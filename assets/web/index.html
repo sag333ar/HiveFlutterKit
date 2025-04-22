@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
+  </head>
+  <body>
+    <script type="module">
+      import * as Aioha from "https://unpkg.com/@aioha/aioha@latest/dist/bundle.js";
+      window.Aioha = Aioha;
+      aiohaInitialized = true;
+    </script>
+    <script>
+      var aiohaInitialized = false;
+      let aioha = null;
+      let qrString = "";
+
+      function setupAioha() {
+        if (aioha === null) {
+          aioha = window.Aioha.initAioha({
+            hiveauth: {
+              name: "AiohaExperiments",
+              description: "Testing aioha login - keychain & hiveauth methods",
+            },
+          });
+        }
+        aioha.on("hiveauth_challenge_request", (payload, evt, cancel) => {
+          qrString = payload;
+        });
+      }
+
+      async function loginWithKeychain(username) {
+        if (!aiohaInitialized) {
+          qrString = "";
+          throw new Error("Aioha not initialized");
+          return;
+        }
+        setupAioha();
+        qrString = "";
+        const proof = parseInt(new Date().getTime() / 1000);
+        const login = await aioha.login(
+          window.Aioha.Providers.Keychain,
+          username,
+          {
+            msg: `${proof}`,
+            keyType: window.Aioha.KeyTypes.Posting,
+          }
+        );
+        if (login.error && login.error !== "Already logged in") {
+          qrString = "";
+          throw new Error("Login Error " + login.error);
+          return;
+        } else if (login.error === "Already logged in") {
+          aioha.switchUser(username);
+          const signedResult = await aioha.signMessage(
+            `${proof}`,
+            window.Aioha.KeyTypes.Posting
+          );
+          if (signedResult.error) {
+            qrString = "";
+            throw new Error("Signing Error " + signedResult.error);
+            return;
+          }
+          qrString = "";
+          return JSON.stringify({ ...signedResult, proof: `${proof}` });
+        }
+        qrString = "";
+        return JSON.stringify({ ...login, proof: `${proof}` });
+      }
+
+      async function loginWithHiveAuth(username, message) {
+        if (!aiohaInitialized) {
+          qrString = "";
+          throw new Error("Aioha not initialized");
+          return;
+        }
+        setupAioha();
+        qrString = "";
+        const proof = parseInt(new Date().getTime() / 1000);
+        const login = await aioha.login(
+          window.Aioha.Providers.HiveAuth,
+          username,
+          {
+            msg: `${proof}`,
+            keyType: window.Aioha.KeyTypes.Posting,
+            hiveauth: {
+              cbWait: (payload, evt) => {
+                qrString = payload;
+              },
+            },
+          }
+        );
+        if (login.error && login.error !== "Already logged in") {
+          qrString = "";
+          throw new Error("Login Error " + login.error);
+          return;
+        } else if (login.error === "Already logged in") {
+          aioha.switchUser(username);
+          const signedResult = await aioha.signMessage(
+            `${proof}`,
+            window.Aioha.KeyTypes.Posting
+          );
+          if (signedResult.error) {
+            qrString = "";
+            throw new Error("Signing Error " + signedResult.error);
+            return;
+          }
+          qrString = "";
+          return JSON.stringify({ ...signedResult, proof: `${proof}` });
+        }
+        qrString = "";
+        return JSON.stringify({ ...login, proof: `${proof}` });
+      }
+
+      async function getQrString() {
+        return qrString;
+      }
+
+      async function getCurrentUser() {
+        try {
+          setupAioha();
+          if (!aioha) {
+            return JSON.stringify({ error: "Aioha is not initialized" });
+          }
+          const currentUser = await aioha.getCurrentUser();
+          if (currentUser) {
+            return JSON.stringify(currentUser);
+          } else {
+            return JSON.stringify({ error: "No user is currently logged in" });
+          }
+        } catch (error) {
+          return JSON.stringify({ error: error.toString() });
+        }
+      }
+
+      async function logoutUser() {
+        try {
+          if (!aiohaInitialized) {
+            return JSON.stringify({ error: "Aioha is not initialized" });
+          }
+          setupAioha();
+          if (!aioha) {
+            return JSON.stringify({ error: "Aioha is not initialized" });
+          }
+          const currentUser = await aioha.getCurrentUser();
+          if (!currentUser) {
+            return JSON.stringify({ error: "No user is currently logged in" });
+          }
+          const logoutResult = await aioha.logout();
+          return JSON.stringify({
+            success: "User logged out successfully",
+            result: logoutResult,
+          });
+        } catch (error) {
+          return JSON.stringify({ error: error.toString() });
+        }
+      }
+
+      async function singleVote(author, permlink, weight) {
+        try {
+          if (!aiohaInitialized) {
+            return JSON.stringify({ error: "Aioha is not initialized" });
+          }
+          setupAioha();
+          if (!aioha) {
+            return JSON.stringify({ error: "Aioha is not initialized" });
+          }
+          const currentUser = await aioha.getCurrentUser();
+          if (!currentUser) {
+            return JSON.stringify({ error: "No user is currently logged in" });
+          }
+          const result = await aioha.vote(author, permlink, weight);
+          return JSON.stringify(result);
+        } catch (error) {
+          return JSON.stringify({ error: error.toString() });
+        }
+      }
+
+      async function comment(
+        parentAuthor,
+        parentPermlink,
+        permlink,
+        title,
+        body,
+        jsonMetadata
+      ) {
+        try {
+          if (!aiohaInitialized) {
+            return JSON.stringify({ error: "Aioha is not initialized" });
+          }
+          setupAioha();
+          if (!aioha) {
+            return JSON.stringify({ error: "Aioha is not initialized" });
+          }
+          const currentUser = await aioha.getCurrentUser();
+          if (!currentUser) {
+            return JSON.stringify({ error: "No user is currently logged in" });
+          }
+          const result = await aioha.comment(
+            parentAuthor,
+            parentPermlink,
+            permlink,
+            title,
+            body,
+            jsonMetadata
+          );
+          return JSON.stringify(result);
+        } catch (error) {
+          return JSON.stringify({ error: error.toString() });
+        }
+      }
+
+      async function commentWithOptions(
+        parentAuthor,
+        parentPermlink,
+        permlink,
+        title,
+        body,
+        jsonMetadata,
+        options
+      ) {
+        try {
+          if (!aiohaInitialized) {
+            return JSON.stringify({ error: "Aioha is not initialized" });
+          }
+          setupAioha();
+          if (!aioha) {
+            return JSON.stringify({ error: "Aioha is not initialized" });
+          }
+          const currentUser = await aioha.getCurrentUser();
+          if (!currentUser) {
+            return JSON.stringify({ error: "No user is currently logged in" });
+          }
+          const result = await aioha.comment(
+            parentAuthor,
+            parentPermlink,
+            permlink,
+            title,
+            body,
+            jsonMetadata,
+            options
+          );
+          return JSON.stringify(result);
+        } catch (error) {
+          return JSON.stringify({ error: error.toString() });
+        }
+      }
+
+      async function deleteComment(permlink) {
+        try {
+          if (!aiohaInitialized) {
+            return JSON.stringify({ error: "Aioha is not initialized" });
+          }
+          setupAioha();
+          if (!aioha) {
+            return JSON.stringify({ error: "Aioha is not initialized" });
+          }
+          const currentUser = await aioha.getCurrentUser();
+          if (!currentUser) {
+            return JSON.stringify({ error: "No user is currently logged in" });
+          }
+          const result = await aioha.deleteComment(permlink);
+          return JSON.stringify(result);
+        } catch (error) {
+          return JSON.stringify({ error: error.toString() });
+        }
+      }
+
+      async function reblog(author, permlink, reblogFlag) {
+        try {
+          if (!aiohaInitialized) {
+            return JSON.stringify({ error: "Aioha is not initialized" });
+          }
+          setupAioha();
+          if (!aioha) {
+            return JSON.stringify({ error: "Aioha is not initialized" });
+          }
+          const currentUser = await aioha.getCurrentUser();
+          if (!currentUser) {
+            return JSON.stringify({ error: "No user is currently logged in" });
+          }
+          const result = await aioha.reblog(author, permlink, reblogFlag);
+          return JSON.stringify(result);
+        } catch (error) {
+          return JSON.stringify({ error: error.toString() });
+        }
+      }
+
+      async function follow(author, followFlag) {
+        try {
+          if (!aiohaInitialized) {
+            return JSON.stringify({ error: "Aioha is not initialized" });
+          }
+          setupAioha();
+          if (!aioha) {
+            return JSON.stringify({ error: "Aioha is not initialized" });
+          }
+          const currentUser = await aioha.getCurrentUser();
+          if (!currentUser) {
+            return JSON.stringify({ error: "No user is currently logged in" });
+          }
+          const result = await aioha.follow(author, followFlag);
+          return JSON.stringify(result);
+        } catch (error) {
+          return JSON.stringify({ error: error.toString() });
+        }
+      }
+    </script>
+  </body>
+</html>

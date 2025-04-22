@@ -26,4 +26,63 @@ abstract class AiohaFlutterCorePlatform extends PlatformInterface {
   Future<String?> getPlatformVersion() {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
+
+  Future<String> loginWithKeychain(String username) {
+    throw UnimplementedError('loginWithKeychain has not been implemented.');
+  }
+
+  Future<String> loginWithHiveAuth(String username) {
+    throw UnimplementedError('loginWithHiveAuth has not been implemented.');
+  }
+
+  Future<String> getCurrentUser() {
+    throw UnimplementedError('getCurrentUser has not been implemented.');
+  }
+
+  Future<String> getQrString() {
+    throw UnimplementedError('getQrString has not been implemented.');
+  }
+
+  Future<String> logout() {
+    throw UnimplementedError('logout has not been implemented.');
+  }
+
+  Future<String> singleVote(String author, String permlink, int weight) {
+    throw UnimplementedError('singleVote has not been implemented.');
+  }
+
+  Future<String> comment(
+    String parentAuthor,
+    String parentPermlink,
+    String permlink,
+    String title,
+    String body,
+    Map<String, dynamic> jsonMetadata,
+  ) {
+    throw UnimplementedError('comment has not been implemented.');
+  }
+
+  Future<String> commentWithOptions(
+    String parentAuthor,
+    String parentPermlink,
+    String permlink,
+    String title,
+    String body,
+    Map<String, dynamic> jsonMetadata,
+    Map<String, dynamic> options,
+  ) {
+    throw UnimplementedError('commentWithOptions has not been implemented.');
+  }
+
+  Future<String> deleteComment(String permlink) {
+    throw UnimplementedError('deleteComment has not been implemented.');
+  }
+
+  Future<String> reblog(String author, String permlink, bool reblogFlag) {
+    throw UnimplementedError('reblog has not been implemented.');
+  }
+
+  Future<String> follow(String author, bool followFlag) {
+    throw UnimplementedError('follow has not been implemented.');
+  }
 }

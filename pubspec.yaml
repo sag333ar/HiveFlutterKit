@@ -12,8 +12,12 @@ dependencies:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
-  web: ^1.0.0
+  web: ^1.1.1
   plugin_platform_interface: ^2.0.2
+  js: ^0.7.2
+  qr_flutter: ^4.1.0
+  flutter_inappwebview: ^6.1.5
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_test:
@@ -47,6 +51,8 @@ flutter:
         fileName: aioha_flutter_core_web.dart
 
   # To add assets to your plugin package, add an assets section, like this:
+  assets:
+    - assets/web/index.html
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
