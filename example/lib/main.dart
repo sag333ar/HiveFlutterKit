@@ -3,6 +3,8 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:aioha_flutter_core/aioha_flutter_core.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(const MyApp());
@@ -294,7 +296,7 @@ class _MyAppState extends State<MyApp> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Text('Flutter Aioha Core Example'),
       ),
       body: Center(
         child: Column(
@@ -320,7 +322,8 @@ class _MyAppState extends State<MyApp> {
             ),
             ElevatedButton(
               onPressed: () async {
-                String username = await aioha.getCurrentUser();
+                String username =
+                    await _aiohaFlutterCorePlugin.getCurrentUser();
                 username = username.replaceAll('"', '');
                 showDialog(
                   context: context,
