@@ -1,17 +1,359 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import 'aioha_flutter_core_platform_interface.dart';
 
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+
 /// An implementation of [AiohaFlutterCorePlatform] that uses method channels.
 class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
+  late HeadlessInAppWebView headlessWebView;
+  var isWebViewRunning = false;
+
+  MethodChannelAiohaFlutterCore() {
+    initHeadlessWebView();
+  }
+
+  Future<void> initHeadlessWebView() async {
+    String htmlContent = await _loadHTMLFromAssets();
+
+    headlessWebView = HeadlessInAppWebView(
+      initialData: InAppWebViewInitialData(
+        data: htmlContent,
+        encoding: "utf-8",
+        mimeType: "text/html",
+        historyUrl: WebUri.uri(Uri.parse("http://localhost")),
+        baseUrl: WebUri.uri(
+          Uri.parse("http://localhost"),
+        ), // iOS-specific for local file access
+      ),
+      initialSettings: InAppWebViewSettings(
+        javaScriptEnabled: true,
+        domStorageEnabled: true, // Ensure localStorage is enabled
+        cacheEnabled: true,
+        allowsInlineMediaPlayback: true,
+        javaScriptCanOpenWindowsAutomatically: true,
+        transparentBackground: true,
+      ),
+      onWebViewCreated: (controller) {
+        print("WebView created");
+      },
+      onLoadStop: (controller, url) {
+        print("WebView load finished: $url");
+        isWebViewRunning = true;
+      },
+    );
+
+    await headlessWebView.run();
+  }
+
+  Future<String> _loadHTMLFromAssets() async {
+    String html = await rootBundle.loadString(
+      "packages/aioha_flutter_core/assets/web/index.html",
+    );
+    // String script1 = await rootBundle.loadString(
+    //   "assets/web/aioha@1.6.0-beta.4.js",
+    // );
+    // String script2 = await rootBundle.loadString(
+    //   "assets/web/hiveauth-aes.bundle.js",
+    // );
+
+    // // Inject both scripts inline into the <head>
+    // String combinedScripts =
+    //     "<script>$script1</script><script>$script2</script>";
+
+    return html; //.replaceFirst("</head>", "$combinedScripts</head>");
+  }
+
   /// The method channel used to interact with the native platform.
   @visibleForTesting
   final methodChannel = const MethodChannel('aioha_flutter_core');
 
   @override
   Future<String?> getPlatformVersion() async {
-    final version = await methodChannel.invokeMethod<String>('getPlatformVersion');
+    final version = await methodChannel.invokeMethod<String>(
+      'getPlatformVersion',
+    );
     return version;
+  }
+
+  @override
+  Future<String> loginWithKeychain(String username) async {
+    throw UnimplementedError(
+      'Hive Keychain based login not available for mobile-apps',
+    );
+  }
+
+  @override
+  Future<String> getQrString() async {
+    final completer = Completer<String>();
+
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: 'onGetQrStringResult',
+      callback: (args) {
+        if (!completer.isCompleted) {
+          completer.complete(args.isNotEmpty ? args[0].toString() : 'null');
+        }
+      },
+    );
+    await headlessWebView.webViewController?.evaluateJavascript(
+      source: """
+      (async () => {
+        var string = await getQrString();
+        window.flutter_inappwebview.callHandler('onGetQrStringResult', string);
+      })()
+      """,
+    );
+    return completer.future;
+  }
+
+  @override
+  Future<String> loginWithHiveAuth(String username) async {
+    final completer = Completer<String>();
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: 'onHiveAuthResult',
+      callback: (args) {
+        if (!completer.isCompleted) {
+          completer.complete(args.isNotEmpty ? args[0].toString() : 'null');
+        }
+      },
+    );
+    var source = """
+    (async () => {
+  try {
+    const res = await loginWithHiveAuth('$username', '');
+    window.flutter_inappwebview.callHandler('onHiveAuthResult', res ?? 'null');
+  } catch (e) {
+    window.flutter_inappwebview.callHandler('onHiveAuthResult', 'Error: ' + e.toString());
+  }
+})()
+  """;
+    await headlessWebView.webViewController?.evaluateJavascript(source: source);
+    return completer.future;
+  }
+
+  @override
+  Future<String> singleVote(String author, String permlink, int weight) async {
+    final completer = Completer<String>();
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: 'onSingleVoteResult',
+      callback: (args) {
+        if (!completer.isCompleted) {
+          completer.complete(args.isNotEmpty ? args[0].toString() : 'null');
+        }
+      },
+    );
+    await headlessWebView.webViewController?.evaluateJavascript(
+      source: """
+      (async () => {
+        try {
+          const res = await singleVote('$author', '$permlink', $weight);
+          window.flutter_inappwebview.callHandler('onSingleVoteResult', res ?? 'null');
+        } catch (e) {
+          window.flutter_inappwebview.callHandler('onSingleVoteResult', 'Error: ' + e.toString());
+        }
+      })()
+      """,
+    );
+    return completer.future;
+  }
+
+  @override
+  Future<String> getCurrentUser() async {
+    final completer = Completer<String>();
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: 'onGetCurrentUserResult',
+      callback: (args) {
+        if (!completer.isCompleted) {
+          completer.complete(args.isNotEmpty ? args[0].toString() : 'null');
+        }
+      },
+    );
+    await headlessWebView.webViewController?.evaluateJavascript(
+      source: """
+      (async () => {
+        try {
+          const res = await getCurrentUser();
+          window.flutter_inappwebview.callHandler('onGetCurrentUserResult', res ?? 'null');
+        } catch (e) {
+          window.flutter_inappwebview.callHandler('onGetCurrentUserResult', 'Error: ' + e.toString());
+        }
+      })()
+      """,
+    );
+    return completer.future;
+  }
+
+  @override
+  Future<String> logout() async {
+    final completer = Completer<String>();
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: 'onLogoutResult',
+      callback: (args) {
+        if (!completer.isCompleted) {
+          completer.complete(args.isNotEmpty ? args[0].toString() : 'null');
+        }
+      },
+    );
+    await headlessWebView.webViewController?.evaluateJavascript(
+      source: """
+      (async () => {
+        try {
+          const res = await logoutUser();
+          window.flutter_inappwebview.callHandler('onLogoutResult', res ?? 'null');
+        } catch (e) {
+          window.flutter_inappwebview.callHandler('onLogoutResult', 'Error: ' + e.toString());
+        }
+      })()
+      """,
+    );
+    return completer.future;
+  }
+
+  @override
+  Future<String> comment(
+    String parentAuthor,
+    String parentPermlink,
+    String permlink,
+    String title,
+    String body,
+    Map<String, dynamic> jsonMetadata,
+  ) async {
+    final completer = Completer<String>();
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: 'onCommentResult',
+      callback: (args) {
+        if (!completer.isCompleted) {
+          completer.complete(args.isNotEmpty ? args[0].toString() : 'null');
+        }
+      },
+    );
+    await headlessWebView.webViewController?.evaluateJavascript(
+      source: """
+      (async () => {
+        try {
+          const res = await comment('$parentAuthor', '$parentPermlink', '$permlink', '$title', '$body', ${jsonMetadata.toString()});
+          window.flutter_inappwebview.callHandler('onCommentResult', res ?? 'null');
+        } catch (e) {
+          window.flutter_inappwebview.callHandler('onCommentResult', 'Error: ' + e.toString());
+        }
+      })()
+      """,
+    );
+    return completer.future;
+  }
+
+  @override
+  Future<String> commentWithOptions(
+    String parentAuthor,
+    String parentPermlink,
+    String permlink,
+    String title,
+    String body,
+    Map<String, dynamic> jsonMetadata,
+    Map<String, dynamic> options,
+  ) async {
+    final completer = Completer<String>();
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: 'onCommentWithOptionsResult',
+      callback: (args) {
+        if (!completer.isCompleted) {
+          completer.complete(args.isNotEmpty ? args[0].toString() : 'null');
+        }
+      },
+    );
+    await headlessWebView.webViewController?.evaluateJavascript(
+      source: """
+      (async () => {
+        try {
+          const res = await comment('$parentAuthor', '$parentPermlink', '$permlink', '$title', '$body', ${jsonMetadata.toString()}, ${options.toString()});
+          window.flutter_inappwebview.callHandler('onCommentWithOptionsResult', res ?? 'null');
+        } catch (e) {
+          window.flutter_inappwebview.callHandler('onCommentWithOptionsResult', 'Error: ' + e.toString());
+        }
+      })()
+      """,
+    );
+    return completer.future;
+  }
+
+  @override
+  Future<String> deleteComment(String permlink) async {
+    final completer = Completer<String>();
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: 'onDeleteCommentResult',
+      callback: (args) {
+        if (!completer.isCompleted) {
+          completer.complete(args.isNotEmpty ? args[0].toString() : 'null');
+        }
+      },
+    );
+    await headlessWebView.webViewController?.evaluateJavascript(
+      source: """
+      (async () => {
+        try {
+          const res = await deleteComment('$permlink');
+          window.flutter_inappwebview.callHandler('onDeleteCommentResult', res ?? 'null');
+        } catch (e) {
+          window.flutter_inappwebview.callHandler('onDeleteCommentResult', 'Error: ' + e.toString());
+        }
+      })()
+      """,
+    );
+    return completer.future;
+  }
+
+  @override
+  Future<String> reblog(String author, String permlink, bool reblogFlag) async {
+    final completer = Completer<String>();
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: 'onReblogResult',
+      callback: (args) {
+        if (!completer.isCompleted) {
+          completer.complete(args.isNotEmpty ? args[0].toString() : 'null');
+        }
+      },
+    );
+    await headlessWebView.webViewController?.evaluateJavascript(
+      source: """
+      (async () => {
+        try {
+          const res = await reblog('$author', '$permlink', $reblogFlag);
+          window.flutter_inappwebview.callHandler('onReblogResult', res ?? 'null');
+        } catch (e) {
+          window.flutter_inappwebview.callHandler('onReblogResult', 'Error: ' + e.toString());
+        }
+      })()
+      """,
+    );
+    return completer.future;
+  }
+
+  @override
+  Future<String> follow(String author, bool followFlag) async {
+    final completer = Completer<String>();
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: 'onFollowResult',
+      callback: (args) {
+        if (!completer.isCompleted) {
+          completer.complete(args.isNotEmpty ? args[0].toString() : 'null');
+        }
+      },
+    );
+    await headlessWebView.webViewController?.evaluateJavascript(
+      source: """
+      (async () => {
+        try {
+          const res = await follow('$author', $followFlag);
+          window.flutter_inappwebview.callHandler('onFollowResult', res ?? 'null');
+        } catch (e) {
+          window.flutter_inappwebview.callHandler('onFollowResult', 'Error: ' + e.toString());
+        }
+      })()
+      """,
+    );
+    return completer.future;
   }
 }
