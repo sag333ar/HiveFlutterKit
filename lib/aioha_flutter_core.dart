@@ -86,4 +86,12 @@ class AiohaFlutterCore {
   Future<String> follow(String author, bool followFlag) {
     return AiohaFlutterCorePlatform.instance.follow(author, followFlag);
   }
+
+  Future<String> claimRewards(){
+    return AiohaFlutterCorePlatform.instance.claimRewards();
+  }
+
+  Future<String> signMessage(String message, String keyType){
+    return AiohaFlutterCorePlatform.instance.signMessage(message, keyType);
+  }
 }

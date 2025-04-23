@@ -60,6 +60,12 @@ external dynamic reblogJS(String author, String permlink, bool reblogFlag);
 @JS('follow')
 external dynamic followJS(String author, bool followFlag);
 
+@JS('claimRewards')
+external dynamic claimRewardsJS();
+
+@JS('signMessage')
+external dynamic signMessageJS(String message, String keyType);
+
 /// A web implementation of the AiohaFlutterCorePlatform of the AiohaFlutterCore plugin.
 class AiohaFlutterCoreWeb extends AiohaFlutterCorePlatform {
   /// Constructs a AiohaFlutterCoreWeb
@@ -193,6 +199,20 @@ class AiohaFlutterCoreWeb extends AiohaFlutterCorePlatform {
   @override
   Future<String> follow(String author, bool followFlag) async {
     var promise = followJS(author, followFlag);
+    var contentData = await promiseToFuture(promise);
+    return contentData;
+  }
+
+  @override
+  Future<String> claimRewards() async {
+    var promise = claimRewardsJS();
+    var contentData = await promiseToFuture(promise);
+    return contentData;
+  }
+  
+  @override
+  Future<String> signMessage(String message, String keyType) async {
+    var promise = signMessageJS(message, keyType);
     var contentData = await promiseToFuture(promise);
     return contentData;
   }
