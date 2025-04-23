@@ -409,4 +409,58 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
     );
     return completer.future;
   }
+
+  @override
+  Future<List<String>> getOtherLogins() async {
+    final completer = Completer<List<String>>();
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: 'onGetOtherLoginsResult',
+      callback: (args) {
+        print("Other logins result from JS: $args");
+        if (!completer.isCompleted) {
+          completer.complete(args.isNotEmpty ? List<String>.from(args[0]) : []);
+        }
+      },
+    );
+    await headlessWebView.webViewController?.evaluateJavascript(
+      source: """
+      (async () => {
+        try {
+          const logins = await getOtherLogins();
+          window.flutter_inappwebview.callHandler('onGetOtherLoginsResult', logins);
+        } catch (e) {
+          window.flutter_inappwebview.callHandler('onGetOtherLoginsResult', []);
+        }
+      })()
+      """,
+    );
+    return completer.future;
+  }
+
+  @override
+  Future<bool> switchUser(String userId) async {
+    final completer = Completer<bool>();
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: 'onSwitchUserResult',
+      callback: (args) {
+        print("Switch user result from JS: $args");
+        if (!completer.isCompleted) {
+          completer.complete(args.isNotEmpty && args[0] == true);
+        }
+      },
+    );
+    await headlessWebView.webViewController?.evaluateJavascript(
+      source: """
+      (async () => {
+        try {
+          const result = switchUser('$userId');
+          window.flutter_inappwebview.callHandler('onSwitchUserResult', result);
+        } catch (e) {
+          window.flutter_inappwebview.callHandler('onSwitchUserResult', false);
+        }
+      })()
+      """,
+    );
+    return completer.future;
+  }
 }

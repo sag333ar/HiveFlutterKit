@@ -94,4 +94,11 @@ class AiohaFlutterCore {
   Future<String> signMessage(String message, String keyType){
     return AiohaFlutterCorePlatform.instance.signMessage(message, keyType);
   }
+  
+  Future<bool> switchUser(String userId){
+    return AiohaFlutterCorePlatform.instance.switchUser(userId);
+  }
+  Future<List<String>> getOtherLogins(){
+    return AiohaFlutterCorePlatform.instance.getOtherLogins();
+  }
 }
