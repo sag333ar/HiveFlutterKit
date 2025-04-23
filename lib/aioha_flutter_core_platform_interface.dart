@@ -88,4 +88,9 @@ abstract class AiohaFlutterCorePlatform extends PlatformInterface {
   Future<String> claimRewards() {
     throw UnimplementedError('claimRewards has not been implemented.');
   }
+
+  Future<String> signMessage(String message, String keyType) {
+    throw UnimplementedError('SignMessage has not been implemented.');
+  }
+
 }

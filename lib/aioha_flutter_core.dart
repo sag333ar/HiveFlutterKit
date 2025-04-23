@@ -90,4 +90,8 @@ class AiohaFlutterCore {
   Future<String> claimRewards(){
     return AiohaFlutterCorePlatform.instance.claimRewards();
   }
+
+  Future<String> signMessage(String message, String keyType){
+    return AiohaFlutterCorePlatform.instance.signMessage(message, keyType);
+  }
 }

@@ -253,6 +253,24 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void _signMessage() async {
+    try {
+      final result = await aiohaCore.plugin.signMessage(
+        'Hello, Aioha!',
+        'Posting',  // Add KeyType here
+      );
+      print('Sign Message result: $result');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Sign Message Success: $result')));
+    } catch (e) {
+      print('Sign Message failed: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Sign Message Error: $e')));
+    }
+  }
+
   void _startTimer() async {
     var string = await aiohaCore.plugin.getQrString();
     setState(() {
@@ -366,6 +384,10 @@ class _MyHomePageState extends State<MyHomePage> {
               ElevatedButton(
                 onPressed: _claimRewards,
                 child: const Text('Claim Rewards'),
+              ),
+              ElevatedButton(
+                onPressed: _signMessage,
+                child: const Text('Sign Message'),
               ),
               // ElevatedButton(onPressed: _comment, child: const Text('Comment')),
               // ElevatedButton(

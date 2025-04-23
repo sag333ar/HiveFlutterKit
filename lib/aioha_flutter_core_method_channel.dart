@@ -383,4 +383,30 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
     );
     return completer.future;
   }
+
+  @override
+  Future<String> signMessage(String message, String keyType) async {
+    final completer = Completer<String>();
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: 'onSignMessageResult',
+      callback: (args) {
+        if (!completer.isCompleted) {
+          completer.complete(args.isNotEmpty ? args[0].toString() : 'null');
+        }
+      },
+    );
+    await headlessWebView.webViewController?.evaluateJavascript(
+      source: """
+      (async () => {
+        try {
+          const res = await signMessage('$message', '$keyType');
+          window.flutter_inappwebview.callHandler('onSignMessageResult', res ?? 'null');
+        } catch (e) {
+          window.flutter_inappwebview.callHandler('onSignMessageResult', 'Error: ' + e.toString());
+        }
+      })()
+      """,
+    );
+    return completer.future;
+  }
 }
