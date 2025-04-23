@@ -60,6 +60,12 @@ external dynamic reblogJS(String author, String permlink, bool reblogFlag);
 @JS('follow')
 external dynamic followJS(String author, bool followFlag);
 
+@JS('claimRewards')
+external dynamic claimRewardsJS();
+
+@JS('signMessage')
+external dynamic signMessageJS(String message, String keyType);
+
 @JS('switchUser')
 external dynamic _switchUser(String userId);
 
@@ -202,18 +208,4 @@ class AiohaFlutterCoreWeb extends AiohaFlutterCorePlatform {
     var contentData = await promiseToFuture(promise);
     return contentData;
   }
-
-  @override
-  Future<List<String>> getOtherLogins() async {
-    var promise = getOtherLoginsJS();
-    var contentData = await promiseToFuture(promise);
-
-    // Ensure the returned data is treated as a list of strings
-    return List<String>.from(contentData);
-  }
-}
-
-Future<bool> switchUser(String userId) async {
-  final result = await promiseToFuture(_switchUser(userId));
-  return result == true;
 }

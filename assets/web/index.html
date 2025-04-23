@@ -306,6 +306,47 @@
         }
       }
 
+      async function claimRewards() {
+        try {
+          if (!aiohaInitialized) {
+            return JSON.stringify({ error: "Aioha is not initialized" });
+          }
+          setupAioha();
+          if (!aioha) {
+            return JSON.stringify({ error: "Aioha is not initialized" });
+          }
+          const currentUser = await aioha.getCurrentUser();
+          if (!currentUser) {
+            return JSON.stringify({ error: "No user is currently logged in" });
+          }
+          const result = await aioha.claimRewards();
+          return JSON.stringify(result);
+        } catch (error) {
+          return JSON.stringify({ error: error.toString() });
+        }
+      }
+
+      async function signMessage(message, keyType) {
+        try {
+          if (!aiohaInitialized) {
+            return JSON.stringify({ error: "Aioha is not initialized" });
+          }
+          setupAioha();
+          if (!aioha) {
+            return JSON.stringify({ error: "Aioha is not initialized" });
+          }
+          const currentUser = await aioha.getCurrentUser();
+          if (!currentUser) {
+            return JSON.stringify({ error: "No user is currently logged in" });
+          }
+          const result = await aioha.signMessage(message, keyType);
+          return JSON.stringify(result);
+        } catch (error) {
+          return JSON.stringify({ error: error.toString() });
+        }
+      }
+
+
 
       
       async function getOtherLogins() {
