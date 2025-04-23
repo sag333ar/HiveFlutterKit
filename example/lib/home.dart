@@ -223,6 +223,68 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void _switchUser() async {
+    if (aiohaCore.plugin == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error: Aioha is not initialized')),
+      );
+      return;
+    }
+
+    try {
+      final otherLogins = await aiohaCore.plugin.getOtherLogins();
+      print('Other logged-in users: $otherLogins');
+
+      if (otherLogins.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No other logged-in users available')),
+        );
+        return;
+      }
+
+      // Show a dialog to select a user
+      final selectedUser = await showDialog<String>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Select User to Switch'),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: otherLogins.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(otherLogins[index]),
+                    onTap: () {
+                      Navigator.of(context).pop(otherLogins[index]);
+                    },
+                  );
+                },
+              ),
+            ),
+          );
+        },
+      );
+
+      if (selectedUser == null) {
+        // User canceled the dialog
+        return;
+      }
+
+      final result = await aiohaCore.plugin.switchUser(selectedUser);
+      print('Switch user result: $result');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Switched to user: $selectedUser')),
+      );
+    } catch (e) {
+      print('Switch user failed: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+    }
+  }
+
   void _unfollow() async {
     try {
       final result = await aiohaCore.plugin.follow('sagarkothari', true);
@@ -292,6 +354,10 @@ class _MyHomePageState extends State<MyHomePage> {
             ElevatedButton(
               onPressed: _loginWithHiveAuth,
               child: const Text('Login with HiveAuth'),
+            ),
+            ElevatedButton(
+              onPressed: _switchUser,
+              child: const Text('Switch User'),
             ),
             ElevatedButton(
               onPressed: () async {

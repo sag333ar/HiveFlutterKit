@@ -305,6 +305,59 @@
           return JSON.stringify({ error: error.toString() });
         }
       }
+
+
+      
+      async function getOtherLogins() {
+        try {
+          if (!aiohaInitialized) {
+            console.error("Aioha is not initialized");
+            return [];
+          }
+
+          const logins = await aioha.getOtherLogins();
+          console.log("Other logged-in users (raw):", logins);
+
+          // Convert the object to a list of user IDs
+          const userIds = Object.keys(logins);
+          console.log("Other logged-in users (processed):", userIds);
+          return userIds;
+        } catch (e) {
+          console.error("Failed to fetch other logged-in users", e);
+          return [];
+        }
+      }
+
+      window.getOtherLogins = getOtherLogins; // Expose the function to Dart
+
+      async function switchUser(userId) {
+        try {
+          if (!aiohaInitialized) {
+            console.error("Aioha is not initialized");
+            return false;
+          }
+
+          const otherLogins = await getOtherLogins();
+          console.log("Available users to switch:", otherLogins);
+
+          if (!otherLogins.includes(userId)) {
+            console.error("User not found in the list of logged-in users");
+            return false;
+          }
+
+          const result = await aioha.switchUser(userId);
+          console.log("Switch user result:", result);
+          console.log("Switched to username:", userId); // Print switched username
+          return result || false; // Ensure a valid boolean is returned
+        } catch (e) {
+          console.error("Switch failed", e);
+          return false;
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        setupAioha();
+      });
     </script>
   </body>
 </html>

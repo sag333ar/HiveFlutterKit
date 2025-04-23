@@ -86,4 +86,11 @@ class AiohaFlutterCore {
   Future<String> follow(String author, bool followFlag) {
     return AiohaFlutterCorePlatform.instance.follow(author, followFlag);
   }
+  
+  Future<bool> switchUser(String userId){
+    return AiohaFlutterCorePlatform.instance.switchUser(userId);
+  }
+  Future<List<String>> getOtherLogins(){
+    return AiohaFlutterCorePlatform.instance.getOtherLogins();
+  }
 }
