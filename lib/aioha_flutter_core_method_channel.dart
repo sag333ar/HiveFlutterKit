@@ -120,16 +120,17 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
         }
       },
     );
-    var source = """
-    (async () => {
-  try {
-    const res = await loginWithHiveAuth('$username', '');
-    window.flutter_inappwebview.callHandler('onHiveAuthResult', res ?? 'null');
-  } catch (e) {
-    window.flutter_inappwebview.callHandler('onHiveAuthResult', 'Error: ' + e.toString());
-  }
-})()
-  """;
+    var source = 
+      """
+          (async () => {
+            try {
+              const res = await loginWithHiveAuth('$username', '');
+              window.flutter_inappwebview.callHandler('onHiveAuthResult', res ?? 'null');
+            } catch (e) {
+              window.flutter_inappwebview.callHandler('onHiveAuthResult', 'Error: ' + e.toString());
+            }
+          })()
+      """;
     await headlessWebView.webViewController?.evaluateJavascript(source: source);
     return completer.future;
   }
@@ -350,6 +351,58 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
           window.flutter_inappwebview.callHandler('onFollowResult', res ?? 'null');
         } catch (e) {
           window.flutter_inappwebview.callHandler('onFollowResult', 'Error: ' + e.toString());
+        }
+      })()
+      """,
+    );
+    return completer.future;
+  }
+  
+  @override
+  Future<String> claimRewards() async {
+    final completer = Completer<String>();
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: 'onClaimRewardsResult',
+      callback: (args) {
+        if (!completer.isCompleted) {
+          completer.complete(args.isNotEmpty ? args[0].toString() : 'null');
+        }
+      },
+    );
+    await headlessWebView.webViewController?.evaluateJavascript(
+      source: """
+      (async () => {
+        try {
+          const res = await claimRewards();
+          window.flutter_inappwebview.callHandler('onClaimRewardsResult', res ?? 'null');
+        } catch (e) {
+          window.flutter_inappwebview.callHandler('onClaimRewardsResult', 'Error: ' + e.toString());
+        }
+      })()
+      """,
+    );
+    return completer.future;
+  }
+
+  @override
+  Future<String> signMessage(String message, String keyType) async {
+    final completer = Completer<String>();
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: 'onSignMessageResult',
+      callback: (args) {
+        if (!completer.isCompleted) {
+          completer.complete(args.isNotEmpty ? args[0].toString() : 'null');
+        }
+      },
+    );
+    await headlessWebView.webViewController?.evaluateJavascript(
+      source: """
+      (async () => {
+        try {
+          const res = await signMessage('$message', '$keyType');
+          window.flutter_inappwebview.callHandler('onSignMessageResult', res ?? 'null');
+        } catch (e) {
+          window.flutter_inappwebview.callHandler('onSignMessageResult', 'Error: ' + e.toString());
         }
       })()
       """,

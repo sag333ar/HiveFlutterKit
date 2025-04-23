@@ -300,6 +300,39 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void _claimRewards() async {
+    try {
+      final result = await aiohaCore.plugin.claimRewards();
+      print('Claim Rewards result: $result');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Claim Rewards Success: $result')));
+    } catch (e) {
+      print('Claim Rewards failed: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Claim Rewards Error: $e')));
+    }
+  }
+
+  void _signMessage() async {
+    try {
+      final result = await aiohaCore.plugin.signMessage(
+        'Hello, Aioha!',
+        'Posting',  // Add KeyType here
+      );
+      print('Sign Message result: $result');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Sign Message Success: $result')));
+    } catch (e) {
+      print('Sign Message failed: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Sign Message Error: $e')));
+    }
+  }
+
   void _startTimer() async {
     var string = await aiohaCore.plugin.getQrString();
     setState(() {
@@ -333,118 +366,132 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text('Flutter Aioha Core Example'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            TextField(
-              controller: _usernameController,
-              decoration: const InputDecoration(
-                labelText: 'Username',
-                border: OutlineInputBorder(),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: _usernameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Username',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            // if (!Platform.isAndroid && !Platform.isIOS) ...[
-            ElevatedButton(
-              onPressed: _loginWithHiveKeychain,
-              child: const Text('Login with Hive Keychain'),
-            ),
-            // ],
-            ElevatedButton(
-              onPressed: _loginWithHiveAuth,
-              child: const Text('Login with HiveAuth'),
-            ),
-            ElevatedButton(
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _loginWithHiveKeychain,
+                child: const Text('Login with Hive Keychain'),
+              ),
+              ElevatedButton(
+                onPressed: _loginWithHiveAuth,
+                child: const Text('Login with HiveAuth'),
+              ),
+              ElevatedButton(
               onPressed: _switchUser,
               child: const Text('Switch User'),
             ),
             ElevatedButton(
-              onPressed: () async {
-                String username = await aiohaCore.plugin.getCurrentUser();
-                username = username.replaceAll('"', '');
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: const Text('User Profile'),
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          CircleAvatar(
-                            radius: 40,
-                            backgroundImage: NetworkImage(
-                              'https://images.hive.blog/u/$username/avatar?id=test',
+                onPressed: () async {
+                  String username = await aiohaCore.plugin.getCurrentUser();
+                  username = username.replaceAll('"', '');
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text('User Profile'),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CircleAvatar(
+                              radius: 40,
+                              backgroundImage: NetworkImage(
+                                'https://images.hive.blog/u/$username/avatar?id=test',
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            '@$username',
-                            style: const TextStyle(fontSize: 18),
+                            const SizedBox(height: 16),
+                            Text(
+                              '@$username',
+                              style: const TextStyle(fontSize: 18),
+                            ),
+                          ],
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Close'),
                           ),
                         ],
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          child: const Text('Close'),
+                      );
+                    },
+                  );
+                },
+                child: const Text('Show User Profile'),
+              ),
+              ElevatedButton(onPressed: _logout, child: const Text('Logout')),
+              ElevatedButton(onPressed: _singleVote, child: const Text('Vote')),
+              ElevatedButton(
+                onPressed: _deleteComment,
+                child: const Text('Delete Comment'),
+              ),
+              ElevatedButton(onPressed: _reblog, child: const Text('Reblog')),
+              ElevatedButton(
+                onPressed: _removeReblog,
+                child: const Text('Remove Reblog'),
+              ),
+              ElevatedButton(onPressed: _follow, child: const Text('Follow')),
+              ElevatedButton(
+                onPressed: _unfollow,
+                child: const Text('Unfollow'),
+              ),
+              ElevatedButton(
+                onPressed: _claimRewards,
+                child: const Text('Claim Rewards'),
+              ),
+              ElevatedButton(
+                onPressed: _signMessage,
+                child: const Text('Sign Message'),
+              ),
+              // ElevatedButton(onPressed: _comment, child: const Text('Comment')),
+              // ElevatedButton(
+              //   onPressed: _commentWithOptions,
+              //   child: const Text('Comment With Options'),
+              // ),
+              qrString.isEmpty || timerDuration == 0
+                  ? const SizedBox.shrink()
+                  : Column(
+                    children: [
+                      InkWell(
+                        child: QrImageView(
+                          data: qrString,
+                          version: QrVersions.auto,
+                          size: 200.0,
                         ),
-                      ],
-                    );
-                  },
-                );
-              },
-              child: const Text('Show User Profile'),
-            ),
-            ElevatedButton(onPressed: _logout, child: const Text('Logout')),
-            ElevatedButton(onPressed: _singleVote, child: const Text('Vote')),
-            ElevatedButton(
-              onPressed: _deleteComment,
-              child: const Text('Delete Comment'),
-            ),
-            ElevatedButton(onPressed: _reblog, child: const Text('Reblog')),
-            ElevatedButton(
-              onPressed: _removeReblog,
-              child: const Text('Remove Reblog'),
-            ),
-            ElevatedButton(onPressed: _follow, child: const Text('Follow')),
-            ElevatedButton(onPressed: _unfollow, child: const Text('Unfollow')),
-            // ElevatedButton(onPressed: _comment, child: const Text('Comment')),
-            // ElevatedButton(
-            //   onPressed: _commentWithOptions,
-            //   child: const Text('Comment With Options'),
-            // ),
-            qrString.isEmpty || timerDuration == 0
-                ? const SizedBox.shrink()
-                : Column(
-                  children: [
-                    InkWell(
-                      child: QrImageView(
-                        data: qrString,
-                        version: QrVersions.auto,
-                        size: 200.0,
+                        onTap: () {
+                          var uri = Uri.tryParse(qrString);
+                          if (uri != null) {
+                            launchUrl(uri);
+                          }
+                        },
                       ),
-                      onTap: () {
-                        var uri = Uri.tryParse(qrString);
-                        if (uri != null) {
-                          launchUrl(uri);
-                        }
-                      },
-                    ),
-                    LinearProgressIndicator(
-                      value: timerDuration / 30,
-                      backgroundColor: Colors.grey[200],
-                      valueColor: const AlwaysStoppedAnimation<Color>(
-                        Colors.blue,
+                      LinearProgressIndicator(
+                        value: timerDuration / 30,
+                        backgroundColor: Colors.grey[200],
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                          Colors.blue,
+                        ),
                       ),
-                    ),
-                    ElevatedButton(
-                      onPressed: _cancelHiveAuth,
-                      child: const Text('Cancel'),
-                    ),
-                  ],
-                ),
-          ],
+                      ElevatedButton(
+                        onPressed: _cancelHiveAuth,
+                        child: const Text('Cancel'),
+                      ),
+                    ],
+                  ),
+            ],
+          ),
         ),
       ),
     );
