@@ -51,20 +51,24 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
 
   Future<String> _loadHTMLFromAssets() async {
     String html = await rootBundle.loadString(
-      "packages/aioha_flutter_core/assets/web/index.html",
+      "packages/aioha_flutter_core/web/aioha.js",
     );
-    // String script1 = await rootBundle.loadString(
-    //   "assets/web/aioha@1.6.0-beta.4.js",
-    // );
-    // String script2 = await rootBundle.loadString(
-    //   "assets/web/hiveauth-aes.bundle.js",
-    // );
+    String longHtml = """
+<html>
+<head><title>AIOHA HTML</title></head>
+<body>
+<script type="module">
+    import * as Aioha from "https://unpkg.com/@aioha/aioha@latest/dist/bundle.js";
+    window.Aioha = Aioha;
+  </script>
+  <script>
+  $html
+  </script>
+  </body>
+  </html>
+   """;
 
-    // // Inject both scripts inline into the <head>
-    // String combinedScripts =
-    //     "<script>$script1</script><script>$script2</script>";
-
-    return html; //.replaceFirst("</head>", "$combinedScripts</head>");
+    return longHtml;
   }
 
   /// The method channel used to interact with the native platform.
@@ -120,8 +124,7 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
         }
       },
     );
-    var source = 
-      """
+    var source = """
           (async () => {
             try {
               const res = await loginWithHiveAuth('$username', '');
@@ -357,7 +360,7 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
     );
     return completer.future;
   }
-  
+
   @override
   Future<String> claimRewards() async {
     final completer = Completer<String>();

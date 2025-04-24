@@ -1,15 +1,21 @@
-# aioha_flutter_core
+# Aioha
 
-A new Flutter plugin project.
+## All-In-One Hive Authentication
 
-## Getting Started
+### Introduction
 
-This project is a starting point for a Flutter
-[plug-in package](https://flutter.dev/to/develop-plugins),
-a specialized package that includes platform-specific implementation code for
-Android and/or iOS.
+- Aioha (All-In-One Hive Authentication) is an API that provides a common interface for working with different Hive login providers. 
+- This allows easier integration of Hive login and transacting on the network with fewer code.
+- For Javascript package usage, https://aioha.dev/docs
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### AIOHA Flutter Core
 
+- Aioha Flutter Core is a Flutter package that provides a common interface for working with different Hive login providers.
+- This allows easier integration of Hive login and transacting on the network with fewer code.
+- For Flutter package usage, https://pub.dev/packages/aioha
+- For more information about the Aioha API, please visit the [Aioha API documentation](https://aioha.dev/docs).
+- For more information about the Aioha Flutter Core, please visit the [Aioha Flutter Core documentation](https://pub.dev/packages/aioha).
+
+### Using AIOHA Flutter Core in web-app
+
+Step 1. 

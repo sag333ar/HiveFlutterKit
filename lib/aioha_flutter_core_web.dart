@@ -5,6 +5,7 @@
 
 import 'dart:html' as html;
 import 'dart:async';
+import 'package:flutter/services.dart';
 import 'package:js/js.dart' show JS;
 import 'package:js/js_util.dart';
 
@@ -60,25 +61,9 @@ external dynamic reblogJS(String author, String permlink, bool reblogFlag);
 @JS('follow')
 external dynamic followJS(String author, bool followFlag);
 
-@JS('claimRewards')
-external dynamic claimRewardsJS();
-
-@JS('signMessage')
-external dynamic signMessageJS(String message, String keyType);
-
-@JS('switchUser')
-external dynamic _switchUser(String userId);
-
-@JS('getOtherLogins')
-external dynamic getOtherLoginsJS();
-
 /// A web implementation of the AiohaFlutterCorePlatform of the AiohaFlutterCore plugin.
 class AiohaFlutterCoreWeb extends AiohaFlutterCorePlatform {
   /// Constructs a AiohaFlutterCoreWeb
-  AiohaFlutterCoreWeb() {
-    showWebViewContent();
-  }
-
   static void registerWith(Registrar registrar) {
     AiohaFlutterCorePlatform.instance = AiohaFlutterCoreWeb();
   }
@@ -88,18 +73,6 @@ class AiohaFlutterCoreWeb extends AiohaFlutterCorePlatform {
   Future<String?> getPlatformVersion() async {
     final version = web.window.navigator.userAgent;
     return version;
-  }
-
-  void showWebViewContent() {
-    if (html.document.getElementById('aioha-iframe') != null) return;
-    html.IFrameElement iframe =
-        html.IFrameElement()
-          ..src = 'assets/packages/aioha_flutter_core/assets/web/index.html'
-          ..id = 'aioha-iframe'
-          ..style.border = 'none'
-          ..style.width = '100%'
-          ..style.height = '100%';
-    html.document.body?.append(iframe);
   }
 
   @override
