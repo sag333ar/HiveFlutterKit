@@ -280,7 +280,15 @@ async function signMessage(message, keyType) {
     if (!currentUser) {
       return JSON.stringify({ error: "No user is currently logged in" });
     }
-    const result = await aioha.signMessage(message, keyType);
+    let keytypeForSignMessage = window.Aioha.KeyTypes.Posting;
+    if (keyType === "active") {
+      keytypeForSignMessage = window.Aioha.KeyTypes.Active;
+    } else if (keyType === 'memo') {
+      keytypeForSignMessage = window.Aioha.KeyTypes.Memo;
+    } else {
+      keytypeForSignMessage = window.Aioha.KeyTypes.Posting;
+    }
+    const result = await aioha.signMessage(message, keytypeForSignMessage);
     return JSON.stringify(result);
   } catch (error) {
     return JSON.stringify({ error: error.toString() });
