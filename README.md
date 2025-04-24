@@ -16,6 +16,17 @@
 - For more information about the Aioha API, please visit the [Aioha API documentation](https://aioha.dev/docs).
 - For more information about the Aioha Flutter Core, please visit the [Aioha Flutter Core documentation](https://pub.dev/packages/aioha).
 
-### Using AIOHA Flutter Core in web-app
+### Setup for Using AIOHA Flutter Core in web-app
 
-Step 1. 
+Open web/index.html and add the following script tag to the body section:
+
+```html
+<body>
+  <script src="flutter_bootstrap.js" async></script>
+  <script type="module">
+    import * as Aioha from "https://unpkg.com/@aioha/aioha@latest/dist/bundle.js";
+    window.Aioha = Aioha;
+  </script>
+  <script src="packages/aioha_flutter_core/web/aioha.js" type="application/javascript" defer></script>
+</body>
+```
