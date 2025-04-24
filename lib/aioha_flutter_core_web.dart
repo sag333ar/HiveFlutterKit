@@ -32,6 +32,15 @@ external dynamic logoutUserJS();
 @JS('singleVote')
 external dynamic singleVoteJS(String author, String permlink, int weight);
 
+@JS('switchUser')
+external dynamic switchUserJS(String userId);
+
+@JS('getOtherLogins')
+external dynamic getOtherLoginsJS();
+
+@JS('signMessage')
+external dynamic signMessageJS(String message, String username);
+
 @JS('comment')
 external dynamic commentJS(
   String parentAuthor,
@@ -85,6 +94,13 @@ class AiohaFlutterCoreWeb extends AiohaFlutterCorePlatform {
   @override
   Future<String> loginWithHiveAuth(String username) async {
     var promise = loginWithHiveAuthJS(username);
+    var contentData = await promiseToFuture(promise);
+    return contentData;
+  }
+
+  @override
+  Future<String> signMessage(String message, String keyType) async {
+    var promise = signMessageJS(message, keyType);
     var contentData = await promiseToFuture(promise);
     return contentData;
   }
@@ -178,6 +194,20 @@ class AiohaFlutterCoreWeb extends AiohaFlutterCorePlatform {
   @override
   Future<String> follow(String author, bool followFlag) async {
     var promise = followJS(author, followFlag);
+    var contentData = await promiseToFuture(promise);
+    return contentData;
+  }
+
+  @override
+  Future<List<String>> getOtherLogins() async {
+    var promise = getOtherLoginsJS();
+    var contentData = await promiseToFuture(promise);
+    return List<String>.from(contentData);
+  }
+
+  @override
+  Future<bool> switchUser(String userId) async {
+    var promise = switchUserJS(userId);
     var contentData = await promiseToFuture(promise);
     return contentData;
   }
