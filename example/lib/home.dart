@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:aioha_flutter_core_example/aioha_core.dart';
+import 'package:aioha_flutter_core/aioha_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -319,7 +319,7 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       final result = await aiohaCore.plugin.signMessage(
         'Hello, Aioha!',
-        'Posting',  // Add KeyType here
+        'Posting', // Add KeyType here
       );
       print('Sign Message result: $result');
       ScaffoldMessenger.of(
@@ -391,10 +391,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: const Text('Login with HiveAuth'),
               ),
               ElevatedButton(
-              onPressed: _switchUser,
-              child: const Text('Switch User'),
-            ),
-            ElevatedButton(
+                onPressed: _switchUser,
+                child: const Text('Switch User'),
+              ),
+              ElevatedButton(
                 onPressed: () async {
                   String username = await aiohaCore.plugin.getCurrentUser();
                   username = username.replaceAll('"', '');

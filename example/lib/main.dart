@@ -1,10 +1,11 @@
-import 'package:aioha_flutter_core_example/aioha_core.dart';
+import 'package:aioha_flutter_core/aioha_core.dart';
 import 'package:aioha_flutter_core_example/home.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(
     Provider<AiohaCore>.value(
       value: AiohaCore(), // uses your factory constructor (singleton)
