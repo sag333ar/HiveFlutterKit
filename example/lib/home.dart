@@ -317,6 +317,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _signMessage() async {
     try {
+      _startTimer();
       final result = await aiohaCore.plugin.signMessage(
         'Hello, Aioha!',
         'Posting', // Add KeyType here
@@ -325,8 +326,10 @@ class _MyHomePageState extends State<MyHomePage> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Sign Message Success: $result')));
+      _cancelHiveAuth();
     } catch (e) {
       print('Sign Message failed: $e');
+      _cancelHiveAuth();
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Sign Message Error: $e')));
