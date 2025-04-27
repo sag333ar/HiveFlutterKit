@@ -52,3 +52,38 @@ Open web/index.html and add the following script tag to the body section:
   <script src="packages/aioha_flutter_core/web/aioha.js" type="application/javascript" defer></script>
 </body>
 ```
+
+### Usage Guide
+
+```dart
+import 'package:aioha_flutter_core/aioha_core.dart';
+import 'package:provider/provider.dart';
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  late AiohaCore aiohaCore;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    aiohaCore = Provider.of<AiohaCore>(context, listen: false);
+  }
+
+  void _loginWithHiveKeychain() async {
+    try {
+      // following line uses aiohaCore
+      final result = await aiohaCore.plugin.loginWithKeychain(
+        _usernameController.text,
+      );
+    } catch (e) {
+
+    }
+  }
+
+```
