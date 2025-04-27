@@ -16,7 +16,29 @@
 - For more information about the Aioha API, please visit the [Aioha API documentation](https://aioha.dev/docs).
 - For more information about the Aioha Flutter Core, please visit the [Aioha Flutter Core documentation](https://pub.dev/packages/aioha).
 
-### Setup for Using AIOHA Flutter Core in web-app
+## Setup for Android, iOS, and Web
+
+```
+flutter pub add provider
+```
+
+Update main function as follows:
+
+```dart
+import 'package:aioha_flutter_core/aioha_core.dart';
+
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(
+    Provider<AiohaCore>.value(
+      value: AiohaCore(), // uses your factory constructor (singleton)
+      child: const MyApp(),
+    ),
+  );
+}
+```
+
+### Extra Setup for Using AIOHA Flutter Core in web-app
 
 Open web/index.html and add the following script tag to the body section:
 
