@@ -242,12 +242,12 @@ class _MyHomePageState extends State<MyHomePage> {
         return;
       }
 
-      // Show a dialog to select a user
-      final selectedUser = await showDialog<String>(
+      // Show a dialog to select or remove a user
+      await showDialog<String>(
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: const Text('Select User to Switch'),
+            title: const Text('Manage Logged-in Users'),
             content: SizedBox(
               width: double.maxFinite,
               child: ListView.builder(
@@ -256,8 +256,45 @@ class _MyHomePageState extends State<MyHomePage> {
                 itemBuilder: (context, index) {
                   return ListTile(
                     title: Text(otherLogins[index]),
-                    onTap: () {
-                      Navigator.of(context).pop(otherLogins[index]);
+                    trailing: IconButton(
+                      icon: const Icon(Icons.close, color: Colors.red),
+                      onPressed: () async {
+                        try {
+                          final result = await aiohaCore.plugin
+                              .removeOtherLogin(otherLogins[index]);
+                          print('Removed user: $result');
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Removed user: ${otherLogins[index]}',
+                              ),
+                            ),
+                          );
+                          Navigator.of(context).pop(); // Close the dialog
+                        } catch (e) {
+                          print('Failed to remove user: $e');
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Failed to remove user: ${otherLogins[index]}',
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                    onTap: () async {
+                      final selectedUser = otherLogins[index];
+                      final result = await aiohaCore.plugin.switchUser(
+                        selectedUser,
+                      );
+                      print('Switch user result: $result');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Switched to user: $selectedUser'),
+                        ),
+                      );
+                      Navigator.of(context).pop(); // Close the dialog
                     },
                   );
                 },
@@ -265,17 +302,6 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           );
         },
-      );
-
-      if (selectedUser == null) {
-        // User canceled the dialog
-        return;
-      }
-
-      final result = await aiohaCore.plugin.switchUser(selectedUser);
-      print('Switch user result: $result');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Switched to user: $selectedUser')),
       );
     } catch (e) {
       print('Switch user failed: $e');

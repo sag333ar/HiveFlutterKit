@@ -70,6 +70,9 @@ external dynamic reblogJS(String author, String permlink, bool reblogFlag);
 @JS('follow')
 external dynamic followJS(String author, bool followFlag);
 
+@JS('removeOtherLogin')
+external dynamic removeOtherLoginJS(String userId);
+
 /// A web implementation of the AiohaFlutterCorePlatform of the AiohaFlutterCore plugin.
 class AiohaFlutterCoreWeb extends AiohaFlutterCorePlatform {
   /// Constructs a AiohaFlutterCoreWeb
@@ -208,6 +211,13 @@ class AiohaFlutterCoreWeb extends AiohaFlutterCorePlatform {
   @override
   Future<bool> switchUser(String userId) async {
     var promise = switchUserJS(userId);
+    var contentData = await promiseToFuture(promise);
+    return contentData;
+  }
+
+  @override
+  Future<String> removeOtherLogin(String userId) async {
+    var promise = removeOtherLoginJS(userId);
     var contentData = await promiseToFuture(promise);
     return contentData;
   }
