@@ -283,7 +283,7 @@ async function signMessage(message, keyType) {
     let keytypeForSignMessage = window.Aioha.KeyTypes.Posting;
     if (keyType === "active") {
       keytypeForSignMessage = window.Aioha.KeyTypes.Active;
-    } else if (keyType === 'memo') {
+    } else if (keyType === "memo") {
       keytypeForSignMessage = window.Aioha.KeyTypes.Memo;
     } else {
       keytypeForSignMessage = window.Aioha.KeyTypes.Posting;
@@ -329,6 +329,23 @@ async function switchUser(userId) {
   } catch (e) {
     console.error("Switch failed", e);
     return false;
+  }
+}
+
+async function removeOtherLogin(userId) {
+  try {
+    setupAioha();
+    if (!aioha) {
+      return JSON.stringify({ error: "Aioha is not initialized" });
+    }
+    const otherLogins = await getOtherLogins();
+    if (!otherLogins.includes(userId)) {
+      return JSON.stringify({ error: "User does not exist" });
+    }
+    const result = await aioha.removeOtherLogin(userId);
+    return JSON.stringify(result);
+  } catch (error) {
+    return JSON.stringify({ error: error.toString() });
   }
 }
 
