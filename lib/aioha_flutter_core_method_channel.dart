@@ -466,4 +466,30 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
     );
     return completer.future;
   }
+
+  @override
+  Future<String> removeOtherLogin(String userId) async {
+    final completer = Completer<String>();
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: 'onRemoveOtherLoginResult',
+      callback: (args) {
+        if (!completer.isCompleted) {
+          completer.complete(args.isNotEmpty ? args[0].toString() : 'null');
+        }
+      },
+    );
+    await headlessWebView.webViewController?.evaluateJavascript(
+      source: """
+      (async () => {
+        try {
+          const res = await removeOtherLogin('$userId');
+          window.flutter_inappwebview.callHandler('onRemoveOtherLoginResult', res ?? 'null');
+        } catch (e) {
+          window.flutter_inappwebview.callHandler('onRemoveOtherLoginResult', 'Error: ' + e.toString());
+        }
+      })()
+      """,
+    );
+    return completer.future;
+  }
 }

@@ -87,18 +87,23 @@ class AiohaFlutterCore {
     return AiohaFlutterCorePlatform.instance.follow(author, followFlag);
   }
 
-  Future<String> claimRewards(){
+  Future<String> claimRewards() {
     return AiohaFlutterCorePlatform.instance.claimRewards();
   }
 
-  Future<String> signMessage(String message, String keyType){
+  Future<String> signMessage(String message, String keyType) {
     return AiohaFlutterCorePlatform.instance.signMessage(message, keyType);
   }
-  
-  Future<bool> switchUser(String userId){
+
+  Future<bool> switchUser(String userId) {
     return AiohaFlutterCorePlatform.instance.switchUser(userId);
   }
-  Future<List<String>> getOtherLogins(){
+
+  Future<List<String>> getOtherLogins() {
     return AiohaFlutterCorePlatform.instance.getOtherLogins();
+  }
+
+  Future<String> removeOtherLogin(String userId) {
+    return AiohaFlutterCorePlatform.instance.removeOtherLogin(userId);
   }
 }
