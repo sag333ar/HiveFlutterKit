@@ -1,4 +1,4 @@
-import 'package:aioha_flutter_core/aioha_core.dart';
+import 'package:aioha_flutter_core/aioha_flutter_core_platform_interface.dart';
 import 'package:aioha_flutter_core_example/home.dart';
 import 'package:flutter/material.dart';
 
@@ -7,8 +7,8 @@ import 'package:provider/provider.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
-    Provider<AiohaCore>.value(
-      value: AiohaCore(), // uses your factory constructor (singleton)
+    Provider<AiohaFlutterCorePlatform>.value(
+      value: AiohaFlutterCorePlatform.instance, // uses the singleton instance
       child: const MyApp(),
     ),
   );

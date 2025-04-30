@@ -5,7 +5,6 @@
 
 import 'dart:html' as html;
 import 'dart:async';
-import 'package:flutter/services.dart';
 import 'package:js/js.dart' show JS;
 import 'package:js/js_util.dart';
 
@@ -78,13 +77,6 @@ class AiohaFlutterCoreWeb extends AiohaFlutterCorePlatform {
   /// Constructs a AiohaFlutterCoreWeb
   static void registerWith(Registrar registrar) {
     AiohaFlutterCorePlatform.instance = AiohaFlutterCoreWeb();
-  }
-
-  /// Returns a [String] containing the version of the platform.
-  @override
-  Future<String?> getPlatformVersion() async {
-    final version = web.window.navigator.userAgent;
-    return version;
   }
 
   @override
