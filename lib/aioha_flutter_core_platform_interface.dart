@@ -1,8 +1,5 @@
-import 'package:aioha_flutter_core/models/current_user_model.dart';
-import 'package:aioha_flutter_core/models/get_qr_string_model.dart';
 import 'package:aioha_flutter_core/models/login_with_hiveauth_model.dart';
 import 'package:aioha_flutter_core/models/login_with_keychain_model.dart';
-import 'package:aioha_flutter_core/models/logout_user_model.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'aioha_flutter_core_method_channel.dart';
@@ -35,15 +32,15 @@ abstract class AiohaFlutterCorePlatform extends PlatformInterface {
     throw UnimplementedError('loginWithHiveAuth has not been implemented.');
   }
 
-  Future<CurrentUserModel> getCurrentUser() {
+  Future<String> getCurrentUser() {
     throw UnimplementedError('getCurrentUser has not been implemented.');
   }
 
-  Future<GetQrStringModel> getQrString() {
+  Future<String> getQrString() {
     throw UnimplementedError('getQrString has not been implemented.');
   }
 
-  Future<LogoutResultModel> logout() {
+  Future<String> logout() {
     throw UnimplementedError('logout has not been implemented.');
   }
 

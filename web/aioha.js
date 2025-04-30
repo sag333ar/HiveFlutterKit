@@ -39,7 +39,11 @@ async function loginWithKeychain(username) {
       return;
     }
     qrString = "";
-    return JSON.stringify({ ...signedResult, proof: `${proof}` });
+    return JSON.stringify({
+      ...signedResult,
+      proof: `${proof}`,
+      username: username, 
+    });
   }
   qrString = "";
   return JSON.stringify({ ...login, proof: `${proof}` });
@@ -61,7 +65,6 @@ async function loginWithHiveAuth(username, message) {
   if (login.error && login.error !== "Already logged in") {
     qrString = "";
     throw new Error("Login Error " + login.error);
-    return;
   } else if (login.error === "Already logged in") {
     aioha.switchUser(username);
     const signedResult = await aioha.signMessage(
@@ -71,18 +74,25 @@ async function loginWithHiveAuth(username, message) {
     if (signedResult.error) {
       qrString = "";
       throw new Error("Signing Error " + signedResult.error);
-      return;
     }
     qrString = "";
-    return JSON.stringify({ ...signedResult, proof: `${proof}` });
+    return JSON.stringify({
+      ...signedResult,
+      proof: `${proof}`,
+      username: username, 
+    });
   }
   qrString = "";
-  return JSON.stringify({ ...login, proof: `${proof}` });
+  return JSON.stringify({
+    ...login,
+    proof: `${proof}`,
+    username: username, 
+  });
 }
 
+
 async function getQrString() {
-  // Ensure a valid JSON string is always returned
-  return JSON.stringify({ qrString: qrString || "" });
+  return qrString;
 }
 
 async function getCurrentUser() {
@@ -93,7 +103,7 @@ async function getCurrentUser() {
     }
     const currentUser = await aioha.getCurrentUser();
     if (currentUser) {
-      return JSON.stringify({ username: currentUser });
+      return JSON.stringify(currentUser);
     } else {
       return JSON.stringify({ error: "No user is currently logged in" });
     }
@@ -107,19 +117,16 @@ async function logoutUser() {
   try {
     setupAioha();
     if (!aioha) {
-      return JSON.stringify({ error: "Aioha is not initialized" });
+      return JSON.stringify("Aioha is not initialized");
     }
     const currentUser = await aioha.getCurrentUser();
     if (!currentUser) {
-      return JSON.stringify({ error: "No user is currently logged in" });
+      return JSON.stringify("No user is currently logged in");
     }
     const logoutResult = await aioha.logout();
-    return JSON.stringify({
-      success: "User logged out successfully",
-      result: logoutResult,
-    });
+    return JSON.stringify(logoutResult);
   } catch (error) {
-    return JSON.stringify({ error: error.toString() });
+    return JSON.stringify(error.toString());
   }
 }
 

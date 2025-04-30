@@ -6,11 +6,8 @@
 import 'dart:html' as html;
 import 'dart:async';
 import 'dart:convert';
-import 'package:aioha_flutter_core/models/current_user_model.dart';
-import 'package:aioha_flutter_core/models/get_qr_string_model.dart';
 import 'package:aioha_flutter_core/models/login_with_hiveauth_model.dart';
 import 'package:aioha_flutter_core/models/login_with_keychain_model.dart';
-import 'package:aioha_flutter_core/models/logout_user_model.dart';
 import 'package:js/js.dart' show JS;
 import 'package:js/js_util.dart';
 
@@ -88,71 +85,36 @@ class AiohaFlutterCoreWeb extends AiohaFlutterCorePlatform {
   @override
   Future<LoginWithKeychainModel> loginWithKeychain(String username) async {
     var promise = loginWithKeychainJS(username);
-    var contentData = await promiseToFuture(promise);
-    var decodedData = jsonDecode(contentData);
-
-    if (decodedData['username'] == null || decodedData['username'].isEmpty) {
-      decodedData['username'] = username;
-    }
-
-    return LoginWithKeychainModel.fromJson(decodedData);
+    var result = await promiseToFuture(promise);
+    return LoginWithKeychainModel.fromJsonString(result);
   }
 
   @override
   Future<LoginWithHiveAuthModel> loginWithHiveAuth(String username) async {
     var promise = loginWithHiveAuthJS(username);
-    var contentData = await promiseToFuture(promise);
-
-    var decodedData = jsonDecode(contentData);
-    if (decodedData['username'] == null || decodedData['username'].isEmpty) {
-      decodedData['username'] = username;
-    }
-    return LoginWithHiveAuthModel.fromJson(decodedData);
+    var result = await promiseToFuture(promise);
+    return LoginWithHiveAuthModel.fromJsonString(result);
   }
 
   @override
-  Future<String> signMessage(String message, String keyType) async {
-    var promise = signMessageJS(message, keyType);
+  Future<String> getQrString() async {
+    var promise = getQrStringJS();
     var contentData = await promiseToFuture(promise);
     return contentData;
   }
 
   @override
-  Future<GetQrStringModel> getQrString() async {
-    var promise = getQrStringJS();
-    var contentData = await promiseToFuture(promise);
-
-    // Ensure contentData is a valid JSON string
-    if (contentData is! String || contentData.isEmpty) {
-      throw Exception('Invalid QR string data received');
-    }
-
-    var decodedData = jsonDecode(contentData);
-    if (decodedData is! Map<String, dynamic> ||
-        !decodedData.containsKey('qrString')) {
-      throw Exception('Invalid QR string format');
-    }
-
-    return GetQrStringModel.fromJson(decodedData);
-  }
-
-  @override
-  Future<CurrentUserModel> getCurrentUser() async {
+  Future<String> getCurrentUser() async {
     var promise = getCurrentUserJS();
     var contentData = await promiseToFuture(promise);
-
-    if (contentData is String) {
-      return CurrentUserModel.fromJsonString(contentData);
-    } else {
-      return CurrentUserModel.fromJson(Map<String, dynamic>.from(contentData));
-    }
+    return contentData;
   }
 
   @override
-  Future<LogoutResultModel> logout() async {
+  Future<String> logout() async {
     var promise = logoutUserJS();
     var contentData = await promiseToFuture(promise);
-    return LogoutResultModel.fromJsonString(contentData);
+    return contentData.toString();
   }
 
   @override

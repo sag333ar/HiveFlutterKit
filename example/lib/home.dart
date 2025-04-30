@@ -69,22 +69,24 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _logout() async {
     try {
-      final result = await aioha.logout();
+      final userStatus = await aioha.getCurrentUser();
 
-      if (result.error != null) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error: ${result.error}')));
+      if (userStatus == null ||
+          userStatus == '' ||
+          userStatus.contains('No user is currently logged in')) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No user is currently logged in')),
+        );
         return;
       }
-
+      await aioha.logout();
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(result.success ?? 'Logged out')));
+      ).showSnackBar(SnackBar(content: Text('Successfully logged out')));
     } catch (e) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      ).showSnackBar(SnackBar(content: Text('Error during logout: $e')));
     }
   }
 
@@ -368,14 +370,14 @@ class _MyHomePageState extends State<MyHomePage> {
   void _startTimer() async {
     var result = await aioha.getQrString();
     setState(() {
-      qrString = result.qrString ?? '';
+      qrString = result;
       timerDuration = 30;
     });
     Timer.periodic(const Duration(seconds: 1), (timer) async {
       if (timerDuration > 0) {
         var result = await aioha.getQrString();
         setState(() {
-          qrString = result.qrString ?? '';
+          qrString = result;
           timerDuration--;
         });
       } else {
@@ -428,30 +430,8 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               ElevatedButton(
                 onPressed: () async {
-                  final user = await aioha.getCurrentUser();
-
-                  if (user.username == null || user.error != null) {
-                    // Show error dialog
-                    showDialog(
-                      context: context,
-                      builder:
-                          (context) => AlertDialog(
-                            title: const Text('Error'),
-                            content: Text(
-                              user.error ?? 'Unknown error occurred',
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                child: const Text('Close'),
-                              ),
-                            ],
-                          ),
-                    );
-                    return;
-                  }
-
-                  final username = user.username!;
+                  String username = await aioha.getCurrentUser();
+                  username = username.replaceAll('"', '');
 
                   showDialog(
                     context: context,
