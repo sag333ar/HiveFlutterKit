@@ -81,7 +81,8 @@ async function loginWithHiveAuth(username, message) {
 }
 
 async function getQrString() {
-  return qrString;
+  // Ensure a valid JSON string is always returned
+  return JSON.stringify({ qrString: qrString || "" });
 }
 
 async function getCurrentUser() {
@@ -92,7 +93,7 @@ async function getCurrentUser() {
     }
     const currentUser = await aioha.getCurrentUser();
     if (currentUser) {
-      return JSON.stringify(currentUser);
+      return JSON.stringify({ username: currentUser });
     } else {
       return JSON.stringify({ error: "No user is currently logged in" });
     }
@@ -100,6 +101,7 @@ async function getCurrentUser() {
     return JSON.stringify({ error: error.toString() });
   }
 }
+
 
 async function logoutUser() {
   try {
