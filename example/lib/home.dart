@@ -33,9 +33,13 @@ class _MyHomePageState extends State<MyHomePage> {
   void _loginWithHiveKeychain() async {
     try {
       final result = await aioha.loginWithKeychain(_usernameController.text);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Success: $result')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Success: ${result.success} Proof: ${result.proof}, Username: ${result.username}, Challenge: ${result.challenge}, PublicKey: ${result.publicKey}',
+          ),
+        ),
+      );
     } catch (e) {
       ScaffoldMessenger.of(
         context,
@@ -47,9 +51,13 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       _startTimer();
       final result = await aioha.loginWithHiveAuth(_usernameController.text);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Success: $result')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Success: ${result.success} Proof: ${result.proof}, Username: ${result.username}, Challenge: ${result.challenge}, PublicKey: ${result.publicKey}',
+          ),
+        ),
+      );
       _cancelHiveAuth();
     } catch (e) {
       _cancelHiveAuth();
@@ -62,9 +70,17 @@ class _MyHomePageState extends State<MyHomePage> {
   void _logout() async {
     try {
       final result = await aioha.logout();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Successfully logged out: $result')),
-      );
+
+      if (result.error != null) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: ${result.error}')));
+        return;
+      }
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(result.success ?? 'Logged out')));
     } catch (e) {
       ScaffoldMessenger.of(
         context,
@@ -350,16 +366,16 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _startTimer() async {
-    var string = await aioha.getQrString();
+    var result = await aioha.getQrString();
     setState(() {
-      qrString = string;
+      qrString = result.qrString ?? '';
       timerDuration = 30;
     });
     Timer.periodic(const Duration(seconds: 1), (timer) async {
       if (timerDuration > 0) {
-        var string = await aioha.getQrString();
+        var result = await aioha.getQrString();
         setState(() {
-          qrString = string;
+          qrString = result.qrString ?? '';
           timerDuration--;
         });
       } else {
@@ -412,8 +428,31 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               ElevatedButton(
                 onPressed: () async {
-                  String username = await aioha.getCurrentUser();
-                  username = username.replaceAll('"', '');
+                  final user = await aioha.getCurrentUser();
+
+                  if (user.username == null || user.error != null) {
+                    // Show error dialog
+                    showDialog(
+                      context: context,
+                      builder:
+                          (context) => AlertDialog(
+                            title: const Text('Error'),
+                            content: Text(
+                              user.error ?? 'Unknown error occurred',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: const Text('Close'),
+                              ),
+                            ],
+                          ),
+                    );
+                    return;
+                  }
+
+                  final username = user.username!;
+
                   showDialog(
                     context: context,
                     builder: (context) {

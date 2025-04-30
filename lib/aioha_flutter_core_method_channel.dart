@@ -1,5 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 
+import 'package:aioha_flutter_core/models/current_user_model.dart';
+import 'package:aioha_flutter_core/models/get_qr_string_model.dart';
+import 'package:aioha_flutter_core/models/login_with_hiveauth_model.dart';
+import 'package:aioha_flutter_core/models/login_with_keychain_model.dart';
+import 'package:aioha_flutter_core/models/logout_user_model.dart';
 import 'package:flutter/services.dart';
 
 import 'aioha_flutter_core_platform_interface.dart';
@@ -71,16 +77,15 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
   }
 
   @override
-  Future<String> loginWithKeychain(String username) async {
+  Future<LoginWithKeychainModel> loginWithKeychain(String username) async {
     throw UnimplementedError(
       'Hive Keychain based login not available for mobile-apps',
     );
   }
 
   @override
-  Future<String> getQrString() async {
+  Future<GetQrStringModel> getQrString() async {
     final completer = Completer<String>();
-
     headlessWebView.webViewController?.addJavaScriptHandler(
       handlerName: 'onGetQrStringResult',
       callback: (args) {
@@ -92,16 +97,26 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
     await headlessWebView.webViewController?.evaluateJavascript(
       source: """
       (async () => {
-        var string = await getQrString();
-        window.flutter_inappwebview.callHandler('onGetQrStringResult', string);
+        try {
+          var string = await getQrString();
+          window.flutter_inappwebview.callHandler('onGetQrStringResult', string);
+        } catch (e) {
+          window.flutter_inappwebview.callHandler('onGetQrStringResult', 'Error: ' + e.toString());
+        }
       })()
       """,
     );
-    return completer.future;
+
+    final result = await completer.future;
+
+    // Decode the JSON string into a Map
+    final decodedResult = jsonDecode(result);
+
+    return GetQrStringModel.fromJson(decodedResult);
   }
 
   @override
-  Future<String> loginWithHiveAuth(String username) async {
+  Future<LoginWithHiveAuthModel> loginWithHiveAuth(String username) async {
     final completer = Completer<String>();
     headlessWebView.webViewController?.addJavaScriptHandler(
       handlerName: 'onHiveAuthResult',
@@ -122,7 +137,17 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
           })()
       """;
     await headlessWebView.webViewController?.evaluateJavascript(source: source);
-    return completer.future;
+
+    final result = await completer.future;
+    final decodedResult = jsonDecode(result);
+
+    // Ensure the username is always updated
+    if (decodedResult['username'] == null ||
+        decodedResult['username'].isEmpty) {
+      decodedResult['username'] = username;
+    }
+
+    return LoginWithHiveAuthModel.fromJson(decodedResult);
   }
 
   @override
@@ -152,16 +177,19 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
   }
 
   @override
-  Future<String> getCurrentUser() async {
+  Future<CurrentUserModel> getCurrentUser() async {
     final completer = Completer<String>();
     headlessWebView.webViewController?.addJavaScriptHandler(
       handlerName: 'onGetCurrentUserResult',
       callback: (args) {
         if (!completer.isCompleted) {
-          completer.complete(args.isNotEmpty ? args[0].toString() : 'null');
+          completer.complete(
+            args.isNotEmpty ? args[0].toString() : '{"error": "null"}',
+          );
         }
       },
     );
+
     await headlessWebView.webViewController?.evaluateJavascript(
       source: """
       (async () => {
@@ -169,16 +197,18 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
           const res = await getCurrentUser();
           window.flutter_inappwebview.callHandler('onGetCurrentUserResult', res ?? 'null');
         } catch (e) {
-          window.flutter_inappwebview.callHandler('onGetCurrentUserResult', 'Error: ' + e.toString());
+          window.flutter_inappwebview.callHandler('onGetCurrentUserResult', JSON.stringify({ error: e.toString() }));
         }
       })()
-      """,
+    """,
     );
-    return completer.future;
+
+    final jsonString = await completer.future;
+    return CurrentUserModel.fromJsonString(jsonString);
   }
 
   @override
-  Future<String> logout() async {
+  Future<LogoutResultModel> logout() async {
     final completer = Completer<String>();
     headlessWebView.webViewController?.addJavaScriptHandler(
       handlerName: 'onLogoutResult',
@@ -190,17 +220,18 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
     );
     await headlessWebView.webViewController?.evaluateJavascript(
       source: """
-      (async () => {
-        try {
-          const res = await logoutUser();
-          window.flutter_inappwebview.callHandler('onLogoutResult', res ?? 'null');
-        } catch (e) {
-          window.flutter_inappwebview.callHandler('onLogoutResult', 'Error: ' + e.toString());
-        }
-      })()
-      """,
+    (async () => {
+      try {
+        const res = await logoutUser();
+        window.flutter_inappwebview.callHandler('onLogoutResult', res ?? 'null');
+      } catch (e) {
+        window.flutter_inappwebview.callHandler('onLogoutResult', 'Error: ' + e.toString());
+      }
+    })()
+    """,
     );
-    return completer.future;
+    final jsonString = await completer.future;
+    return LogoutResultModel.fromJsonString(jsonString);
   }
 
   @override
