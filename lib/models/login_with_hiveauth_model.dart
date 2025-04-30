@@ -1,3 +1,4 @@
+import 'dart:convert';
 class LoginWithHiveAuthModel {
   final bool? success;
   final String? username;
@@ -22,4 +23,6 @@ class LoginWithHiveAuthModel {
       challenge: json['result'] as String?,
     );
   }
+  static LoginWithHiveAuthModel fromJsonString(String str) =>
+      LoginWithHiveAuthModel.fromJson(json.decode(str));
 }

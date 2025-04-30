@@ -1,3 +1,4 @@
+import 'dart:convert';
 class LoginWithKeychainModel {
   final bool? success;
   final String? username;
@@ -10,7 +11,7 @@ class LoginWithKeychainModel {
     this.username,
     this.proof,
     this.publicKey,
-    this.challenge
+    this.challenge,
   });
 
   factory LoginWithKeychainModel.fromJson(Map<String, dynamic> json) {
@@ -22,4 +23,6 @@ class LoginWithKeychainModel {
       challenge: json['result'] as String?,
     );
   }
+  static LoginWithKeychainModel fromJsonString(String str) =>
+      LoginWithKeychainModel.fromJson(json.decode(str));
 }
