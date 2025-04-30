@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:aioha_flutter_core/aioha_core.dart';
+import 'package:aioha_flutter_core/aioha_flutter_core_platform_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -14,7 +14,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late AiohaCore aiohaCore;
+  late AiohaFlutterCorePlatform aioha;
   final TextEditingController _usernameController = TextEditingController();
   var qrString = '';
   var timerDuration = 0;
@@ -22,7 +22,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    aiohaCore = Provider.of<AiohaCore>(context, listen: false);
+    aioha = Provider.of<AiohaFlutterCorePlatform>(context, listen: false);
   }
 
   @override
@@ -32,9 +32,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _loginWithHiveKeychain() async {
     try {
-      final result = await aiohaCore.plugin.loginWithKeychain(
-        _usernameController.text,
-      );
+      final result = await aioha.loginWithKeychain(_usernameController.text);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Success: $result')));
@@ -48,9 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _loginWithHiveAuth() async {
     try {
       _startTimer();
-      final result = await aiohaCore.plugin.loginWithHiveAuth(
-        _usernameController.text,
-      );
+      final result = await aioha.loginWithHiveAuth(_usernameController.text);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Success: $result')));
@@ -65,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _logout() async {
     try {
-      final result = await aiohaCore.plugin.logout();
+      final result = await aioha.logout();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Successfully logged out: $result')),
       );
@@ -79,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _singleVote() async {
     try {
       _startTimer();
-      final result = await aiohaCore.plugin.singleVote(
+      final result = await aioha.singleVote(
         'sagarkothari88',
         'aihoa-based-login-with-hiveauth-and-sign-a-message-works-well-with-ios-app-now',
         1000,
@@ -98,7 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _comment() async {
     try {
-      final result = await aiohaCore.plugin.comment(
+      final result = await aioha.comment(
         'parentAuthor',
         'parentPermlink',
         'permlink',
@@ -118,7 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _commentWithOptions() async {
     try {
-      final result = await aiohaCore.plugin.commentWithOptions(
+      final result = await aioha.commentWithOptions(
         'parentAuthor',
         'parentPermlink',
         'permlink',
@@ -126,7 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
         'body',
         {'foo': 'bar'},
         {
-          'author': await aiohaCore.plugin.getCurrentUser(),
+          'author': await aioha.getCurrentUser(),
           'permlink': 'permlink',
           'max_accepted_payout': '1000000.000 HBD',
           'percent_hbd': 10000,
@@ -158,7 +154,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _deleteComment() async {
     try {
       _startTimer();
-      final result = await aiohaCore.plugin.deleteComment(
+      final result = await aioha.deleteComment(
         'permlinktodel',
       ); //Permlink to delete
       // Replace with the actual permlink you want to delete
@@ -176,11 +172,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _reblog() async {
     try {
-      final result = await aiohaCore.plugin.reblog(
-        'sagarkothari',
-        'rblmtojs',
-        true,
-      );
+      final result = await aioha.reblog('sagarkothari', 'rblmtojs', true);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Reblog Success: $result')));
@@ -193,11 +185,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _removeReblog() async {
     try {
-      final result = await aiohaCore.plugin.reblog(
-        'sagarkothari',
-        'rblmtojs',
-        false,
-      );
+      final result = await aioha.reblog('sagarkothari', 'rblmtojs', false);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Remove Reblog Success: $result')));
@@ -210,7 +198,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _follow() async {
     try {
-      final result = await aiohaCore.plugin.follow('sagarkothari', false);
+      final result = await aioha.follow('sagarkothari', false);
       print('Follow result: $result');
       ScaffoldMessenger.of(
         context,
@@ -224,7 +212,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _switchUser() async {
-    if (aiohaCore.plugin == null) {
+    if (aioha == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Error: Aioha is not initialized')),
       );
@@ -232,7 +220,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     try {
-      final otherLogins = await aiohaCore.plugin.getOtherLogins();
+      final otherLogins = await aioha.getOtherLogins();
       print('Other logged-in users: $otherLogins');
 
       if (otherLogins.isEmpty) {
@@ -260,8 +248,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       icon: const Icon(Icons.close, color: Colors.red),
                       onPressed: () async {
                         try {
-                          final result = await aiohaCore.plugin
-                              .removeOtherLogin(otherLogins[index]);
+                          final result = await aioha.removeOtherLogin(
+                            otherLogins[index],
+                          );
                           print('Removed user: $result');
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -285,9 +274,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     onTap: () async {
                       final selectedUser = otherLogins[index];
-                      final result = await aiohaCore.plugin.switchUser(
-                        selectedUser,
-                      );
+                      final result = await aioha.switchUser(selectedUser);
                       print('Switch user result: $result');
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
@@ -313,7 +300,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _unfollow() async {
     try {
-      final result = await aiohaCore.plugin.follow('sagarkothari', true);
+      final result = await aioha.follow('sagarkothari', true);
       print('Unfollow result: $result');
       ScaffoldMessenger.of(
         context,
@@ -328,7 +315,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _claimRewards() async {
     try {
-      final result = await aiohaCore.plugin.claimRewards();
+      final result = await aioha.claimRewards();
       print('Claim Rewards result: $result');
       ScaffoldMessenger.of(
         context,
@@ -344,7 +331,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _signMessage() async {
     try {
       _startTimer();
-      final result = await aiohaCore.plugin.signMessage(
+      final result = await aioha.signMessage(
         'Hello, Aioha!',
         'Posting', // Add KeyType here
       );
@@ -363,14 +350,14 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _startTimer() async {
-    var string = await aiohaCore.plugin.getQrString();
+    var string = await aioha.getQrString();
     setState(() {
       qrString = string;
       timerDuration = 30;
     });
     Timer.periodic(const Duration(seconds: 1), (timer) async {
       if (timerDuration > 0) {
-        var string = await aiohaCore.plugin.getQrString();
+        var string = await aioha.getQrString();
         setState(() {
           qrString = string;
           timerDuration--;
@@ -425,7 +412,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               ElevatedButton(
                 onPressed: () async {
-                  String username = await aiohaCore.plugin.getCurrentUser();
+                  String username = await aioha.getCurrentUser();
                   username = username.replaceAll('"', '');
                   showDialog(
                     context: context,

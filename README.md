@@ -30,8 +30,8 @@ import 'package:aioha_flutter_core/aioha_core.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
-    Provider<AiohaCore>.value(
-      value: AiohaCore(), // uses your factory constructor (singleton)
+    Provider<AiohaFlutterCorePlatform>.value(
+      value: AiohaFlutterCorePlatform.instance,
       child: const MyApp(),
     ),
   );
@@ -67,18 +67,18 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late AiohaCore aiohaCore;
+  late AiohaFlutterCorePlatform aioha;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    aiohaCore = Provider.of<AiohaCore>(context, listen: false);
+    aioha = Provider.of<AiohaFlutterCorePlatform>(context, listen: false);
   }
 
   void _loginWithHiveKeychain() async {
     try {
-      // following line uses aiohaCore
-      final result = await aiohaCore.plugin.loginWithKeychain(
+      // following line uses aioha
+      final result = await aioha.plugin.loginWithKeychain(
         _usernameController.text,
       );
     } catch (e) {
