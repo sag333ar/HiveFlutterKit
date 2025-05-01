@@ -33,9 +33,13 @@ class _MyHomePageState extends State<MyHomePage> {
   void _loginWithHiveKeychain() async {
     try {
       final result = await aioha.loginWithKeychain(_usernameController.text);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Success: $result')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Success: ${result.success} Proof: ${result.proof}, Username: ${result.username}, Challenge: ${result.challenge}, PublicKey: ${result.publicKey}',
+          ),
+        ),
+      );
     } catch (e) {
       ScaffoldMessenger.of(
         context,
@@ -47,9 +51,13 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       _startTimer();
       final result = await aioha.loginWithHiveAuth(_usernameController.text);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Success: $result')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Success: ${result.success} Proof: ${result.proof}, Username: ${result.username}, Challenge: ${result.challenge}, PublicKey: ${result.publicKey}',
+          ),
+        ),
+      );
       _cancelHiveAuth();
     } catch (e) {
       _cancelHiveAuth();
@@ -61,14 +69,24 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _logout() async {
     try {
-      final result = await aioha.logout();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Successfully logged out: $result')),
-      );
+      final userStatus = await aioha.getCurrentUser();
+
+      if (userStatus == null ||
+          userStatus == '' ||
+          userStatus.contains('No user is currently logged in')) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No user is currently logged in')),
+        );
+        return;
+      }
+      await aioha.logout();
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Successfully logged out')));
     } catch (e) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      ).showSnackBar(SnackBar(content: Text('Error during logout: $e')));
     }
   }
 
@@ -350,16 +368,16 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _startTimer() async {
-    var string = await aioha.getQrString();
+    var result = await aioha.getQrString();
     setState(() {
-      qrString = string;
+      qrString = result;
       timerDuration = 30;
     });
     Timer.periodic(const Duration(seconds: 1), (timer) async {
       if (timerDuration > 0) {
-        var string = await aioha.getQrString();
+        var result = await aioha.getQrString();
         setState(() {
-          qrString = string;
+          qrString = result;
           timerDuration--;
         });
       } else {
@@ -414,6 +432,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () async {
                   String username = await aioha.getCurrentUser();
                   username = username.replaceAll('"', '');
+
                   showDialog(
                     context: context,
                     builder: (context) {
