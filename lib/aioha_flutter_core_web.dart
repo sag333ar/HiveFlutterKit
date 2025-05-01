@@ -5,6 +5,9 @@
 
 import 'dart:html' as html;
 import 'dart:async';
+import 'dart:convert';
+import 'package:aioha_flutter_core/models/login_with_hiveauth_model.dart';
+import 'package:aioha_flutter_core/models/login_with_keychain_model.dart';
 import 'package:js/js.dart' show JS;
 import 'package:js/js_util.dart';
 
@@ -80,24 +83,17 @@ class AiohaFlutterCoreWeb extends AiohaFlutterCorePlatform {
   }
 
   @override
-  Future<String> loginWithKeychain(String username) async {
+  Future<LoginWithKeychainModel> loginWithKeychain(String username) async {
     var promise = loginWithKeychainJS(username);
-    var contentData = await promiseToFuture(promise);
-    return contentData;
+    var result = await promiseToFuture(promise);
+    return LoginWithKeychainModel.fromJsonString(result);
   }
 
   @override
-  Future<String> loginWithHiveAuth(String username) async {
+  Future<LoginWithHiveAuthModel> loginWithHiveAuth(String username) async {
     var promise = loginWithHiveAuthJS(username);
-    var contentData = await promiseToFuture(promise);
-    return contentData;
-  }
-
-  @override
-  Future<String> signMessage(String message, String keyType) async {
-    var promise = signMessageJS(message, keyType);
-    var contentData = await promiseToFuture(promise);
-    return contentData;
+    var result = await promiseToFuture(promise);
+    return LoginWithHiveAuthModel.fromJsonString(result);
   }
 
   @override
@@ -118,7 +114,7 @@ class AiohaFlutterCoreWeb extends AiohaFlutterCorePlatform {
   Future<String> logout() async {
     var promise = logoutUserJS();
     var contentData = await promiseToFuture(promise);
-    return contentData;
+    return contentData.toString();
   }
 
   @override
