@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:aioha_flutter_core/models/login_with_hiveauth_model.dart';
-import 'package:aioha_flutter_core/models/login_with_keychain_model.dart';
+import 'package:aioha_flutter_core/models/login_model.dart';
 import 'package:flutter/services.dart';
 
 import 'aioha_flutter_core_platform_interface.dart';
@@ -73,7 +72,7 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
   }
 
   @override
-  Future<LoginWithKeychainModel> loginWithKeychain(String username) async {
+  Future<LoginModel> loginWithKeychain(String username) async {
     throw UnimplementedError(
       'Hive Keychain based login not available for mobile-apps',
     );
@@ -102,7 +101,7 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
   }
 
   @override
-  Future<LoginWithHiveAuthModel> loginWithHiveAuth(String username) async {
+  Future<LoginModel> loginWithHiveAuth(String username) async {
     final completer = Completer<String>();
     headlessWebView.webViewController?.addJavaScriptHandler(
       handlerName: 'onHiveAuthResult',
@@ -124,7 +123,7 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
       """;
     await headlessWebView.webViewController?.evaluateJavascript(source: source);
     final result = await completer.future;
-    return LoginWithHiveAuthModel.fromJsonString(result);
+    return LoginModel.fromJsonString(result);
   }
 
   @override

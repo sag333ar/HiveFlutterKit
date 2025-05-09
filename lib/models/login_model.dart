@@ -1,12 +1,12 @@
 import 'dart:convert';
-class LoginWithHiveAuthModel {
+class LoginModel {
   final bool? success;
   final String? username;
   final String? proof;
   final String? publicKey;
   final String? challenge;
 
-  LoginWithHiveAuthModel({
+  LoginModel({
     this.success,
     this.username,
     this.proof,
@@ -14,8 +14,8 @@ class LoginWithHiveAuthModel {
     this.challenge
   });
 
-  factory LoginWithHiveAuthModel.fromJson(Map<String, dynamic> json) {
-    return LoginWithHiveAuthModel(
+  factory LoginModel.fromJson(Map<String, dynamic> json) {
+    return LoginModel(
       success: json['success'] as bool?,
       username: json['username'] as String?,
       proof: json['proof'] as String?,
@@ -23,6 +23,6 @@ class LoginWithHiveAuthModel {
       challenge: json['result'] as String?,
     );
   }
-  static LoginWithHiveAuthModel fromJsonString(String str) =>
-      LoginWithHiveAuthModel.fromJson(json.decode(str));
+  static LoginModel fromJsonString(String str) =>
+      LoginModel.fromJson(json.decode(str));
 }
