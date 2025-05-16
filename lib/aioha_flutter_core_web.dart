@@ -16,10 +16,10 @@ import 'package:web/web.dart' as web;
 import 'aioha_flutter_core_platform_interface.dart';
 
 @JS('loginWithKeychain')
-external dynamic loginWithKeychainJS(String username);
+external dynamic loginWithKeychainJS(String username, String proof);
 
 @JS('loginWithHiveAuth')
-external dynamic loginWithHiveAuthJS(String username);
+external dynamic loginWithHiveAuthJS(String username, String proof);
 
 @JS('loginWithPlaintextKey')
 external dynamic loginWithPlaintextKeyJS(String username, String postingKey);
@@ -85,20 +85,24 @@ class AiohaFlutterCoreWeb extends AiohaFlutterCorePlatform {
   }
 
   @override
-  Future<LoginModel> loginWithKeychain(String username) async {
-    var promise = loginWithKeychainJS(username);
+  Future<LoginModel> loginWithKeychain(String username, String proof) async {
+    var promise = loginWithKeychainJS(username, proof);
     var result = await promiseToFuture(promise);
     return LoginModel.fromJsonString(result);
   }
 
   @override
-  Future<LoginModel> loginWithHiveAuth(String username) async {
-    var promise = loginWithHiveAuthJS(username);
+  Future<LoginModel> loginWithHiveAuth(String username, String proof) async {
+    var promise = loginWithHiveAuthJS(username, proof);
     var result = await promiseToFuture(promise);
     return LoginModel.fromJsonString(result);
   }
+
   @override
-  Future<LoginModel> loginWithPlaintextKey(String username, String postingKey) async {
+  Future<LoginModel> loginWithPlaintextKey(
+    String username,
+    String postingKey,
+  ) async {
     var promise = loginWithPlaintextKeyJS(username, postingKey);
     var result = await promiseToFuture(promise);
     return LoginModel.fromJsonString(result);

@@ -80,6 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // following line uses aioha
       final result = await aioha.plugin.loginWithKeychain(
         _usernameController.text,
+        'some-text-to-be-signed', // if we send empty string, it will be auto-generated
       );
     } catch (e) {
 

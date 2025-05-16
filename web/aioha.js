@@ -15,10 +15,12 @@ function setupAioha() {
   });
 }
 
-async function loginWithKeychain(username) {
+async function loginWithKeychain(username, proof) {
   setupAioha();
   qrString = "";
-  const proof = parseInt(new Date().getTime() / 1000);
+  if (proof === undefined || proof === null || proof === "") {
+    proof = parseInt(new Date().getTime() / 1000);
+  }
   const login = await aioha.login(window.Aioha.Providers.Keychain, username, {
     msg: `${proof}`,
     keyType: window.Aioha.KeyTypes.Posting,
@@ -49,10 +51,12 @@ async function loginWithKeychain(username) {
   return JSON.stringify({ ...login, proof: `${proof}` });
 }
 
-async function loginWithHiveAuth(username, message) {
+async function loginWithHiveAuth(username, proof) {
   setupAioha();
   qrString = "";
-  const proof = parseInt(new Date().getTime() / 1000);
+  if (proof === undefined || proof === null || proof === "") {
+    proof = parseInt(new Date().getTime() / 1000);
+  }
   const login = await aioha.login(window.Aioha.Providers.HiveAuth, username, {
     msg: `${proof}`,
     keyType: window.Aioha.KeyTypes.Posting,
