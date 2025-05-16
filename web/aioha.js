@@ -91,6 +91,35 @@ async function loginWithHiveAuth(username, message) {
 }
 
 
+async function loginWithPlaintextKey(username, postingKey) {
+  setupAioha();
+  const proof = Math.floor(Date.now() / 1000).toString();
+
+  try {
+    aioha.registerCustomProvider(new PlaintextKeyProvider(postingKey));
+
+    const login = await aioha.login(window.Aioha.Providers.Custom, username, {
+      msg: proof,
+      keyType: "posting",
+    });
+
+    if (login?.error) {
+      throw new Error("Login Error: " + login.error);
+    }
+
+    return JSON.stringify({
+      ...login,
+      username,
+      proof,
+      method: "PlaintextKey",
+    });
+
+  } catch (error) {
+    console.error("PlaintextKey login failed:", error.message);
+    throw error;
+  }
+}
+
 async function getQrString() {
   return qrString;
 }
