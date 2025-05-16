@@ -127,6 +127,43 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
   }
 
   @override
+  Future<LoginModel> loginWithPlaintextKey(
+    String username,
+    String postingKey,
+  ) async {
+    final completer = Completer<LoginModel>();
+
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: 'onLoginWithPlaintextKeyResult',
+      callback: (args) {
+        if (!completer.isCompleted) {
+          try {
+            final resultJson = args[0];
+            final result = LoginModel.fromJson(jsonDecode(resultJson));
+            completer.complete(result);
+          } catch (e) {
+            completer.completeError("Parsing error: $e");
+          }
+        }
+      },
+    );
+
+    await headlessWebView.webViewController?.evaluateJavascript(
+      source: """
+    (async () => {
+      try {
+        const result = await loginWithPlaintextKey("$username", "$postingKey");
+        window.flutter_inappwebview.callHandler('onLoginWithPlaintextKeyResult', result);
+      } catch (err) {
+        window.flutter_inappwebview.callHandler('onLoginWithPlaintextKeyResult', JSON.stringify({ error: err.message }));
+      }
+    })();
+    """,
+    );
+    return completer.future;
+  }
+
+  @override
   Future<String> singleVote(String author, String permlink, int weight) async {
     final completer = Completer<String>();
     headlessWebView.webViewController?.addJavaScriptHandler(

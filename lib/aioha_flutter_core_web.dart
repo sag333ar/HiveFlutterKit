@@ -21,6 +21,9 @@ external dynamic loginWithKeychainJS(String username);
 @JS('loginWithHiveAuth')
 external dynamic loginWithHiveAuthJS(String username);
 
+@JS('loginWithPlaintextKey')
+external dynamic loginWithPlaintextKeyJS(String username, String postingKey);
+
 @JS('getQrString')
 external dynamic getQrStringJS();
 
@@ -91,6 +94,12 @@ class AiohaFlutterCoreWeb extends AiohaFlutterCorePlatform {
   @override
   Future<LoginModel> loginWithHiveAuth(String username) async {
     var promise = loginWithHiveAuthJS(username);
+    var result = await promiseToFuture(promise);
+    return LoginModel.fromJsonString(result);
+  }
+  @override
+  Future<LoginModel> loginWithPlaintextKey(String username, String postingKey) async {
+    var promise = loginWithPlaintextKeyJS(username, postingKey);
     var result = await promiseToFuture(promise);
     return LoginModel.fromJsonString(result);
   }

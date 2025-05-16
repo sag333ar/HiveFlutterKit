@@ -16,6 +16,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late AiohaFlutterCorePlatform aioha;
   final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _postingKeyController = TextEditingController();
+
   var qrString = '';
   var timerDuration = 0;
 
@@ -61,6 +63,35 @@ class _MyHomePageState extends State<MyHomePage> {
       _cancelHiveAuth();
     } catch (e) {
       _cancelHiveAuth();
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+    }
+  }
+
+  void _loginWithPlaintextKey() async {
+    try {
+      final username = _usernameController.text;
+      final postingKey = _postingKeyController.text;
+
+      if (username.isEmpty || postingKey.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Username and Posting Key are required'),
+          ),
+        );
+        return;
+      }
+
+      final result = await aioha.loginWithPlaintextKey(username, postingKey);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Success: ${result.success} Proof: ${result.proof}, Username: ${result.username}, Challenge: ${result.challenge}, PublicKey: ${result.publicKey}',
+          ),
+        ),
+      );
+    } catch (e) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Error: $e')));
@@ -405,6 +436,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              // Username input
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextField(
@@ -415,7 +447,22 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
               ),
+
+              // ✅ NEW: Posting Key input field
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: TextField(
+                  controller: _postingKeyController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Posting Key (for plaintext login)',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+
               const SizedBox(height: 16),
+
               ElevatedButton(
                 onPressed: _loginWithHiveKeychain,
                 child: const Text('Login with Hive Keychain'),
@@ -424,6 +471,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: _loginWithHiveAuth,
                 child: const Text('Login with HiveAuth'),
               ),
+
+              // ✅ NEW: Login with Plaintext Key
+              ElevatedButton(
+                onPressed: _loginWithPlaintextKey,
+                child: const Text('Login with Plaintext Key'),
+              ),
+
               ElevatedButton(
                 onPressed: _switchUser,
                 child: const Text('Switch User'),
@@ -490,11 +544,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: _signMessage,
                 child: const Text('Sign Message'),
               ),
-              // ElevatedButton(onPressed: _comment, child: const Text('Comment')),
-              // ElevatedButton(
-              //   onPressed: _commentWithOptions,
-              //   child: const Text('Comment With Options'),
-              // ),
+
               qrString.isEmpty || timerDuration == 0
                   ? const SizedBox.shrink()
                   : Column(
