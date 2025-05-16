@@ -23,11 +23,11 @@ abstract class AiohaFlutterCorePlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  Future<LoginModel> loginWithKeychain(String username) {
+  Future<LoginModel> loginWithKeychain(String username, String proof) {
     throw UnimplementedError('loginWithKeychain has not been implemented.');
   }
 
-  Future<LoginModel> loginWithHiveAuth(String username) {
+  Future<LoginModel> loginWithHiveAuth(String username, String proof) {
     throw UnimplementedError('loginWithHiveAuth has not been implemented.');
   }
 

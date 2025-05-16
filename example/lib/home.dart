@@ -34,7 +34,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _loginWithHiveKeychain() async {
     try {
-      final result = await aioha.loginWithKeychain(_usernameController.text);
+      final result = await aioha.loginWithKeychain(
+        _usernameController.text,
+        '',
+      );
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -52,7 +55,10 @@ class _MyHomePageState extends State<MyHomePage> {
   void _loginWithHiveAuth() async {
     try {
       _startTimer();
-      final result = await aioha.loginWithHiveAuth(_usernameController.text);
+      final result = await aioha.loginWithHiveAuth(
+        _usernameController.text,
+        '',
+      );
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(

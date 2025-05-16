@@ -72,7 +72,7 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
   }
 
   @override
-  Future<LoginModel> loginWithKeychain(String username) async {
+  Future<LoginModel> loginWithKeychain(String username, String proof) async {
     throw UnimplementedError(
       'Hive Keychain based login not available for mobile-apps',
     );
@@ -101,7 +101,7 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
   }
 
   @override
-  Future<LoginModel> loginWithHiveAuth(String username) async {
+  Future<LoginModel> loginWithHiveAuth(String username, String proof) async {
     final completer = Completer<String>();
     headlessWebView.webViewController?.addJavaScriptHandler(
       handlerName: 'onHiveAuthResult',
@@ -114,7 +114,7 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
     var source = """
           (async () => {
             try {
-              const res = await loginWithHiveAuth('$username', '');
+              const res = await loginWithHiveAuth('$username', '$proof');
               window.flutter_inappwebview.callHandler('onHiveAuthResult', res ?? 'null');
             } catch (e) {
               window.flutter_inappwebview.callHandler('onHiveAuthResult', 'Error: ' + e.toString());
