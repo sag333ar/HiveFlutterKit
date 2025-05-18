@@ -50,19 +50,33 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
   }
 
   Future<String> _loadHTMLFromAssets() async {
-    String html = await rootBundle.loadString(
+    String aiohajs = await rootBundle.loadString(
       "packages/aioha_flutter_core/web/aioha.js",
+    );
+    String aioha196js = await rootBundle.loadString(
+      "packages/aioha_flutter_core/web/196.aioha.js",
+    );
+    String aioha769js = await rootBundle.loadString(
+      "packages/aioha_flutter_core/web/769.aioha.js",
+    );
+    String aioha785js = await rootBundle.loadString(
+      "packages/aioha_flutter_core/web/785.aioha.js",
     );
     String longHtml = """
 <html>
 <head><title>AIOHA HTML</title></head>
 <body>
-<script type="module">
-    import * as Aioha from "https://unpkg.com/@aioha/aioha@latest/dist/bundle.js";
-    window.Aioha = Aioha;
+  <script>
+  $aiohajs
   </script>
   <script>
-  $html
+  $aioha196js
+  </script>
+  <script>
+  $aioha769js
+  </script>
+  <script>
+  $aioha785js
   </script>
   </body>
   </html>
