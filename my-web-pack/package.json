@@ -1,0 +1,18 @@
+{
+  "name": "my-web-pack",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@aioha/aioha": "^1.6.0"
+  },
+  "devDependencies": {
+    "buffer": "^6.0.3",
+    "webpack-cli": "^6.0.1"
+  }
+}
