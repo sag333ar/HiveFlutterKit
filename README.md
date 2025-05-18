@@ -46,9 +46,6 @@ Open web/index.html and add the following script tag to the body section:
 <body>
   <script src="flutter_bootstrap.js" async></script>
   <script src="packages/aioha_flutter_core/web/aioha.js" type="application/javascript" defer></script>
-  <script src="packages/aioha_flutter_core/web/196.aioha.js" type="application/javascript" defer></script>
-  <script src="packages/aioha_flutter_core/web/769.aioha.js" type="application/javascript" defer></script>
-  <script src="packages/aioha_flutter_core/web/785.aioha.js" type="application/javascript" defer></script>
 </body>
 ```
 

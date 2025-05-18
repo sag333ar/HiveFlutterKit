@@ -5,7 +5,7 @@ const webpack = require('webpack');
 module.exports = {
   entry: './src/index.js', 
   output: {
-    filename: 'bundle.js',
+    filename: 'aioha.js',
     path: path.resolve('../web', ''),
   },
   optimization: {
