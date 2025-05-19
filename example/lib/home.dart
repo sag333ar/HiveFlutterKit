@@ -89,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
         return;
       }
 
-      final result = await aioha.loginWithPlaintextKey(username, postingKey);
+      final result = await aioha.loginWithPlaintextKey(username, postingKey, '');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(

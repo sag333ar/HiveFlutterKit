@@ -40,7 +40,7 @@ async function loginWithKeychain(username, proof) {
     return JSON.stringify({
       ...signedResult,
       proof: `${proof}`,
-      username: username, 
+      username: username,
     });
   }
   qrString = "";
@@ -80,45 +80,57 @@ async function loginWithHiveAuth(username, proof) {
     return JSON.stringify({
       ...signedResult,
       proof: `${proof}`,
-      username: username, 
+      username: username,
     });
   }
   qrString = "";
   return JSON.stringify({
     ...login,
     proof: `${proof}`,
-    username: username, 
+    username: username,
   });
 }
 
 window.loginWithHiveAuth = loginWithHiveAuth;
 
 async function loginWithPlaintextKey(username, postingKey, proof) {
+  qrString = "";
   if (proof === undefined || proof === null || proof === "") {
     proof = parseInt(new Date().getTime() / 1000);
   }
-  try {
-    aioha.registerCustomProvider(new PlaintextKeyProvider(postingKey));
-    const login = await aioha.login(Providers.Custom, username, {
-      msg: `${proof}`,
-      keyType: "posting",
-    });
+  aioha.registerCustomProvider(new PlaintextKeyProvider(postingKey));
+  const login = await aioha.login(Providers.Custom, username, {
+    msg: `${proof}`,
+    keyType: KeyTypes.Posting,
+  });
 
-    if (login?.error) {
-      throw new Error("Login Error: " + login.error);
+  if (login.error && login.error !== "Already logged in") {
+    qrString = "";
+    throw new Error("Login Error " + login.error);
+  } else if (login.error === "Already logged in") {
+    aioha.switchUser(username);
+    const signedResult = await aioha.signMessage(
+      `${proof}`,
+      KeyTypes.Posting
+    );
+    if (signedResult.error) {
+      qrString = "";
+      throw new Error("Signing Error " + signedResult.error);
     }
-
+    qrString = "";
     return JSON.stringify({
-      ...login,
-      username,
-      proof:`${proof}`,
-      method: "PlaintextKey",
+      ...signedResult,
+      proof: `${proof}`,
+      username: username,
     });
-
-  } catch (error) {
-    console.error("PlaintextKey login failed:", error.message);
-    throw error;
   }
+
+  qrString = "";
+  return JSON.stringify({
+    ...login,
+    proof: `${proof}`,
+    username: username,
+  });
 }
 
 window.loginWithPlaintextKey = loginWithPlaintextKey; // Expose the function to Dart
