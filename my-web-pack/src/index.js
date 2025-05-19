@@ -91,7 +91,7 @@ async function loginWithHiveAuth(username, proof) {
   });
 }
 
-window.loginWithHiveAuth = loginWithHiveAuth; // Expose the function to Dart
+window.loginWithHiveAuth = loginWithHiveAuth;
 
 async function loginWithPlaintextKey(username, postingKey, proof) {
   if (proof === undefined || proof === null || proof === "") {
@@ -99,9 +99,9 @@ async function loginWithPlaintextKey(username, postingKey, proof) {
   }
   try {
     const aioha = new Aioha();
-    aioha.registerCustomProvider(new PlaintextKeyProvider.PlaintextKeyProvider(postingKey));
+    aioha.registerCustomProvider(new PlaintextKeyProvider(postingKey));
     const login = await aioha.login(Providers.Custom, username, {
-      msg: proof,
+      msg: `${proof}`,
       keyType: "posting",
     });
 
@@ -112,7 +112,7 @@ async function loginWithPlaintextKey(username, postingKey, proof) {
     return JSON.stringify({
       ...login,
       username,
-      proof,
+      proof:`${proof}`,
       method: "PlaintextKey",
     });
 
