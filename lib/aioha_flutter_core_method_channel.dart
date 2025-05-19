@@ -126,6 +126,7 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
   Future<LoginModel> loginWithPlaintextKey(
     String username,
     String postingKey,
+    String proof,
   ) async {
     final completer = Completer<LoginModel>();
 
@@ -148,7 +149,7 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
       source: """
     (async () => {
       try {
-        const result = await loginWithPlaintextKey("$username", "$postingKey");
+        const result = await loginWithPlaintextKey("$username", "$postingKey", "$proof");
         window.flutter_inappwebview.callHandler('onLoginWithPlaintextKeyResult', result);
       } catch (err) {
         window.flutter_inappwebview.callHandler('onLoginWithPlaintextKeyResult', JSON.stringify({ error: err.message }));

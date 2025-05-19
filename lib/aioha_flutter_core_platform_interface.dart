@@ -31,7 +31,7 @@ abstract class AiohaFlutterCorePlatform extends PlatformInterface {
     throw UnimplementedError('loginWithHiveAuth has not been implemented.');
   }
 
-  Future<LoginModel> loginWithPlaintextKey(String username, String postingKey) {
+  Future<LoginModel> loginWithPlaintextKey(String username, String postingKey, String proof) {
     throw UnimplementedError('loginWithPlaintextKey has not been implemented.');
   }
 
