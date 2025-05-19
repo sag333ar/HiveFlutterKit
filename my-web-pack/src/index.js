@@ -352,7 +352,7 @@ async function switchUser(userId) {
       return false;
     }
 
-    const result = aioha.switchUser(userId);
+    const result = await aioha.switchUser(userId);
     console.log("Switch user result:", result);
     console.log("Switched to username:", userId); // Print switched username
     return result || false; // Ensure a valid boolean is returned
