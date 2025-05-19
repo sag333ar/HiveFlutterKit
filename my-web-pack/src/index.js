@@ -98,7 +98,6 @@ async function loginWithPlaintextKey(username, postingKey, proof) {
     proof = parseInt(new Date().getTime() / 1000);
   }
   try {
-    const aioha = new Aioha();
     aioha.registerCustomProvider(new PlaintextKeyProvider(postingKey));
     const login = await aioha.login(Providers.Custom, username, {
       msg: `${proof}`,
