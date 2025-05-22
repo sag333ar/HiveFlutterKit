@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:aioha_flutter_core/aioha_flutter_core_platform_interface.dart';
 import 'package:flutter/material.dart';
@@ -89,7 +90,11 @@ class _MyHomePageState extends State<MyHomePage> {
         return;
       }
 
-      final result = await aioha.loginWithPlaintextKey(username, postingKey, '');
+      final result = await aioha.loginWithPlaintextKey(
+        username,
+        postingKey,
+        '',
+      );
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -169,32 +174,46 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _commentWithOptions() async {
     try {
-      final result = await aioha.commentWithOptions(
-        'parentAuthor',
-        'parentPermlink',
-        'permlink',
-        'title',
-        'body',
-        {'foo': 'bar'},
-        {
-          'author': await aioha.getCurrentUser(),
-          'permlink': 'permlink',
-          'max_accepted_payout': '1000000.000 HBD',
-          'percent_hbd': 10000,
-          'allow_votes': true,
-          'allow_curation_rewards': true,
-          'extensions': [
-            [
-              0,
-              {
-                'beneficiaries': [
-                  {'account': 'alice', 'weight': 100},
-                  {'account': 'bob', 'weight': 150},
-                ],
-              },
-            ],
+      final jsonMetadata = {
+        "tags": ["sagar", "kothari"],
+        "app": "checkinwithxyz/1.0.0",
+        "username": "sagar",
+        "image": [
+          "https://canopas-blogs.s3.ap-south-1.amazonaws.com/my_profile_c0f157624c.jpeg",
+        ],
+        "onboarder": "sagarkothari",
+        "introductionText": "Hello, I am a new user",
+        "communityName": "blabla",
+        "lightningAddress": "bla@bla.v4v.app",
+      };
+
+      final Map<String, dynamic> options = {
+        "author": "shaktimaaan",
+        "permlink": "asdfasfaasdfsdfasdfasfasdf",
+        "allow_votes": true,
+        "max_accepted_payout": "100000.000 SBD",
+        "percent_hbd": 10000,
+        "allow_curation_rewards": true,
+        "extensions": [
+          [
+            0,
+            {
+              "beneficiaries": [
+                {"weight": 3000, "account": "threespeakselfie"},
+              ],
+            },
           ],
-        },
+        ],
+      };
+
+      final result = await aioha.commentWithOptions(
+        '',
+        'hive-184437',
+        'asdfasfaasdfsdfasdfasfasdf',
+        'this is a test title from aioha comment with options',
+        'I am going to try this comment with options and see how it works and if it works or not and if it works or not asdfafadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfads',
+        jsonEncode(jsonMetadata),
+        jsonEncode(options),
       );
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('CommentWithOptions Success: $result')),
@@ -549,6 +568,11 @@ class _MyHomePageState extends State<MyHomePage> {
               ElevatedButton(
                 onPressed: _signMessage,
                 child: const Text('Sign Message'),
+              ),
+
+              ElevatedButton(
+                onPressed: _commentWithOptions,
+                child: const Text('Comment with Options'),
               ),
 
               qrString.isEmpty || timerDuration == 0

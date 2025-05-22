@@ -22,7 +22,11 @@ external dynamic loginWithKeychainJS(String username, String proof);
 external dynamic loginWithHiveAuthJS(String username, String proof);
 
 @JS('loginWithPlaintextKey')
-external dynamic loginWithPlaintextKeyJS(String username, String postingKey, String proof);
+external dynamic loginWithPlaintextKeyJS(
+  String username,
+  String postingKey,
+  String proof,
+);
 
 @JS('getQrString')
 external dynamic getQrStringJS();
@@ -61,8 +65,8 @@ external dynamic commentWithOptionsJS(
   String permlink,
   String title,
   String body,
-  Map<String, dynamic> jsonMetadata,
-  Map<String, dynamic> options,
+  String jsonMetadata,
+  String options,
 );
 
 @JS('deleteComment')
@@ -165,8 +169,8 @@ class AiohaFlutterCoreWeb extends AiohaFlutterCorePlatform {
     String permlink,
     String title,
     String body,
-    Map<String, dynamic> jsonMetadata,
-    Map<String, dynamic> options,
+    String jsonMetadata,
+    String options,
   ) async {
     var promise = commentWithOptionsJS(
       parentAuthor,

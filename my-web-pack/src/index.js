@@ -235,8 +235,8 @@ async function commentWithOptions(
       permlink,
       title,
       body,
-      jsonMetadata,
-      options
+      JSON.parse(jsonMetadata),
+      JSON.parse(options),
     );
     return JSON.stringify(result);
   } catch (error) {

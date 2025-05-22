@@ -304,8 +304,8 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
     String permlink,
     String title,
     String body,
-    Map<String, dynamic> jsonMetadata,
-    Map<String, dynamic> options,
+    String jsonMetadata,
+    String options,
   ) async {
     final completer = Completer<String>();
     headlessWebView.webViewController?.addJavaScriptHandler(
