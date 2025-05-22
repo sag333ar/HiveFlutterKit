@@ -1,12 +1,14 @@
-const { Aioha, initAioha, KeyTypes, Providers } = require('@aioha/aioha')
-const { PlaintextKeyProvider } = require('@aioha/aioha/build/providers/custom/plaintext.js')
+const { Aioha, initAioha, KeyTypes, Providers } = require("@aioha/aioha");
+const {
+  PlaintextKeyProvider,
+} = require("@aioha/aioha/build/providers/custom/plaintext.js");
 
 const aioha = initAioha({
   hiveauth: {
-    name: 'AiohaExperiments',
-    description: 'Testing aioha login - keychain & hiveauth methods'
+    name: "AiohaExperiments",
+    description: "Testing aioha login - keychain & hiveauth methods",
   },
-})
+});
 
 aioha.on("hiveauth_challenge_request", (payload, evt, cancel) => {
   qrString = payload;
@@ -28,10 +30,7 @@ async function loginWithKeychain(username, proof) {
     throw new Error("Login Error " + login.error);
   } else if (login.error === "Already logged in") {
     aioha.switchUser(username);
-    const signedResult = await aioha.signMessage(
-      `${proof}`,
-      KeyTypes.Posting
-    );
+    const signedResult = await aioha.signMessage(`${proof}`, KeyTypes.Posting);
     if (signedResult.error) {
       qrString = "";
       throw new Error("Signing Error " + signedResult.error);
@@ -68,10 +67,7 @@ async function loginWithHiveAuth(username, proof) {
     throw new Error("Login Error " + login.error);
   } else if (login.error === "Already logged in") {
     aioha.switchUser(username);
-    const signedResult = await aioha.signMessage(
-      `${proof}`,
-      KeyTypes.Posting
-    );
+    const signedResult = await aioha.signMessage(`${proof}`, KeyTypes.Posting);
     if (signedResult.error) {
       qrString = "";
       throw new Error("Signing Error " + signedResult.error);
@@ -109,10 +105,7 @@ async function loginWithPlaintextKey(username, postingKey, proof) {
     throw new Error("Login Error " + login.error);
   } else if (login.error === "Already logged in") {
     aioha.switchUser(username);
-    const signedResult = await aioha.signMessage(
-      `${proof}`,
-      KeyTypes.Posting
-    );
+    const signedResult = await aioha.signMessage(`${proof}`, KeyTypes.Posting);
     if (signedResult.error) {
       qrString = "";
       throw new Error("Signing Error " + signedResult.error);
@@ -236,7 +229,7 @@ async function commentWithOptions(
       title,
       body,
       JSON.parse(jsonMetadata),
-      JSON.parse(options),
+      JSON.parse(options)
     );
     return JSON.stringify(result);
   } catch (error) {
@@ -378,3 +371,25 @@ async function removeOtherLogin(userId) {
 }
 
 window.removeOtherLogin = removeOtherLogin; // Expose the function to Dart
+
+async function addAccountAuthority(account, keyType, weight) {
+  try {
+    const result = await aioha.addAccountAuthority(account, keyType, weight);
+    return JSON.stringify(result);
+  } catch (error) {
+    return JSON.stringify({ error: error.toString() });
+  }
+}
+
+window.addAccountAuthority = addAccountAuthority;
+
+async function removeAccountAuthority(account, keyType) {
+  try {
+    const result = await aioha.removeAccountAuthority(account, keyType);
+    return JSON.stringify(result);
+  } catch (error) {
+    return JSON.stringify({ error: error.toString() });
+  }
+}
+
+window.removeAccountAuthority = removeAccountAuthority;
