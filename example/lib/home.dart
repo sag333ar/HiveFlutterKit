@@ -434,8 +434,8 @@ class _MyHomePageState extends State<MyHomePage> {
       }
       // Example: add 'aioha' to Posting authority with weight 1
       final result = await aioha.addAccountAuthority(
-        username, // or username, depending on your use-case
-        'Posting',
+        "threespeak",
+        'posting',
         1,
       );
       ScaffoldMessenger.of(
@@ -459,8 +459,8 @@ class _MyHomePageState extends State<MyHomePage> {
       }
       // Example: remove 'aioha' from Posting authority
       final result = await aioha.removeAccountAuthority(
-        username, // or username, depending on your use-case
-        'Posting',
+        'threespeak',
+        'posting',
       );
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Remove Account Authority: $result')),
