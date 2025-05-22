@@ -109,4 +109,18 @@ abstract class AiohaFlutterCorePlatform extends PlatformInterface {
   Future<String> removeOtherLogin(String userId) {
     throw UnimplementedError('removeOtherLogin has not been implemented.');
   }
+
+  Future<String> addAccountAuthority(
+    String account,
+    String keyType,
+    int weight,
+  ) {
+    throw UnimplementedError('addAccountAuthority has not been implemented.');
+  }
+
+  Future<String> removeAccountAuthority(String account, String keyType) {
+    throw UnimplementedError(
+      'removeAccountAuthority has not been implemented.',
+    );
+  }
 }

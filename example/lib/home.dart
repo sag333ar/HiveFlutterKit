@@ -423,6 +423,55 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void _addAccountAuthority() async {
+    try {
+      final username = _usernameController.text;
+      if (username.isEmpty) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Username is required')));
+        return;
+      }
+      // Example: add 'aioha' to Posting authority with weight 1
+      final result = await aioha.addAccountAuthority(
+        username, // or username, depending on your use-case
+        'Posting',
+        1,
+      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Add Account Authority: $result')));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Add Account Authority Error: $e')),
+      );
+    }
+  }
+
+  void _removeAccountAuthority() async {
+    try {
+      final username = _usernameController.text;
+      if (username.isEmpty) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Username is required')));
+        return;
+      }
+      // Example: remove 'aioha' from Posting authority
+      final result = await aioha.removeAccountAuthority(
+        username, // or username, depending on your use-case
+        'Posting',
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Remove Account Authority: $result')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Remove Account Authority Error: $e')),
+      );
+    }
+  }
+
   void _startTimer() async {
     var result = await aioha.getQrString();
     setState(() {
@@ -570,6 +619,17 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: const Text('Sign Message'),
               ),
 
+              // --- New Buttons for Account Authority ---
+              ElevatedButton(
+                onPressed: _addAccountAuthority,
+                child: const Text('Add Account Authority'),
+              ),
+              ElevatedButton(
+                onPressed: _removeAccountAuthority,
+                child: const Text('Remove Account Authority'),
+              ),
+
+              // --- End New Buttons ---
               ElevatedButton(
                 onPressed: _commentWithOptions,
                 child: const Text('Comment with Options'),

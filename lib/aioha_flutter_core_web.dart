@@ -81,6 +81,16 @@ external dynamic followJS(String author, bool followFlag);
 @JS('removeOtherLogin')
 external dynamic removeOtherLoginJS(String userId);
 
+@JS('addAccountAuthority')
+external dynamic addAccountAuthorityJS(
+  String account,
+  String keyType,
+  int weight,
+);
+
+@JS('removeAccountAuthority')
+external dynamic removeAccountAuthorityJS(String account, String keyType);
+
 /// A web implementation of the AiohaFlutterCorePlatform of the AiohaFlutterCore plugin.
 class AiohaFlutterCoreWeb extends AiohaFlutterCorePlatform {
   /// Constructs a AiohaFlutterCoreWeb
@@ -223,6 +233,24 @@ class AiohaFlutterCoreWeb extends AiohaFlutterCorePlatform {
   @override
   Future<String> removeOtherLogin(String userId) async {
     var promise = removeOtherLoginJS(userId);
+    var contentData = await promiseToFuture(promise);
+    return contentData;
+  }
+
+  @override
+  Future<String> addAccountAuthority(
+    String account,
+    String keyType,
+    int weight,
+  ) async {
+    var promise = addAccountAuthorityJS(account, keyType, weight);
+    var contentData = await promiseToFuture(promise);
+    return contentData;
+  }
+
+  @override
+  Future<String> removeAccountAuthority(String account, String keyType) async {
+    var promise = removeAccountAuthorityJS(account, keyType);
     var contentData = await promiseToFuture(promise);
     return contentData;
   }

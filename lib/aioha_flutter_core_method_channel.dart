@@ -540,4 +540,60 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
     );
     return completer.future;
   }
+
+  @override
+  Future<String> addAccountAuthority(
+    String account,
+    String keyType,
+    int weight,
+  ) async {
+    final completer = Completer<String>();
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: 'onAddAccountAuthorityResult',
+      callback: (args) {
+        if (!completer.isCompleted) {
+          completer.complete(args.isNotEmpty ? args[0].toString() : 'null');
+        }
+      },
+    );
+    await headlessWebView.webViewController?.evaluateJavascript(
+      source: """
+      (async () => {
+        try {
+          const res = await addAccountAuthority('$account', '$keyType', $weight);
+          window.flutter_inappwebview.callHandler('onAddAccountAuthorityResult', res ?? 'null');
+        } catch (e) {
+          window.flutter_inappwebview.callHandler('onAddAccountAuthorityResult', 'Error: ' + e.toString());
+        }
+      })()
+      """,
+    );
+    return completer.future;
+  }
+
+  @override
+  Future<String> removeAccountAuthority(String account, String keyType) async {
+    final completer = Completer<String>();
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: 'onRemoveAccountAuthorityResult',
+      callback: (args) {
+        if (!completer.isCompleted) {
+          completer.complete(args.isNotEmpty ? args[0].toString() : 'null');
+        }
+      },
+    );
+    await headlessWebView.webViewController?.evaluateJavascript(
+      source: """
+      (async () => {
+        try {
+          const res = await removeAccountAuthority('$account', '$keyType');
+          window.flutter_inappwebview.callHandler('onRemoveAccountAuthorityResult', res ?? 'null');
+        } catch (e) {
+          window.flutter_inappwebview.callHandler('onRemoveAccountAuthorityResult', 'Error: ' + e.toString());
+        }
+      })()
+      """,
+    );
+    return completer.future;
+  }
 }
