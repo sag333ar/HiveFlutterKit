@@ -1,6 +1,10 @@
 import 'package:aioha_flutter_core/models/login_model.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-
+import 'package:aioha_flutter_core/models/account.dart';
+import 'package:aioha_flutter_core/models/chain_properties.dart';
+import 'package:aioha_flutter_core/models/discussion.dart';
+import 'package:aioha_flutter_core/models/resource_credits.dart';
+import 'package:aioha_flutter_core/models/voting_power.dart';
 import 'aioha_flutter_core_method_channel.dart';
 
 abstract class AiohaFlutterCorePlatform extends PlatformInterface {
@@ -122,5 +126,47 @@ abstract class AiohaFlutterCorePlatform extends PlatformInterface {
     throw UnimplementedError(
       'removeAccountAuthority has not been implemented.',
     );
+  }
+
+  Future<String?> getPlatformVersion() {
+    throw UnimplementedError('platformVersion() has not been implemented.');
+  }
+
+  Future<ChainProperties> getChainProperties() {
+    throw UnimplementedError('getChainProperties() has not been implemented.');
+  }
+
+  Future<List<Discussion>> getDiscussions(
+    String by, {
+    required int limit,
+    String tag = '',
+    String? startAuthor,
+    String? startPermlink,
+    String? observer,
+  }) {
+    throw UnimplementedError('getDiscussions() has not been implemented.');
+  }
+
+  Future<List<Account>> getAccounts(List<String> usernames) {
+    throw UnimplementedError('getAccounts() has not been implemented.');
+  }
+
+  Future<VotingPower> getVotingPower(String username) {
+    throw UnimplementedError('getVotingPower() has not been implemented.');
+  }
+
+  Future<ResourceCredits> getResourceCredits(String username) {
+    throw UnimplementedError('getResourceCredits() has not been implemented.');
+  }
+
+  Future<List<Discussion>> getAccountPosts(
+    String username,
+    String by, {
+    required int limit,
+    String? startAuthor,
+    String? startPermlink,
+    String? observer,
+  }) {
+    throw UnimplementedError('getAccountPosts() has not been implemented.');
   }
 }

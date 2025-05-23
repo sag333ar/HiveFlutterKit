@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:aioha_flutter_core/aioha_flutter_core_platform_interface.dart';
-import 'package:aioha_flutter_core/dhive_flutter_platform_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -17,7 +16,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late AiohaFlutterCorePlatform aioha;
-  late DhiveFlutterPlatform dhive;
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _postingKeyController = TextEditingController();
 
@@ -28,7 +26,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     aioha = Provider.of<AiohaFlutterCorePlatform>(context, listen: false);
-    dhive = Provider.of<DhiveFlutterPlatform>(context, listen: false);
   }
 
   @override
@@ -123,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
         return;
       }
 
-      var result = await dhive.getVotingPower(username);
+      var result = await aioha.getVotingPower(username);
       debugPrint(
         "Voting Power: ${result.downvotePower}, ${result.upvotePower}",
       );

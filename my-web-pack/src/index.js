@@ -1,17 +1,22 @@
-const { Aioha, initAioha, KeyTypes, Providers } = require("@aioha/aioha");
-const {PlaintextKeyProvider } = require("@aioha/aioha/build/providers/custom/plaintext.js");
+const { initAioha, KeyTypes, Providers } = require("@aioha/aioha");
+const { PlaintextKeyProvider } = require("@aioha/aioha/build/providers/custom/plaintext.js");
 const dhive = require('@hiveio/dhive');
 
-let dhiveClient = null;
+let dhiveClient = new dhive.Client(["https://api.hive.blog"]);
+const aioha = initAioha({
+  hiveauth: {
+    name: "AiohaExperiments",
+    description: "Testing aioha login - keychain & hiveauth methods",
+  },
+});
 
-function setupDhive() {
-  if (dhiveClient === null) {
-    dhiveClient = new dhive.Client(["https://api.hive.blog"]);
-  }
-}
+aioha.on("hiveauth_challenge_request", (payload, evt, cancel) => {
+  qrString = payload;
+});
+
+let qrString = "";
 
 async function getChainProperties() {
-  setupDhive();
   const props = await dhiveClient.database.getChainProperties();
   return JSON.stringify(props);
 }
@@ -25,7 +30,6 @@ async function getDiscussions(
   startPermlink = null,
   observer = null,
 ) {
-  setupDhive();
   const query = {
     sort: by,
     tag: tag,    
@@ -41,18 +45,12 @@ async function getDiscussions(
 window.getDiscussions = getDiscussions;
 
 async function getAccounts(usernames) {
-  setupDhive();
   const accounts = await dhiveClient.database.getAccounts(usernames);
   return JSON.stringify(accounts);
 }
 window.getAccounts = getAccounts;
 
-document.addEventListener("DOMContentLoaded", () => {
-  setupDhive();
-});
-
 async function getVotingPowerData(username) {
-  setupDhive();
   const downVotingPower = (account) => {
     const HIVE_VOTING_MANA_REGENERATION_SECONDS = 5 * 60 * 60 * 24; // 5 days
     const totalShares =
@@ -96,7 +94,6 @@ async function getVotingPowerData(username) {
 window.getVotingPowerData = getVotingPowerData;
 
 async function getResourceCreditsPercentage(username) {
-  setupDhive();
   const [manabar] = await dhiveClient.rc.findRCAccounts([username]);
   const currentMana = parseFloat(manabar.rc_manabar.current_mana);
   const maxRC = parseFloat(manabar.max_rc);
@@ -113,7 +110,6 @@ async function getAccountPosts(
   startPermlink = null,
   observer = null,
 ) {
-  setupDhive();
   const query = {
     account: username,
     sort: by,   
@@ -127,19 +123,6 @@ async function getAccountPosts(
   return JSON.stringify(discussions);
 }
 window.getAccountPosts = getAccountPosts;
-
-const aioha = initAioha({
-  hiveauth: {
-    name: "AiohaExperiments",
-    description: "Testing aioha login - keychain & hiveauth methods",
-  },
-});
-
-aioha.on("hiveauth_challenge_request", (payload, evt, cancel) => {
-  qrString = payload;
-});
-
-let qrString = "";
 
 async function loginWithKeychain(username, proof) {
   qrString = "";
@@ -170,7 +153,6 @@ async function loginWithKeychain(username, proof) {
   qrString = "";
   return JSON.stringify({ ...login, proof: `${proof}` });
 }
-
 window.loginWithKeychain = loginWithKeychain; // Expose the function to Dart
 
 async function loginWithHiveAuth(username, proof) {
@@ -211,7 +193,6 @@ async function loginWithHiveAuth(username, proof) {
     username: username,
   });
 }
-
 window.loginWithHiveAuth = loginWithHiveAuth;
 
 async function loginWithPlaintextKey(username, postingKey, proof) {
@@ -250,13 +231,11 @@ async function loginWithPlaintextKey(username, postingKey, proof) {
     username: username,
   });
 }
-
 window.loginWithPlaintextKey = loginWithPlaintextKey; // Expose the function to Dart
 
 async function getQrString() {
   return qrString;
 }
-
 window.getQrString = getQrString; // Expose the function to Dart
 
 async function getCurrentUser() {
@@ -271,7 +250,6 @@ async function getCurrentUser() {
     return JSON.stringify({ error: error.toString() });
   }
 }
-
 window.getCurrentUser = getCurrentUser; // Expose the function to Dart
 
 async function logoutUser() {
@@ -286,7 +264,6 @@ async function logoutUser() {
     return JSON.stringify(error.toString());
   }
 }
-
 window.logoutUser = logoutUser; // Expose the function to Dart
 
 async function singleVote(author, permlink, weight) {
@@ -301,7 +278,6 @@ async function singleVote(author, permlink, weight) {
     return JSON.stringify({ error: error.toString() });
   }
 }
-
 window.singleVote = singleVote; // Expose the function to Dart
 
 async function comment(
@@ -330,7 +306,6 @@ async function comment(
     return JSON.stringify({ error: error.toString() });
   }
 }
-
 window.comment = comment; // Expose the function to Dart
 
 async function commentWithOptions(
@@ -361,7 +336,6 @@ async function commentWithOptions(
     return JSON.stringify({ error: error.toString() });
   }
 }
-
 window.commentWithOptions = commentWithOptions; // Expose the function to Dart
 
 async function deleteComment(permlink) {
@@ -376,7 +350,6 @@ async function deleteComment(permlink) {
     return JSON.stringify({ error: error.toString() });
   }
 }
-
 window.deleteComment = deleteComment; // Expose the function to Dart
 
 async function reblog(author, permlink, reblogFlag) {
@@ -391,7 +364,6 @@ async function reblog(author, permlink, reblogFlag) {
     return JSON.stringify({ error: error.toString() });
   }
 }
-
 window.reblog = reblog; // Expose the function to Dart
 
 async function follow(author, followFlag) {
@@ -406,7 +378,6 @@ async function follow(author, followFlag) {
     return JSON.stringify({ error: error.toString() });
   }
 }
-
 window.follow = follow; // Expose the function to Dart
 
 async function claimRewards() {
@@ -421,7 +392,6 @@ async function claimRewards() {
     return JSON.stringify({ error: error.toString() });
   }
 }
-
 window.claimRewards = claimRewards; // Expose the function to Dart
 
 async function signMessage(message, keyType) {
@@ -444,7 +414,6 @@ async function signMessage(message, keyType) {
     return JSON.stringify({ error: error.toString() });
   }
 }
-
 window.signMessage = signMessage; // Expose the function to Dart
 
 async function getOtherLogins() {
@@ -457,7 +426,6 @@ async function getOtherLogins() {
     return [];
   }
 }
-
 window.getOtherLogins = getOtherLogins; // Expose the function to Dart
 
 async function switchUser(userId) {
@@ -479,7 +447,6 @@ async function switchUser(userId) {
     return false;
   }
 }
-
 window.switchUser = switchUser; // Expose the function to Dart
 
 async function removeOtherLogin(userId) {
@@ -494,7 +461,6 @@ async function removeOtherLogin(userId) {
     return JSON.stringify({ error: error.toString() });
   }
 }
-
 window.removeOtherLogin = removeOtherLogin; // Expose the function to Dart
 
 async function addAccountAuthority(account, keyType, weight) {
@@ -505,7 +471,6 @@ async function addAccountAuthority(account, keyType, weight) {
     return JSON.stringify({ error: error.toString() });
   }
 }
-
 window.addAccountAuthority = addAccountAuthority;
 
 async function removeAccountAuthority(account, keyType) {
@@ -516,5 +481,4 @@ async function removeAccountAuthority(account, keyType) {
     return JSON.stringify({ error: error.toString() });
   }
 }
-
 window.removeAccountAuthority = removeAccountAuthority;

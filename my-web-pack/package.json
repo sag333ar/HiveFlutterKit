@@ -9,7 +9,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@aioha/aioha": "^1.6.0"
+    "@aioha/aioha": "^1.6.0",
+    "@hiveio/dhive": "^1.3.2"
   },
   "devDependencies": {
     "buffer": "^6.0.3",
