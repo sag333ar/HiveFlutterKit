@@ -1,7 +1,132 @@
 const { Aioha, initAioha, KeyTypes, Providers } = require("@aioha/aioha");
-const {
-  PlaintextKeyProvider,
-} = require("@aioha/aioha/build/providers/custom/plaintext.js");
+const {PlaintextKeyProvider } = require("@aioha/aioha/build/providers/custom/plaintext.js");
+const dhive = require('@hiveio/dhive');
+
+let dhiveClient = null;
+
+function setupDhive() {
+  if (dhiveClient === null) {
+    dhiveClient = new dhive.Client(["https://api.hive.blog"]);
+  }
+}
+
+async function getChainProperties() {
+  setupDhive();
+  const props = await dhiveClient.database.getChainProperties();
+  return JSON.stringify(props);
+}
+window.getChainProperties = getChainProperties;
+
+async function getDiscussions(
+  by,
+  limit = 20,
+  tag = '',
+  startAuthor = null,
+  startPermlink = null,
+  observer = null,
+) {
+  setupDhive();
+  const query = {
+    sort: by,
+    tag: tag,    
+    limit: limit,      
+    start_author: startAuthor,
+    start_permlink: startPermlink,
+  };
+
+  if (observer) query.observer = observer;
+  const discussions = await dhiveClient.call('bridge', 'get_ranked_posts', query);
+  return JSON.stringify(discussions);
+}
+window.getDiscussions = getDiscussions;
+
+async function getAccounts(usernames) {
+  setupDhive();
+  const accounts = await dhiveClient.database.getAccounts(usernames);
+  return JSON.stringify(accounts);
+}
+window.getAccounts = getAccounts;
+
+document.addEventListener("DOMContentLoaded", () => {
+  setupDhive();
+});
+
+async function getVotingPowerData(username) {
+  setupDhive();
+  const downVotingPower = (account) => {
+    const HIVE_VOTING_MANA_REGENERATION_SECONDS = 5 * 60 * 60 * 24; // 5 days
+    const totalShares =
+      parseFloat(account.vesting_shares) +
+      parseFloat(account.received_vesting_shares) -
+      parseFloat(account.delegated_vesting_shares) -
+      parseFloat(account.vesting_withdraw_rate);
+    const elapsed =
+      Math.floor(Date.now() / 1000) - account.downvote_manabar.last_update_time;
+    const maxMana = (totalShares * 1000000) / 4;
+
+    let currentMana =
+      parseFloat(account.downvote_manabar.current_mana.toString()) +
+      (elapsed * maxMana) / HIVE_VOTING_MANA_REGENERATION_SECONDS;
+
+    if (currentMana > maxMana) {
+      currentMana = maxMana;
+    }
+    const currentManaPerc = (currentMana * 100) / maxMana;
+    if (isNaN(currentManaPerc)) {
+      return 0;
+    }
+    if (currentManaPerc > 100) {
+      return 100;
+    }
+    return currentManaPerc;
+  };
+
+  const accounts = await dhiveClient.database.getAccounts([username]);
+  if (accounts.length === 0)
+    return JSON.stringify({ error: "Account not found!" });
+  const account = accounts[0];
+  const calc = dhiveClient.rc.calculateVPMana(account);
+  const dv = downVotingPower(account);
+  var upvotepower = (calc.percentage / 100).toFixed(2);
+  var downvote = dv.toFixed(2);
+
+  const result = { upvotepower, downvote };
+  return JSON.stringify(result);
+}
+window.getVotingPowerData = getVotingPowerData;
+
+async function getResourceCreditsPercentage(username) {
+  setupDhive();
+  const [manabar] = await dhiveClient.rc.findRCAccounts([username]);
+  const currentMana = parseFloat(manabar.rc_manabar.current_mana);
+  const maxRC = parseFloat(manabar.max_rc);
+  const rcPercentage = (currentMana / maxRC) * 100;
+  return rcPercentage;
+}
+window.getResourceCreditsPercentage = getResourceCreditsPercentage;
+
+async function getAccountPosts(
+  username,
+  by,
+  limit = 20,
+  startAuthor = null,
+  startPermlink = null,
+  observer = null,
+) {
+  setupDhive();
+  const query = {
+    account: username,
+    sort: by,   
+    limit: limit,      
+    start_author: startAuthor,
+    start_permlink: startPermlink,
+  };
+
+  if (observer) query.observer = observer;
+  const discussions = await dhiveClient.call('bridge', 'get_account_posts', query);
+  return JSON.stringify(discussions);
+}
+window.getAccountPosts = getAccountPosts;
 
 const aioha = initAioha({
   hiveauth: {

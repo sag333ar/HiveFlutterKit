@@ -1,4 +1,5 @@
 import 'package:aioha_flutter_core/aioha_flutter_core_platform_interface.dart';
+import 'package:aioha_flutter_core/dhive_flutter_platform_interface.dart';
 import 'package:aioha_flutter_core_example/home.dart';
 import 'package:flutter/material.dart';
 
@@ -7,8 +8,15 @@ import 'package:provider/provider.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
-    Provider<AiohaFlutterCorePlatform>.value(
-      value: AiohaFlutterCorePlatform.instance, // uses the singleton instance
+    MultiProvider(
+      providers: [
+        Provider<AiohaFlutterCorePlatform>.value(
+          value: AiohaFlutterCorePlatform.instance,
+        ),
+        Provider<DhiveFlutterPlatform>.value(
+          value: DhiveFlutterPlatform.instance,
+        ),
+      ],
       child: const MyApp(),
     ),
   );
