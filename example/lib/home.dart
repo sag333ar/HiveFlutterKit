@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:aioha_flutter_core/aioha_flutter_core_platform_interface.dart';
+import 'package:aioha_flutter_core/dhive_flutter_platform_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -16,6 +17,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late AiohaFlutterCorePlatform aioha;
+  late DhiveFlutterPlatform dhive;
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _postingKeyController = TextEditingController();
 
@@ -26,6 +28,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     aioha = Provider.of<AiohaFlutterCorePlatform>(context, listen: false);
+    dhive = Provider.of<DhiveFlutterPlatform>(context, listen: false);
   }
 
   @override
@@ -101,6 +104,28 @@ class _MyHomePageState extends State<MyHomePage> {
             'Success: ${result.success} Proof: ${result.proof}, Username: ${result.username}, Challenge: ${result.challenge}, PublicKey: ${result.publicKey}',
           ),
         ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+    }
+  }
+
+  void _getVotingPower() async {
+    try {
+      final username = _usernameController.text;
+
+      if (username.isEmpty) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Username is required')));
+        return;
+      }
+
+      var result = await dhive.getVotingPower(username);
+      debugPrint(
+        "Voting Power: ${result.downvotePower}, ${result.upvotePower}",
       );
     } catch (e) {
       ScaffoldMessenger.of(
@@ -522,7 +547,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
 
-              // ✅ NEW: Posting Key input field
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: TextField(
@@ -550,6 +574,11 @@ class _MyHomePageState extends State<MyHomePage> {
               ElevatedButton(
                 onPressed: _loginWithPlaintextKey,
                 child: const Text('Login with Plaintext Key'),
+              ),
+
+              ElevatedButton(
+                child: Text('Get Voting power'),
+                onPressed: _getVotingPower,
               ),
 
               ElevatedButton(
