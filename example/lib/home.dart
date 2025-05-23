@@ -494,6 +494,181 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<void> _getChainPropertiesAioha() async {
+    try {
+      var result = await aioha.getChainProperties();
+      debugPrint("Aioha Chain Properties: $result");
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Chain Properties: $result')));
+    } catch (e) {
+      debugPrint('Aioha getChainProperties error: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Chain Properties Error: $e')));
+    }
+  }
+
+  Future<void> _getDiscussionsAioha() async {
+    try {
+      final result = await aioha.getDiscussions(
+        'trending',
+        limit: 20,
+        tag: '',
+        startAuthor: null,
+        startPermlink: null,
+        observer: '',
+      );
+      for (var discussion in result) {
+        final metadata = discussion.jsonMetadata;
+        debugPrint('--- ${discussion.title} ---');
+        debugPrint('--- ${discussion.community} ---');
+        debugPrint('--- ${discussion.communityTitle} ---');
+        debugPrint('Uplovte Count : ${discussion.stats?.totalVotes}');
+        debugPrint('App: ${metadata?.app}');
+        debugPrint('Tags: ${metadata?.tags?.join(', ') ?? 'none'}');
+        debugPrint(
+          'First image: ${metadata?.image?.isNotEmpty == true ? metadata!.image!.first : 'none'}',
+        );
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Fetched discussions (see debug output)')),
+      );
+    } catch (e) {
+      debugPrint('Aioha getDiscussions error: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Get Discussions Error: $e')));
+    }
+  }
+
+  Future<void> _getAccountsAioha() async {
+    try {
+      var result = await aioha.getAccounts(['sagarkothari88']);
+      for (var account in result) {
+        debugPrint("Account: ${account.posting?.accountAuths}");
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Fetched accounts (see debug output)')),
+      );
+    } catch (e) {
+      debugPrint('Aioha getAccounts error: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Get Accounts Error: $e')));
+    }
+  }
+
+  Future<void> _getAccountPostsAioha() async {
+    try {
+      String username = 'sagarkothari88';
+      String sort = 'comments';
+      var result = await aioha.getAccountPosts(
+        username,
+        limit: 20,
+        sort,
+        // observer: 'shaktimaaan',
+        // startAuthor: 'sagarkothari88',
+        // startPermlink: 're-sagarkothari88-20250204t071809647',
+      );
+      if (result.isEmpty) {
+        debugPrint('No posts found.');
+      } else {
+        for (var post in result) {
+          debugPrint('--- Post Debug Start ---');
+          debugPrint('Author: ${post.author}');
+          debugPrint('Title: ${post.title}');
+          debugPrint('Permlink: ${post.permlink}');
+          debugPrint('Author Reputation: ${post.authorReputation}');
+          debugPrint('FirstRebloggedBy: ${post.firstRebloggedBy ?? "null"}');
+          debugPrint('FirstRebloggedOn: ${post.firstRebloggedOn ?? "null"}');
+          debugPrint('PendingPayoutValue: ${post.pendingPayoutValue}');
+          debugPrint(
+            'TotalPendingPayoutValue: ${post.totalPendingPayoutValue}',
+          );
+          debugPrint('Promoted: ${post.promoted}');
+          debugPrint('RootTitle: ${post.rootTitle}');
+          debugPrint('URL: ${post.url}');
+          debugPrint('ActiveVotes Count: ${post.activeVotes?.length ?? 0}');
+          debugPrint('Replies Count: ${post.replies?.length ?? 0}');
+          debugPrint('RebloggedBy Count: ${post.rebloggedBy?.length ?? 0}');
+          debugPrint('Beneficiaries Count: ${post.beneficiaries?.length ?? 0}');
+          debugPrint('Payout : ${post.payout ?? 0}');
+          debugPrint('Uplovte Count : ${post.stats?.totalVotes}');
+          debugPrint('--- Post Debug End ---\n');
+        }
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Fetched account posts (see debug output)')),
+      );
+    } catch (e) {
+      debugPrint('Aioha getAccountPosts error: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Get AccountPosts Error: $e')));
+    }
+  }
+
+  Future<void> _getVotingPowerAioha() async {
+    try {
+      var result = await aioha.getVotingPower('sagarkothari88');
+      debugPrint(
+        "Voting Power: ${result.downvotePower}, ${result.upvotePower}",
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Voting Power: ${result.downvotePower}, ${result.upvotePower}',
+          ),
+        ),
+      );
+    } catch (e) {
+      debugPrint('Aioha getVotingPower error: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Get Voting Power Error: $e')));
+    }
+  }
+
+  Future<void> _getResourceCreditsAioha() async {
+    try {
+      var result = await aioha.getResourceCredits('sagarkothari88');
+      debugPrint("Resources Credits Percentage: ${result.percentage}");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Resources Credits Percentage: ${result.percentage}'),
+        ),
+      );
+    } catch (e) {
+      debugPrint('Aioha getResourceCredits error: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Get Resource Credits Error: $e')));
+    }
+  }
+
+  Future<void> _checkThreespeakInAccountAuths() async {
+    try {
+      final username = _usernameController.text;
+      if (username.isEmpty) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Username is required')));
+        return;
+      }
+      bool hasThreespeak = await aioha.hasThreespeakInAccountAuths(username);
+      debugPrint('threespeak present in accountAuths: $hasThreespeak');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('threespeak present: $hasThreespeak')),
+      );
+    } catch (e) {
+      debugPrint('Error checking threespeak in accountAuths: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+    }
+  }
+
   void _startTimer() async {
     var result = await aioha.getQrString();
     setState(() {
@@ -659,6 +834,38 @@ class _MyHomePageState extends State<MyHomePage> {
               ElevatedButton(
                 onPressed: _commentWithOptions,
                 child: const Text('Comment with Options'),
+              ),
+
+              // --- AIOHA equivalents for dhive UI ---
+              ElevatedButton(
+                child: Text('Get Chain Properties (Aioha)'),
+                onPressed: _getChainPropertiesAioha,
+              ),
+              ElevatedButton(
+                child: Text('Get Discussions (Aioha)'),
+                onPressed: _getDiscussionsAioha,
+              ),
+              ElevatedButton(
+                child: Text('Get Accounts (Aioha)'),
+                onPressed: _getAccountsAioha,
+              ),
+              ElevatedButton(
+                child: Text('Get AccountPosts (Aioha)'),
+                onPressed: _getAccountPostsAioha,
+              ),
+              ElevatedButton(
+                child: Text('Get Voting power (Aioha)'),
+                onPressed: _getVotingPowerAioha,
+              ),
+              ElevatedButton(
+                child: Text('Resources Credits Percentage (Aioha)'),
+                onPressed: _getResourceCreditsAioha,
+              ),
+
+              // --- End AIOHA equivalents ---
+              ElevatedButton(
+                onPressed: _checkThreespeakInAccountAuths,
+                child: const Text('Check threespeak in accountAuths'),
               ),
 
               qrString.isEmpty || timerDuration == 0

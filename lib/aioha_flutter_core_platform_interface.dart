@@ -169,4 +169,8 @@ abstract class AiohaFlutterCorePlatform extends PlatformInterface {
   }) {
     throw UnimplementedError('getAccountPosts() has not been implemented.');
   }
+
+  Future<bool> hasThreespeakInAccountAuths(String username) {
+    throw UnimplementedError('hasThreespeakInAccountAuths has not been implemented.');
+  }
 }
