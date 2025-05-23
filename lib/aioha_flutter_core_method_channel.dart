@@ -827,4 +827,16 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
 
     return completer.future;
   }
+
+  @override
+  Future<bool> hasThreespeakInAccountAuths(String username) async {
+    final accounts = await getAccounts([username]);
+    if (accounts.isNotEmpty) {
+      final accountAuths = accounts[0].posting?.accountAuths;
+      if (accountAuths != null) {
+        return accountAuths.any((auth) => auth.isNotEmpty && auth[0] == 'threespeak');
+      }
+    }
+    return false;
+  }
 }
