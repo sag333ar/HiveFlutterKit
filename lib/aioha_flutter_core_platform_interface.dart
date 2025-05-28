@@ -5,6 +5,7 @@ import 'package:aioha_flutter_core/models/chain_properties.dart';
 import 'package:aioha_flutter_core/models/discussion.dart';
 import 'package:aioha_flutter_core/models/resource_credits.dart';
 import 'package:aioha_flutter_core/models/voting_power.dart';
+import 'package:aioha_flutter_core/models/community_model.dart';
 import 'aioha_flutter_core_method_channel.dart';
 
 abstract class AiohaFlutterCorePlatform extends PlatformInterface {
@@ -172,5 +173,13 @@ abstract class AiohaFlutterCorePlatform extends PlatformInterface {
 
   Future<bool> hasThreespeakInAccountAuths(String username) {
     throw UnimplementedError('hasThreespeakInAccountAuths has not been implemented.');
+  }
+
+  Future<List<CommunityItem>> getListOfCommunities(
+    String? query, {
+    int limit = 20,
+    String? last,
+  }) {
+    throw UnimplementedError('getListOfCommunities has not been implemented.');
   }
 }

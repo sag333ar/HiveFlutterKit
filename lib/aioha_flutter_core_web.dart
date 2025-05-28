@@ -18,6 +18,8 @@ import 'package:aioha_flutter_core/models/chain_properties.dart';
 import 'package:aioha_flutter_core/models/discussion.dart';
 import 'package:aioha_flutter_core/models/resource_credits.dart';
 import 'package:aioha_flutter_core/models/voting_power.dart';
+import 'package:aioha_flutter_core/models/community_model.dart';
+import 'package:http/http.dart' as http;
 
 import 'aioha_flutter_core_platform_interface.dart';
 
@@ -403,5 +405,43 @@ class AiohaFlutterCoreWeb extends AiohaFlutterCorePlatform {
       }
     }
     return false;
+  }
+
+  @override
+  Future<List<CommunityItem>> getListOfCommunities(
+    String? query, {
+    int limit = 20,
+    String? last,
+  }) async {
+    var client = http.Client();
+    var body = CommunitiesRequestModel(
+      params: CommunitiesRequestParams(
+        query: query,
+        limit: limit,
+        last: last,
+      ),
+    ).toJsonString();
+
+    try {
+      var response = await client.post(
+        Uri.parse('https://api.hive.blog'),
+        body: body,
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        var jsonResponse = json.decode(response.body);
+        if (jsonResponse['result'] != null) {
+          return (jsonResponse['result'] as List)
+              .map((item) => CommunityItem.fromJson(item))
+              .toList();
+        }
+      }
+      throw "Failed to load communities. Status code: ${response.statusCode}";
+    } catch (e) {
+      throw "Error loading communities: $e";
+    } finally {
+      client.close();
+    }
   }
 }

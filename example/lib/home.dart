@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:aioha_flutter_core/aioha_flutter_core_platform_interface.dart';
+import 'package:aioha_flutter_core/models/community_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -21,6 +23,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   var qrString = '';
   var timerDuration = 0;
+
+  int _communityPage = 0;
+  final int _communityPageSize = 20;
+  List<CommunityItem> _communities = [];
+  bool _isLoadingCommunities = false;
+  bool _hasMoreCommunities = true;
+
+  String? _lastCommunityId;
 
   @override
   void didChangeDependencies() {
@@ -695,6 +705,55 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  Future<void> _fetchCommunities({bool loadMore = false}) async {
+    if (_isLoadingCommunities || !_hasMoreCommunities) return;
+    setState(() {
+      _isLoadingCommunities = true;
+    });
+
+    try {
+      final result = await aioha.getListOfCommunities(
+        null,
+        limit: _communityPageSize,
+        last: loadMore ? _lastCommunityId : null,
+      );
+
+      if (result.isEmpty) {
+        setState(() {
+          _hasMoreCommunities = false;
+        });
+      } else {
+        if (loadMore) {
+          _communities.addAll(result);
+        } else {
+          _communities = result;
+        }
+        // Save last id for next page
+        final last = result.last;
+        _lastCommunityId = last.name;
+        setState(() {
+          _hasMoreCommunities = result.length == _communityPageSize;
+        });
+      }
+      setState(() {
+        _communityPage += 1;
+      });
+      debugPrint('Communities: ${_communities.map((c) => c.name).join(', ')}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Fetched ${result.length} communities')),
+      );
+    } catch (e) {
+      debugPrint('Error fetching communities: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error fetching communities: $e')),
+      );
+    } finally {
+      setState(() {
+        _isLoadingCommunities = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -867,6 +926,43 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: _checkThreespeakInAccountAuths,
                 child: const Text('Check threespeak in accountAuths'),
               ),
+              ElevatedButton(
+                onPressed: () {
+                  _communityPage = 0;
+                  _hasMoreCommunities = true;
+                  _lastCommunityId = null;
+                  _fetchCommunities(loadMore: false);
+                },
+                child: const Text('Fetch Communities'),
+              ),
+              if (_communities.isNotEmpty)
+                Column(
+                  children: [
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: _communities.length,
+                      itemBuilder: (context, index) {
+                        final c = _communities[index];
+                        return ListTile(
+                          title: Text(c.title ?? c.name ?? ''),
+                          subtitle: Text(c.about ?? ''),
+                        );
+                      },
+                    ),
+                    if (_hasMoreCommunities)
+                      ElevatedButton(
+                        onPressed: () => _fetchCommunities(loadMore: true),
+                        child: _isLoadingCommunities
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : const Text('Load More'),
+                      ),
+                  ],
+                ),
 
               qrString.isEmpty || timerDuration == 0
                   ? const SizedBox.shrink()
