@@ -32,8 +32,8 @@ async function getDiscussions(
 ) {
   const query = {
     sort: by,
-    tag: tag,    
-    limit: limit,      
+    tag: tag,
+    limit: limit,
     start_author: startAuthor,
     start_permlink: startPermlink,
   };
@@ -43,6 +43,34 @@ async function getDiscussions(
   return JSON.stringify(discussions);
 }
 window.getDiscussions = getDiscussions;
+
+async function getListOfCommunities(last, limit = 20, query = '', observer = null) {
+  const params = {
+    limit: limit,
+  };
+
+  if (last && last.trim() !== '') {
+    params.last = last;
+  }
+
+  if (query && query.trim() !== '') {
+    params.query = query;
+  }
+
+  if (observer !== null && observer !== undefined) {
+    params.observer = observer;
+  }
+
+  try {
+    const listOfCommunities = await dhiveClient.call('bridge', 'list_communities', params);
+    return JSON.stringify(listOfCommunities);
+  } catch (error) {
+    console.error('Error calling list_communities:', error);
+    return JSON.stringify([]);
+  }
+}
+
+window.getListOfCommunities = getListOfCommunities;
 
 async function getAccounts(usernames) {
   const accounts = await dhiveClient.database.getAccounts(usernames);
@@ -112,8 +140,8 @@ async function getAccountPosts(
 ) {
   const query = {
     account: username,
-    sort: by,   
-    limit: limit,      
+    sort: by,
+    limit: limit,
     start_author: startAuthor,
     start_permlink: startPermlink,
   };

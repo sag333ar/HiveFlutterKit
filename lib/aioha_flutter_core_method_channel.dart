@@ -836,7 +836,9 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
     if (accounts.isNotEmpty) {
       final accountAuths = accounts[0].posting?.accountAuths;
       if (accountAuths != null) {
-        return accountAuths.any((auth) => auth.isNotEmpty && auth[0] == 'threespeak');
+        return accountAuths.any(
+          (auth) => auth.isNotEmpty && auth[0] == 'threespeak',
+        );
       }
     }
     return false;
@@ -847,36 +849,51 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
     String? query, {
     int limit = 20,
     String? last,
+    String? observer,
   }) async {
-    var client = http.Client();
-    var body = CommunitiesRequestModel(
-      params: CommunitiesRequestParams(
-        query: query,
-        limit: limit,
-        last: last,
-      ),
-    ).toJsonString();
+    final completer = Completer<List<CommunityItem>>();
 
-    try {
-      var response = await client.post(
-        Uri.parse('https://api.hive.blog'),
-        body: body,
-        headers: {'Content-Type': 'application/json'},
-      );
+    // Setup JS handler
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: 'getListOfCommunitiesResult',
+      callback: (args) {
+        if (!completer.isCompleted) {
+          var contentData = args.isNotEmpty ? args[0].toString() : null;
 
-      if (response.statusCode == 200) {
-        var jsonResponse = json.decode(response.body);
-        if (jsonResponse['result'] != null) {
-          return (jsonResponse['result'] as List)
-              .map((item) => CommunityItem.fromJson(item))
-              .toList();
+          if (contentData != null &&
+              contentData != 'null' &&
+              contentData.isNotEmpty) {
+            try {
+              final jsonList = jsonDecode(contentData);
+              final communities =
+                  (jsonList as List)
+                      .map((item) => CommunityItem.fromJson(item))
+                      .toList();
+              completer.complete(communities);
+            } catch (e) {
+              completer.completeError('Failed to parse communities: $e');
+            }
+          } else {
+            completer.completeError('Empty or null JS result for communities');
+          }
         }
-      }
-      throw "Failed to load communities. Status code: ${response.statusCode}";
-    } catch (e) {
-      throw "Error loading communities: $e";
-    } finally {
-      client.close();
-    }
+      },
+    );
+
+    // Call the JS function via WebView
+    await headlessWebView.webViewController?.evaluateJavascript(
+      source: """
+      (async () => {
+        const result = await getListOfCommunities(
+          ${jsonEncode(last)},
+          $limit,
+          ${jsonEncode(observer)},
+        );
+        window.flutter_inappwebview.callHandler('getListOfCommunitiesResult', result);
+      })()
+    """,
+    );
+
+    return completer.future;
   }
 }

@@ -55,6 +55,14 @@ external dynamic getAccountPostsJS(
   String? observer,
 );
 
+@JS('getListOfCommunities')
+external dynamic getListOfCommunitiesJS(
+  String? last,
+  int limit,
+  String? query,
+  String? observer,
+);
+
 // -------------------------------------------------------------------------
 
 @JS('loginWithKeychain')
@@ -401,7 +409,9 @@ class AiohaFlutterCoreWeb extends AiohaFlutterCorePlatform {
     if (accounts.isNotEmpty) {
       final accountAuths = accounts[0].posting?.accountAuths;
       if (accountAuths != null) {
-        return accountAuths.any((auth) => auth.isNotEmpty && auth[0] == 'threespeak');
+        return accountAuths.any(
+          (auth) => auth.isNotEmpty && auth[0] == 'threespeak',
+        );
       }
     }
     return false;
@@ -412,36 +422,20 @@ class AiohaFlutterCoreWeb extends AiohaFlutterCorePlatform {
     String? query, {
     int limit = 20,
     String? last,
+    String? observer,
   }) async {
-    var client = http.Client();
-    var body = CommunitiesRequestModel(
-      params: CommunitiesRequestParams(
-        query: query,
-        limit: limit,
-        last: last,
-      ),
-    ).toJsonString();
-
     try {
-      var response = await client.post(
-        Uri.parse('https://api.hive.blog'),
-        body: body,
-        headers: {'Content-Type': 'application/json'},
-      );
+      final promise = getListOfCommunitiesJS(last, limit, query, observer);
+      final jsonString = await promiseToFuture(promise);
 
-      if (response.statusCode == 200) {
-        var jsonResponse = json.decode(response.body);
-        if (jsonResponse['result'] != null) {
-          return (jsonResponse['result'] as List)
-              .map((item) => CommunityItem.fromJson(item))
-              .toList();
-        }
+      final jsonList = jsonDecode(jsonString);
+      if (jsonList is List) {
+        return jsonList.map((item) => CommunityItem.fromJson(item)).toList();
+      } else {
+        throw Exception("Expected a list of communities, got: $jsonList");
       }
-      throw "Failed to load communities. Status code: ${response.statusCode}";
     } catch (e) {
-      throw "Error loading communities: $e";
-    } finally {
-      client.close();
+      throw Exception("Error fetching communities via JS: $e");
     }
   }
 }

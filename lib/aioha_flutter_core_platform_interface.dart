@@ -179,6 +179,7 @@ abstract class AiohaFlutterCorePlatform extends PlatformInterface {
     String? query, {
     int limit = 20,
     String? last,
+    String? observer,
   }) {
     throw UnimplementedError('getListOfCommunities has not been implemented.');
   }

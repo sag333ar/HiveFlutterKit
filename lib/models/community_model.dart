@@ -53,6 +53,7 @@ class CommunityItem {
   final String? name;
   final String? title;
   final String? about;
+  final String? description; // Added
   final int? typeId;
   final bool? isNsfw;
   final int? subscribers;
@@ -62,14 +63,17 @@ class CommunityItem {
   final List<String>? admins;
   final String? avatarUrl;
   final String? lang;
-  final String? createdAt;
+  final DateTime? createdAt; // Changed type
   final Map<String, dynamic>? context;
+  final int? rank; // Optional, often present in sorted results
+  final double? score; // Optional, for search ranking or trending
 
   CommunityItem({
     this.id,
     this.name,
     this.title,
     this.about,
+    this.description,
     this.typeId,
     this.isNsfw,
     this.subscribers,
@@ -81,6 +85,8 @@ class CommunityItem {
     this.lang,
     this.createdAt,
     this.context,
+    this.rank,
+    this.score,
   });
 
   factory CommunityItem.fromJson(Map<String, dynamic>? json) => CommunityItem(
@@ -88,6 +94,7 @@ class CommunityItem {
         name: json?['name'],
         title: json?['title'],
         about: json?['about'],
+        description: json?['description'],
         typeId: json?['type_id'],
         isNsfw: json?['is_nsfw'],
         subscribers: json?['subscribers'],
@@ -95,11 +102,22 @@ class CommunityItem {
         numAuthors: json?['num_authors'],
         numPending: json?['num_pending'],
         admins: (json?['admins'] as List<dynamic>?)
-                ?.map((e) => e.toString())
-                .toList(),
+            ?.map((e) => e.toString())
+            .toList(),
         avatarUrl: json?['avatar_url'],
         lang: json?['lang'],
-        createdAt: json?['created_at'],
-        context: json?['context'] != null ? Map<String, dynamic>.from(json?['context']) : null,
+        createdAt: json?['created_at'] != null
+            ? DateTime.tryParse(json!['created_at'])
+            : null,
+        context: json?['context'] != null
+            ? Map<String, dynamic>.from(json!['context'])
+            : null,
+        rank: json?['rank'],
+        score: (json?['score'] is num) ? (json?['score'] as num).toDouble() : null,
       );
+
+  static List<CommunityItem> fromJsonStringList(String jsonString) {
+    final List<dynamic> jsonList = json.decode(jsonString);
+    return jsonList.map((e) => CommunityItem.fromJson(e)).toList();
+  }
 }
