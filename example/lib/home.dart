@@ -754,6 +754,38 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<void> _getCommentsListAioha() async {
+    try {
+      String author = 'cositav'; // Replace with actual video author
+      String permlink = 'miwbidtw'; // Replace with actual video permlink
+
+      final comments = await aioha.getCommentsList(author, permlink);
+
+      if (comments.isEmpty) {
+        debugPrint('No comments found.');
+      } else {
+        debugPrint('--- Comments Start ---');
+        for (var comment in comments) {
+          debugPrint('Author: ${comment.author}');
+          debugPrint('Body: ${comment.body}'); // Full comment
+          debugPrint('Permlink: ${comment.permlink}');
+          debugPrint('Reputation: ${comment.authorReputation}');
+          debugPrint('---');
+        }
+        debugPrint('--- Comments End ---');
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Fetched ${comments.length} comments')),
+      );
+    } catch (e) {
+      debugPrint('Aioha getCommentsList error: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Get Comments Error: $e')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -925,6 +957,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: _checkThreespeakInAccountAuths,
                 child: const Text('Check threespeak in accountAuths'),
               ),
+              ElevatedButton(
+                child: Text('Get Comments (Aioha)'),
+                onPressed: _getCommentsListAioha,
+              ),
+
               ElevatedButton(
                 onPressed: () {
                   _communityPage = 0;
