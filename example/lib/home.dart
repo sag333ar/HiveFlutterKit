@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:http/http.dart' as http;
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -30,7 +29,9 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _isLoadingCommunities = false;
   bool _hasMoreCommunities = true;
 
-  String? _lastCommunityId;
+  String? _currentObserver;
+  String? _lastCommunityName;
+  String _searchQuery = '';
 
   @override
   void didChangeDependencies() {
@@ -707,15 +708,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _fetchCommunities({bool loadMore = false}) async {
     if (_isLoadingCommunities || !_hasMoreCommunities) return;
+
     setState(() {
       _isLoadingCommunities = true;
     });
 
     try {
       final result = await aioha.getListOfCommunities(
-        null,
+        _searchQuery.isNotEmpty ? _searchQuery : null,
         limit: _communityPageSize,
-        last: loadMore ? _lastCommunityId : null,
+        last: loadMore ? _lastCommunityName : null,
+        observer: _currentObserver, // optional, nullable
       );
 
       if (result.isEmpty) {
@@ -723,30 +726,27 @@ class _MyHomePageState extends State<MyHomePage> {
           _hasMoreCommunities = false;
         });
       } else {
-        if (loadMore) {
-          _communities.addAll(result);
-        } else {
-          _communities = result;
-        }
-        // Save last id for next page
-        final last = result.last;
-        _lastCommunityId = last.name;
         setState(() {
+          if (loadMore) {
+            _communities.addAll(result);
+          } else {
+            _communities = result;
+          }
+          _lastCommunityName = result.last.name;
           _hasMoreCommunities = result.length == _communityPageSize;
+          _communityPage += 1;
         });
       }
-      setState(() {
-        _communityPage += 1;
-      });
+
       debugPrint('Communities: ${_communities.map((c) => c.name).join(', ')}');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Fetched ${result.length} communities')),
       );
     } catch (e) {
       debugPrint('Error fetching communities: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error fetching communities: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error fetching communities: $e')));
     } finally {
       setState(() {
         _isLoadingCommunities = false;
@@ -801,7 +801,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: const Text('Login with HiveAuth'),
               ),
 
-              // ✅ NEW: Login with Plaintext Key
               ElevatedButton(
                 onPressed: _loginWithPlaintextKey,
                 child: const Text('Login with Plaintext Key'),
@@ -930,7 +929,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () {
                   _communityPage = 0;
                   _hasMoreCommunities = true;
-                  _lastCommunityId = null;
+                  _lastCommunityName = null;
                   _fetchCommunities(loadMore: false);
                 },
                 child: const Text('Fetch Communities'),
@@ -953,13 +952,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     if (_hasMoreCommunities)
                       ElevatedButton(
                         onPressed: () => _fetchCommunities(loadMore: true),
-                        child: _isLoadingCommunities
-                            ? const SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              )
-                            : const Text('Load More'),
+                        child:
+                            _isLoadingCommunities
+                                ? const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                                : const Text('Load More'),
                       ),
                   ],
                 ),
