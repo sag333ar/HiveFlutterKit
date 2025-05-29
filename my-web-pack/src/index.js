@@ -69,8 +69,19 @@ async function getListOfCommunities(last, limit = 20, query = '', observer = nul
     return JSON.stringify([]);
   }
 }
-
 window.getListOfCommunities = getListOfCommunities;
+
+async function getCommentsList(author, permlink) {
+  const params = {
+    author: author,
+    permlink: permlink,
+  };
+
+  const discussion = await dhiveClient.call('bridge', 'get_discussion', params);
+  return JSON.stringify(discussion);
+}
+window.getCommentsList = getCommentsList;
+
 
 async function getAccounts(usernames) {
   const accounts = await dhiveClient.database.getAccounts(usernames);

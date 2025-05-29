@@ -183,4 +183,10 @@ abstract class AiohaFlutterCorePlatform extends PlatformInterface {
   }) {
     throw UnimplementedError('getListOfCommunities has not been implemented.');
   }
+
+  Future<List<Discussion>> getCommentsList (
+    String author,
+    String permlink) {
+    throw UnimplementedError('getCommentsList has not been implemented.');
+  }
 }

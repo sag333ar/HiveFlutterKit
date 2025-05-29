@@ -63,6 +63,9 @@ external dynamic getListOfCommunitiesJS(
   String? observer,
 );
 
+@JS('getCommentsList')
+external Object getCommentsListJS(String author, String permlink);
+
 // -------------------------------------------------------------------------
 
 @JS('loginWithKeychain')
@@ -436,6 +439,35 @@ class AiohaFlutterCoreWeb extends AiohaFlutterCorePlatform {
       }
     } catch (e) {
       throw Exception("Error fetching communities via JS: $e");
+    }
+  }
+
+  @override
+  Future<List<Discussion>> getCommentsList(
+    String author,
+    String permlink,
+  ) async {
+    try {
+      final promise = getCommentsListJS(author, permlink);
+      final jsonString = await promiseToFuture(promise);
+      final jsonMap = jsonDecode(jsonString);
+
+      if (jsonMap is Map<String, dynamic>) {
+        final comments = <Discussion>[];
+
+        for (var entry in jsonMap.entries) {
+          if (entry.value is Map<String, dynamic>) {
+            final comment = Discussion.fromJson(entry.value);
+            comments.add(comment);
+          }
+        }
+
+        return comments;
+      } else {
+        throw Exception("Expected a map of comments, but got: $jsonMap");
+      }
+    } catch (e) {
+      throw Exception("Error fetching comments via JS: $e");
     }
   }
 }

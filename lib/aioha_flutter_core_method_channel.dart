@@ -896,4 +896,54 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
 
     return completer.future;
   }
+
+  @override
+  Future<List<Discussion>> getCommentsList(
+    String author,
+    String permlink,
+  ) async {
+    final completer = Completer<List<Discussion>>();
+
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: 'getCommentsListResult',
+      callback: (args) {
+        if (!completer.isCompleted) {
+          final contentData = args.isNotEmpty ? args[0].toString() : null;
+
+          if (contentData != null &&
+              contentData != 'null' &&
+              contentData.isNotEmpty) {
+            try {
+              final Map<String, dynamic> parsedMap = jsonDecode(contentData);
+              final comments =
+                  parsedMap.values
+                      .map(
+                        (e) => Discussion.fromJson(e as Map<String, dynamic>),
+                      )
+                      .toList();
+              completer.complete(comments);
+            } catch (e) {
+              completer.completeError('Failed to parse comments: $e');
+            }
+          } else {
+            completer.completeError('Failed to get comments or empty response');
+          }
+        }
+      },
+    );
+
+    await headlessWebView.webViewController?.evaluateJavascript(
+      source: """
+    (async () => {
+      var string = await getCommentsList(
+        ${jsonEncode(author)},
+        ${jsonEncode(permlink)}
+      );
+      window.flutter_inappwebview.callHandler('getCommentsListResult', string);
+    })()
+    """,
+    );
+
+    return completer.future;
+  }
 }
