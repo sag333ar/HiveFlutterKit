@@ -538,7 +538,8 @@ async function openImagePickerForWebApp() {
                 const content = Buffer.from(reader.result,"binary");
                 const prefix = Buffer.from("ImageSigningChallenge");
                 const buf = Buffer.concat([prefix, content]);
-                const signed = await aioha.signMessage(JSON.stringify(buf), KeyTypes.Posting);
+                const bufJson = JSON.stringify(buf);
+                const signed = await aioha.signMessage(bufJson, KeyTypes.Posting);
                 const signature = signed.result;
                 const url = `https://images.hive.blog/${currentUser}/${signature}`;
                 const formData = new FormData();
@@ -551,6 +552,7 @@ async function openImagePickerForWebApp() {
                     console.log(`uploaded url is ${uploadUrl}`);
                     resolve(uploadUrl);
                 };
+                xhr.send(formData);
             };
             reader.readAsBinaryString(file);
         };
@@ -559,7 +561,6 @@ async function openImagePickerForWebApp() {
 }
 
 window.openImagePickerForWebApp = openImagePickerForWebApp; 
-
 
 async function signAndBroadcastTx(operations, keyType) {
   try {
