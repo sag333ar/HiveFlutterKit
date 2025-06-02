@@ -953,28 +953,39 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
     String keyType,
   ) async {
     final completer = Completer<OperationResponse>();
+
+    // Ensure we don't register multiple handlers accidentally
+    headlessWebView.webViewController?.removeJavaScriptHandler(
+      handlerName: 'onSignAndBroadcastTxResult',
+    );
+
     headlessWebView.webViewController?.addJavaScriptHandler(
       handlerName: 'onSignAndBroadcastTxResult',
       callback: (args) {
         if (!completer.isCompleted) {
-          final resultString = args.isNotEmpty ? args[0].toString() : null;
-          completer.complete(OperationResponse.fromJsonString(resultString));
+          final resultString =
+              (args.isNotEmpty && args[0] is String) ? args[0] as String : null;
+          final response = OperationResponse.fromJsonString(resultString);
+          completer.complete(response);
         }
       },
     );
+
     final opsJson = jsonEncode(operationRequest.toJson());
-    await headlessWebView.webViewController?.evaluateJavascript(
-      source: """
-      (async () => {
-        try {
-          const res = await signAndBroadcastTx($opsJson, "$keyType");
-          window.flutter_inappwebview.callHandler('onSignAndBroadcastTxResult', res ?? 'null');
-        } catch (e) {
-          window.flutter_inappwebview.callHandler('onSignAndBroadcastTxResult', 'Error: ' + e.toString());
-        }
-      })()
-      """,
-    );
+
+    final jsCode = """
+    (async () => {
+      try {
+        const res = await signAndBroadcastTx($opsJson, "$keyType");
+        window.flutter_inappwebview.callHandler('onSignAndBroadcastTxResult', JSON.stringify(res));
+      } catch (e) {
+        window.flutter_inappwebview.callHandler('onSignAndBroadcastTxResult', JSON.stringify({ error: e.toString() }));
+      }
+    })();
+  """;
+
+    await headlessWebView.webViewController?.evaluateJavascript(source: jsCode);
+
     return completer.future;
   }
 }

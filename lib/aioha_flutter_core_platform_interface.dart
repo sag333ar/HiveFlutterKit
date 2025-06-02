@@ -217,8 +217,9 @@ abstract class AiohaFlutterCorePlatform extends PlatformInterface {
     required Uint8List imageBytes,
     required String fileName,
     required String token,
+    required String uploadUrlSever,
   }) async {
-    final url = Uri.parse("https://images.ecency.com/hs/$token");
+    final url = Uri.parse("$uploadUrlSever/$token");
 
     // Detect MIME type (e.g., image/jpeg or image/png)
     final mimeType = lookupMimeType(fileName) ?? 'application/octet-stream';
@@ -252,22 +253,19 @@ abstract class AiohaFlutterCorePlatform extends PlatformInterface {
     }
   }
 
-  Future<String> pickImageWithMaxSize(int maxDimension) async {
+  Future<String> pickImageWithMaxSize(int maxDimension,String uploadUrlSever) async {
     final XFile? pickedFile = await _picker.pickImage(
       source: ImageSource.gallery,
     );
-
     if (pickedFile == null) {
-      print("❌ No image selected.");
       throw Exception("No image selected.");
     }
-
+    
     Uint8List fileBytes = await pickedFile.readAsBytes();
 
     // Decode to check dimensions
     img.Image? decodedImage = img.decodeImage(fileBytes);
     if (decodedImage == null) {
-      print("❌ Failed to decode image.");
       throw Exception("Failed to decode image.");
     }
 
@@ -275,7 +273,6 @@ abstract class AiohaFlutterCorePlatform extends PlatformInterface {
     int height = decodedImage.height;
 
     if (width <= maxDimension && height <= maxDimension) {
-      print("✅ Image accepted: ${pickedFile.name} ($width x $height)");
       var username = await getCurrentUser();
       username = username.replaceAll("\"", "");
       int timeStamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
@@ -291,22 +288,19 @@ abstract class AiohaFlutterCorePlatform extends PlatformInterface {
       print("Result of signature: $resultOfSignature");
       final decodedResult = jsonDecode(resultOfSignature);
       if (decodedResult['success'] == true) {
-        print("✅ Image signed successfully.");
         object['signatures'] = [decodedResult['result']];
         var base64StringOfObject = toBase64(jsonEncode(object));
         var uploadedUrl = await uploadImage(
           imageBytes: fileBytes,
           fileName: pickedFile.name,
           token: base64StringOfObject,
+          uploadUrlSever: uploadUrlSever,
         );
-        print("✅ Image uploaded successfully - $uploadedUrl");
         return uploadedUrl;
       } else {
-        print("❌ Failed to sign image: ${decodedResult['error']}");
         throw Exception("Failed to sign image: ${decodedResult['error']}");
       }
     } else {
-      print("❌ Image too large: $width x $height (max: $maxDimension px)");
       throw Exception(
         "Image too large: $width x $height (max: $maxDimension px)",
       );
