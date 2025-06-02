@@ -490,7 +490,6 @@ class AiohaFlutterCoreWeb extends AiohaFlutterCorePlatform {
   ) async {
     var promise = signAndBroadcastTxJS(operationRequest.toJson(), keyType);
     var result = await promiseToFuture(promise);
-    // result is a JSON string
     return OperationResponse.fromJsonString(result);
   }
 }

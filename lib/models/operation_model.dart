@@ -17,18 +17,22 @@ class Operation {
 }
 
 class OperationRequest {
-  final List<Operation> operations;
+  final Operation operation;
 
-  OperationRequest({required this.operations});
+  OperationRequest({required this.operation});
 
   factory OperationRequest.fromJson(List<dynamic> json) {
+    if (json.isEmpty || json.first is! List) {
+      throw FormatException('Invalid operation request format');
+    }
     return OperationRequest(
-      operations: json.map((e) => Operation.fromJson(e as List)).toList(),
+      operation: Operation.fromJson(json.first as List),
     );
   }
 
-  List toJson() => operations.map((op) => op.toJson()).toList();
+  List toJson() => [operation.toJson()];
 }
+
 
 class OperationProfile {
   final String? name;
@@ -125,20 +129,36 @@ class OperationResponse {
   final OperationProfile? profile;
   final OperationExtra? extra;
   final OperationBitcoin? bitcoin;
+  final bool success;
+  final String? error;
 
-  OperationResponse({this.profile, this.extra, this.bitcoin});
+  OperationResponse({
+    this.profile,
+    this.extra,
+    this.bitcoin,
+    this.success = false,
+    this.error,
+  });
 
   factory OperationResponse.fromJson(Map<String, dynamic>? json) {
     if (json == null) return OperationResponse();
+
+    final bool success = json['success'] ?? false;
+    final String? error = json['error'];
+    final result = json['result'];
+    final custom = result is Map<String, dynamic> ? result['custom'] : null;
+
     return OperationResponse(
-      profile: json['profile'] != null
-          ? OperationProfile.fromJson(json['profile'])
+      success: success,
+      error: error,
+      profile: custom?['profile'] != null
+          ? OperationProfile.fromJson(custom['profile'])
           : null,
-      extra: json['extra'] != null
-          ? OperationExtra.fromJson(json['extra'])
+      extra: custom?['extra'] != null
+          ? OperationExtra.fromJson(custom['extra'])
           : null,
-      bitcoin: json['bitcoin'] != null
-          ? OperationBitcoin.fromJson(json['bitcoin'])
+      bitcoin: custom?['bitcoin'] != null
+          ? OperationBitcoin.fromJson(custom['bitcoin'])
           : null,
     );
   }
@@ -154,33 +174,38 @@ class OperationResponse {
   }
 
   Map<String, dynamic> toJson() => {
-    if (profile != null) 'profile': {
-      'name': profile?.name,
-      'version': profile?.version,
-      'website': profile?.website,
-      'profile_image': profile?.profileImage,
-      'about': profile?.about,
-      'location': profile?.location,
-      'cover_image': profile?.coverImage,
-      'btcLightningAddress': profile?.btcLightningAddress,
-    },
-    if (extra != null) 'extra': {
-      'name': extra?.name,
-      'blockChainData': extra?.blockChainData != null
-          ? {
-        'data': {
-          'address': extra?.blockChainData?.address,
-          'signature': extra?.blockChainData?.signature,
-        },
-        'loginMethod': extra?.loginMethod,
-      }
-          : null,
-    },
-    if (bitcoin != null) 'bitcoin': {
-      'address': bitcoin?.address,
-      'ordinalAddress': bitcoin?.ordinalAddress,
-      'signature': bitcoin?.signature,
-      'message': bitcoin?.message,
-    },
-  };
+        'success': success,
+        if (error != null) 'error': error,
+        if (profile != null)
+          'profile': {
+            'name': profile?.name,
+            'version': profile?.version,
+            'website': profile?.website,
+            'profile_image': profile?.profileImage,
+            'about': profile?.about,
+            'location': profile?.location,
+            'cover_image': profile?.coverImage,
+            'btcLightningAddress': profile?.btcLightningAddress,
+          },
+        if (extra != null)
+          'extra': {
+            'name': extra?.name,
+            'blockChainData': extra?.blockChainData != null
+                ? {
+                    'data': {
+                      'address': extra?.blockChainData?.address,
+                      'signature': extra?.blockChainData?.signature,
+                    },
+                    'loginMethod': extra?.loginMethod,
+                  }
+                : null,
+          },
+        if (bitcoin != null)
+          'bitcoin': {
+            'address': bitcoin?.address,
+            'ordinalAddress': bitcoin?.ordinalAddress,
+            'signature': bitcoin?.signature,
+            'message': bitcoin?.message,
+          },
+      };
 }

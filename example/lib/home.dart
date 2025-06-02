@@ -799,7 +799,10 @@ class _MyHomePageState extends State<MyHomePage> {
       _uploadedImageUrl = null;
     });
     try {
-      final url = await aioha.pickImageWithMaxSize(1000);
+      final url = await aioha.pickImageWithMaxSize(
+        1000,
+        "https://images.ecency.com/hs",
+      );
       setState(() {
         _uploadedImageUrl = url;
       });
@@ -819,17 +822,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _signAndBroadcastTx() async {
     if (_uploadedImageUrl == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Please upload an image first')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please upload an image first')),
+      );
       return;
     }
+
     setState(() {
       _isBroadcasting = true;
       _broadcastResult = null;
     });
+
     try {
-      // Build the posting_json_metadata with the uploaded image URL
+      // Construct profile, extra, and bitcoin metadata
       final profile = {
         "name": "test account for @sagarkothari88",
         "version": 2,
@@ -840,6 +845,7 @@ class _MyHomePageState extends State<MyHomePage> {
         "cover_image": "",
         "btcLightningAddress": "sag333ar@vipsats.app",
       };
+
       final extra = {
         "name": "shaktimaaan",
         "blockChainData": {
@@ -851,6 +857,7 @@ class _MyHomePageState extends State<MyHomePage> {
           "loginMethod": "dash",
         },
       };
+
       final bitcoin = {
         "address": "bc1q9h3mx8np4h96dgekkgcyzj6xym5wp32ddmpqqf",
         "ordinalAddress":
@@ -859,6 +866,7 @@ class _MyHomePageState extends State<MyHomePage> {
             "JyTSXhO9+ajceko9zTsbKMd4oyj/A/XVS33Nokty4670HvvjGQ4BoXAoq//3rIJIL14NQ8KU+f86cNUpBKIEkjQ=",
         "message": "Hive:shaktimaaan",
       };
+
       final postingJsonMetadata = jsonEncode({
         "profile": profile,
         "extra": extra,
@@ -868,25 +876,39 @@ class _MyHomePageState extends State<MyHomePage> {
       final operationData = {
         "account": "shaktimaaan",
         "json_metadata": "",
-        "posting_json_metadata": postingJsonMetadata,
+        "posting_json_metadata": jsonEncode(postingJsonMetadata),
         "extensions": [],
       };
 
       final operation = Operation(type: "account_update2", data: operationData);
-      final operationRequest = OperationRequest(operations: [operation]);
+      final operationRequest = OperationRequest(operation: operation);
 
-      // Use static keyType, e.g. 'posting'
-      final result = await aioha.signAndBroadcastTx(
+      final response = await aioha.signAndBroadcastTx(
         operationRequest,
         'posting',
       );
-      setState(() {
-        _broadcastResult =
-            result.profile?.profileImage ?? 'Broadcasted! (see logs)';
-      });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Broadcast Success')));
+
+      if (response.success) {
+        setState(() {
+          _broadcastResult =
+              response.profile?.profileImage ?? 'Broadcasted successfully!';
+        });
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Broadcast Success')));
+      } else {
+        setState(() {
+          _broadcastResult =
+              'Broadcast failed: ${response.error ?? 'Unknown error'}';
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Broadcast failed: ${response.error ?? 'Unknown error'}',
+            ),
+          ),
+        );
+      }
     } catch (e) {
       setState(() {
         _broadcastResult = 'Broadcast failed: $e';

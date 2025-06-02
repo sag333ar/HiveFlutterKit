@@ -1,6 +1,6 @@
 const { initAioha, KeyTypes, Providers } = require("@aioha/aioha");
 const { PlaintextKeyProvider } = require("@aioha/aioha/build/providers/custom/plaintext.js");
-var Buffer = require('buffer/').Buffer 
+var Buffer = require('buffer/').Buffer
 const dhive = require('@hiveio/dhive');
 
 let dhiveClient = new dhive.Client(["https://api.hive.blog"]);
@@ -526,21 +526,34 @@ window.removeAccountAuthority = removeAccountAuthority;
 async function signAndBroadcastTx(operations, keyType) {
   try {
     if (!Array.isArray(operations) || operations.length === 0) {
-      return JSON.stringify({ success: false, error: "Operations array is required" });
+      return JSON.stringify({
+        success: false,
+        error: "Operations array is required",
+      });
     }
-    let keytypeForTx = KeyTypes.Posting;
+
+    let keytypeForTx;
     if (keyType === "active" || keyType === KeyTypes.Active) {
       keytypeForTx = KeyTypes.Active;
     } else if (keyType === "posting" || keyType === KeyTypes.Posting) {
       keytypeForTx = KeyTypes.Posting;
     } else {
-      // Memo key is not allowed for transaction signing
-      return JSON.stringify({ success: false, error: "KeyType must be 'posting' or 'active'" });
+      return JSON.stringify({
+        success: false,
+        error: "KeyType must be 'posting' or 'active'",
+      });
     }
+
     const result = await aioha.signAndBroadcastTx(operations, keytypeForTx);
-    return JSON.stringify(result);
+
+    // Assuming `result` is already a JSON-compatible object
+    return JSON.stringify({ success: true, result });
   } catch (error) {
-    return JSON.stringify({ success: false, error: error.toString() });
+    return JSON.stringify({
+      success: false,
+      error: error?.message || error.toString(),
+    });
   }
 }
+
 window.signAndBroadcastTx = signAndBroadcastTx;
