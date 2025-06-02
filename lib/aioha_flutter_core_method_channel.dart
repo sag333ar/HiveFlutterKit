@@ -948,32 +948,6 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
   }
 
   @override
-  Future<String> openImagePickerForWebApp() async {
-    final completer = Completer<String>();
-    headlessWebView.webViewController?.addJavaScriptHandler(
-      handlerName: 'onOpenImagePickerForWebAppResult',
-      callback: (args) {
-        if (!completer.isCompleted) {
-          completer.complete(args.isNotEmpty ? args[0].toString() : 'null');
-        }
-      },
-    );
-    await headlessWebView.webViewController?.evaluateJavascript(
-      source: """
-      (async () => {
-        try {
-          const res = await openImagePickerForWebApp();
-          window.flutter_inappwebview.callHandler('onOpenImagePickerForWebAppResult', res ?? 'null');
-        } catch (e) {
-          window.flutter_inappwebview.callHandler('onOpenImagePickerForWebAppResult', 'Error: ' + e.toString());
-        }
-      })()
-      """,
-    );
-    return completer.future;
-  }
-
-  @override
   Future<OperationResponse> signAndBroadcastTx(
     OperationRequest operationRequest,
     String keyType,

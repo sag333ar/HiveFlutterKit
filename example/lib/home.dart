@@ -799,13 +799,17 @@ class _MyHomePageState extends State<MyHomePage> {
       _uploadedImageUrl = null;
     });
     try {
-      final url = await aioha.openImagePickerForWebApp();
+      final url = await aioha.pickImageWithMaxSize(1000);
       setState(() {
         _uploadedImageUrl = url;
       });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Image uploaded: $url')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Image uploaded: $url')));
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Upload failed: $e')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Upload failed: $e')));
     } finally {
       setState(() {
         _isUploading = false;
@@ -815,7 +819,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _signAndBroadcastTx() async {
     if (_uploadedImageUrl == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please upload an image first')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Please upload an image first')));
       return;
     }
     setState(() {
@@ -832,23 +838,26 @@ class _MyHomePageState extends State<MyHomePage> {
         "about": "",
         "location": "",
         "cover_image": "",
-        "btcLightningAddress": "sag333ar@vipsats.app"
+        "btcLightningAddress": "sag333ar@vipsats.app",
       };
       final extra = {
         "name": "shaktimaaan",
         "blockChainData": {
           "data": {
             "address": "XmZkyFgp3gwXTkrygac78CwjmPmKRvsBVL",
-            "signature": "H/K4qsvJfM+kGg5XCpVmvoNFjSLA5sD1d4OIvt02Y/ryNnoHK1y9IJR4jCpslpgWE46cQd3Pz7ji+Zv1v8uNWag="
+            "signature":
+                "H/K4qsvJfM+kGg5XCpVmvoNFjSLA5sD1d4OIvt02Y/ryNnoHK1y9IJR4jCpslpgWE46cQd3Pz7ji+Zv1v8uNWag=",
           },
-          "loginMethod": "dash"
-        }
+          "loginMethod": "dash",
+        },
       };
       final bitcoin = {
         "address": "bc1q9h3mx8np4h96dgekkgcyzj6xym5wp32ddmpqqf",
-        "ordinalAddress": "bc1pvqxtn9ugnsdsludt9dh37xet9tz9kdv8gtzzpc6mwl7fsjph42xq549hvq",
-        "signature": "JyTSXhO9+ajceko9zTsbKMd4oyj/A/XVS33Nokty4670HvvjGQ4BoXAoq//3rIJIL14NQ8KU+f86cNUpBKIEkjQ=",
-        "message": "Hive:shaktimaaan"
+        "ordinalAddress":
+            "bc1pvqxtn9ugnsdsludt9dh37xet9tz9kdv8gtzzpc6mwl7fsjph42xq549hvq",
+        "signature":
+            "JyTSXhO9+ajceko9zTsbKMd4oyj/A/XVS33Nokty4670HvvjGQ4BoXAoq//3rIJIL14NQ8KU+f86cNUpBKIEkjQ=",
+        "message": "Hive:shaktimaaan",
       };
       final postingJsonMetadata = jsonEncode({
         "profile": profile,
@@ -860,23 +869,31 @@ class _MyHomePageState extends State<MyHomePage> {
         "account": "shaktimaaan",
         "json_metadata": "",
         "posting_json_metadata": postingJsonMetadata,
-        "extensions": []
+        "extensions": [],
       };
 
       final operation = Operation(type: "account_update2", data: operationData);
       final operationRequest = OperationRequest(operations: [operation]);
 
       // Use static keyType, e.g. 'posting'
-      final result = await aioha.signAndBroadcastTx(operationRequest, 'posting');
+      final result = await aioha.signAndBroadcastTx(
+        operationRequest,
+        'posting',
+      );
       setState(() {
-        _broadcastResult = result.profile?.profileImage ?? 'Broadcasted! (see logs)';
+        _broadcastResult =
+            result.profile?.profileImage ?? 'Broadcasted! (see logs)';
       });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Broadcast Success')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Broadcast Success')));
     } catch (e) {
       setState(() {
         _broadcastResult = 'Broadcast failed: $e';
       });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Broadcast failed: $e')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Broadcast failed: $e')));
     } finally {
       setState(() {
         _isBroadcasting = false;
@@ -1134,7 +1151,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
               // --- Image Upload and Broadcast UI ---
               const SizedBox(height: 24),
-              const Text('Upload Profile Image and Broadcast Operation', style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text(
+                'Upload Profile Image and Broadcast Operation',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 8),
               if (_uploadedImageUrl != null)
                 Image.network(_uploadedImageUrl!, width: 120, height: 120),
@@ -1143,23 +1163,46 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: [
                   ElevatedButton(
                     onPressed: _isUploading ? null : _pickAndUploadImage,
-                    child: _isUploading ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Text('Pick & Upload Image'),
+                    child:
+                        _isUploading
+                            ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                            : const Text('Pick & Upload Image'),
                   ),
                 ],
               ),
               if (_uploadedImageUrl != null)
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text('Uploaded URL: $_uploadedImageUrl', style: const TextStyle(fontSize: 12)),
+                  child: Text(
+                    'Uploaded URL: $_uploadedImageUrl',
+                    style: const TextStyle(fontSize: 12),
+                  ),
                 ),
               ElevatedButton(
-                onPressed: (_uploadedImageUrl != null && !_isBroadcasting) ? _signAndBroadcastTx : null,
-                child: _isBroadcasting ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Text('Sign & Broadcast Tx'),
+                onPressed:
+                    (_uploadedImageUrl != null && !_isBroadcasting)
+                        ? _signAndBroadcastTx
+                        : null,
+                child:
+                    _isBroadcasting
+                        ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                        : const Text('Sign & Broadcast Tx'),
               ),
               if (_broadcastResult != null)
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text('Broadcast Result: $_broadcastResult', style: const TextStyle(fontSize: 12)),
+                  child: Text(
+                    'Broadcast Result: $_broadcastResult',
+                    style: const TextStyle(fontSize: 12),
+                  ),
                 ),
               const Divider(),
             ],
