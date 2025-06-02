@@ -558,4 +558,27 @@ async function openImagePickerForWebApp() {
     });
 }
 
-window.openImagePickerForWebApp = openImagePickerForWebApp; // Expose the function to Dart
+window.openImagePickerForWebApp = openImagePickerForWebApp; 
+
+
+async function signAndBroadcastTx(operations, keyType) {
+  try {
+    if (!Array.isArray(operations) || operations.length === 0) {
+      return JSON.stringify({ success: false, error: "Operations array is required" });
+    }
+    let keytypeForTx = KeyTypes.Posting;
+    if (keyType === "active" || keyType === KeyTypes.Active) {
+      keytypeForTx = KeyTypes.Active;
+    } else if (keyType === "posting" || keyType === KeyTypes.Posting) {
+      keytypeForTx = KeyTypes.Posting;
+    } else {
+      // Memo key is not allowed for transaction signing
+      return JSON.stringify({ success: false, error: "KeyType must be 'posting' or 'active'" });
+    }
+    const result = await aioha.signAndBroadcastTx(operations, keytypeForTx);
+    return JSON.stringify(result);
+  } catch (error) {
+    return JSON.stringify({ success: false, error: error.toString() });
+  }
+}
+window.signAndBroadcastTx = signAndBroadcastTx;

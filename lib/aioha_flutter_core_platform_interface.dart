@@ -6,6 +6,7 @@ import 'package:aioha_flutter_core/models/discussion.dart';
 import 'package:aioha_flutter_core/models/resource_credits.dart';
 import 'package:aioha_flutter_core/models/voting_power.dart';
 import 'package:aioha_flutter_core/models/community_model.dart';
+import 'package:aioha_flutter_core/models/operation_model.dart';
 import 'aioha_flutter_core_method_channel.dart';
 
 abstract class AiohaFlutterCorePlatform extends PlatformInterface {
@@ -188,5 +189,16 @@ abstract class AiohaFlutterCorePlatform extends PlatformInterface {
     String author,
     String permlink) {
     throw UnimplementedError('getCommentsList has not been implemented.');
+  }
+
+  Future<String> openImagePickerForWebApp() {
+    throw UnimplementedError('openImagePickerForWebApp has not been implemented.');
+  }
+
+  Future<OperationResponse> signAndBroadcastTx(
+    OperationRequest operationRequest,
+    String keyType,
+  ) {
+    throw UnimplementedError('signAndBroadcastTx has not been implemented.');
   }
 }
