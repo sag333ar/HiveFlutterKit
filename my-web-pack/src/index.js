@@ -557,3 +557,5 @@ async function openImagePickerForWebApp() {
         input.click();
     });
 }
+
+window.openImagePickerForWebApp = openImagePickerForWebApp; // Expose the function to Dart
