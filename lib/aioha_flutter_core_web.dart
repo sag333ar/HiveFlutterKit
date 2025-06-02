@@ -19,6 +19,7 @@ import 'package:aioha_flutter_core/models/discussion.dart';
 import 'package:aioha_flutter_core/models/resource_credits.dart';
 import 'package:aioha_flutter_core/models/voting_power.dart';
 import 'package:aioha_flutter_core/models/community_model.dart';
+import 'package:aioha_flutter_core/models/operation_model.dart';
 import 'package:http/http.dart' as http;
 
 import 'aioha_flutter_core_platform_interface.dart';
@@ -143,6 +144,15 @@ external dynamic addAccountAuthorityJS(
 
 @JS('removeAccountAuthority')
 external dynamic removeAccountAuthorityJS(String account, String keyType);
+
+@JS('openImagePickerForWebApp')
+external dynamic openImagePickerForWebAppJS();
+
+@JS('signAndBroadcastTx')
+external dynamic signAndBroadcastTxJS(
+  dynamic operations, // pass as List<dynamic>
+  String keyType,
+);
 
 /// A web implementation of the AiohaFlutterCorePlatform of the AiohaFlutterCore plugin.
 class AiohaFlutterCoreWeb extends AiohaFlutterCorePlatform {
@@ -469,5 +479,23 @@ class AiohaFlutterCoreWeb extends AiohaFlutterCorePlatform {
     } catch (e) {
       throw Exception("Error fetching comments via JS: $e");
     }
+  }
+
+  @override
+  Future<String> openImagePickerForWebApp() async {
+    var promise = openImagePickerForWebAppJS();
+    var result = await promiseToFuture(promise);
+    return result;
+  }
+
+  @override
+  Future<OperationResponse> signAndBroadcastTx(
+    OperationRequest operationRequest,
+    String keyType,
+  ) async {
+    var promise = signAndBroadcastTxJS(operationRequest.toJson(), keyType);
+    var result = await promiseToFuture(promise);
+    // result is a JSON string
+    return OperationResponse.fromJsonString(result);
   }
 }

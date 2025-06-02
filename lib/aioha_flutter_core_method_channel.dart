@@ -10,9 +10,9 @@ import 'package:aioha_flutter_core/models/discussion.dart';
 import 'package:aioha_flutter_core/models/resource_credits.dart';
 import 'package:aioha_flutter_core/models/voting_power.dart';
 import 'package:aioha_flutter_core/models/community_model.dart';
-import 'package:http/http.dart' as http;
 
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:aioha_flutter_core/models/operation_model.dart';
 
 /// An implementation of [AiohaFlutterCorePlatform] that uses method channels.
 class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
@@ -944,6 +944,63 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
     """,
     );
 
+    return completer.future;
+  }
+
+  @override
+  Future<String> openImagePickerForWebApp() async {
+    final completer = Completer<String>();
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: 'onOpenImagePickerForWebAppResult',
+      callback: (args) {
+        if (!completer.isCompleted) {
+          completer.complete(args.isNotEmpty ? args[0].toString() : 'null');
+        }
+      },
+    );
+    await headlessWebView.webViewController?.evaluateJavascript(
+      source: """
+      (async () => {
+        try {
+          const res = await openImagePickerForWebApp();
+          window.flutter_inappwebview.callHandler('onOpenImagePickerForWebAppResult', res ?? 'null');
+        } catch (e) {
+          window.flutter_inappwebview.callHandler('onOpenImagePickerForWebAppResult', 'Error: ' + e.toString());
+        }
+      })()
+      """,
+    );
+    return completer.future;
+  }
+
+  @override
+  Future<OperationResponse> signAndBroadcastTx(
+    OperationRequest operationRequest,
+    String keyType,
+  ) async {
+    final completer = Completer<OperationResponse>();
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: 'onSignAndBroadcastTxResult',
+      callback: (args) {
+        if (!completer.isCompleted) {
+          final resultString = args.isNotEmpty ? args[0].toString() : null;
+          completer.complete(OperationResponse.fromJsonString(resultString));
+        }
+      },
+    );
+    final opsJson = jsonEncode(operationRequest.toJson());
+    await headlessWebView.webViewController?.evaluateJavascript(
+      source: """
+      (async () => {
+        try {
+          const res = await signAndBroadcastTx($opsJson, "$keyType");
+          window.flutter_inappwebview.callHandler('onSignAndBroadcastTxResult', res ?? 'null');
+        } catch (e) {
+          window.flutter_inappwebview.callHandler('onSignAndBroadcastTxResult', 'Error: ' + e.toString());
+        }
+      })()
+      """,
+    );
     return completer.future;
   }
 }
