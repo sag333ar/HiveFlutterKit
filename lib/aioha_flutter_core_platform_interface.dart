@@ -207,13 +207,18 @@ abstract class AiohaFlutterCorePlatform extends PlatformInterface {
     return digest.toString();
   }
 
+  String toBase64(String input) {
+    List<int> bytes = utf8.encode(input); // Convert string to bytes
+    String base64Str = base64Encode(bytes); // Encode to Base64
+    return base64Str;
+  }
+
   Future<String> uploadImage({
     required Uint8List imageBytes,
     required String fileName,
-    required String accountName,
-    required String signature,
+    required String token,
   }) async {
-    final url = Uri.parse("https://images.hive.blog/$accountName/$signature");
+    final url = Uri.parse("https://images.ecency.com/hs/$token");
 
     // Detect MIME type (e.g., image/jpeg or image/png)
     final mimeType = lookupMimeType(fileName) ?? 'application/octet-stream';
@@ -271,23 +276,28 @@ abstract class AiohaFlutterCorePlatform extends PlatformInterface {
 
     if (width <= maxDimension && height <= maxDimension) {
       print("✅ Image accepted: ${pickedFile.name} ($width x $height)");
-
-      // Equivalent to JS logic
-      List<int> prefix = utf8.encode("ImageSigningChallenge");
-      //List<int> fileBytesSha256 = utf8.encode(computeSha256(fileBytes));
-      List<int> combined = [...prefix, ...fileBytes];
-      String bufJson = jsonEncode(combined);
-      print("Buffer JSON: $bufJson");
-      final resultOfSignature = await signMessage(bufJson, 'posting');
+      var username = await getCurrentUser();
+      username = username.replaceAll("\"", "");
+      int timeStamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+      var object = {
+        "signed_message": {"type": "posting", "app": "ecency.app"},
+        "authors": [username],
+        "timestamp": timeStamp,
+      };
+      final resultOfSignature = await signMessage(
+        jsonEncode(object),
+        'posting',
+      );
       print("Result of signature: $resultOfSignature");
       final decodedResult = jsonDecode(resultOfSignature);
       if (decodedResult['success'] == true) {
         print("✅ Image signed successfully.");
+        object['signatures'] = [decodedResult['result']];
+        var base64StringOfObject = toBase64(jsonEncode(object));
         var uploadedUrl = await uploadImage(
           imageBytes: fileBytes,
           fileName: pickedFile.name,
-          accountName: decodedResult['username'] as String,
-          signature: decodedResult['result'] as String,
+          token: base64StringOfObject,
         );
         print("✅ Image uploaded successfully - $uploadedUrl");
         return uploadedUrl;
