@@ -1,5 +1,6 @@
 const { initAioha, KeyTypes, Providers } = require("@aioha/aioha");
 const { PlaintextKeyProvider } = require("@aioha/aioha/build/providers/custom/plaintext.js");
+var Buffer = require('buffer/').Buffer 
 const dhive = require('@hiveio/dhive');
 
 let dhiveClient = new dhive.Client(["https://api.hive.blog"]);
@@ -521,3 +522,38 @@ async function removeAccountAuthority(account, keyType) {
   }
 }
 window.removeAccountAuthority = removeAccountAuthority;
+
+async function openImagePickerForWebApp() {
+  const currentUser = aioha.getCurrentUser();
+    if (!currentUser) {
+      return JSON.stringify({ error: "No user is currently logged in" });
+    }
+    return new Promise(function (resolve, reject) {
+        var input = document.createElement("input");
+        input.type = "file";
+        input.onchange = (e) => {
+            var file = e.target.files[0];
+            var reader = new FileReader();
+            reader.onload = async () => {
+                const content = Buffer.from(reader.result,"binary");
+                const prefix = Buffer.from("ImageSigningChallenge");
+                const buf = Buffer.concat([prefix, content]);
+                const signed = await aioha.signMessage(JSON.stringify(buf), KeyTypes.Posting);
+                const signature = signed.result;
+                const url = `https://images.hive.blog/${currentUser}/${signature}`;
+                const formData = new FormData();
+                formData.append("file", file, file.name);
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", url);
+                xhr.onload = () => {
+                    const res = JSON.parse(xhr.responseText);
+                    const uploadUrl = res.url;
+                    console.log(`uploaded url is ${uploadUrl}`);
+                    resolve(uploadUrl);
+                };
+            };
+            reader.readAsBinaryString(file);
+        };
+        input.click();
+    });
+}
