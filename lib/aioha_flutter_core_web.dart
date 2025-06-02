@@ -11,7 +11,6 @@ import 'package:js/js.dart' show JS;
 import 'package:js/js_util.dart';
 
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
-import 'package:web/web.dart' as web;
 
 import 'package:aioha_flutter_core/models/account.dart';
 import 'package:aioha_flutter_core/models/chain_properties.dart';
@@ -20,7 +19,6 @@ import 'package:aioha_flutter_core/models/resource_credits.dart';
 import 'package:aioha_flutter_core/models/voting_power.dart';
 import 'package:aioha_flutter_core/models/community_model.dart';
 import 'package:aioha_flutter_core/models/operation_model.dart';
-import 'package:http/http.dart' as http;
 
 import 'aioha_flutter_core_platform_interface.dart';
 
@@ -144,9 +142,6 @@ external dynamic addAccountAuthorityJS(
 
 @JS('removeAccountAuthority')
 external dynamic removeAccountAuthorityJS(String account, String keyType);
-
-@JS('openImagePickerForWebApp')
-external dynamic openImagePickerForWebAppJS();
 
 @JS('signAndBroadcastTx')
 external dynamic signAndBroadcastTxJS(
@@ -284,6 +279,13 @@ class AiohaFlutterCoreWeb extends AiohaFlutterCorePlatform {
     var promise = getOtherLoginsJS();
     var contentData = await promiseToFuture(promise);
     return List<String>.from(contentData);
+  }
+
+  @override
+  Future<String> signMessage(String message, String keyType) async {
+    var promise = signMessageJS(message, keyType);
+    var contentData = await promiseToFuture(promise);
+    return contentData;
   }
 
   @override
@@ -479,13 +481,6 @@ class AiohaFlutterCoreWeb extends AiohaFlutterCorePlatform {
     } catch (e) {
       throw Exception("Error fetching comments via JS: $e");
     }
-  }
-
-  @override
-  Future<String> openImagePickerForWebApp() async {
-    var promise = openImagePickerForWebAppJS();
-    var result = await promiseToFuture(promise);
-    return result;
   }
 
   @override
