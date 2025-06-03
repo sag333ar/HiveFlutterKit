@@ -241,10 +241,8 @@ abstract class AiohaFlutterCorePlatform extends PlatformInterface {
     if (response.statusCode == 200) {
       final Map<String, dynamic> resJson = jsonDecode(response.body);
       final uploadUrl = resJson['url'];
-      print("✅ Uploaded URL: $uploadUrl");
       return uploadUrl;
     } else {
-      print("❌ Upload failed: ${response.statusCode}");
       print("Response: ${response.body}");
       throw Exception(
         "Upload failed: ${response.statusCode} - ${response.body}",
