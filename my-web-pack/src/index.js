@@ -525,6 +525,7 @@ window.removeAccountAuthority = removeAccountAuthority;
 
 async function signAndBroadcastTx(operations, keyType) {
   try {
+    operations = JSON.parse(operations);
     if (!Array.isArray(operations) || operations.length === 0) {
       return JSON.stringify({
         success: false,
@@ -545,6 +546,7 @@ async function signAndBroadcastTx(operations, keyType) {
     }
 
     const result = await aioha.signAndBroadcastTx(operations, keytypeForTx);
+  
 
     // Assuming `result` is already a JSON-compatible object
     return JSON.stringify({ success: true, result });

@@ -18,7 +18,6 @@ import 'package:aioha_flutter_core/models/discussion.dart';
 import 'package:aioha_flutter_core/models/resource_credits.dart';
 import 'package:aioha_flutter_core/models/voting_power.dart';
 import 'package:aioha_flutter_core/models/community_model.dart';
-import 'package:aioha_flutter_core/models/operation_model.dart';
 
 import 'aioha_flutter_core_platform_interface.dart';
 
@@ -484,12 +483,12 @@ class AiohaFlutterCoreWeb extends AiohaFlutterCorePlatform {
   }
 
   @override
-  Future<OperationResponse> signAndBroadcastTx(
-    OperationRequest operationRequest,
+  Future<dynamic> signAndBroadcastTx(
+    dynamic operationRequest,
     String keyType,
   ) async {
-    var promise = signAndBroadcastTxJS(operationRequest.toJson(), keyType);
+    var promise = signAndBroadcastTxJS(jsonEncode(operationRequest), keyType);
     var result = await promiseToFuture(promise);
-    return OperationResponse.fromJsonString(result);
+    return jsonDecode(result);
   }
 }

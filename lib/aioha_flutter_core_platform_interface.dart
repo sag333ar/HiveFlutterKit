@@ -6,7 +6,6 @@ import 'package:aioha_flutter_core/models/discussion.dart';
 import 'package:aioha_flutter_core/models/resource_credits.dart';
 import 'package:aioha_flutter_core/models/voting_power.dart';
 import 'package:aioha_flutter_core/models/community_model.dart';
-import 'package:aioha_flutter_core/models/operation_model.dart';
 
 import 'dart:typed_data';
 import 'package:image_picker/image_picker.dart';
@@ -307,8 +306,8 @@ abstract class AiohaFlutterCorePlatform extends PlatformInterface {
     }
   }
 
-  Future<OperationResponse> signAndBroadcastTx(
-    OperationRequest operationRequest,
+  Future<dynamic> signAndBroadcastTx(
+    dynamic operationRequest,
     String keyType,
   ) {
     throw UnimplementedError('signAndBroadcastTx has not been implemented.');
