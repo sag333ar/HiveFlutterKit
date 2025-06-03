@@ -201,12 +201,12 @@ abstract class AiohaFlutterCorePlatform extends PlatformInterface {
     throw UnimplementedError('getCommentsList has not been implemented.');
   }
 
-  String computeSha256(Uint8List data) {
+  String _computeSha256(Uint8List data) {
     Digest digest = sha256.convert(data);
     return digest.toString();
   }
 
-  String toBase64(String input) {
+  String _toBase64(String input) {
     List<int> bytes = utf8.encode(input); // Convert string to bytes
     String base64Str = base64Encode(bytes); // Encode to Base64
     return base64Str;
@@ -286,7 +286,7 @@ abstract class AiohaFlutterCorePlatform extends PlatformInterface {
       final decodedResult = jsonDecode(resultOfSignature);
       if (decodedResult['success'] == true) {
         object['signatures'] = [decodedResult['result']];
-        var base64StringOfObject = toBase64(jsonEncode(object));
+        var base64StringOfObject = _toBase64(jsonEncode(object));
         var uploadedUrl = await uploadImage(
           imageBytes: fileBytes,
           fileName: pickedFile.name,
