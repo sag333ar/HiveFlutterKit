@@ -1,5 +1,6 @@
 const { initAioha, KeyTypes, Providers } = require("@aioha/aioha");
 const { PlaintextKeyProvider } = require("@aioha/aioha/build/providers/custom/plaintext.js");
+var Buffer = require('buffer/').Buffer
 const dhive = require('@hiveio/dhive');
 
 let dhiveClient = new dhive.Client(["https://api.hive.blog"]);
@@ -448,7 +449,7 @@ async function signMessage(message, keyType) {
       keytypeForSignMessage = KeyTypes.Posting;
     }
     const result = await aioha.signMessage(message, keytypeForSignMessage);
-    return JSON.stringify(result);
+    return JSON.stringify({...result, username: aioha.getCurrentUser()});
   } catch (error) {
     return JSON.stringify({ error: error.toString() });
   }
@@ -521,3 +522,38 @@ async function removeAccountAuthority(account, keyType) {
   }
 }
 window.removeAccountAuthority = removeAccountAuthority;
+
+async function signAndBroadcastTx(operations, keyType) {
+  try {
+    if (!Array.isArray(operations) || operations.length === 0) {
+      return JSON.stringify({
+        success: false,
+        error: "Operations array is required",
+      });
+    }
+
+    let keytypeForTx;
+    if (keyType === "active" || keyType === KeyTypes.Active) {
+      keytypeForTx = KeyTypes.Active;
+    } else if (keyType === "posting" || keyType === KeyTypes.Posting) {
+      keytypeForTx = KeyTypes.Posting;
+    } else {
+      return JSON.stringify({
+        success: false,
+        error: "KeyType must be 'posting' or 'active'",
+      });
+    }
+
+    const result = await aioha.signAndBroadcastTx(operations, keytypeForTx);
+
+    // Assuming `result` is already a JSON-compatible object
+    return JSON.stringify({ success: true, result });
+  } catch (error) {
+    return JSON.stringify({
+      success: false,
+      error: error?.message || error.toString(),
+    });
+  }
+}
+
+window.signAndBroadcastTx = signAndBroadcastTx;

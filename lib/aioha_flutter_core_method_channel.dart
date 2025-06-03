@@ -10,9 +10,9 @@ import 'package:aioha_flutter_core/models/discussion.dart';
 import 'package:aioha_flutter_core/models/resource_credits.dart';
 import 'package:aioha_flutter_core/models/voting_power.dart';
 import 'package:aioha_flutter_core/models/community_model.dart';
-import 'package:http/http.dart' as http;
 
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:aioha_flutter_core/models/operation_model.dart';
 
 /// An implementation of [AiohaFlutterCorePlatform] that uses method channels.
 class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
@@ -943,6 +943,48 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
     })()
     """,
     );
+
+    return completer.future;
+  }
+
+  @override
+  Future<OperationResponse> signAndBroadcastTx(
+    OperationRequest operationRequest,
+    String keyType,
+  ) async {
+    final completer = Completer<OperationResponse>();
+
+    // Ensure we don't register multiple handlers accidentally
+    headlessWebView.webViewController?.removeJavaScriptHandler(
+      handlerName: 'onSignAndBroadcastTxResult',
+    );
+
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: 'onSignAndBroadcastTxResult',
+      callback: (args) {
+        if (!completer.isCompleted) {
+          final resultString =
+              (args.isNotEmpty && args[0] is String) ? args[0] as String : null;
+          final response = OperationResponse.fromJsonString(resultString);
+          completer.complete(response);
+        }
+      },
+    );
+
+    final opsJson = jsonEncode(operationRequest.toJson());
+
+    final jsCode = """
+    (async () => {
+      try {
+        const res = await signAndBroadcastTx($opsJson, "$keyType");
+        window.flutter_inappwebview.callHandler('onSignAndBroadcastTxResult', JSON.stringify(res));
+      } catch (e) {
+        window.flutter_inappwebview.callHandler('onSignAndBroadcastTxResult', JSON.stringify({ error: e.toString() }));
+      }
+    })();
+  """;
+
+    await headlessWebView.webViewController?.evaluateJavascript(source: jsCode);
 
     return completer.future;
   }

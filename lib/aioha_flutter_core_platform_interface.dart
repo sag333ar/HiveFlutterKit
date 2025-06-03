@@ -6,12 +6,24 @@ import 'package:aioha_flutter_core/models/discussion.dart';
 import 'package:aioha_flutter_core/models/resource_credits.dart';
 import 'package:aioha_flutter_core/models/voting_power.dart';
 import 'package:aioha_flutter_core/models/community_model.dart';
+import 'package:aioha_flutter_core/models/operation_model.dart';
+
+import 'dart:typed_data';
+import 'package:image_picker/image_picker.dart';
+import 'package:image/image.dart' as img;
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:mime/mime.dart';
+import 'package:crypto/crypto.dart';
+
 import 'aioha_flutter_core_method_channel.dart';
 
 abstract class AiohaFlutterCorePlatform extends PlatformInterface {
   /// Constructs a AiohaFlutterCorePlatform.
   AiohaFlutterCorePlatform() : super(token: _token);
   static final Object _token = Object();
+  final ImagePicker _picker = ImagePicker();
 
   static AiohaFlutterCorePlatform _instance = MethodChannelAiohaFlutterCore();
 
@@ -172,7 +184,9 @@ abstract class AiohaFlutterCorePlatform extends PlatformInterface {
   }
 
   Future<bool> hasThreespeakInAccountAuths(String username) {
-    throw UnimplementedError('hasThreespeakInAccountAuths has not been implemented.');
+    throw UnimplementedError(
+      'hasThreespeakInAccountAuths has not been implemented.',
+    );
   }
 
   Future<List<CommunityItem>> getListOfCommunities(
@@ -184,9 +198,119 @@ abstract class AiohaFlutterCorePlatform extends PlatformInterface {
     throw UnimplementedError('getListOfCommunities has not been implemented.');
   }
 
-  Future<List<Discussion>> getCommentsList (
-    String author,
-    String permlink) {
+  Future<List<Discussion>> getCommentsList(String author, String permlink) {
     throw UnimplementedError('getCommentsList has not been implemented.');
+  }
+
+  String computeSha256(Uint8List data) {
+    Digest digest = sha256.convert(data);
+    return digest.toString();
+  }
+
+  String toBase64(String input) {
+    List<int> bytes = utf8.encode(input); // Convert string to bytes
+    String base64Str = base64Encode(bytes); // Encode to Base64
+    return base64Str;
+  }
+
+  Future<String> uploadImage({
+    required Uint8List imageBytes,
+    required String fileName,
+    required String token,
+    required String uploadUrlSever,
+  }) async {
+    final url = Uri.parse("$uploadUrlSever/$token");
+
+    // Detect MIME type (e.g., image/jpeg or image/png)
+    final mimeType = lookupMimeType(fileName) ?? 'application/octet-stream';
+    final mediaType = MediaType.parse(mimeType);
+
+    final request = http.MultipartRequest("POST", url);
+
+    request.files.add(
+      http.MultipartFile.fromBytes(
+        'file',
+        imageBytes,
+        filename: fileName,
+        contentType: mediaType,
+      ),
+    );
+
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> resJson = jsonDecode(response.body);
+      final uploadUrl = resJson['url'];
+      print("✅ Uploaded URL: $uploadUrl");
+      return uploadUrl;
+    } else {
+      print("❌ Upload failed: ${response.statusCode}");
+      print("Response: ${response.body}");
+      throw Exception(
+        "Upload failed: ${response.statusCode} - ${response.body}",
+      );
+    }
+  }
+
+  Future<String> pickImageWithMaxSize(int maxDimension,String uploadUrlSever) async {
+    final XFile? pickedFile = await _picker.pickImage(
+      source: ImageSource.gallery,
+    );
+    if (pickedFile == null) {
+      throw Exception("No image selected.");
+    }
+    
+    Uint8List fileBytes = await pickedFile.readAsBytes();
+
+    // Decode to check dimensions
+    img.Image? decodedImage = img.decodeImage(fileBytes);
+    if (decodedImage == null) {
+      throw Exception("Failed to decode image.");
+    }
+
+    int width = decodedImage.width;
+    int height = decodedImage.height;
+
+    if (width <= maxDimension && height <= maxDimension) {
+      var username = await getCurrentUser();
+      username = username.replaceAll("\"", "");
+      int timeStamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+      var object = {
+        "signed_message": {"type": "posting", "app": "ecency.app"},
+        "authors": [username],
+        "timestamp": timeStamp,
+      };
+      final resultOfSignature = await signMessage(
+        jsonEncode(object),
+        'posting',
+      );
+      print("Result of signature: $resultOfSignature");
+      final decodedResult = jsonDecode(resultOfSignature);
+      if (decodedResult['success'] == true) {
+        object['signatures'] = [decodedResult['result']];
+        var base64StringOfObject = toBase64(jsonEncode(object));
+        var uploadedUrl = await uploadImage(
+          imageBytes: fileBytes,
+          fileName: pickedFile.name,
+          token: base64StringOfObject,
+          uploadUrlSever: uploadUrlSever,
+        );
+        return uploadedUrl;
+      } else {
+        throw Exception("Failed to sign image: ${decodedResult['error']}");
+      }
+    } else {
+      throw Exception(
+        "Image too large: $width x $height (max: $maxDimension px)",
+      );
+    }
+  }
+
+  Future<OperationResponse> signAndBroadcastTx(
+    OperationRequest operationRequest,
+    String keyType,
+  ) {
+    throw UnimplementedError('signAndBroadcastTx has not been implemented.');
   }
 }
