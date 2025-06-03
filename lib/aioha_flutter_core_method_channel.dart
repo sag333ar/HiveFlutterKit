@@ -12,7 +12,6 @@ import 'package:aioha_flutter_core/models/voting_power.dart';
 import 'package:aioha_flutter_core/models/community_model.dart';
 
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:aioha_flutter_core/models/operation_model.dart';
 
 /// An implementation of [AiohaFlutterCorePlatform] that uses method channels.
 class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
@@ -948,13 +947,13 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
   }
 
   @override
-  Future<OperationResponse> signAndBroadcastTx(
-    OperationRequest operationRequest,
+  Future<dynamic> signAndBroadcastTx(
+    dynamic operationRequest,
     String keyType,
   ) async {
-    final completer = Completer<OperationResponse>();
+    final completer = Completer<dynamic>();
 
-    // Ensure we don't register multiple handlers accidentally
+    // Remove previous handler if exists
     headlessWebView.webViewController?.removeJavaScriptHandler(
       handlerName: 'onSignAndBroadcastTxResult',
     );
@@ -965,13 +964,13 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
         if (!completer.isCompleted) {
           final resultString =
               (args.isNotEmpty && args[0] is String) ? args[0] as String : null;
-          final response = OperationResponse.fromJsonString(resultString);
+          final response = resultString != null ? jsonDecode(resultString) : null;
           completer.complete(response);
         }
       },
     );
 
-    final opsJson = jsonEncode(operationRequest.toJson());
+    final opsJson = jsonEncode(operationRequest);
 
     final jsCode = """
     (async () => {

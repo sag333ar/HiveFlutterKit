@@ -4,7 +4,6 @@ import 'dart:typed_data';
 
 import 'package:aioha_flutter_core/aioha_flutter_core_platform_interface.dart';
 import 'package:aioha_flutter_core/models/community_model.dart';
-import 'package:aioha_flutter_core/models/operation_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -800,7 +799,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
     try {
       final url = await aioha.pickImageWithMaxSize(
-        1000,
+        2000,
         "https://images.ecency.com/hs",
       );
       setState(() {
@@ -861,7 +860,7 @@ class _MyHomePageState extends State<MyHomePage> {
         'Updated profile_image: ${postingJsonMetadata['profile']['profile_image']}',
       );
 
-      // Prepare operation data
+      // Prepare operation data as dynamic
       final operationData = {
         "account": username,
         "json_metadata": "",
@@ -869,18 +868,20 @@ class _MyHomePageState extends State<MyHomePage> {
         "extensions": [],
       };
 
-      final operation = Operation(type: "account_update2", data: operationData);
-      final operationRequest = OperationRequest(operation: operation);
+      // Use dynamic for operation and operationRequest
+      final dynamic operation = ["account_update2", operationData];
+      final dynamic operationRequest = [operation];
 
       final response = await aioha.signAndBroadcastTx(
         operationRequest,
         'posting',
       );
 
-      if (response.success) {
+      // Handle response as dynamic
+      if (response != null && response['success'] == true) {
         setState(() {
           _broadcastResult =
-              response.profile?.profileImage ?? 'Broadcasted successfully!';
+              response['profile']?['profile_image'] ?? 'Broadcasted successfully!';
         });
         ScaffoldMessenger.of(
           context,
@@ -888,12 +889,12 @@ class _MyHomePageState extends State<MyHomePage> {
       } else {
         setState(() {
           _broadcastResult =
-              'Broadcast failed: ${response.error ?? 'Unknown error'}';
+              'Broadcast failed: ${response?['error'] ?? 'Unknown error'}';
         });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Broadcast failed: ${response.error ?? 'Unknown error'}',
+              'Broadcast failed: ${response?['error'] ?? 'Unknown error'}',
             ),
           ),
         );
