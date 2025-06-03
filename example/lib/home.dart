@@ -834,47 +834,36 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     try {
-      // Construct profile, extra, and bitcoin metadata
-      final profile = {
-        "name": "test account for @sagarkothari88",
-        "version": 2,
-        "website": "test",
-        "profile_image": _uploadedImageUrl,
-        "about": "",
-        "location": "",
-        "cover_image": "",
-        "btcLightningAddress": "sag333ar@vipsats.app",
-      };
+      // Fetch account and decode posting_json_metadata
+      final username = "shaktimaaan";
+      final accounts = await aioha.getAccounts([username]);
+      if (accounts.isEmpty) throw Exception("Account not found");
 
-      final extra = {
-        "name": "shaktimaaan",
-        "blockChainData": {
-          "data": {
-            "address": "XmZkyFgp3gwXTkrygac78CwjmPmKRvsBVL",
-            "signature":
-                "H/K4qsvJfM+kGg5XCpVmvoNFjSLA5sD1d4OIvt02Y/ryNnoHK1y9IJR4jCpslpgWE46cQd3Pz7ji+Zv1v8uNWag=",
-          },
-          "loginMethod": "dash",
-        },
-      };
+      final account = accounts.first;
+      final postingJsonMetadataStr = account.postingJsonMetadata;
+      if (postingJsonMetadataStr == null || postingJsonMetadataStr.isEmpty) {
+        throw Exception("No posting_json_metadata found for account");
+      }
 
-      final bitcoin = {
-        "address": "bc1q9h3mx8np4h96dgekkgcyzj6xym5wp32ddmpqqf",
-        "ordinalAddress":
-            "bc1pvqxtn9ugnsdsludt9dh37xet9tz9kdv8gtzzpc6mwl7fsjph42xq549hvq",
-        "signature":
-            "JyTSXhO9+ajceko9zTsbKMd4oyj/A/XVS33Nokty4670HvvjGQ4BoXAoq//3rIJIL14NQ8KU+f86cNUpBKIEkjQ=",
-        "message": "Hive:shaktimaaan",
-      };
+      // Decode and update profile_image
+      final postingJsonMetadata = jsonDecode(postingJsonMetadataStr);
+      if (postingJsonMetadata is! Map<String, dynamic>) {
+        throw Exception("Invalid posting_json_metadata format");
+      }
 
-      final postingJsonMetadata = jsonEncode({
-        "profile": profile,
-        "extra": extra,
-        "bitcoin": bitcoin,
-      });
+      // Update profile_image
+      if (postingJsonMetadata.containsKey('profile') &&
+          postingJsonMetadata['profile'] is Map<String, dynamic>) {
+        postingJsonMetadata['profile']['profile_image'] = _uploadedImageUrl;
+      }
 
+      print(
+        'Updated profile_image: ${postingJsonMetadata['profile']['profile_image']}',
+      );
+
+      // Prepare operation data
       final operationData = {
-        "account": "shaktimaaan",
+        "account": username,
         "json_metadata": "",
         "posting_json_metadata": jsonEncode(postingJsonMetadata),
         "extensions": [],
