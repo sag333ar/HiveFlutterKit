@@ -45,17 +45,17 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.example.aioha_flutter_core
-        pluginClass: AiohaFlutterCorePlugin
+        package: com.example.hive_flutter_kit
+        pluginClass: HiveFlutterKitPlugin
       ios:
-        pluginClass: AiohaFlutterCorePlugin
+        pluginClass: HiveFlutterKitPlugin
       web:
-        pluginClass: AiohaFlutterCoreWeb
-        fileName: aioha_flutter_core_web.dart
+        pluginClass: HiveFlutterKitWeb
+        fileName: hive_flutter_kit_web.dart
 
   # To add assets to your plugin package, add an assets section, like this:
   assets:
-    - web/aioha.js
+    - web/hiveflutterkit.js
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

@@ -16,7 +16,7 @@
 
 ### HiveFlutterKit
 
-- HiveFlutterKit is a Flutter package that provides a common interface for working with different Hive login providers.
+- HiveFlutterKit is a Flutter package that provides a common interface for working with different Hive login providers. It also provides dhive package usage.
 - This allows easier integration of Hive login and transacting on the network with fewer code.
 - For Flutter package usage, https://pub.dev/packages/aioha
 - For more information about the HiveFlutterKit API, please visit the [HiveFlutterKit API documentation](https://aioha.dev/docs).
