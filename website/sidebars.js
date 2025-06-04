@@ -32,7 +32,7 @@ const sidebars = {
       label: 'Core API',
       items: [
         'core-api/overview', // Points to docs/core-api/overview.md
-        'core-api/all-methods', // Points to docs/core-api/methods.md (via slug)
+        'core-api/methods', // Points to docs/core-api/methods.md (via slug)
       ],
     },
     // Example for a future "Guides" section
