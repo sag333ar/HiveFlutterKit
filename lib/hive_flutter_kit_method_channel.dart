@@ -1,24 +1,24 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:aioha_flutter_core/models/login_model.dart';
+import 'package:hive_flutter_kit/models/login_model.dart';
 import 'package:flutter/services.dart';
 
-import 'aioha_flutter_core_platform_interface.dart';
-import 'package:aioha_flutter_core/models/account.dart';
-import 'package:aioha_flutter_core/models/chain_properties.dart';
-import 'package:aioha_flutter_core/models/discussion.dart';
-import 'package:aioha_flutter_core/models/resource_credits.dart';
-import 'package:aioha_flutter_core/models/voting_power.dart';
-import 'package:aioha_flutter_core/models/community_model.dart';
+import 'hive_flutter_kit_platform_interface.dart';
+import 'package:hive_flutter_kit/models/account.dart';
+import 'package:hive_flutter_kit/models/chain_properties.dart';
+import 'package:hive_flutter_kit/models/discussion.dart';
+import 'package:hive_flutter_kit/models/resource_credits.dart';
+import 'package:hive_flutter_kit/models/voting_power.dart';
+import 'package:hive_flutter_kit/models/community_model.dart';
 
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
-/// An implementation of [AiohaFlutterCorePlatform] that uses method channels.
-class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
+/// An implementation of [HiveFlutterKitPlatform] that uses method channels.
+class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
   late HeadlessInAppWebView headlessWebView;
   var isWebViewRunning = false;
 
-  MethodChannelAiohaFlutterCore() {
+  MethodChannelHiveFlutterKit() {
     initHeadlessWebView();
   }
 
@@ -57,7 +57,7 @@ class MethodChannelAiohaFlutterCore extends AiohaFlutterCorePlatform {
 
   Future<String> _loadHTMLFromAssets() async {
     String aiohajs = await rootBundle.loadString(
-      "packages/aioha_flutter_core/web/aioha.js",
+      "packages/hive_flutter_kit/web/aioha.js",
     );
     String longHtml = """
 <html>
