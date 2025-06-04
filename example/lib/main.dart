@@ -1,5 +1,5 @@
-import 'package:aioha_flutter_core/aioha_flutter_core_platform_interface.dart';
-import 'package:aioha_flutter_core_example/home.dart';
+import 'package:hive_flutter_kit/hive_flutter_kit_platform_interface.dart';
+import 'package:hive_flutter_kit_example/home.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -9,8 +9,8 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
-        Provider<AiohaFlutterCorePlatform>.value(
-          value: AiohaFlutterCorePlatform.instance,
+        Provider<HiveFlutterKitPlatform>.value(
+          value: HiveFlutterKitPlatform.instance,
         ),
       ],
       child: const MyApp(),

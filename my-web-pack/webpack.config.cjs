@@ -5,7 +5,7 @@ const webpack = require('webpack');
 module.exports = {
   entry: './src/index.js', 
   output: {
-    filename: 'aioha.js',
+    filename: 'hiveflutterkit.js',
     path: path.resolve('../web', ''),
   },
   optimization: {
