@@ -803,7 +803,7 @@ class _MyHomePageState extends State<MyHomePage> {
         "https://images.ecency.com/hs",
       );
       setState(() {
-        _uploadedImageUrl = url;
+        _uploadedImageUrl = url['url'];
       });
       ScaffoldMessenger.of(
         context,
