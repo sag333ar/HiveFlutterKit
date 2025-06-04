@@ -10,8 +10,8 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'AIOHA Flutter Core',
-  tagline: 'All-In-One Hive Authentication for Flutter',
+  title: 'HiveFlutterKit',
+  tagline: 'Seamless Hive Authentication for your Flutter Apps',
   favicon: 'img/favicon.ico',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
@@ -23,12 +23,12 @@ const config = {
   url: 'https://sag333ar.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/aioha_flutter_core/',
+  baseUrl: '/HiveFlutterKit/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'sag333ar', // Usually your GitHub org/user name.
-  projectName: 'aioha_flutter_core', // Usually your repo name.
+  projectName: 'HiveFlutterKit', // Usually your repo name.
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -50,8 +50,7 @@ const config = {
           sidebarPath: './sidebars.js',
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+          editUrl: 'https://github.com/sag333ar/HiveFlutterKit/tree/main/website/',
         },
         blog: {
           showReadingTime: true,
@@ -61,8 +60,7 @@ const config = {
           },
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+          editUrl: 'https://github.com/sag333ar/HiveFlutterKit/tree/main/website/blog/',
           // Useful options to enforce blogging best practices
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
@@ -81,7 +79,7 @@ const config = {
       // Replace with your project's social card
       image: 'img/docusaurus-social-card.jpg',
       navbar: {
-        title: 'AIOHA Flutter Core',
+        title: 'HiveFlutterKit',
         logo: {
           alt: 'My Site Logo',
           src: 'img/logo.svg',
@@ -93,9 +91,9 @@ const config = {
             position: 'left',
             label: 'Docs',
           },
-          {to: '/blog', label: 'Blog', position: 'left'},
+          {href: 'https://hive.blog/@sagarkothari88/posts', label: 'Blog', position: 'left'},
           {
-            href: 'https://github.com/sag333ar/aioha_flutter_core',
+            href: 'https://github.com/sag333ar/HiveFlutterKit',
             label: 'GitHub',
             position: 'right',
           },
@@ -108,7 +106,7 @@ const config = {
             title: 'Docs',
             items: [
               {
-                label: 'Tutorial',
+                label: 'Documentation',
                 to: '/docs/intro',
               },
             ],
@@ -117,16 +115,12 @@ const config = {
             title: 'Community',
             items: [
               {
-                label: 'Stack Overflow',
-                href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-              },
-              {
                 label: 'Discord',
-                href: 'https://discordapp.com/invite/docusaurus',
+                href: 'https://discord.gg/WEKa8JKg7W',
               },
               {
                 label: 'X',
-                href: 'https://x.com/docusaurus',
+                href: 'https://x.com/sagarkothari88',
               },
             ],
           },
@@ -135,16 +129,16 @@ const config = {
             items: [
               {
                 label: 'Blog',
-                to: '/blog',
+                href: 'https://hive.blog/@sagarkothari88/posts',
               },
               {
                 label: 'GitHub',
-                href: 'https://github.com/sag333ar/aioha_flutter_core',
+                href: 'https://github.com/sag333ar/HiveFlutterKit',
               },
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} HiveFlutterKit`,
       },
       prism: {
         theme: prismThemes.github,
