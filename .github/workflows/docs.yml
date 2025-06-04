@@ -1,0 +1,49 @@
+name: Deploy Docusaurus Docs
+
+on:
+  push:
+    branches:
+      - main # Or your default branch
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout your repository
+        uses: actions/checkout@v4
+        # Docusaurus recommends fetching all history for versioning/last updated features
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18' # Or a version compatible with your Docusaurus install
+          cache: 'npm' # Or 'yarn' if your Docusaurus project uses yarn
+          cache-dependency-path: website/package-lock.json # Or website/yarn.lock
+
+      - name: Install Docusaurus dependencies
+        run: npm install # Or yarn install if using yarn
+        working-directory: ./website
+
+      - name: Build Docusaurus site
+        run: npm run build # Or yarn build if using yarn
+        working-directory: ./website
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: website/build
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
