@@ -17,7 +17,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late HiveFlutterKitPlatform aioha;
+  late HiveFlutterKitPlatform hfKit;
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _postingKeyController = TextEditingController();
 
@@ -42,7 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    aioha = Provider.of<HiveFlutterKitPlatform>(context, listen: false);
+    hfKit = Provider.of<HiveFlutterKitPlatform>(context, listen: false);
   }
 
   @override
@@ -52,7 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _loginWithHiveKeychain() async {
     try {
-      final result = await aioha.loginWithKeychain(
+      final result = await hfKit.loginWithKeychain(
         _usernameController.text,
         '',
       );
@@ -73,7 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _loginWithHiveAuth() async {
     try {
       _startTimer();
-      final result = await aioha.loginWithHiveAuth(
+      final result = await hfKit.loginWithHiveAuth(
         _usernameController.text,
         '',
       );
@@ -107,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
         return;
       }
 
-      final result = await aioha.loginWithPlaintextKey(
+      final result = await hfKit.loginWithPlaintextKey(
         username,
         postingKey,
         '',
@@ -137,7 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
         return;
       }
 
-      var result = await aioha.getVotingPower(username);
+      var result = await hfKit.getVotingPower(username);
       debugPrint(
         "Voting Power: ${result.downvotePower}, ${result.upvotePower}",
       );
@@ -150,7 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _logout() async {
     try {
-      final userStatus = await aioha.getCurrentUser();
+      final userStatus = await hfKit.getCurrentUser();
 
       if (userStatus == null ||
           userStatus == '' ||
@@ -160,7 +160,7 @@ class _MyHomePageState extends State<MyHomePage> {
         );
         return;
       }
-      await aioha.logout();
+      await hfKit.logout();
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Successfully logged out')));
@@ -174,7 +174,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _singleVote() async {
     try {
       _startTimer();
-      final result = await aioha.singleVote(
+      final result = await hfKit.singleVote(
         'sagarkothari88',
         'aihoa-based-login-with-hiveauth-and-sign-a-message-works-well-with-ios-app-now',
         1000,
@@ -193,7 +193,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _comment() async {
     try {
-      final result = await aioha.comment(
+      final result = await hfKit.comment(
         'parentAuthor',
         'parentPermlink',
         'permlink',
@@ -245,7 +245,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       };
 
-      final result = await aioha.commentWithOptions(
+      final result = await hfKit.commentWithOptions(
         '',
         'hive-184437',
         'asdfasfaasdfsdfasdfasfasdf',
@@ -267,7 +267,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _deleteComment() async {
     try {
       _startTimer();
-      final result = await aioha.deleteComment(
+      final result = await hfKit.deleteComment(
         'permlinktodel',
       ); //Permlink to delete
       // Replace with the actual permlink you want to delete
@@ -285,7 +285,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _reblog() async {
     try {
-      final result = await aioha.reblog('sagarkothari', 'rblmtojs', true);
+      final result = await hfKit.reblog('sagarkothari', 'rblmtojs', true);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Reblog Success: $result')));
@@ -298,7 +298,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _removeReblog() async {
     try {
-      final result = await aioha.reblog('sagarkothari', 'rblmtojs', false);
+      final result = await hfKit.reblog('sagarkothari', 'rblmtojs', false);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Remove Reblog Success: $result')));
@@ -311,7 +311,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _follow() async {
     try {
-      final result = await aioha.follow('sagarkothari', false);
+      final result = await hfKit.follow('sagarkothari', false);
       print('Follow result: $result');
       ScaffoldMessenger.of(
         context,
@@ -333,7 +333,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     try {
-      final otherLogins = await aioha.getOtherLogins();
+      final otherLogins = await hfKit.getOtherLogins();
       print('Other logged-in users: $otherLogins');
 
       if (otherLogins.isEmpty) {
@@ -361,7 +361,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       icon: const Icon(Icons.close, color: Colors.red),
                       onPressed: () async {
                         try {
-                          final result = await aioha.removeOtherLogin(
+                          final result = await hfKit.removeOtherLogin(
                             otherLogins[index],
                           );
                           print('Removed user: $result');
@@ -387,7 +387,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     onTap: () async {
                       final selectedUser = otherLogins[index];
-                      final result = await aioha.switchUser(selectedUser);
+                      final result = await hfKit.switchUser(selectedUser);
                       print('Switch user result: $result');
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
@@ -413,7 +413,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _unfollow() async {
     try {
-      final result = await aioha.follow('sagarkothari', true);
+      final result = await hfKit.follow('sagarkothari', true);
       print('Unfollow result: $result');
       ScaffoldMessenger.of(
         context,
@@ -428,7 +428,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _claimRewards() async {
     try {
-      final result = await aioha.claimRewards();
+      final result = await hfKit.claimRewards();
       print('Claim Rewards result: $result');
       ScaffoldMessenger.of(
         context,
@@ -444,7 +444,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _signMessage() async {
     try {
       _startTimer();
-      final result = await aioha.signMessage(
+      final result = await hfKit.signMessage(
         'Hello, Aioha!',
         'Posting', // Add KeyType here
       );
@@ -472,7 +472,7 @@ class _MyHomePageState extends State<MyHomePage> {
         return;
       }
       // Example: add 'aioha' to Posting authority with weight 1
-      final result = await aioha.addAccountAuthority(
+      final result = await hfKit.addAccountAuthority(
         "threespeak",
         'posting',
         1,
@@ -497,7 +497,7 @@ class _MyHomePageState extends State<MyHomePage> {
         return;
       }
       // Example: remove 'aioha' from Posting authority
-      final result = await aioha.removeAccountAuthority(
+      final result = await hfKit.removeAccountAuthority(
         'threespeak',
         'posting',
       );
@@ -513,7 +513,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _getChainPropertiesAioha() async {
     try {
-      var result = await aioha.getChainProperties();
+      var result = await hfKit.getChainProperties();
       debugPrint("Aioha Chain Properties: $result");
       ScaffoldMessenger.of(
         context,
@@ -528,7 +528,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _getDiscussionsAioha() async {
     try {
-      final result = await aioha.getDiscussions(
+      final result = await hfKit.getDiscussions(
         'trending',
         limit: 20,
         tag: '',
@@ -561,7 +561,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _getAccountsAioha() async {
     try {
-      var result = await aioha.getAccounts(['sagarkothari88']);
+      var result = await hfKit.getAccounts(['sagarkothari88']);
       for (var account in result) {
         debugPrint("Account: ${account.posting?.accountAuths}");
       }
@@ -580,7 +580,7 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       String username = 'sagarkothari88';
       String sort = 'comments';
-      var result = await aioha.getAccountPosts(
+      var result = await hfKit.getAccountPosts(
         username,
         limit: 20,
         sort,
@@ -628,7 +628,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _getVotingPowerAioha() async {
     try {
-      var result = await aioha.getVotingPower('sagarkothari88');
+      var result = await hfKit.getVotingPower('sagarkothari88');
       debugPrint(
         "Voting Power: ${result.downvotePower}, ${result.upvotePower}",
       );
@@ -649,7 +649,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _getResourceCreditsAioha() async {
     try {
-      var result = await aioha.getResourceCredits('sagarkothari88');
+      var result = await hfKit.getResourceCredits('sagarkothari88');
       debugPrint("Resources Credits Percentage: ${result.percentage}");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -673,7 +673,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ).showSnackBar(const SnackBar(content: Text('Username is required')));
         return;
       }
-      bool hasThreespeak = await aioha.hasThreespeakInAccountAuths(username);
+      bool hasThreespeak = await hfKit.hasThreespeakInAccountAuths(username);
       debugPrint('threespeak present in accountAuths: $hasThreespeak');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('threespeak present: $hasThreespeak')),
@@ -687,14 +687,14 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _startTimer() async {
-    var result = await aioha.getQrString();
+    var result = await hfKit.getQrString();
     setState(() {
       qrString = result;
       timerDuration = 30;
     });
     Timer.periodic(const Duration(seconds: 1), (timer) async {
       if (timerDuration > 0) {
-        var result = await aioha.getQrString();
+        var result = await hfKit.getQrString();
         setState(() {
           qrString = result;
           timerDuration--;
@@ -720,7 +720,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     try {
-      final result = await aioha.getListOfCommunities(
+      final result = await hfKit.getListOfCommunities(
         _searchQuery.isNotEmpty ? _searchQuery : null,
         limit: _communityPageSize,
         last: loadMore ? _lastCommunityName : null,
@@ -765,7 +765,7 @@ class _MyHomePageState extends State<MyHomePage> {
       String author = 'cositav'; // Replace with actual video author
       String permlink = 'miwbidtw'; // Replace with actual video permlink
 
-      final comments = await aioha.getCommentsList(author, permlink);
+      final comments = await hfKit.getCommentsList(author, permlink);
 
       if (comments.isEmpty) {
         debugPrint('No comments found.');
@@ -798,7 +798,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _uploadedImageUrl = null;
     });
     try {
-      final url = await aioha.pickImageWithMaxSize(
+      final url = await hfKit.pickImageWithMaxSize(
         2000,
         "https://images.ecency.com/hs",
       );
@@ -835,7 +835,7 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       // Fetch account and decode posting_json_metadata
       final username = "shaktimaaan";
-      final accounts = await aioha.getAccounts([username]);
+      final accounts = await hfKit.getAccounts([username]);
       if (accounts.isEmpty) throw Exception("Account not found");
 
       final account = accounts.first;
@@ -872,7 +872,7 @@ class _MyHomePageState extends State<MyHomePage> {
       final dynamic operation = ["account_update2", operationData];
       final dynamic operationRequest = [operation];
 
-      final response = await aioha.signAndBroadcastTx(
+      final response = await hfKit.signAndBroadcastTx(
         operationRequest,
         'posting',
       );
@@ -977,7 +977,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               ElevatedButton(
                 onPressed: () async {
-                  String username = await aioha.getCurrentUser();
+                  String username = await hfKit.getCurrentUser();
                   username = username.replaceAll('"', '');
 
                   showDialog(
