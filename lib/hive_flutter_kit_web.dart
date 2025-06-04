@@ -6,20 +6,20 @@
 import 'dart:html' as html;
 import 'dart:async';
 import 'dart:convert';
-import 'package:aioha_flutter_core/models/login_model.dart';
+import 'package:hive_flutter_kit/models/login_model.dart';
 import 'package:js/js.dart' show JS;
 import 'package:js/js_util.dart';
 
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
-import 'package:aioha_flutter_core/models/account.dart';
-import 'package:aioha_flutter_core/models/chain_properties.dart';
-import 'package:aioha_flutter_core/models/discussion.dart';
-import 'package:aioha_flutter_core/models/resource_credits.dart';
-import 'package:aioha_flutter_core/models/voting_power.dart';
-import 'package:aioha_flutter_core/models/community_model.dart';
+import 'package:hive_flutter_kit/models/account.dart';
+import 'package:hive_flutter_kit/models/chain_properties.dart';
+import 'package:hive_flutter_kit/models/discussion.dart';
+import 'package:hive_flutter_kit/models/resource_credits.dart';
+import 'package:hive_flutter_kit/models/voting_power.dart';
+import 'package:hive_flutter_kit/models/community_model.dart';
 
-import 'aioha_flutter_core_platform_interface.dart';
+import 'hive_flutter_kit_platform_interface.dart';
 
 @JS('getChainProperties')
 external dynamic getChainPropertiesJS();
@@ -148,11 +148,11 @@ external dynamic signAndBroadcastTxJS(
   String keyType,
 );
 
-/// A web implementation of the AiohaFlutterCorePlatform of the AiohaFlutterCore plugin.
-class AiohaFlutterCoreWeb extends AiohaFlutterCorePlatform {
-  /// Constructs a AiohaFlutterCoreWeb
+/// A web implementation of the HiveFlutterKitPlatform of the HiveFlutterKit plugin.
+class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
+  /// Constructs a HiveFlutterKitWeb
   static void registerWith(Registrar registrar) {
-    AiohaFlutterCorePlatform.instance = AiohaFlutterCoreWeb();
+    HiveFlutterKitPlatform.instance = HiveFlutterKitWeb();
   }
 
   @override

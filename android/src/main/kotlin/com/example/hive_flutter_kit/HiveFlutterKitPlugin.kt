@@ -1,4 +1,4 @@
-package com.example.aioha_flutter_core
+package com.example.hive_flutter_kit
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
@@ -6,8 +6,8 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 
-/** AiohaFlutterCorePlugin */
-class AiohaFlutterCorePlugin: FlutterPlugin, MethodCallHandler {
+/** HiveFlutterKitPlugin **/
+class HiveFlutterKitPlugin: FlutterPlugin, MethodCallHandler {
   /// The MethodChannel that will the communication between Flutter and native Android
   ///
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
@@ -15,7 +15,7 @@ class AiohaFlutterCorePlugin: FlutterPlugin, MethodCallHandler {
   private lateinit var channel : MethodChannel
 
   override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-    channel = MethodChannel(flutterPluginBinding.binaryMessenger, "aioha_flutter_core")
+    channel = MethodChannel(flutterPluginBinding.binaryMessenger, "hive_flutter_kit_method_channel")
     channel.setMethodCallHandler(this)
   }
 

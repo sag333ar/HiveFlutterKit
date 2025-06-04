@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:aioha_flutter_core/aioha_flutter_core_platform_interface.dart';
-import 'package:aioha_flutter_core/models/community_model.dart';
+import 'package:hive_flutter_kit/hive_flutter_kit_platform_interface.dart';
+import 'package:hive_flutter_kit/models/community_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -17,7 +17,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late AiohaFlutterCorePlatform aioha;
+  late HiveFlutterKitPlatform aioha;
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _postingKeyController = TextEditingController();
 
@@ -42,7 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    aioha = Provider.of<AiohaFlutterCorePlatform>(context, listen: false);
+    aioha = Provider.of<HiveFlutterKitPlatform>(context, listen: false);
   }
 
   @override
