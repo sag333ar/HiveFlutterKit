@@ -10,4 +10,4 @@ The AIOHA Flutter Core provides a comprehensive Platform Interface, `AiohaFlutte
 
 This section provides detailed documentation for these public methods.
 
-Navigate to the [All Methods](./all-methods.md) page to see the full list of available functionalities, their parameters, and return types.
+Navigate to the [All Methods](./methods.md) page to see the full list of available functionalities, their parameters, and return types.
