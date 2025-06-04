@@ -803,7 +803,7 @@ class _MyHomePageState extends State<MyHomePage> {
         "https://images.ecency.com/hs",
       );
       setState(() {
-        _uploadedImageUrl = url;
+        _uploadedImageUrl = url['url'];
       });
       ScaffoldMessenger.of(
         context,
@@ -881,7 +881,8 @@ class _MyHomePageState extends State<MyHomePage> {
       if (response != null && response['success'] == true) {
         setState(() {
           _broadcastResult =
-              response['profile']?['profile_image'] ?? 'Broadcasted successfully!';
+              response['profile']?['profile_image'] ??
+              'Broadcasted successfully!';
         });
         ScaffoldMessenger.of(
           context,
@@ -918,7 +919,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('Flutter Aioha Core Example'),
+        title: Text('HiveFlutterKit Example'),
       ),
       body: SingleChildScrollView(
         child: Center(
