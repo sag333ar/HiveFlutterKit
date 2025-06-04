@@ -1,6 +1,6 @@
-# Aioha Flutter Core
+# HiveFlutterKit
 
-**📣 For comprehensive documentation, please visit our new documentation site: [https://sag333ar.github.io/aioha_flutter_core/](https://sag333ar.github.io/aioha_flutter_core/)**
+**📣 For comprehensive documentation, please visit our new documentation site: [https://sag333ar.github.io/HiveFlutterKit/](https://sag333ar.github.io/HiveFlutterKit/)**
 
 ---
 
@@ -10,17 +10,17 @@
 
 ### Introduction
 
-- Aioha (All-In-One Hive Authentication) is an API that provides a common interface for working with different Hive login providers. 
+- Aioha (All-In-One Hive Authentication) - Now HiveFlutterKit is an API that provides a common interface for working with different Hive login providers.
 - This allows easier integration of Hive login and transacting on the network with fewer code.
 - For Javascript package usage, https://aioha.dev/docs
 
-### AIOHA Flutter Core
+### HiveFlutterKit
 
-- Aioha Flutter Core is a Flutter package that provides a common interface for working with different Hive login providers.
+- HiveFlutterKit is a Flutter package that provides a common interface for working with different Hive login providers.
 - This allows easier integration of Hive login and transacting on the network with fewer code.
 - For Flutter package usage, https://pub.dev/packages/aioha
-- For more information about the Aioha API, please visit the [Aioha API documentation](https://aioha.dev/docs).
-- For more information about the Aioha Flutter Core, please visit the [Aioha Flutter Core documentation](https://pub.dev/packages/aioha).
+- For more information about the HiveFlutterKit API, please visit the [HiveFlutterKit API documentation](https://aioha.dev/docs).
+- For more information about the HiveFlutterKit, please visit the [HiveFlutterKit documentation](https://pub.dev/packages/aioha).
 
 ## Setup for Android, iOS, and Web
 
@@ -31,7 +31,7 @@ flutter pub add provider
 Update main function as follows:
 
 ```dart
-import 'package:aioha_flutter_core/aioha_core.dart';
+import 'package:HiveFlutterKit/aioha_core.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,21 +44,21 @@ void main() {
 }
 ```
 
-### Extra Setup for Using AIOHA Flutter Core in web-app
+### Extra Setup for Using HiveFlutterKit in web-app
 
 Open web/index.html and add the following script tag to the body section:
 
 ```html
 <body>
   <script src="flutter_bootstrap.js" async></script>
-  <script src="packages/aioha_flutter_core/web/aioha.js" type="application/javascript" defer></script>
+  <script src="packages/HiveFlutterKit/web/aioha.js" type="application/javascript" defer></script>
 </body>
 ```
 
 ### Usage Guide
 
 ```dart
-import 'package:aioha_flutter_core/aioha_core.dart';
+import 'package:HiveFlutterKit/aioha_core.dart';
 import 'package:provider/provider.dart';
 
 class MyHomePage extends StatefulWidget {

@@ -1,12 +1,12 @@
 ---
 sidebar_position: 1
-title: API Overview
+title: HiveFlutterKit API Overview
 sidebar_label: Overview
 ---
 
-# Core API Overview
+# HiveFlutterKit API Overview
 
-The AIOHA Flutter Core provides a comprehensive Platform Interface, `AiohaFlutterCorePlatform`, with a set of methods to interact with the Hive blockchain and perform related utility functions.
+The HiveFlutterKit provides a comprehensive Platform Interface, `HiveFlutterKitPlatform`, with a set of methods to interact with the Hive blockchain and perform related utility functions.
 
 This section provides detailed documentation for these public methods.
 
