@@ -1,18 +1,16 @@
 import 'dart:convert';
 
-// Add AccountAsset and Authority classes for compatibility
-class AccountAsset {
+// Add Asset and Authority classes for compatibility
+class Asset {
   final String value;
-  AccountAsset(this.value);
+  Asset(this.value);
 
-  factory AccountAsset.fromJson(dynamic json) {
-    if (json is String) return AccountAsset(json);
-    if (json is Map &&
-        json.containsKey('amount') &&
-        json.containsKey('symbol')) {
-      return AccountAsset('${json['amount']} ${json['symbol']}');
+  factory Asset.fromJson(dynamic json) {
+    if (json is String) return Asset(json);
+    if (json is Map && json.containsKey('amount') && json.containsKey('symbol')) {
+      return Asset('${json['amount']} ${json['symbol']}');
     }
-    return AccountAsset(json.toString());
+    return Asset(json.toString());
   }
 
   @override
@@ -29,14 +27,12 @@ class Authority {
   factory Authority.fromJson(Map<String, dynamic> json) {
     return Authority(
       weightThreshold: json['weight_threshold'],
-      accountAuths:
-          json['account_auths'] != null
-              ? List<List<dynamic>>.from(json['account_auths'])
-              : null,
-      keyAuths:
-          json['key_auths'] != null
-              ? List<List<dynamic>>.from(json['key_auths'])
-              : null,
+      accountAuths: json['account_auths'] != null
+          ? List<List<dynamic>>.from(json['account_auths'])
+          : null,
+      keyAuths: json['key_auths'] != null
+          ? List<List<dynamic>>.from(json['key_auths'])
+          : null,
     );
   }
 }
@@ -208,10 +204,8 @@ class Account {
       id: json['id'],
       name: json['name'],
       owner: json['owner'] != null ? Authority.fromJson(json['owner']) : null,
-      active:
-          json['active'] != null ? Authority.fromJson(json['active']) : null,
-      posting:
-          json['posting'] != null ? Authority.fromJson(json['posting']) : null,
+      active: json['active'] != null ? Authority.fromJson(json['active']) : null,
+      posting: json['posting'] != null ? Authority.fromJson(json['posting']) : null,
       memoKey: json['memo_key'],
       jsonMetadata: json['json_metadata'],
       postingJsonMetadata: json['posting_json_metadata'],
@@ -233,75 +227,33 @@ class Account {
       canVote: json['can_vote'],
       votingPower: json['voting_power'],
       lastVoteTime: json['last_vote_time'],
-      votingManabar:
-          json['voting_manabar'] != null
-              ? Manabar.fromJson(json['voting_manabar'])
-              : null,
-      balance:
-          json['balance'] != null
-              ? AccountAsset.fromJson(json['balance'])
-              : null,
-      savingsBalance:
-          json['savings_balance'] != null
-              ? AccountAsset.fromJson(json['savings_balance'])
-              : null,
-      hbdBalance:
-          json['hbd_balance'] != null
-              ? AccountAsset.fromJson(json['hbd_balance'])
-              : null,
+      votingManabar: json['voting_manabar'] != null ? Manabar.fromJson(json['voting_manabar']) : null,
+      balance: json['balance'] != null ? Asset.fromJson(json['balance']) : null,
+      savingsBalance: json['savings_balance'] != null ? Asset.fromJson(json['savings_balance']) : null,
+      hbdBalance: json['hbd_balance'] != null ? Asset.fromJson(json['hbd_balance']) : null,
       hbdSeconds: json['hbd_seconds'],
       hbdSecondsLastUpdate: json['hbd_seconds_last_update'],
       hbdLastInterestPayment: json['hbd_last_interest_payment'],
-      savingsHbdBalance:
-          json['savings_hbd_balance'] != null
-              ? AccountAsset.fromJson(json['savings_hbd_balance'])
-              : null,
+      savingsHbdBalance: json['savings_hbd_balance'] != null ? Asset.fromJson(json['savings_hbd_balance']) : null,
       savingsHbdSeconds: json['savings_hbd_seconds'],
       savingsHbdSecondsLastUpdate: json['savings_hbd_seconds_last_update'],
       savingsHbdLastInterestPayment: json['savings_hbd_last_interest_payment'],
       savingsWithdrawRequests: json['savings_withdraw_requests'],
-      rewardHbdBalance:
-          json['reward_hbd_balance'] != null
-              ? AccountAsset.fromJson(json['reward_hbd_balance'])
-              : null,
-      rewardHiveBalance:
-          json['reward_hive_balance'] != null
-              ? AccountAsset.fromJson(json['reward_hive_balance'])
-              : null,
-      rewardVestingBalance:
-          json['reward_vesting_balance'] != null
-              ? AccountAsset.fromJson(json['reward_vesting_balance'])
-              : null,
-      rewardVestingHive:
-          json['reward_vesting_hive'] != null
-              ? AccountAsset.fromJson(json['reward_vesting_hive'])
-              : null,
+      rewardHbdBalance: json['reward_hbd_balance'] != null ? Asset.fromJson(json['reward_hbd_balance']) : null,
+      rewardHiveBalance: json['reward_hive_balance'] != null ? Asset.fromJson(json['reward_hive_balance']) : null,
+      rewardVestingBalance: json['reward_vesting_balance'] != null ? Asset.fromJson(json['reward_vesting_balance']) : null,
+      rewardVestingHive: json['reward_vesting_hive'] != null ? Asset.fromJson(json['reward_vesting_hive']) : null,
       curationRewards: json['curation_rewards'],
       postingRewards: json['posting_rewards'],
-      vestingShares:
-          json['vesting_shares'] != null
-              ? AccountAsset.fromJson(json['vesting_shares'])
-              : null,
-      delegatedVestingShares:
-          json['delegated_vesting_shares'] != null
-              ? AccountAsset.fromJson(json['delegated_vesting_shares'])
-              : null,
-      receivedVestingShares:
-          json['received_vesting_shares'] != null
-              ? AccountAsset.fromJson(json['received_vesting_shares'])
-              : null,
-      vestingWithdrawRate:
-          json['vesting_withdraw_rate'] != null
-              ? AccountAsset.fromJson(json['vesting_withdraw_rate'])
-              : null,
+      vestingShares: json['vesting_shares'] != null ? Asset.fromJson(json['vesting_shares']) : null,
+      delegatedVestingShares: json['delegated_vesting_shares'] != null ? Asset.fromJson(json['delegated_vesting_shares']) : null,
+      receivedVestingShares: json['received_vesting_shares'] != null ? Asset.fromJson(json['received_vesting_shares']) : null,
+      vestingWithdrawRate: json['vesting_withdraw_rate'] != null ? Asset.fromJson(json['vesting_withdraw_rate']) : null,
       nextVestingWithdrawal: json['next_vesting_withdrawal'],
       withdrawn: json['withdrawn'],
       toWithdraw: json['to_withdraw'],
       withdrawRoutes: json['withdraw_routes'],
-      proxiedVsfVotes:
-          json['proxied_vsf_votes'] != null
-              ? List<int>.from(json['proxied_vsf_votes'])
-              : null,
+      proxiedVsfVotes: json['proxied_vsf_votes'] != null ? List<int>.from(json['proxied_vsf_votes']) : null,
       witnessesVotedFor: json['witnesses_voted_for'],
       averageBandwidth: json['average_bandwidth'],
       lifetimeBandwidth: json['lifetime_bandwidth'],
@@ -311,28 +263,16 @@ class Account {
       lastMarketBandwidthUpdate: json['last_market_bandwidth_update'],
       lastPost: json['last_post'],
       lastRootPost: json['last_root_post'],
-      vestingBalance:
-          json['vesting_balance'] != null
-              ? AccountAsset.fromJson(json['vesting_balance'])
-              : null,
+      vestingBalance: json['vesting_balance'] != null ? Asset.fromJson(json['vesting_balance']) : null,
       reputation: json['reputation'],
       transferHistory: json['transfer_history'],
       marketHistory: json['market_history'],
       postHistory: json['post_history'],
       voteHistory: json['vote_history'],
       otherHistory: json['other_history'],
-      witnessVotes:
-          json['witness_votes'] != null
-              ? List<String>.from(json['witness_votes'])
-              : null,
-      tagsUsage:
-          json['tags_usage'] != null
-              ? List<String>.from(json['tags_usage'])
-              : null,
-      guestBloggers:
-          json['guest_bloggers'] != null
-              ? List<String>.from(json['guest_bloggers'])
-              : null,
+      witnessVotes: json['witness_votes'] != null ? List<String>.from(json['witness_votes']) : null,
+      tagsUsage: json['tags_usage'] != null ? List<String>.from(json['tags_usage']) : null,
+      guestBloggers: json['guest_bloggers'] != null ? List<String>.from(json['guest_bloggers']) : null,
       openOrders: json['open_orders'],
       comments: json['comments'],
       blog: json['blog'],
