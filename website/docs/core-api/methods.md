@@ -5,9 +5,9 @@ sidebar_label: All Methods
 slug: /core-api/all-methods
 ---
 
-# All AIOHA Flutter Core Methods
+# All HiveFlutterKit Methods
 
-This page details the public methods available in the `AiohaFlutterCorePlatform` class.
+This page details the public methods available in the `HiveFlutterKitPlatform` class.
 
 ---
 

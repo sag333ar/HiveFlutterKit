@@ -6,11 +6,11 @@ sidebar_label: Basic Usage
 
 # Basic Usage Guide
 
-Here's a simple example of how to use AIOHA Flutter Core in your Flutter widget. This example demonstrates how to access the AIOHA instance and call a login method.
+Here's a simple example of how to use HiveFlutterKit in your Flutter widget. This example demonstrates how to access the AIOHA instance and call a login method.
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:aioha_flutter_core/aioha_flutter_core.dart'; // Ensure correct import
+import 'package:hive_flutter_kit/hive_flutter_kit.dart'; // Ensure correct import
 import 'package:provider/provider.dart'; // If using Provider
 
 class MyHomePage extends StatefulWidget {
@@ -21,7 +21,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late AiohaFlutterCorePlatform aioha;
+  late HiveFlutterKitPlatform aioha;
   final _usernameController = TextEditingController(); // For username input
   String _loginResult = ''; // To display login result
 
@@ -31,7 +31,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // It's often better to get the provider instance in initState or didChangeDependencies
     // if you need it early and it doesn't depend on BuildContext that changes often.
     // However, for simplicity in this example, if context is truly needed:
-    // aioha = Provider.of<AiohaFlutterCorePlatform>(context, listen: false);
+    // aioha = Provider.of<HiveFlutterKitPlatform>(context, listen: false);
     // But since it's not used in initState here, we'll get it in the method.
   }
 
@@ -39,7 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     // Initialize aioha here if it depends on context and might change
-    aioha = Provider.of<AiohaFlutterCorePlatform>(context, listen: false);
+    aioha = Provider.of<HiveFlutterKitPlatform>(context, listen: false);
   }
 
   void _loginWithHiveKeychain() async {
@@ -71,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('AIOHA Flutter Core Example'),
+        title: Text('HiveFlutterKit Example'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
