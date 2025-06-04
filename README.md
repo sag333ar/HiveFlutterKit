@@ -16,7 +16,7 @@
 
 ### HiveFlutterKit
 
-- HiveFlutterKit is a Flutter package that provides a common interface for working with different Hive login providers. It also provides dhive package usage.
+- HiveFlutterKit is a Flutter package that provides a common interface for working with different Hive login providers.
 - This allows easier integration of Hive login and transacting on the network with fewer code.
 - For Flutter package usage, https://pub.dev/packages/aioha
 - For more information about the HiveFlutterKit API, please visit the [HiveFlutterKit API documentation](https://aioha.dev/docs).
@@ -36,12 +36,8 @@ import 'package:HiveFlutterKit/aioha_core.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
-    MultiProvider(
-      providers: [
-        Provider<HiveFlutterKitPlatform>.value(
-          value: HiveFlutterKitPlatform.instance,
-        ),
-      ],
+    Provider<AiohaFlutterCorePlatform>.value(
+      value: AiohaFlutterCorePlatform.instance,
       child: const MyApp(),
     ),
   );
@@ -55,14 +51,14 @@ Open web/index.html and add the following script tag to the body section:
 ```html
 <body>
   <script src="flutter_bootstrap.js" async></script>
-  <script src="packages/HiveFlutterKit/web/hiveflutterkit.js" type="application/javascript" defer></script>
+  <script src="packages/HiveFlutterKit/web/aioha.js" type="application/javascript" defer></script>
 </body>
 ```
 
 ### Usage Guide
 
 ```dart
-import 'package:hive_flutter_kit/hive_flutter_kit_platform_interface.dart';
+import 'package:HiveFlutterKit/aioha_core.dart';
 import 'package:provider/provider.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -73,18 +69,18 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late HiveFlutterKitPlatform hfKit;
+  late AiohaFlutterCorePlatform aioha;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    hfKit = Provider.of<HiveFlutterKitPlatform>(context, listen: false);
+    aioha = Provider.of<AiohaFlutterCorePlatform>(context, listen: false);
   }
 
   void _loginWithHiveKeychain() async {
     try {
-      // following line uses hfKit
-      final result = await hfKit.plugin.loginWithKeychain(
+      // following line uses aioha
+      final result = await aioha.plugin.loginWithKeychain(
         _usernameController.text,
         'some-text-to-be-signed', // if we send empty string, it will be auto-generated
       );
@@ -97,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 ## API Reference
 
-This section provides documentation for the public methods available in the `HiveFlutterKitPlatform` class.
+This section provides documentation for the public methods available in the `AiohaFlutterCorePlatform` class.
 
 ---
 

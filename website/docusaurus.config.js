@@ -12,7 +12,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 const config = {
   title: 'HiveFlutterKit',
   tagline: 'Seamless Hive Authentication for your Flutter Apps',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/hiveflutterkit_logo.png',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
@@ -77,12 +77,12 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       // Replace with your project's social card
-      image: 'img/docusaurus-social-card.jpg',
+      image: 'img/hiveflutterkit_logo.png',
       navbar: {
         title: 'HiveFlutterKit',
         logo: {
-          alt: 'My Site Logo',
-          src: 'img/logo.svg',
+          alt: 'HiveFlutterKit Logo',
+          src: 'img/hiveflutterkit_logo.png',
         },
         items: [
           {
