@@ -11,7 +11,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `loginWithKeychain(String username, String proof)`
+### `loginWithKeychain`
+`loginWithKeychain(String username, String proof)`
 
 *   **Description:** Initiates a login process using Hive Keychain.
 *   **Parameters:**
@@ -21,7 +22,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `loginWithHiveAuth(String username, String proof)`
+### `loginWithHiveAuth`
+`loginWithHiveAuth(String username, String proof)`
 
 *   **Description:** Initiates a login process using HiveAuth.
 *   **Parameters:**
@@ -31,7 +33,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `loginWithPlaintextKey(String username, String postingKey, String proof)`
+### `loginWithPlaintextKey`
+`loginWithPlaintextKey(String username, String postingKey, String proof)`
 
 *   **Description:** Initiates a login process using a plaintext posting key. **Note:** This method should be used with extreme caution due to the security risks of handling plaintext private keys.
 *   **Parameters:**
@@ -42,7 +45,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `getCurrentUser()`
+### `getCurrentUser`
+`getCurrentUser()`
 
 *   **Description:** Retrieves the username of the currently logged-in user.
 *   **Parameters:** None.
@@ -50,7 +54,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `getQrString()`
+### `getQrString`
+`getQrString()`
 
 *   **Description:** Generates a QR code string, typically used for HiveAuth login flows.
 *   **Parameters:** None.
@@ -58,7 +63,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `logout()`
+### `logout`
+`logout()`
 
 *   **Description:** Logs out the current user.
 *   **Parameters:** None.
@@ -66,7 +72,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `singleVote(String author, String permlink, int weight)`
+### `singleVote`
+`singleVote(String author, String permlink, int weight)`
 
 *   **Description:** Casts a vote on a Hive post or comment.
 *   **Parameters:**
@@ -77,7 +84,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `comment(String parentAuthor, String parentPermlink, String permlink, String title, String body, Map<String, dynamic> jsonMetadata)`
+### `comment`
+`comment(String parentAuthor, String parentPermlink, String permlink, String title, String body, Map<String, dynamic> jsonMetadata)`
 
 *   **Description:** Publishes a comment or post on the Hive blockchain.
 *   **Parameters:**
@@ -91,7 +99,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `commentWithOptions(String parentAuthor, String parentPermlink, String permlink, String title, String body, String jsonMetadata, String options)`
+### `commentWithOptions`
+`commentWithOptions(String parentAuthor, String parentPermlink, String permlink, String title, String body, String jsonMetadata, String options)`
 
 *   **Description:** Publishes a comment or post with additional options (e.g., beneficiaries, burn_account).
 *   **Parameters:**
@@ -106,7 +115,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `deleteComment(String permlink)`
+### `deleteComment`
+`deleteComment(String permlink)`
 
 *   **Description:** Deletes a previously published comment or post.
 *   **Parameters:**
@@ -115,7 +125,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `reblog(String author, String permlink, bool reblogFlag)`
+### `reblog`
+`reblog(String author, String permlink, bool reblogFlag)`
 
 *   **Description:** Reblogs or un-reblogs a post.
 *   **Parameters:**
@@ -126,7 +137,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `follow(String author, bool followFlag)`
+### `follow`
+`follow(String author, bool followFlag)`
 
 *   **Description:** Follows or unfollows a Hive user.
 *   **Parameters:**
@@ -136,7 +148,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `claimRewards()`
+### `claimRewards`
+`claimRewards()`
 
 *   **Description:** Claims pending rewards for the logged-in user.
 *   **Parameters:** None.
@@ -144,7 +157,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `signMessage(String message, String keyType)`
+### `signMessage`
+`signMessage(String message, String keyType)`
 
 *   **Description:** Signs an arbitrary message with the user's specified key type.
 *   **Parameters:**
@@ -154,7 +168,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `switchUser(String userId)`
+### `switchUser`
+`switchUser(String userId)`
 
 *   **Description:** Switches the active user if multiple accounts are managed by AIOHA.
 *   **Parameters:**
@@ -163,7 +178,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `getOtherLogins()`
+### `getOtherLogins`
+`getOtherLogins()`
 
 *   **Description:** Retrieves a list of other usernames for accounts that have been previously logged into and are managed by AIOHA.
 *   **Parameters:** None.
@@ -171,7 +187,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `removeOtherLogin(String userId)`
+### `removeOtherLogin`
+`removeOtherLogin(String userId)`
 
 *   **Description:** Removes a previously logged-in user from the list of managed accounts.
 *   **Parameters:**
@@ -180,7 +197,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `addAccountAuthority(String account, String keyType, int weight)`
+### `addAccountAuthority`
+`addAccountAuthority(String account, String keyType, int weight)`
 
 *   **Description:** Grants authority to another account for a specific key type (e.g., posting authority).
 *   **Parameters:**
@@ -191,7 +209,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `removeAccountAuthority(String account, String keyType)`
+### `removeAccountAuthority`
+`removeAccountAuthority(String account, String keyType)`
 
 *   **Description:** Revokes authority previously granted to another account for a specific key type.
 *   **Parameters:**
@@ -201,7 +220,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `getPlatformVersion()`
+### `getPlatformVersion`
+`getPlatformVersion()`
 
 *   **Description:** Retrieves the platform version on which the Flutter app is running. This is typically for debugging or platform-specific logic.
 *   **Parameters:** None.
@@ -209,7 +229,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `getChainProperties()`
+### `getChainProperties`
+`getChainProperties()`
 
 *   **Description:** Fetches dynamic global properties of the Hive blockchain.
 *   **Parameters:** None.
@@ -217,7 +238,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `getDiscussions(String by, {required int limit, String tag = '', String? startAuthor, String? startPermlink, String? observer})`
+### `getDiscussions`
+`getDiscussions(String by, {required int limit, String tag = '', String? startAuthor, String? startPermlink, String? observer})`
 
 *   **Description:** Fetches a list of discussions (posts/comments) based on various criteria (e.g., trending, hot, new).
 *   **Parameters:**
@@ -231,7 +253,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `getAccounts(List<String> usernames)`
+### `getAccounts`
+`getAccounts(List<String> usernames)`
 
 *   **Description:** Retrieves detailed information for a list of Hive accounts.
 *   **Parameters:**
@@ -240,7 +263,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `getVotingPower(String username)`
+### `getVotingPower`
+`getVotingPower(String username)`
 
 *   **Description:** Fetches the current voting power for a specified user.
 *   **Parameters:**
@@ -249,7 +273,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `getResourceCredits(String username)`
+### `getResourceCredits`
+`getResourceCredits(String username)`
 
 *   **Description:** Fetches the current resource credits (RC) for a specified user.
 *   **Parameters:**
@@ -258,7 +283,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `getAccountPosts(String username, String by, {required int limit, String? startAuthor, String? startPermlink, String? observer})`
+### `getAccountPosts`
+`getAccountPosts(String username, String by, {required int limit, String? startAuthor, String? startPermlink, String? observer})`
 
 *   **Description:** Fetches a list of posts made by a specific account, sorted by a chosen method.
 *   **Parameters:**
@@ -272,7 +298,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `hasThreespeakInAccountAuths(String username)`
+### `hasThreespeakInAccountAuths`
+`hasThreespeakInAccountAuths(String username)`
 
 *   **Description:** Checks if the 'threespeak' account has been granted posting authority by the specified user. This is relevant for integrations with the 3Speak video platform.
 *   **Parameters:**
@@ -281,7 +308,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `getListOfCommunities(String? query, {int limit = 20, String? last, String? observer})`
+### `getListOfCommunities`
+`getListOfCommunities(String? query, {int limit = 20, String? last, String? observer})`
 
 *   **Description:** Fetches a list of Hive communities. Can be used to search for communities or list them.
 *   **Parameters:**
@@ -293,7 +321,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `getCommentsList(String author, String permlink)`
+### `getCommentsList`
+`getCommentsList(String author, String permlink)`
 
 *   **Description:** Fetches the list of comments for a specific post.
 *   **Parameters:**
@@ -303,7 +332,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `uploadImage({required Uint8List imageBytes, required String fileName, required String token, required String uploadUrlSever})`
+### `uploadImage`
+`uploadImage({required Uint8List imageBytes, required String fileName, required String token, required String uploadUrlSever})`
 
 *   **Description:** Uploads an image to a specified server.
 *   **Parameters:**
@@ -316,7 +346,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `pickImageWithMaxSize(int maxDimension, String uploadUrlSever)`
+### `pickImageWithMaxSize`
+`pickImageWithMaxSize(int maxDimension, String uploadUrlSever)`
 
 *   **Description:** Allows the user to pick an image from the gallery, checks its dimensions, signs a message (presumably for authentication with the upload server), and then uploads it using `uploadImage`.
 *   **Parameters:**
@@ -327,7 +358,8 @@ This page details the public methods available in the `AiohaFlutterCorePlatform`
 
 ---
 
-### `signAndBroadcastTx(dynamic operationRequest, String keyType)`
+### `signAndBroadcastTx`
+`signAndBroadcastTx(dynamic operationRequest, String keyType)`
 
 *   **Description:** Signs and broadcasts a generic Hive transaction. This is a flexible method for operations not explicitly covered by other methods.
 *   **Parameters:**
