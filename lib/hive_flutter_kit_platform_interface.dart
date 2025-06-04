@@ -201,56 +201,18 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
     throw UnimplementedError('getCommentsList has not been implemented.');
   }
 
-  String computeSha256(Uint8List data) {
+  String _computeSha256(Uint8List data) {
     Digest digest = sha256.convert(data);
     return digest.toString();
   }
 
-  String toBase64(String input) {
+  String _toBase64(String input) {
     List<int> bytes = utf8.encode(input); // Convert string to bytes
     String base64Str = base64Encode(bytes); // Encode to Base64
     return base64Str;
   }
 
-  // Future<String> uploadImage({
-  //   required Uint8List imageBytes,
-  //   required String fileName,
-  //   required String token,
-  //   required String uploadUrlSever,
-  // }) async {
-  //   final url = Uri.parse("$uploadUrlSever/$token");
-
-  //   // Detect MIME type (e.g., image/jpeg or image/png)
-  //   final mimeType = lookupMimeType(fileName) ?? 'application/octet-stream';
-  //   final mediaType = MediaType.parse(mimeType);
-
-  //   final request = http.MultipartRequest("POST", url);
-
-  //   request.files.add(
-  //     http.MultipartFile.fromBytes(
-  //       'file',
-  //       imageBytes,
-  //       filename: fileName,
-  //       contentType: mediaType,
-  //     ),
-  //   );
-
-  //   final streamedResponse = await request.send();
-  //   final response = await http.Response.fromStream(streamedResponse);
-
-  //   if (response.statusCode == 200) {
-  //     final Map<String, dynamic> resJson = jsonDecode(response.body);
-  //     final uploadUrl = resJson['url'];
-  //     return uploadUrl;
-  //   } else {
-  //     print("Response: ${response.body}");
-  //     throw Exception(
-  //       "Upload failed: ${response.statusCode} - ${response.body}",
-  //     );
-  //   }
-  // }
-
-  Future<Map<String, dynamic>> uploadImage({
+  Future<String> uploadImage({
     required Uint8List imageBytes,
     required String fileName,
     required String token,
@@ -258,6 +220,7 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
   }) async {
     final url = Uri.parse("$uploadUrlSever/$token");
 
+    // Detect MIME type (e.g., image/jpeg or image/png)
     final mimeType = lookupMimeType(fileName) ?? 'application/octet-stream';
     final mediaType = MediaType.parse(mimeType);
 
@@ -272,35 +235,22 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
       ),
     );
 
-    try {
-      final streamedResponse = await request.send();
-      final response = await http.Response.fromStream(streamedResponse);
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> resJson = jsonDecode(response.body);
-        final uploadUrl = resJson['url'];
-
-        return {
-          'success': true,
-          'url': uploadUrl,
-          'message': 'Image uploaded successfully.',
-        };
-      } else {
-        return {
-          'success': false,
-          'url': null,
-          'message': 'Upload failed: ${response.statusCode} - ${response.body}',
-        };
-      }
-    } catch (e) {
-      return {'success': false, 'url': null, 'message': 'Upload error: $e'};
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> resJson = jsonDecode(response.body);
+      final uploadUrl = resJson['url'];
+      return uploadUrl;
+    } else {
+      print("Response: ${response.body}");
+      throw Exception(
+        "Upload failed: ${response.statusCode} - ${response.body}",
+      );
     }
   }
 
-  Future<Map<String, dynamic>> pickImageWithMaxSize(
-    int maxDimension,
-    String uploadUrlSever,
-  ) async {
+  Future<String> pickImageWithMaxSize(int maxDimension,String uploadUrlSever) async {
     final XFile? pickedFile = await _picker.pickImage(
       source: ImageSource.gallery,
     );
@@ -336,7 +286,7 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
       final decodedResult = jsonDecode(resultOfSignature);
       if (decodedResult['success'] == true) {
         object['signatures'] = [decodedResult['result']];
-        var base64StringOfObject = toBase64(jsonEncode(object));
+        var base64StringOfObject = _toBase64(jsonEncode(object));
         var uploadedUrl = await uploadImage(
           imageBytes: fileBytes,
           fileName: pickedFile.name,
@@ -354,7 +304,10 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
     }
   }
 
-  Future<dynamic> signAndBroadcastTx(dynamic operationRequest, String keyType) {
+  Future<dynamic> signAndBroadcastTx(
+    dynamic operationRequest,
+    String keyType,
+  ) {
     throw UnimplementedError('signAndBroadcastTx has not been implemented.');
   }
 }
