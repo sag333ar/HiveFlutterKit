@@ -4,32 +4,32 @@ import styles from './styles.module.css';
 
 const FeatureList = [
   {
-    title: 'Easy to Use',
+    title: 'Flutter-Friendly Hive Auth',
     Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        HiveFlutterKit is designed for seamless integration into your Flutter
+        applications, allowing you to add Hive authentication with minimal setup.
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
+    title: 'Connect to Hive, Not Complexity',
     Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        HiveFlutterKit handles the underlying complexities of Hive authentication,
+        so you can focus on building great user experiences on the Hive blockchain.
       </>
     ),
   },
   {
-    title: 'Powered by React',
+    title: 'Open Source & Community Driven',
     Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        HiveFlutterKit is an open-source project built for the Hive community.
+        Contributions are welcome to help it grow and thrive!
       </>
     ),
   },
