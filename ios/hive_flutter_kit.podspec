@@ -1,15 +1,15 @@
 #
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html.
-# Run `pod lib lint aioha_flutter_core.podspec` to validate before publishing.
+# Run `pod lib lint hive_flutter_kit.podspec` to validate before publishing.
 #
 Pod::Spec.new do |s|
-  s.name             = 'aioha_flutter_core'
+  s.name             = 'hive_flutter_kit'
   s.version          = '0.0.1'
-  s.summary          = 'A new Flutter plugin project.'
+  s.summary          = 'A Flutter plugin for Hive blockchain authentication and operations.'
   s.description      = <<-DESC
-A new Flutter plugin project.
+A Flutter plugin for Hive blockchain authentication and operations.
                        DESC
-  s.homepage         = 'http://example.com'
+  s.homepage         = 'https://github.com/sag333ar/HiveFlutterKit'
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Your Company' => 'email@example.com' }
   s.source           = { :path => '.' }
@@ -25,5 +25,5 @@ A new Flutter plugin project.
   # required reason APIs, update the PrivacyInfo.xcprivacy file to describe your
   # plugin's privacy impact, and then uncomment this line. For more information,
   # see https://developer.apple.com/documentation/bundleresources/privacy_manifest_files
-  # s.resource_bundles = {'aioha_flutter_core_privacy' => ['Resources/PrivacyInfo.xcprivacy']}
+  # s.resource_bundles = {'hive_flutter_kit_privacy' => ['Resources/PrivacyInfo.xcprivacy']}
 end

@@ -1,11 +1,11 @@
-import 'package:aioha_flutter_core/models/login_model.dart';
+import 'package:hive_flutter_kit/models/login_model.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:aioha_flutter_core/models/account.dart';
-import 'package:aioha_flutter_core/models/chain_properties.dart';
-import 'package:aioha_flutter_core/models/discussion.dart';
-import 'package:aioha_flutter_core/models/resource_credits.dart';
-import 'package:aioha_flutter_core/models/voting_power.dart';
-import 'package:aioha_flutter_core/models/community_model.dart';
+import 'package:hive_flutter_kit/models/account.dart';
+import 'package:hive_flutter_kit/models/chain_properties.dart';
+import 'package:hive_flutter_kit/models/discussion.dart';
+import 'package:hive_flutter_kit/models/resource_credits.dart';
+import 'package:hive_flutter_kit/models/voting_power.dart';
+import 'package:hive_flutter_kit/models/community_model.dart';
 
 import 'dart:typed_data';
 import 'package:image_picker/image_picker.dart';
@@ -16,25 +16,25 @@ import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
 import 'package:crypto/crypto.dart';
 
-import 'aioha_flutter_core_method_channel.dart';
+import 'hive_flutter_kit_method_channel.dart';
 
-abstract class AiohaFlutterCorePlatform extends PlatformInterface {
-  /// Constructs a AiohaFlutterCorePlatform.
-  AiohaFlutterCorePlatform() : super(token: _token);
+abstract class HiveFlutterKitPlatform extends PlatformInterface {
+  /// Constructs a HiveFlutterKitPlatform.
+  HiveFlutterKitPlatform() : super(token: _token);
   static final Object _token = Object();
   final ImagePicker _picker = ImagePicker();
 
-  static AiohaFlutterCorePlatform _instance = MethodChannelAiohaFlutterCore();
+  static HiveFlutterKitPlatform _instance = MethodChannelHiveFlutterKit();
 
-  /// The default instance of [AiohaFlutterCorePlatform] to use.
+  /// The default instance of [HiveFlutterKitPlatform] to use.
   ///
-  /// Defaults to [MethodChannelAiohaFlutterCore].
-  static AiohaFlutterCorePlatform get instance => _instance;
+  /// Defaults to [MethodChannelHiveFlutterKit].
+  static HiveFlutterKitPlatform get instance => _instance;
 
   /// Platform-specific implementations should set this with their own
-  /// platform-specific class that extends [AiohaFlutterCorePlatform] when
+  /// platform-specific class that extends [HiveFlutterKitPlatform] when
   /// they register themselves.
-  static set instance(AiohaFlutterCorePlatform instance) {
+  static set instance(HiveFlutterKitPlatform instance) {
     PlatformInterface.verifyToken(instance, _token);
     _instance = instance;
   }

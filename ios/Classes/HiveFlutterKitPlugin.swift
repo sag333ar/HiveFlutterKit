@@ -1,10 +1,10 @@
 import Flutter
 import UIKit
 
-public class AiohaFlutterCorePlugin: NSObject, FlutterPlugin {
+public class HiveFlutterKitPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(name: "aioha_flutter_core", binaryMessenger: registrar.messenger())
-    let instance = AiohaFlutterCorePlugin()
+    let channel = FlutterMethodChannel(name: "hive_flutter_kit_method_channel", binaryMessenger: registrar.messenger())
+    let instance = HiveFlutterKitPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
 
