@@ -5,18 +5,18 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "hive_flutter_kit",
+      "name": "aioha_flutter_core",
       "request": "launch",
       "type": "dart"
     },
     {
-      "name": "hive_flutter_kit (profile mode)",
+      "name": "aioha_flutter_core (profile mode)",
       "request": "launch",
       "type": "dart",
       "flutterMode": "profile"
     },
     {
-      "name": "hive_flutter_kit (release mode)",
+      "name": "aioha_flutter_core (release mode)",
       "request": "launch",
       "type": "dart",
       "flutterMode": "release"
