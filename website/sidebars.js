@@ -35,10 +35,26 @@ const sidebars = {
         id: 'use-aioha',
       },
       items: [
-        'use-aioha#authentication',
-        'use-aioha#user-management',
-        'use-aioha#onchain-operations',
-        'use-aioha#helpers',
+        {
+          type: 'link',
+          label: 'Authentication',
+          href: '/docs/use-aioha#authentication',
+        },
+        {
+          type: 'link',
+          label: 'User management',
+          href: '/docs/use-aioha#user-management',
+        },
+        {
+          type: 'link',
+          label: 'Onchain Operations',
+          href: '/docs/use-aioha#onchain-operations',
+        },
+        {
+          type: 'link',
+          label: 'Helpers',
+          href: '/docs/use-aioha#helpers',
+        },
       ],
     },
     'use-dhive',
