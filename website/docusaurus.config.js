@@ -97,11 +97,6 @@ const config = {
             label: 'GitHub',
             position: 'right',
           },
-          {
-            href: 'https://donate.the-hive-mobile.app/#/donate/sagarkothari88',
-            label: 'Donate',
-            position: 'right',
-          },
         ],
       },
       footer: {
@@ -113,6 +108,14 @@ const config = {
               {
                 label: 'Documentation',
                 to: '/docs/intro',
+              },
+              {
+                label: 'Our Contributions',
+                to: '/docs/our-contributions',
+              },
+              {
+                label: 'Donate',
+                href: 'https://donate.the-hive-mobile.app/#/donate/sagarkothari88',
               },
             ],
           },
