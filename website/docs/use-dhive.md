@@ -10,7 +10,7 @@ slug: /use-dhive
 
 ---
 
-### Get Chain Properties
+#### Get Chain Properties
 `getChainProperties()`
 
 *   **Description:** Fetches dynamic global properties of the Hive blockchain.
@@ -19,7 +19,7 @@ slug: /use-dhive
 
 ---
 
-### Get Discussions
+#### Get Discussions
 `getDiscussions(String by, {required int limit, String tag = '', String? startAuthor, String? startPermlink, String? observer})`
 
 *   **Description:** Fetches a list of discussions (posts/comments) based on various criteria (e.g., trending, hot, new).
@@ -34,7 +34,7 @@ slug: /use-dhive
 
 ---
 
-### Get Accounts
+#### Get Accounts
 `getAccounts(List<String> usernames)`
 
 *   **Description:** Retrieves detailed information for a list of Hive accounts.
@@ -48,7 +48,7 @@ slug: /use-dhive
 
 ---
 
-### Get Voting Power
+#### Get Voting Power
 `getVotingPower(String username)`
 
 *   **Description:** Fetches the current voting power for a specified user.
@@ -58,7 +58,7 @@ slug: /use-dhive
 
 ---
 
-### Get Resource Credits
+#### Get Resource Credits
 `getResourceCredits(String username)`
 
 *   **Description:** Fetches the current resource credits (RC) for a specified user.
@@ -68,7 +68,7 @@ slug: /use-dhive
 
 ---
 
-### Has Threespeak In Account Auths
+#### Has Threespeak In Account Auths
 `hasThreespeakInAccountAuths(String username)`
 
 *   **Description:** Checks if the 'threespeak' account has been granted posting authority by the specified user. This is relevant for integrations with the 3Speak video platform.
@@ -82,7 +82,7 @@ slug: /use-dhive
 
 ---
 
-### Get Account Posts
+#### Get Account Posts
 `getAccountPosts(String username, String by, {required int limit, String? startAuthor, String? startPermlink, String? observer})`
 
 *   **Description:** Fetches a list of posts made by a specific account, sorted by a chosen method.
@@ -97,7 +97,7 @@ slug: /use-dhive
 
 ---
 
-### Get List Of Communities
+#### Get List Of Communities
 `getListOfCommunities(String? query, {int limit = 20, String? last, String? observer})`
 
 *   **Description:** Fetches a list of Hive communities. Can be used to search for communities or list them.
@@ -114,7 +114,7 @@ slug: /use-dhive
 
 ---
 
-### Get Comments List
+#### Get Comments List
 `getCommentsList(String author, String permlink)`
 
 *   **Description:** Fetches the list of comments for a specific post.
