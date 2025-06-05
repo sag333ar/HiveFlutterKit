@@ -27,14 +27,9 @@ const sidebars = {
         'getting-started/basic-usage', // Points to docs/getting-started/basic-usage.md
       ],
     },
-    {
-      type: 'category',
-      label: 'Core API',
-      items: [
-        'core-api/overview', // Points to docs/core-api/overview.md
-        'core-api/methods', // Points to docs/core-api/methods.md (via slug)
-      ],
-    },
+    'use-aioha',
+    'use-dhive',
+    'extra-utilities',
     // Example for a future "Guides" section
     // {
     //   type: 'category',
