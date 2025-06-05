@@ -73,7 +73,7 @@ const sidebars = {
         {
           type: 'link',
           label: 'Helpers & Utilities',
-          href: '/docs/use-dhive#helpers-utilities',
+          href: '/docs/use-dhive#helpers--utilities',
         },
         {
           type: 'link',
