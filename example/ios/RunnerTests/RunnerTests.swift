@@ -3,7 +3,7 @@ import UIKit
 import XCTest
 
 
-@testable import aioha_flutter_core
+@testable import hive_flutter_kit
 
 // This demonstrates a simple unit test of the Swift portion of this plugin's implementation.
 //
