@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/ux/aioha_login_screen.dart';
 import 'package:hive_flutter_kit/ux/aioha_switch_user.dart';
 import 'package:hive_flutter_kit/ux/community_list.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/three_speak_feed_list.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -1277,6 +1278,51 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
               const Divider(),
+
+              // --- ThreeSpeak Feed List Buttons ---
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Scaffold(
+                        appBar: AppBar(title: const Text('Trending Feed')),
+                        body: const ThreeSpeakFeedList(feedType: ThreeSpeakFeedType.trending),
+                      ),
+                    ),
+                  );
+                },
+                child: const Text('Show Trending Feed'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Scaffold(
+                        appBar: AppBar(title: const Text('New Uploads Feed')),
+                        body: const ThreeSpeakFeedList(feedType: ThreeSpeakFeedType.newUploads),
+                      ),
+                    ),
+                  );
+                },
+                child: const Text('Show New Uploads Feed'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Scaffold(
+                        appBar: AppBar(title: const Text('First Uploads Feed')),
+                        body: const ThreeSpeakFeedList(feedType: ThreeSpeakFeedType.firstUploads),
+                      ),
+                    ),
+                  );
+                },
+                child: const Text('Show First Uploads Feed'),
+              ),
             ],
           ),
         ),
