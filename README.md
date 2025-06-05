@@ -1,6 +1,6 @@
 # HiveFlutterKit
 
-**📣 For comprehensive documentation, please visit our new documentation site: [https://sag333ar.github.io/HiveFlutterKit/](https://sag333ar.github.io/HiveFlutterKit/)**
+**📣 For comprehensive documentation, please visit our new documentation site: [https://hiveflutterkit.sagarkothari88.one/](https://hiveflutterkit.sagarkothari88.one/)**
 
 ---
 
