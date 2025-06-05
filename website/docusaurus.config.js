@@ -109,6 +109,14 @@ const config = {
                 label: 'Documentation',
                 to: '/docs/intro',
               },
+              {
+                label: 'Our Contributions',
+                to: '/docs/our-contributions',
+              },
+              {
+                label: 'Donate',
+                href: 'https://donate.the-hive-mobile.app/#/donate/sagarkothari88',
+              },
             ],
           },
           {
