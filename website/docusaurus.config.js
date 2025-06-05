@@ -97,6 +97,11 @@ const config = {
             label: 'GitHub',
             position: 'right',
           },
+          {
+            href: 'https://donate.the-hive-mobile.app/#/donate/sagarkothari88',
+            label: 'Donate',
+            position: 'right',
+          },
         ],
       },
       footer: {
