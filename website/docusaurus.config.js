@@ -148,6 +148,10 @@ const config = {
         ],
         copyright: `Copyright © ${new Date().getFullYear()} HiveFlutterKit`,
       },
+      tableOfContents: {
+        minHeadingLevel: 2,
+        maxHeadingLevel: 4,
+      },
       prism: {
         theme: prismThemes.github,
         darkTheme: prismThemes.dracula,
