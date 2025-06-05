@@ -19,6 +19,7 @@ const sidebars = {
   // But we want to create a custom sidebar
   docsSidebar: [
     'intro', // Points to docs/intro.md
+    'our-contributions',
     {
       type: 'category',
       label: 'Getting Started',
