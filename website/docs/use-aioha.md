@@ -10,7 +10,7 @@ slug: /use-aioha
 
 ---
 
-### Login With Keychain
+#### Login With Keychain
 `loginWithKeychain(String username, String proof)`
 
 *   **Description:** Initiates a login process using Hive Keychain.
@@ -21,7 +21,7 @@ slug: /use-aioha
 
 ---
 
-### Login With Hive Auth
+#### Login With Hive Auth
 `loginWithHiveAuth(String username, String proof)`
 
 *   **Description:** Initiates a login process using HiveAuth.
@@ -32,7 +32,7 @@ slug: /use-aioha
 
 ---
 
-### Login With Plaintext Key
+#### Login With Plaintext Key
 `loginWithPlaintextKey(String username, String postingKey, String proof)`
 
 *   **Description:** Initiates a login process using a plaintext posting key. **Note:** This method should be used with extreme caution due to the security risks of handling plaintext private keys.
@@ -48,7 +48,7 @@ slug: /use-aioha
 
 ---
 
-### Get Current User
+#### Get Current User
 `getCurrentUser()`
 
 *   **Description:** Retrieves the username of the currently logged-in user.
@@ -57,7 +57,7 @@ slug: /use-aioha
 
 ---
 
-### Logout
+#### Logout
 `logout()`
 
 *   **Description:** Logs out the current user.
@@ -66,7 +66,7 @@ slug: /use-aioha
 
 ---
 
-### Switch User
+#### Switch User
 `switchUser(String userId)`
 
 *   **Description:** Switches the active user if multiple accounts are managed by AIOHA.
@@ -76,7 +76,7 @@ slug: /use-aioha
 
 ---
 
-### Get Other Logins
+#### Get Other Logins
 `getOtherLogins()`
 
 *   **Description:** Retrieves a list of other usernames for accounts that have been previously logged into and are managed by AIOHA.
@@ -85,7 +85,7 @@ slug: /use-aioha
 
 ---
 
-### Remove Other Login
+#### Remove Other Login
 `removeOtherLogin(String userId)`
 
 *   **Description:** Removes a previously logged-in user from the list of managed accounts.
@@ -99,7 +99,7 @@ slug: /use-aioha
 
 ---
 
-### Single Vote
+#### Single Vote
 `singleVote(String author, String permlink, int weight)`
 
 *   **Description:** Casts a vote on a Hive post or comment.
@@ -111,7 +111,7 @@ slug: /use-aioha
 
 ---
 
-### Comment
+#### Comment
 `comment(String parentAuthor, String parentPermlink, String permlink, String title, String body, Map<String, dynamic> jsonMetadata)`
 
 *   **Description:** Publishes a comment or post on the Hive blockchain.
@@ -126,7 +126,7 @@ slug: /use-aioha
 
 ---
 
-### Comment With Options
+#### Comment With Options
 `commentWithOptions(String parentAuthor, String parentPermlink, String permlink, String title, String body, String jsonMetadata, String options)`
 
 *   **Description:** Publishes a comment or post with additional options (e.g., beneficiaries, burn_account).
@@ -142,7 +142,7 @@ slug: /use-aioha
 
 ---
 
-### Delete Comment
+#### Delete Comment
 `deleteComment(String permlink)`
 
 *   **Description:** Deletes a previously published comment or post.
@@ -152,7 +152,7 @@ slug: /use-aioha
 
 ---
 
-### Reblog
+#### Reblog
 `reblog(String author, String permlink, bool reblogFlag)`
 
 *   **Description:** Reblogs or un-reblogs a post.
@@ -164,7 +164,7 @@ slug: /use-aioha
 
 ---
 
-### Follow
+#### Follow
 `follow(String author, bool followFlag)`
 
 *   **Description:** Follows or unfollows a Hive user.
@@ -175,7 +175,7 @@ slug: /use-aioha
 
 ---
 
-### Claim Rewards
+#### Claim Rewards
 `claimRewards()`
 
 *   **Description:** Claims pending rewards for the logged-in user.
@@ -188,7 +188,7 @@ slug: /use-aioha
 
 ---
 
-### Get QR String
+#### Get QR String
 `getQrString()`
 
 *   **Description:** Generates a QR code string, typically used for HiveAuth login flows.
@@ -197,7 +197,7 @@ slug: /use-aioha
 
 ---
 
-### Sign Message
+#### Sign Message
 `signMessage(String message, String keyType)`
 
 *   **Description:** Signs an arbitrary message with the user's specified key type.
@@ -208,7 +208,7 @@ slug: /use-aioha
 
 ---
 
-### Sign And Broadcast Tx
+#### Sign And Broadcast Tx
 `signAndBroadcastTx(dynamic operationRequest, String keyType)`
 
 *   **Description:** Signs and broadcasts a generic Hive transaction. This is a flexible method for operations not explicitly covered by other methods.
@@ -219,7 +219,7 @@ slug: /use-aioha
 
 ---
 
-### Add Account Authority
+#### Add Account Authority
 `addAccountAuthority(String account, String keyType, int weight)`
 
 *   **Description:** Grants authority to another account for a specific key type (e.g., posting authority).
@@ -231,7 +231,7 @@ slug: /use-aioha
 
 ---
 
-### Remove Account Authority
+#### Remove Account Authority
 `removeAccountAuthority(String account, String keyType)`
 
 *   **Description:** Revokes authority previously granted to another account for a specific key type.
