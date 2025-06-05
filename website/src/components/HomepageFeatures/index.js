@@ -1,11 +1,14 @@
 import clsx from 'clsx';
 import Heading from '@theme/Heading';
 import styles from './styles.module.css';
+import MountainSvg from '@site/static/img/undraw_docusaurus_mountain.svg';
+import TreeSvg from '@site/static/img/undraw_docusaurus_tree.svg';
+import ReactSvg from '@site/static/img/undraw_docusaurus_react.svg';
 
 const FeatureList = [
   {
     title: 'Flutter-Friendly Hive Auth',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    Svg: MountainSvg,
     description: (
       <>
         HiveFlutterKit is designed for seamless integration into your Flutter
@@ -15,7 +18,7 @@ const FeatureList = [
   },
   {
     title: 'Connect to Hive, Not Complexity',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    Svg: TreeSvg,
     description: (
       <>
         HiveFlutterKit handles the underlying complexities of Hive authentication,
@@ -25,7 +28,7 @@ const FeatureList = [
   },
   {
     title: 'Open Source & Community Driven',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    Svg: ReactSvg,
     description: (
       <>
         HiveFlutterKit is an open-source project built for the Hive community.
