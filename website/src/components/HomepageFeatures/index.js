@@ -1,14 +1,12 @@
 import clsx from 'clsx';
 import Heading from '@theme/Heading';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import styles from './styles.module.css';
-import MountainSvg from '@site/static/img/undraw_docusaurus_mountain.svg';
-import TreeSvg from '@site/static/img/undraw_docusaurus_tree.svg';
-import ReactSvg from '@site/static/img/undraw_docusaurus_react.svg';
 
 const FeatureList = [
   {
     title: 'Flutter-Friendly Hive Auth',
-    Svg: MountainSvg,
+    imgSrc: '/img/undraw_docusaurus_mountain.png',
     description: (
       <>
         HiveFlutterKit is designed for seamless integration into your Flutter
@@ -18,7 +16,7 @@ const FeatureList = [
   },
   {
     title: 'Connect to Hive, Not Complexity',
-    Svg: TreeSvg,
+    imgSrc: '/img/undraw_docusaurus_tree.png',
     description: (
       <>
         HiveFlutterKit handles the underlying complexities of Hive authentication,
@@ -28,7 +26,7 @@ const FeatureList = [
   },
   {
     title: 'Open Source & Community Driven',
-    Svg: ReactSvg,
+    imgSrc: '/img/undraw_docusaurus_react.png',
     description: (
       <>
         HiveFlutterKit is an open-source project built for the Hive community.
@@ -38,11 +36,11 @@ const FeatureList = [
   },
 ];
 
-function Feature({Svg, title, description}) {
+function Feature({imgSrc, title, description}) {
   return (
     <div className={clsx('col col--4')}>
       <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
+        <img src={useBaseUrl(imgSrc)} alt={title} className={styles.featureSvg} />
       </div>
       <div className="text--center padding-horiz--md">
         <Heading as="h3">{title}</Heading>
