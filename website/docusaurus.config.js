@@ -11,7 +11,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'HiveFlutterKit',
-  tagline: 'Seamless Hive Authentication for your Flutter Apps',
+  tagline: 'A comprehensive Flutter toolkit for Hive blockchain development, integrating AIOHA, DHive, and essential utilities.',
   favicon: 'img/hiveflutterkit_logo.png',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
