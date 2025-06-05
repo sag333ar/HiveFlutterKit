@@ -1,0 +1,90 @@
+---
+title: Our Contributions
+sidebar_label: Our Contributions
+slug: /our-contributions
+---
+
+# Our Contributions to the Hive Ecosystem
+
+We are actively involved in developing and supporting a variety of projects and initiatives within the Hive ecosystem. Here's a list of our key contributions:
+
+- **[Hive Inbox](https://inbox.the-hive-mobile.app)**
+  - Easily Manage your Hive Blog's replies
+  - We are working on Hive Inbox as Key contributors
+- **[HiFind](https://hifind.the-hive-mobile.app)**
+  - Your Manual Curation Assistant
+- **[Vote page for Hive Users](https://witness.the-hive-mobile.app/#/witnesses/@sagarkothari88)**
+  - Vote for any Hive witness.
+  - Generate Vote for witness page for any witness.
+  - We are working on 'Vote' as Key contributors
+- **[Donate Page for Hive Users](https://donate.the-hive-mobile.app/#/donate/sagarkothari88)**
+  - Generate Donate page for any Hive user.
+  - We are working on 'Donate' as Key contributors.
+- **[Distriator](https://distriator.com)**
+  - Get Paid for paying in Hive Dollars, Hive & Bitcoin Sats
+  - We are working on Distributor as Key contributors.
+- **[3Speak](https://linktr.ee/3speak)**
+  - Tokenised Video Communities
+  - We work on 3Speak's Mobile app.
+  - We also take care of customer support.
+  - On-going maintenance tasks.
+- **[3Shorts](https://linktr.ee/3speak)**
+  - Short Contents on 3Speak.tv
+  - We are key contributor for 3Shorts app (within 3Speak App)
+- **[Podcast](https://linktr.ee/3speak)**
+  - Listen to your favorite podcast
+  - We are key contributors for Podcast app (within 3Speak App)
+- **[HiveAuth](https://hiveauth.com)**
+  - Hive Authentication Service
+  - We contributed a little on the mobile app for HiveAuth
+- **[Ecency](https://ecency.com)**
+  - A FrontEnd for Hive Blockchain
+  - We have worked with Team Ecency for integrating 3Speak in Ecency
+- **[Hive Curators](https://peakd.com/@hivecurators)**
+  - A community for communities.
+  - Here community moderators can join.
+  - Request to curate content on behalf of them for their communities.
+  - We have staked Hive Power to curate & reward Hive content creators
+- **[ActiFit](https://actifit.io)**
+  - A FrontEnd for Hive Blockchain. Move to Earn
+  - We have worked with Team ActiFit for integrating 3Speak
+- **[InLeo](https://inleo.io/)**
+  - A Short Content FrontEnd for Hive Blockchain.
+  - We have worked with Team Leo Finance for integrating 3Speak
+- **[Stats](https://vote.hive.uno/@sagarkothari88)**
+  - View Statstics for any Hive User
+  - We are working on 'Stats' as Key contributors.
+  - Coming soon
+- **[The Hive Mobile App](https://vote.hive.uno/@sagarkothari88)**
+  - A New FrontEnd for Hive Blockchain on which we are working.
+  - We are key contributors
+  - Coming Soon
+- **[12 Nodes](https://vote.hive.uno/@sagarkothari88)**
+  - Powerful video encoder nodes for 3Speak
+  - Each node costing minimum $20 per month
+  - $240 per month in total for all nodes
+  - These encoder nodes usally encodes up-to 70% to 80% videos of 3Speak daily
+  - These encoder nodes encodes the videos uploaded by 3Speak users
+- **[Witness Node](https://vote.hive.uno/@sagarkothari88)**
+  - Running Hive Witness Node
+  - Witness node costs $50 per month
+  - With Hive Witness node, strengthen the decentralisation of Hive
+- **[Curation Node](https://vote.hive.uno/@sagarkothari88)**
+  - Running A Curation Node for Hive Curators community
+  - Curation bot costs $5 per month
+  - With Curation bot, Hive Curators Community members can curate contents
+- **[VSC Node](https://vote.hive.uno/@sagarkothari88)**
+  - Running A VSC Witness Node
+  - Curation bot costs $10 per month
+- **[Reward Distribution Node](https://vote.hive.uno/@sagarkothari88)**
+  - Running A Reward Distribution Node
+  - Reward Distribution bot costs $5 per month
+  - It distributes Hive Power Up to community members of Hive who have participated in different weekly contests.
+- **[Free Rewards](https://vote.hive.uno/@sagarkothari88)**
+  - We are sending out free rewards to Hive community members
+  - We are sponsers for weekly contests held by many communities
+  - IndiaUnited, Amazing Drinks, Shadow Hunters, Reflection Hunters, Power Plant Veggies, Ladies of Hive & list goes on.
+- **[Additional Developers](https://vote.hive.uno/@sagarkothari88)**
+  - In order to manage on going development, we've a team of developers, community managers
+  - As a team, we are able to make an impact
+  - Cost of developers is on us as a Contribution for Hive Community members
