@@ -57,7 +57,36 @@ const sidebars = {
         },
       ],
     },
-    'use-dhive',
+    {
+      type: 'category',
+      label: 'Use DHive',
+      link: {
+        type: 'doc',
+        id: 'use-dhive',
+      },
+      items: [
+        {
+          type: 'link',
+          label: 'Database API',
+          href: '/docs/use-dhive#database-api',
+        },
+        {
+          type: 'link',
+          label: 'Helpers & Utilities',
+          href: '/docs/use-dhive#helpers-utilities',
+        },
+        {
+          type: 'link',
+          label: 'HiveMind',
+          href: '/docs/use-dhive#hivemind',
+        },
+        {
+          type: 'link',
+          label: 'Bridge',
+          href: '/docs/use-dhive#bridge',
+        },
+      ],
+    },
     'extra-utilities',
     // Example for a future "Guides" section
     // {
