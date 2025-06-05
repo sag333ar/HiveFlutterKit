@@ -1,11 +1,11 @@
 {
-    "name": "hive_flutter_kit_example",
-    "short_name": "hive_flutter_kit_example",
+    "name": "aioha_flutter_core_example",
+    "short_name": "aioha_flutter_core_example",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "Demonstrates how to use the hive_flutter_kit plugin.",
+    "description": "Demonstrates how to use the aioha_flutter_core plugin.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

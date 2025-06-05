@@ -1,4 +1,4 @@
-package com.example.hive_flutter_kit_example
+package com.example.aioha_flutter_core_example
 
 import io.flutter.embedding.android.FlutterActivity
 
