@@ -1,4 +1,4 @@
-import 'package:hive_flutter_kit/hive_flutter_kit_platform_interface.dart';
+import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit_example/home.dart';
 import 'package:flutter/material.dart';
 
