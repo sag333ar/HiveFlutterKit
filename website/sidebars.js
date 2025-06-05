@@ -27,7 +27,20 @@ const sidebars = {
         'getting-started/basic-usage', // Points to docs/getting-started/basic-usage.md
       ],
     },
-    'use-aioha',
+    {
+      type: 'category',
+      label: 'Use AIOHA',
+      link: {
+        type: 'doc',
+        id: 'use-aioha',
+      },
+      items: [
+        'use-aioha#authentication',
+        'use-aioha#user-management',
+        'use-aioha#onchain-operations',
+        'use-aioha#helpers',
+      ],
+    },
     'use-dhive',
     'extra-utilities',
     // Example for a future "Guides" section
