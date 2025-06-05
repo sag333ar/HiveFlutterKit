@@ -1,6 +1,6 @@
-# aioha_flutter_core_example
+# Hive Flutter Kit example
 
-Demonstrates how to use the aioha_flutter_core plugin.
+Demonstrates how to use the Hive Flutter Kit plugin.
 
 ## Getting Started
 
