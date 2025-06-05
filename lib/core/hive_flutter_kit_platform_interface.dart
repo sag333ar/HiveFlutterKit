@@ -1,11 +1,11 @@
-import 'package:hive_flutter_kit/models/login_model.dart';
+import 'package:hive_flutter_kit/core/models/login_model.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:hive_flutter_kit/models/account.dart';
-import 'package:hive_flutter_kit/models/chain_properties.dart';
-import 'package:hive_flutter_kit/models/discussion.dart';
-import 'package:hive_flutter_kit/models/resource_credits.dart';
-import 'package:hive_flutter_kit/models/voting_power.dart';
-import 'package:hive_flutter_kit/models/community_model.dart';
+import 'package:hive_flutter_kit/core/models/account.dart';
+import 'package:hive_flutter_kit/core/models/chain_properties.dart';
+import 'package:hive_flutter_kit/core/models/discussion.dart';
+import 'package:hive_flutter_kit/core/models/resource_credits.dart';
+import 'package:hive_flutter_kit/core/models/voting_power.dart';
+import 'package:hive_flutter_kit/core/models/community_model.dart';
 
 import 'dart:typed_data';
 import 'package:image_picker/image_picker.dart';
@@ -212,7 +212,7 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
     return base64Str;
   }
 
-  Future<String> uploadImage({
+  Future<Map<String, dynamic>> uploadImage({
     required Uint8List imageBytes,
     required String fileName,
     required String token,
@@ -220,7 +220,7 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
   }) async {
     final url = Uri.parse("$uploadUrlSever/$token");
 
-    // Detect MIME type (e.g., image/jpeg or image/png)
+    // Detect MIME type
     final mimeType = lookupMimeType(fileName) ?? 'application/octet-stream';
     final mediaType = MediaType.parse(mimeType);
 
@@ -235,22 +235,35 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
       ),
     );
 
-    final streamedResponse = await request.send();
-    final response = await http.Response.fromStream(streamedResponse);
+    try {
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> resJson = jsonDecode(response.body);
-      final uploadUrl = resJson['url'];
-      return uploadUrl;
-    } else {
-      print("Response: ${response.body}");
-      throw Exception(
-        "Upload failed: ${response.statusCode} - ${response.body}",
-      );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> resJson = jsonDecode(response.body);
+        final uploadUrl = resJson['url'];
+
+        return {
+          'success': true,
+          'url': uploadUrl,
+          'message': 'Image uploaded successfully.',
+        };
+      } else {
+        return {
+          'success': false,
+          'url': null,
+          'message': 'Upload failed: ${response.statusCode} - ${response.body}',
+        };
+      }
+    } catch (e) {
+      return {'success': false, 'url': null, 'message': 'Upload error: $e'};
     }
   }
 
-  Future<String> pickImageWithMaxSize(int maxDimension,String uploadUrlSever) async {
+  Future<Map<String, dynamic>> pickImageWithMaxSize(
+    int maxDimension,
+    String uploadUrlSever,
+  ) async {
     final XFile? pickedFile = await _picker.pickImage(
       source: ImageSource.gallery,
     );
@@ -304,10 +317,7 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
     }
   }
 
-  Future<dynamic> signAndBroadcastTx(
-    dynamic operationRequest,
-    String keyType,
-  ) {
+  Future<dynamic> signAndBroadcastTx(dynamic operationRequest, String keyType) {
     throw UnimplementedError('signAndBroadcastTx has not been implemented.');
   }
 }

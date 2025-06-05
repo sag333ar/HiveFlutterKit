@@ -6,18 +6,18 @@
 import 'dart:html' as html;
 import 'dart:async';
 import 'dart:convert';
-import 'package:hive_flutter_kit/models/login_model.dart';
+import 'package:hive_flutter_kit/core/models/login_model.dart';
 import 'package:js/js.dart' show JS;
 import 'package:js/js_util.dart';
 
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
-import 'package:hive_flutter_kit/models/account.dart';
-import 'package:hive_flutter_kit/models/chain_properties.dart';
-import 'package:hive_flutter_kit/models/discussion.dart';
-import 'package:hive_flutter_kit/models/resource_credits.dart';
-import 'package:hive_flutter_kit/models/voting_power.dart';
-import 'package:hive_flutter_kit/models/community_model.dart';
+import 'package:hive_flutter_kit/core/models/account.dart';
+import 'package:hive_flutter_kit/core/models/chain_properties.dart';
+import 'package:hive_flutter_kit/core/models/discussion.dart';
+import 'package:hive_flutter_kit/core/models/resource_credits.dart';
+import 'package:hive_flutter_kit/core/models/voting_power.dart';
+import 'package:hive_flutter_kit/core/models/community_model.dart';
 
 import 'hive_flutter_kit_platform_interface.dart';
 
