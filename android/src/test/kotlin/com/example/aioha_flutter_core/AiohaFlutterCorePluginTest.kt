@@ -1,4 +1,4 @@
-package com.example.aioha_flutter_core
+package com.example.hive_flutter_kit
 
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel

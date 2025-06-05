@@ -5,7 +5,7 @@ import styles from './styles.module.css';
 const FeatureList = [
   {
     title: 'Flutter-Friendly Hive Auth',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    Svg: require('@site/static/img/undraw_docusaurus_mountain.png').default,
     description: (
       <>
         HiveFlutterKit is designed for seamless integration into your Flutter
@@ -15,7 +15,7 @@ const FeatureList = [
   },
   {
     title: 'Connect to Hive, Not Complexity',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    Svg: require('@site/static/img/undraw_docusaurus_tree.png').default,
     description: (
       <>
         HiveFlutterKit handles the underlying complexities of Hive authentication,
@@ -25,7 +25,7 @@ const FeatureList = [
   },
   {
     title: 'Open Source & Community Driven',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    Svg: require('@site/static/img/undraw_docusaurus_react.png').default,
     description: (
       <>
         HiveFlutterKit is an open-source project built for the Hive community.
