@@ -1,17 +1,21 @@
 ---
 sidebar_position: 2
-title: All Methods
-sidebar_label: All Methods
-slug: /core-api/all-methods
+title: HiveFlutterKit Methods
+sidebar_label: HiveFlutterKit Methods
+slug: /core-api/methods
 ---
 
-# All HiveFlutterKit Methods
+# HiveFlutterKit Methods
 
 This page details the public methods available in the `HiveFlutterKitPlatform` class.
 
+## Use AIOHA
+
+### Authentication
+
 ---
 
-### `loginWithKeychain`
+### Login With Keychain
 `loginWithKeychain(String username, String proof)`
 
 *   **Description:** Initiates a login process using Hive Keychain.
@@ -22,7 +26,7 @@ This page details the public methods available in the `HiveFlutterKitPlatform` c
 
 ---
 
-### `loginWithHiveAuth`
+### Login With Hive Auth
 `loginWithHiveAuth(String username, String proof)`
 
 *   **Description:** Initiates a login process using HiveAuth.
@@ -33,7 +37,7 @@ This page details the public methods available in the `HiveFlutterKitPlatform` c
 
 ---
 
-### `loginWithPlaintextKey`
+### Login With Plaintext Key
 `loginWithPlaintextKey(String username, String postingKey, String proof)`
 
 *   **Description:** Initiates a login process using a plaintext posting key. **Note:** This method should be used with extreme caution due to the security risks of handling plaintext private keys.
@@ -45,16 +49,7 @@ This page details the public methods available in the `HiveFlutterKitPlatform` c
 
 ---
 
-### `getCurrentUser`
-`getCurrentUser()`
-
-*   **Description:** Retrieves the username of the currently logged-in user.
-*   **Parameters:** None.
-*   **Returns:** `Future<String>`: A future that resolves to the username of the current user.
-
----
-
-### `getQrString`
+### Get QR String
 `getQrString()`
 
 *   **Description:** Generates a QR code string, typically used for HiveAuth login flows.
@@ -63,7 +58,31 @@ This page details the public methods available in the `HiveFlutterKitPlatform` c
 
 ---
 
-### `logout`
+### Sign Message
+`signMessage(String message, String keyType)`
+
+*   **Description:** Signs an arbitrary message with the user's specified key type.
+*   **Parameters:**
+    *   `message` (`String`): The message to be signed.
+    *   `keyType` (`String`): The type of key to use for signing (e.g., "posting", "active").
+*   **Returns:** `Future<String>`: A future that resolves to the signed message or an error.
+
+---
+
+### User management
+
+---
+
+### Get Current User
+`getCurrentUser()`
+
+*   **Description:** Retrieves the username of the currently logged-in user.
+*   **Parameters:** None.
+*   **Returns:** `Future<String>`: A future that resolves to the username of the current user.
+
+---
+
+### Logout
 `logout()`
 
 *   **Description:** Logs out the current user.
@@ -72,7 +91,42 @@ This page details the public methods available in the `HiveFlutterKitPlatform` c
 
 ---
 
-### `singleVote`
+### Switch User
+`switchUser(String userId)`
+
+*   **Description:** Switches the active user if multiple accounts are managed by AIOHA.
+*   **Parameters:**
+    *   `userId` (`String`): The username of the account to switch to.
+*   **Returns:** `Future<bool>`: A future that resolves to `true` if the switch was successful, `false` otherwise.
+
+---
+
+### Get Other Logins
+`getOtherLogins()`
+
+*   **Description:** Retrieves a list of other usernames for accounts that have been previously logged into and are managed by AIOHA.
+*   **Parameters:** None.
+*   **Returns:** `Future<List<String>>`: A future that resolves to a list of usernames.
+
+---
+
+### Remove Other Login
+`removeOtherLogin(String userId)`
+
+*   **Description:** Removes a previously logged-in user from the list of managed accounts.
+*   **Parameters:**
+    *   `userId` (`String`): The username to remove.
+*   **Returns:** `Future<String>`: A future that resolves to a status message.
+
+---
+
+### Onchain Operations
+
+#### Social onchain operations
+
+---
+
+### Single Vote
 `singleVote(String author, String permlink, int weight)`
 
 *   **Description:** Casts a vote on a Hive post or comment.
@@ -84,7 +138,7 @@ This page details the public methods available in the `HiveFlutterKitPlatform` c
 
 ---
 
-### `comment`
+### Comment
 `comment(String parentAuthor, String parentPermlink, String permlink, String title, String body, Map<String, dynamic> jsonMetadata)`
 
 *   **Description:** Publishes a comment or post on the Hive blockchain.
@@ -99,7 +153,7 @@ This page details the public methods available in the `HiveFlutterKitPlatform` c
 
 ---
 
-### `commentWithOptions`
+### Comment With Options
 `commentWithOptions(String parentAuthor, String parentPermlink, String permlink, String title, String body, String jsonMetadata, String options)`
 
 *   **Description:** Publishes a comment or post with additional options (e.g., beneficiaries, burn_account).
@@ -115,7 +169,7 @@ This page details the public methods available in the `HiveFlutterKitPlatform` c
 
 ---
 
-### `deleteComment`
+### Delete Comment
 `deleteComment(String permlink)`
 
 *   **Description:** Deletes a previously published comment or post.
@@ -125,7 +179,7 @@ This page details the public methods available in the `HiveFlutterKitPlatform` c
 
 ---
 
-### `reblog`
+### Reblog
 `reblog(String author, String permlink, bool reblogFlag)`
 
 *   **Description:** Reblogs or un-reblogs a post.
@@ -137,7 +191,7 @@ This page details the public methods available in the `HiveFlutterKitPlatform` c
 
 ---
 
-### `follow`
+### Follow
 `follow(String author, bool followFlag)`
 
 *   **Description:** Follows or unfollows a Hive user.
@@ -148,7 +202,7 @@ This page details the public methods available in the `HiveFlutterKitPlatform` c
 
 ---
 
-### `claimRewards`
+### Claim Rewards
 `claimRewards()`
 
 *   **Description:** Claims pending rewards for the logged-in user.
@@ -157,47 +211,22 @@ This page details the public methods available in the `HiveFlutterKitPlatform` c
 
 ---
 
-### `signMessage`
-`signMessage(String message, String keyType)`
+### Sign And Broadcast Tx
+`signAndBroadcastTx(dynamic operationRequest, String keyType)`
 
-*   **Description:** Signs an arbitrary message with the user's specified key type.
+*   **Description:** Signs and broadcasts a generic Hive transaction. This is a flexible method for operations not explicitly covered by other methods.
 *   **Parameters:**
-    *   `message` (`String`): The message to be signed.
+    *   `operationRequest` (`dynamic`): The operation or list of operations to be signed and broadcasted. The structure depends on the specific Hive operation.
     *   `keyType` (`String`): The type of key to use for signing (e.g., "posting", "active").
-*   **Returns:** `Future<String>`: A future that resolves to the signed message or an error.
+*   **Returns:** `Future<dynamic>`: A future that resolves to the result of the broadcast, which could be a transaction ID or an error object.
 
 ---
 
-### `switchUser`
-`switchUser(String userId)`
-
-*   **Description:** Switches the active user if multiple accounts are managed by AIOHA.
-*   **Parameters:**
-    *   `userId` (`String`): The username of the account to switch to.
-*   **Returns:** `Future<bool>`: A future that resolves to `true` if the switch was successful, `false` otherwise.
+#### Active Key based operations
 
 ---
 
-### `getOtherLogins`
-`getOtherLogins()`
-
-*   **Description:** Retrieves a list of other usernames for accounts that have been previously logged into and are managed by AIOHA.
-*   **Parameters:** None.
-*   **Returns:** `Future<List<String>>`: A future that resolves to a list of usernames.
-
----
-
-### `removeOtherLogin`
-`removeOtherLogin(String userId)`
-
-*   **Description:** Removes a previously logged-in user from the list of managed accounts.
-*   **Parameters:**
-    *   `userId` (`String`): The username to remove.
-*   **Returns:** `Future<String>`: A future that resolves to a status message.
-
----
-
-### `addAccountAuthority`
+### Add Account Authority
 `addAccountAuthority(String account, String keyType, int weight)`
 
 *   **Description:** Grants authority to another account for a specific key type (e.g., posting authority).
@@ -209,7 +238,7 @@ This page details the public methods available in the `HiveFlutterKitPlatform` c
 
 ---
 
-### `removeAccountAuthority`
+### Remove Account Authority
 `removeAccountAuthority(String account, String keyType)`
 
 *   **Description:** Revokes authority previously granted to another account for a specific key type.
@@ -220,16 +249,11 @@ This page details the public methods available in the `HiveFlutterKitPlatform` c
 
 ---
 
-### `getPlatformVersion`
-`getPlatformVersion()`
-
-*   **Description:** Retrieves the platform version on which the Flutter app is running. This is typically for debugging or platform-specific logic.
-*   **Parameters:** None.
-*   **Returns:** `Future<String?>`: A future that resolves to a string representing the platform version, or `null` if it cannot be determined.
+## Use DHive
 
 ---
 
-### `getChainProperties`
+### Get Chain Properties
 `getChainProperties()`
 
 *   **Description:** Fetches dynamic global properties of the Hive blockchain.
@@ -238,7 +262,7 @@ This page details the public methods available in the `HiveFlutterKitPlatform` c
 
 ---
 
-### `getDiscussions`
+### Get Discussions
 `getDiscussions(String by, {required int limit, String tag = '', String? startAuthor, String? startPermlink, String? observer})`
 
 *   **Description:** Fetches a list of discussions (posts/comments) based on various criteria (e.g., trending, hot, new).
@@ -253,7 +277,7 @@ This page details the public methods available in the `HiveFlutterKitPlatform` c
 
 ---
 
-### `getAccounts`
+### Get Accounts
 `getAccounts(List<String> usernames)`
 
 *   **Description:** Retrieves detailed information for a list of Hive accounts.
@@ -263,7 +287,7 @@ This page details the public methods available in the `HiveFlutterKitPlatform` c
 
 ---
 
-### `getVotingPower`
+### Get Voting Power
 `getVotingPower(String username)`
 
 *   **Description:** Fetches the current voting power for a specified user.
@@ -273,7 +297,7 @@ This page details the public methods available in the `HiveFlutterKitPlatform` c
 
 ---
 
-### `getResourceCredits`
+### Get Resource Credits
 `getResourceCredits(String username)`
 
 *   **Description:** Fetches the current resource credits (RC) for a specified user.
@@ -283,7 +307,7 @@ This page details the public methods available in the `HiveFlutterKitPlatform` c
 
 ---
 
-### `getAccountPosts`
+### Get Account Posts
 `getAccountPosts(String username, String by, {required int limit, String? startAuthor, String? startPermlink, String? observer})`
 
 *   **Description:** Fetches a list of posts made by a specific account, sorted by a chosen method.
@@ -298,7 +322,7 @@ This page details the public methods available in the `HiveFlutterKitPlatform` c
 
 ---
 
-### `hasThreespeakInAccountAuths`
+### Has Threespeak In Account Auths
 `hasThreespeakInAccountAuths(String username)`
 
 *   **Description:** Checks if the 'threespeak' account has been granted posting authority by the specified user. This is relevant for integrations with the 3Speak video platform.
@@ -308,7 +332,7 @@ This page details the public methods available in the `HiveFlutterKitPlatform` c
 
 ---
 
-### `getListOfCommunities`
+### Get List Of Communities
 `getListOfCommunities(String? query, {int limit = 20, String? last, String? observer})`
 
 *   **Description:** Fetches a list of Hive communities. Can be used to search for communities or list them.
@@ -321,7 +345,7 @@ This page details the public methods available in the `HiveFlutterKitPlatform` c
 
 ---
 
-### `getCommentsList`
+### Get Comments List
 `getCommentsList(String author, String permlink)`
 
 *   **Description:** Fetches the list of comments for a specific post.
@@ -332,7 +356,11 @@ This page details the public methods available in the `HiveFlutterKitPlatform` c
 
 ---
 
-### `uploadImage`
+## Extra utilities
+
+---
+
+### Upload Image
 `uploadImage({required Uint8List imageBytes, required String fileName, required String token, required String uploadUrlSever})`
 
 *   **Description:** Uploads an image to a specified server.
@@ -346,7 +374,7 @@ This page details the public methods available in the `HiveFlutterKitPlatform` c
 
 ---
 
-### `pickImageWithMaxSize`
+### Pick Image With Max Size
 `pickImageWithMaxSize(int maxDimension, String uploadUrlSever)`
 
 *   **Description:** Allows the user to pick an image from the gallery, checks its dimensions, signs a message (presumably for authentication with the upload server), and then uploads it using `uploadImage`.
@@ -355,16 +383,5 @@ This page details the public methods available in the `HiveFlutterKitPlatform` c
     *   `uploadUrlSever` (`String`): The base URL of the image upload server.
 *   **Returns:** `Future<String>`: A future that resolves to the URL of the uploaded image.
 *   **Throws:** `Exception` if no image is selected, if image decoding fails, if the image is too large, or if signing/uploading fails.
-
----
-
-### `signAndBroadcastTx`
-`signAndBroadcastTx(dynamic operationRequest, String keyType)`
-
-*   **Description:** Signs and broadcasts a generic Hive transaction. This is a flexible method for operations not explicitly covered by other methods.
-*   **Parameters:**
-    *   `operationRequest` (`dynamic`): The operation or list of operations to be signed and broadcasted. The structure depends on the specific Hive operation.
-    *   `keyType` (`String`): The type of key to use for signing (e.g., "posting", "active").
-*   **Returns:** `Future<dynamic>`: A future that resolves to the result of the broadcast, which could be a transaction ID or an error object.
 
 ---
