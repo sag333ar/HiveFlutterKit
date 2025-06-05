@@ -6,6 +6,8 @@ slug: /use-dhive
 
 ## Use DHive
 
+### Database API
+
 ---
 
 ### Get Chain Properties
@@ -42,6 +44,10 @@ slug: /use-dhive
 
 ---
 
+### Helpers & Utilities
+
+---
+
 ### Get Voting Power
 `getVotingPower(String username)`
 
@@ -62,6 +68,20 @@ slug: /use-dhive
 
 ---
 
+### Has Threespeak In Account Auths
+`hasThreespeakInAccountAuths(String username)`
+
+*   **Description:** Checks if the 'threespeak' account has been granted posting authority by the specified user. This is relevant for integrations with the 3Speak video platform.
+*   **Parameters:**
+    *   `username` (`String`): The Hive username to check.
+*   **Returns:** `Future<bool>`: A future that resolves to `true` if 'threespeak' has posting authority, `false` otherwise.
+
+---
+
+### HiveMind
+
+---
+
 ### Get Account Posts
 `getAccountPosts(String username, String by, {required int limit, String? startAuthor, String? startPermlink, String? observer})`
 
@@ -77,16 +97,6 @@ slug: /use-dhive
 
 ---
 
-### Has Threespeak In Account Auths
-`hasThreespeakInAccountAuths(String username)`
-
-*   **Description:** Checks if the 'threespeak' account has been granted posting authority by the specified user. This is relevant for integrations with the 3Speak video platform.
-*   **Parameters:**
-    *   `username` (`String`): The Hive username to check.
-*   **Returns:** `Future<bool>`: A future that resolves to `true` if 'threespeak' has posting authority, `false` otherwise.
-
----
-
 ### Get List Of Communities
 `getListOfCommunities(String? query, {int limit = 20, String? last, String? observer})`
 
@@ -97,6 +107,10 @@ slug: /use-dhive
     *   `last` (String?, optional): For pagination, the name of the last community from the previous fetch.
     *   `observer` (String?, optional): The username of the observer.
 *   **Returns:** `Future<List<CommunityItem>>`: A future that resolves to a list of `CommunityItem` objects.
+
+---
+
+### Bridge
 
 ---
 
