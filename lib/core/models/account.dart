@@ -1,16 +1,16 @@
 import 'dart:convert';
 
-// Add Asset and Authority classes for compatibility
-class Asset {
+// Add AccountAsset and Authority classes for compatibility
+class AccountAsset {
   final String value;
-  Asset(this.value);
+  AccountAsset(this.value);
 
-  factory Asset.fromJson(dynamic json) {
-    if (json is String) return Asset(json);
+  factory AccountAsset.fromJson(dynamic json) {
+    if (json is String) return AccountAsset(json);
     if (json is Map && json.containsKey('amount') && json.containsKey('symbol')) {
-      return Asset('${json['amount']} ${json['symbol']}');
+      return AccountAsset('${json['amount']} ${json['symbol']}');
     }
-    return Asset(json.toString());
+    return AccountAsset(json.toString());
   }
 
   @override
@@ -228,27 +228,27 @@ class Account {
       votingPower: json['voting_power'],
       lastVoteTime: json['last_vote_time'],
       votingManabar: json['voting_manabar'] != null ? Manabar.fromJson(json['voting_manabar']) : null,
-      balance: json['balance'] != null ? Asset.fromJson(json['balance']) : null,
-      savingsBalance: json['savings_balance'] != null ? Asset.fromJson(json['savings_balance']) : null,
-      hbdBalance: json['hbd_balance'] != null ? Asset.fromJson(json['hbd_balance']) : null,
+      balance: json['balance'] != null ? AccountAsset.fromJson(json['balance']) : null,
+      savingsBalance: json['savings_balance'] != null ? AccountAsset.fromJson(json['savings_balance']) : null,
+      hbdBalance: json['hbd_balance'] != null ? AccountAsset.fromJson(json['hbd_balance']) : null,
       hbdSeconds: json['hbd_seconds'],
       hbdSecondsLastUpdate: json['hbd_seconds_last_update'],
       hbdLastInterestPayment: json['hbd_last_interest_payment'],
-      savingsHbdBalance: json['savings_hbd_balance'] != null ? Asset.fromJson(json['savings_hbd_balance']) : null,
+      savingsHbdBalance: json['savings_hbd_balance'] != null ? AccountAsset.fromJson(json['savings_hbd_balance']) : null,
       savingsHbdSeconds: json['savings_hbd_seconds'],
       savingsHbdSecondsLastUpdate: json['savings_hbd_seconds_last_update'],
       savingsHbdLastInterestPayment: json['savings_hbd_last_interest_payment'],
       savingsWithdrawRequests: json['savings_withdraw_requests'],
-      rewardHbdBalance: json['reward_hbd_balance'] != null ? Asset.fromJson(json['reward_hbd_balance']) : null,
-      rewardHiveBalance: json['reward_hive_balance'] != null ? Asset.fromJson(json['reward_hive_balance']) : null,
-      rewardVestingBalance: json['reward_vesting_balance'] != null ? Asset.fromJson(json['reward_vesting_balance']) : null,
-      rewardVestingHive: json['reward_vesting_hive'] != null ? Asset.fromJson(json['reward_vesting_hive']) : null,
+      rewardHbdBalance: json['reward_hbd_balance'] != null ? AccountAsset.fromJson(json['reward_hbd_balance']) : null,
+      rewardHiveBalance: json['reward_hive_balance'] != null ? AccountAsset.fromJson(json['reward_hive_balance']) : null,
+      rewardVestingBalance: json['reward_vesting_balance'] != null ? AccountAsset.fromJson(json['reward_vesting_balance']) : null,
+      rewardVestingHive: json['reward_vesting_hive'] != null ? AccountAsset.fromJson(json['reward_vesting_hive']) : null,
       curationRewards: json['curation_rewards'],
       postingRewards: json['posting_rewards'],
-      vestingShares: json['vesting_shares'] != null ? Asset.fromJson(json['vesting_shares']) : null,
-      delegatedVestingShares: json['delegated_vesting_shares'] != null ? Asset.fromJson(json['delegated_vesting_shares']) : null,
-      receivedVestingShares: json['received_vesting_shares'] != null ? Asset.fromJson(json['received_vesting_shares']) : null,
-      vestingWithdrawRate: json['vesting_withdraw_rate'] != null ? Asset.fromJson(json['vesting_withdraw_rate']) : null,
+      vestingShares: json['vesting_shares'] != null ? AccountAsset.fromJson(json['vesting_shares']) : null,
+      delegatedVestingShares: json['delegated_vesting_shares'] != null ? AccountAsset.fromJson(json['delegated_vesting_shares']) : null,
+      receivedVestingShares: json['received_vesting_shares'] != null ? AccountAsset.fromJson(json['received_vesting_shares']) : null,
+      vestingWithdrawRate: json['vesting_withdraw_rate'] != null ? AccountAsset.fromJson(json['vesting_withdraw_rate']) : null,
       nextVestingWithdrawal: json['next_vesting_withdrawal'],
       withdrawn: json['withdrawn'],
       toWithdraw: json['to_withdraw'],
@@ -263,7 +263,7 @@ class Account {
       lastMarketBandwidthUpdate: json['last_market_bandwidth_update'],
       lastPost: json['last_post'],
       lastRootPost: json['last_root_post'],
-      vestingBalance: json['vesting_balance'] != null ? Asset.fromJson(json['vesting_balance']) : null,
+      vestingBalance: json['vesting_balance'] != null ? AccountAsset.fromJson(json['vesting_balance']) : null,
       reputation: json['reputation'],
       transferHistory: json['transfer_history'],
       marketHistory: json['market_history'],

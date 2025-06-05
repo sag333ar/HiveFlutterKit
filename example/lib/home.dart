@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
-
-import 'package:hive_flutter_kit/hive_flutter_kit_platform_interface.dart';
-import 'package:hive_flutter_kit/models/community_model.dart';
+import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
+import 'package:hive_flutter_kit/core/models/community_model.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter_kit/ux/aioha_login_screen.dart';
+import 'package:hive_flutter_kit/ux/aioha_switch_user.dart';
+import 'package:hive_flutter_kit/ux/community_list.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -881,7 +882,8 @@ class _MyHomePageState extends State<MyHomePage> {
       if (response != null && response['success'] == true) {
         setState(() {
           _broadcastResult =
-              response['profile']?['profile_image'] ?? 'Broadcasted successfully!';
+              response['profile']?['profile_image'] ??
+              'Broadcasted successfully!';
         });
         ScaffoldMessenger.of(
           context,
@@ -916,10 +918,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('Flutter Aioha Core Example'),
-      ),
       body: SingleChildScrollView(
         child: Center(
           child: Column(
@@ -1088,7 +1086,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Text('Get Comments (Aioha)'),
                 onPressed: _getCommentsListAioha,
               ),
-
               ElevatedButton(
                 onPressed: () {
                   _communityPage = 0;
@@ -1129,6 +1126,69 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                   ],
                 ),
+
+              ElevatedButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder:
+                        (context) => AlertDialog(content: AiohaSwitchUser(aioha: aioha)),
+                  );
+                },
+                child: const Text('Switch User (Dialog)'),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => Dialog(
+                              insetPadding: EdgeInsets.zero,
+                              child: SizedBox(
+                                width: MediaQuery.of(context).size.width,
+                                height: MediaQuery.of(context).size.height,
+                                child: AiohaLoginScreen(aioha: aioha),
+                              ),
+                            ),
+                          );
+                        },
+                        child: const Text('Aioha Login Screen User (Dialog)'),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => Dialog(
+                              insetPadding: EdgeInsets.zero,
+                              child: SizedBox(
+                                width: MediaQuery.of(context).size.width,
+                                height: MediaQuery.of(context).size.height,
+                                child: CommunitiesList(
+                                  onSelectCommunity: (community) async {
+                                    debugPrint(
+                                      'Selected community: ${community.name}',
+                                    );
+                                    Navigator.of(context).pop();
+                                  },
+                                  aioha: aioha,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        child: const Text('Communities List (Dialog)'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
 
               qrString.isEmpty || timerDuration == 0
                   ? const SizedBox.shrink()
