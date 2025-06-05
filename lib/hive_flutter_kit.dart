@@ -2,16 +2,36 @@ library hive_flutter_kit;
 
 // Export the platform interface. Consumers will typically interact with this.
 // Assuming HiveFlutterKitPlatform will be the new class name inside hive_flutter_kit_platform_interface.dart
-export 'hive_flutter_kit_platform_interface.dart' show HiveFlutterKitPlatform;
+export 'core/hive_flutter_kit_platform_interface.dart' show HiveFlutterKitPlatform;
 
 // Export models
-export 'models/account.dart';
-export 'models/chain_properties.dart';
-export 'models/community_model.dart';
-export 'models/discussion.dart';
-export 'models/login_model.dart';
-export 'models/resource_credits.dart';
-export 'models/voting_power.dart';
+
+// Export Core models
+export 'core/models/account.dart';
+export 'core/models/chain_properties.dart';
+export 'core/models/community_model.dart';
+export 'core/models/discussion.dart';
+export 'core/models/login_model.dart';
+export 'core/models/resource_credits.dart';
+export 'core/models/voting_power.dart';
+
+
+
+
+
+// Export UX components
+export 'ux/aioha_comments.dart';
+export 'ux/aioha_login_screen.dart';
+export 'ux/aioha_switch_user.dart';
+export 'ux/aioha_upvote_bottomsheet.dart';
+export 'ux/aioha_upvote.dart';
+export 'ux/community_list.dart';
+export 'ux/edit_profile.dart';
+export 'ux/image_picker.dart';
+export 'ux/user_profile_bottom_sheet.dart';
+export 'ux/user_profile_dhive.dart';
+
+
 
 // Potentially export other specific classes if they are part of the public API
 // For example, if there are specific error types or helper classes defined elsewhere.

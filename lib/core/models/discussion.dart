@@ -1,26 +1,26 @@
 import 'dart:convert';
 
-class Asset {
+class DiscussionAsset {
   final double? amount;
   final String? symbol;
 
-  Asset({this.amount, this.symbol});
+  DiscussionAsset({this.amount, this.symbol});
 
-  factory Asset.fromRawJson(String str) => Asset.fromJson(json.decode(str));
+  factory DiscussionAsset.fromRawJson(String str) => DiscussionAsset.fromJson(json.decode(str));
 
   String toRawJson() => json.encode(toJson());
 
-  factory Asset.fromJson(dynamic json) {
+  factory DiscussionAsset.fromJson(dynamic json) {
     if (json is String) {
       final parts = json.split(' ');
-      return Asset(amount: double.tryParse(parts[0]), symbol: parts[1]);
+      return DiscussionAsset(amount: double.tryParse(parts[0]), symbol: parts[1]);
     } else if (json is Map<String, dynamic>) {
-      return Asset(
+      return DiscussionAsset(
         amount: double.tryParse(json['amount'].toString()),
         symbol: json['symbol'],
       );
     } else {
-      throw Exception("Invalid Asset format");
+      throw Exception("Invalid DiscussionAsset format");
     }
   }
 
@@ -74,8 +74,8 @@ class Comment {
   final String? maxCashoutTime;
   final int? totalVoteWeight;
   final int? rewardWeight;
-  final Asset? totalPayoutValue;
-  final Asset? curatorPayoutValue;
+  final DiscussionAsset? totalPayoutValue;
+  final DiscussionAsset? curatorPayoutValue;
   final String? authorRewards;
   final int? netVotes;
   final int? rootComment;
@@ -153,11 +153,11 @@ class Comment {
     rewardWeight: json["reward_weight"],
     totalPayoutValue:
         json["total_payout_value"] != null
-            ? Asset.fromJson(json["total_payout_value"])
+            ? DiscussionAsset.fromJson(json["total_payout_value"])
             : null,
     curatorPayoutValue:
         json["curator_payout_value"] != null
-            ? Asset.fromJson(json["curator_payout_value"])
+            ? DiscussionAsset.fromJson(json["curator_payout_value"])
             : null,
     authorRewards: json["author_rewards"],
     netVotes: json["net_votes"],
@@ -231,12 +231,12 @@ class Discussion extends Comment {
   final String? rootTitle;
   final double? payout;
   final String? payoutAt;
-  final Asset? pendingPayoutValue;
-  final Asset? totalPendingPayoutValue;
+  final DiscussionAsset? pendingPayoutValue;
+  final DiscussionAsset? totalPendingPayoutValue;
   final List<ActiveVote>? activeVotes;
   final List<String>? replies;
   final double? authorReputation;
-  final Asset? promoted;
+  final DiscussionAsset? promoted;
   final dynamic firstRebloggedBy;
   final dynamic firstRebloggedOn;
   final List<String>? rebloggedBy;
@@ -358,11 +358,11 @@ class Discussion extends Comment {
       rewardWeight: json['reward_weight'],
       totalPayoutValue:
           json['total_payout_value'] != null
-              ? Asset.fromJson(json['total_payout_value'])
+              ? DiscussionAsset.fromJson(json['total_payout_value'])
               : null,
       curatorPayoutValue:
           json['curator_payout_value'] != null
-              ? Asset.fromJson(json['curator_payout_value'])
+              ? DiscussionAsset.fromJson(json['curator_payout_value'])
               : null,
       authorRewards: json['author_rewards'],
       netVotes: json['net_votes'],
@@ -384,11 +384,11 @@ class Discussion extends Comment {
       payoutAt: json['payout_at'],
       pendingPayoutValue:
           json['pending_payout_value'] != null
-              ? Asset.fromJson(json['pending_payout_value'])
+              ? DiscussionAsset.fromJson(json['pending_payout_value'])
               : null,
       totalPendingPayoutValue:
           json['total_pending_payout_value'] != null
-              ? Asset.fromJson(json['total_pending_payout_value'])
+              ? DiscussionAsset.fromJson(json['total_pending_payout_value'])
               : null,
       activeVotes:
           json['active_votes'] != null
@@ -400,7 +400,7 @@ class Discussion extends Comment {
           json['replies'] != null ? List<String>.from(json['replies']) : null,
       authorReputation: json['author_reputation'],
       promoted:
-          json['promoted'] != null ? Asset.fromJson(json['promoted']) : null,
+          json['promoted'] != null ? DiscussionAsset.fromJson(json['promoted']) : null,
       rebloggedBy:
           json['reblogged_by'] != null
               ? List<String>.from(json['reblogged_by'])
