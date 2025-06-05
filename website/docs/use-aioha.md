@@ -44,26 +44,6 @@ slug: /use-aioha
 
 ---
 
-### Get QR String
-`getQrString()`
-
-*   **Description:** Generates a QR code string, typically used for HiveAuth login flows.
-*   **Parameters:** None.
-*   **Returns:** `Future<String>`: A future that resolves to the QR code string.
-
----
-
-### Sign Message
-`signMessage(String message, String keyType)`
-
-*   **Description:** Signs an arbitrary message with the user's specified key type.
-*   **Parameters:**
-    *   `message` (`String`): The message to be signed.
-    *   `keyType` (`String`): The type of key to use for signing (e.g., "posting", "active").
-*   **Returns:** `Future<String>`: A future that resolves to the signed message or an error.
-
----
-
 ### User management
 
 ---
@@ -116,8 +96,6 @@ slug: /use-aioha
 ---
 
 ### Onchain Operations
-
-#### Social onchain operations
 
 ---
 
@@ -206,6 +184,30 @@ slug: /use-aioha
 
 ---
 
+### Helpers
+
+---
+
+### Get QR String
+`getQrString()`
+
+*   **Description:** Generates a QR code string, typically used for HiveAuth login flows.
+*   **Parameters:** None.
+*   **Returns:** `Future<String>`: A future that resolves to the QR code string.
+
+---
+
+### Sign Message
+`signMessage(String message, String keyType)`
+
+*   **Description:** Signs an arbitrary message with the user's specified key type.
+*   **Parameters:**
+    *   `message` (`String`): The message to be signed.
+    *   `keyType` (`String`): The type of key to use for signing (e.g., "posting", "active").
+*   **Returns:** `Future<String>`: A future that resolves to the signed message or an error.
+
+---
+
 ### Sign And Broadcast Tx
 `signAndBroadcastTx(dynamic operationRequest, String keyType)`
 
@@ -214,10 +216,6 @@ slug: /use-aioha
     *   `operationRequest` (`dynamic`): The operation or list of operations to be signed and broadcasted. The structure depends on the specific Hive operation.
     *   `keyType` (`String`): The type of key to use for signing (e.g., "posting", "active").
 *   **Returns:** `Future<dynamic>`: A future that resolves to the result of the broadcast, which could be a transaction ID or an error object.
-
----
-
-#### Active Key based operations
 
 ---
 
