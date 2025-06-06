@@ -7,6 +7,8 @@ import 'package:hive_flutter_kit/ux/aioha_login_screen.dart';
 import 'package:hive_flutter_kit/ux/aioha_switch_user.dart';
 import 'package:hive_flutter_kit/ux/community_list.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/three_speak_feed_list.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/video_player.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/get_video_url.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -1148,13 +1150,13 @@ class _MyHomePageState extends State<MyHomePage> {
                           showDialog(
                             context: context,
                             builder: (context) => Dialog(
-                              insetPadding: EdgeInsets.zero,
-                              child: SizedBox(
-                                width: MediaQuery.of(context).size.width,
-                                height: MediaQuery.of(context).size.height,
-                                child: AiohaLoginScreen(aioha: aioha),
-                              ),
-                            ),
+                                  insetPadding: EdgeInsets.zero,
+                                  child: SizedBox(
+                                    width: MediaQuery.of(context).size.width,
+                                    height: MediaQuery.of(context).size.height,
+                                    child: AiohaLoginScreen(aioha: aioha),
+                                  ),
+                                ),
                           );
                         },
                         child: const Text('Aioha Login Screen User (Dialog)'),
@@ -1167,21 +1169,21 @@ class _MyHomePageState extends State<MyHomePage> {
                           showDialog(
                             context: context,
                             builder: (context) => Dialog(
-                              insetPadding: EdgeInsets.zero,
-                              child: SizedBox(
-                                width: MediaQuery.of(context).size.width,
-                                height: MediaQuery.of(context).size.height,
-                                child: CommunitiesList(
-                                  onSelectCommunity: (community) async {
-                                    debugPrint(
-                                      'Selected community: ${community.name}',
-                                    );
-                                    Navigator.of(context).pop();
-                                  },
-                                  aioha: aioha,
+                                  insetPadding: EdgeInsets.zero,
+                                  child: SizedBox(
+                                    width: MediaQuery.of(context).size.width,
+                                    height: MediaQuery.of(context).size.height,
+                                    child: CommunitiesList(
+                                      onSelectCommunity: (community) async {
+                                        debugPrint(
+                                          'Selected community: ${community.name}',
+                                        );
+                                        Navigator.of(context).pop();
+                                      },
+                                      aioha: aioha,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
                           );
                         },
                         child: const Text('Communities List (Dialog)'),
@@ -1286,10 +1288,32 @@ class _MyHomePageState extends State<MyHomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Scaffold(
-                        appBar: AppBar(title: const Text('Trending Feed')),
-                        body: const ThreeSpeakFeedList(feedType: ThreeSpeakFeedType.trending),
-                      ),
+                      builder:
+                          (context) => Scaffold(
+                            appBar: AppBar(title: const Text('Trending Feed')),
+                            body: ThreeSpeakFeedList(
+                              feedType: ThreeSpeakFeedType.trending,
+                              onTapVideoItem: (item) {
+                                final videoUrl = getVideoUrl(item);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => VideoPlayerScreen(
+                                          videoUrl: videoUrl ?? '',
+                                          title: item.title ?? 'Untitled',
+                                          author:
+                                              item.author?.username ??
+                                              'Unknown',
+                                          permlink: item.permlink ?? 'Unknown',
+                                          createdAt: item.createdAt,
+                                          item: item,
+                                        ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
                     ),
                   );
                 },
@@ -1300,10 +1324,34 @@ class _MyHomePageState extends State<MyHomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Scaffold(
-                        appBar: AppBar(title: const Text('New Uploads Feed')),
-                        body: const ThreeSpeakFeedList(feedType: ThreeSpeakFeedType.newUploads),
-                      ),
+                      builder:
+                          (context) => Scaffold(
+                            appBar: AppBar(
+                              title: const Text('New Uploads Feed'),
+                            ),
+                            body: ThreeSpeakFeedList(
+                              feedType: ThreeSpeakFeedType.newUploads,
+                              onTapVideoItem: (item) {
+                                final videoUrl = getVideoUrl(item);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => VideoPlayerScreen(
+                                          videoUrl: videoUrl ?? '',
+                                          title: item.title ?? 'Untitled',
+                                          author:
+                                              item.author?.username ??
+                                              'Unknown',
+                                          permlink: item.permlink ?? 'Unknown',
+                                          createdAt: item.createdAt,
+                                          item: item,
+                                        ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
                     ),
                   );
                 },
@@ -1314,10 +1362,34 @@ class _MyHomePageState extends State<MyHomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Scaffold(
-                        appBar: AppBar(title: const Text('First Uploads Feed')),
-                        body: const ThreeSpeakFeedList(feedType: ThreeSpeakFeedType.firstUploads),
-                      ),
+                      builder:
+                          (context) => Scaffold(
+                            appBar: AppBar(
+                              title: const Text('First Uploads Feed'),
+                            ),
+                            body: ThreeSpeakFeedList(
+                              feedType: ThreeSpeakFeedType.firstUploads,
+                              onTapVideoItem: (item) {
+                                final videoUrl = getVideoUrl(item);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => VideoPlayerScreen(
+                                          videoUrl: videoUrl ?? '',
+                                          title: item.title ?? 'Untitled',
+                                          author:
+                                              item.author?.username ??
+                                              'Unknown',
+                                          permlink: item.permlink ?? 'Unknown',
+                                          createdAt: item.createdAt,
+                                          item: item,
+                                        ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
                     ),
                   );
                 },
