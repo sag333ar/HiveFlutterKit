@@ -58,7 +58,10 @@ If you are targeting web, open your `web/index.html` file and add the following 
 ```html
 <body>
   <!-- Add this line -->
-  <script src="packages/hive_flutter_kit/web/aioha.js" type="application/javascript" defer></script>
+  <script src="packages/hive_flutter_kit/web/hiveflutterkit.js" type="application/javascript" defer></script>
+
+  <!-- Add this line if you are using 3speak components like video player -->
+   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest" type="application/javascript">
 
   <script src="flutter_bootstrap.js" async></script>
 </body>
