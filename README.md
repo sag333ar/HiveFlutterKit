@@ -2,7 +2,6 @@
 
 **📣 For comprehensive documentation, please visit our new documentation site: [https://hiveflutterkit.sagarkothari88.one/](https://hiveflutterkit.sagarkothari88.one/)**
 
-![logo Here](https://github.com/sag333ar/HiveFlutterKit/blob/main/assets/images/logo.png?raw=true)
+<img src="https://github.com/sag333ar/HiveFlutterKit/blob/main/assets/images/logo.png?raw=true" width="100" height="100">
 
-![Banner Image Here](https://github.com/sag333ar/HiveFlutterKit/blob/main/assets/images/banner.png?raw=true)
-
+<img src="https://github.com/sag333ar/HiveFlutterKit/blob/main/assets/images/banner.jpg?raw=true">
