@@ -7,6 +7,8 @@ const FeatureList = [
   {
     title: 'Flutter-Friendly Hive Auth',
     imgSrc: '/img/undraw_docusaurus_mountain.png',
+    width: 272,
+    height: 172,
     description: (
       <>
         HiveFlutterKit is designed for seamless integration into your Flutter
@@ -19,6 +21,8 @@ const FeatureList = [
   {
     title: 'Connect to Hive, Not Complexity',
     imgSrc: '/img/undraw_docusaurus_tree.png',
+    width: 260,
+    height: 138,
     description: (
       <>
         HiveFlutterKit handles the underlying complexities of Hive authentication,
@@ -31,6 +35,8 @@ const FeatureList = [
   {
     title: 'Open Source & Community Driven',
     imgSrc: '/img/undraw_docusaurus_react.png',
+    width: 282,
+    height: 166,
     description: (
       <>
         HiveFlutterKit is an open-source project built for the Hive community.
