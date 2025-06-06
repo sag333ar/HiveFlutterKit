@@ -11,11 +11,18 @@ class ThreeSpeakFeedList extends StatefulWidget {
   final bool isShorts;
   final String? lang;
 
+  final void Function(GQLFeedItem item)? onTapVideoItem;
+  final void Function(GQLFeedItem item)? onTapAuthor;
+  final void Function(GQLFeedItem item)? onTapReport;
+
   const ThreeSpeakFeedList({
     super.key,
     required this.feedType,
     this.isShorts = false,
     this.lang,
+    this.onTapVideoItem,
+    this.onTapAuthor,
+    this.onTapReport,
   });
 
   @override
@@ -108,19 +115,22 @@ class _ThreeSpeakFeedListState extends State<ThreeSpeakFeedList> {
           return VideoCard(
             item: item,
             isVisible: true,
-            onTap: () => _openVideo(context, item),
+            onTap: () => widget.onTapVideoItem?.call(item),
+            onTapAuthor: () => widget.onTapAuthor?.call(item),
+            onTapReport: () => widget.onTapReport?.call(item),
           );
         },
       );
     } else {
-      // If you have a VisibilityDetectorListView, use it. Otherwise, fallback to ListView.builder.
       return VisibilityDetectorListView(
         items: _items,
         itemBuilder: (context, item, index, isVisible) {
           return VideoCard(
             item: item,
             isVisible: isVisible,
-            onTap: () => _openVideo(context, item),
+            onTap: () => widget.onTapVideoItem?.call(item),
+            onTapAuthor: () => widget.onTapAuthor?.call(item),
+            onTapReport: () => widget.onTapReport?.call(item),
           );
         },
       );

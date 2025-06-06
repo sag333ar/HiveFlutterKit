@@ -2,19 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/server_proxy.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/auto_playvideo_thumbnail.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/video_thumbnail.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class VideoCard extends StatefulWidget {
   final GQLFeedItem item;
   final bool isVisible;
   final void Function()? onTap;
+  final void Function()? onTapAuthor;
+  final void Function()? onTapReport;
 
   const VideoCard({
     super.key,
     required this.item,
     required this.isVisible,
     this.onTap,
+    this.onTapAuthor,
+    this.onTapReport,
   });
 
   @override
@@ -36,12 +40,11 @@ class _VideoCardState extends State<VideoCard> {
           children: [
             AspectRatio(
               aspectRatio: 16 / 9,
-              child: AutoPlayVideoThumbnail(
+              child: VideoThumbnail(
                 item: item,
                 isVisible: widget.isVisible,
               ),
             ),
-            //AutoPlayVideoThumbnail(item: item, isVisible: widget.isVisible),
             isMobile
                 ? Padding(
                   padding: const EdgeInsets.symmetric(
@@ -72,23 +75,7 @@ class _VideoCardState extends State<VideoCard> {
                                         const Icon(Icons.error),
                               ),
                             ),
-                            onTap: () {
-                              // Navigate to user channel screen
-                              final username = item.author?.username ?? '';
-                              if (username.isNotEmpty) {
-                                // Navigator.of(context).push(
-                                //   MaterialPageRoute(
-                                //     builder:
-                                //         (_) =>
-                                //             UserChannelScreen(owner: username),
-                                //   ),
-                                // );
-                                // context.goNamed(
-                                //   'user',
-                                //   pathParameters: {'author': username},
-                                // );
-                              }
-                            },
+                            onTap: widget.onTapAuthor,
                           ),
                           const SizedBox(width: 8),
                           Expanded(
@@ -105,7 +92,7 @@ class _VideoCardState extends State<VideoCard> {
                           PopupMenuButton<String>(
                             onSelected: (value) {
                               if (value == 'Report') {
-                                print('Report clicked');
+                                widget.onTapReport?.call();
                               }
                             },
                             itemBuilder:
@@ -187,24 +174,7 @@ class _VideoCardState extends State<VideoCard> {
                                         const Icon(Icons.error),
                               ),
                             ),
-                            onTap: () {
-                              // Navigate to user channel screen
-                              final username = item.author?.username ?? '';
-                              if (username.isNotEmpty) {
-                                // Navigator.of(context).push(
-                                //   MaterialPageRoute(
-                                //     builder:
-                                //         (_) => UserChannelScreen(
-                                //           owner: username,
-                                //         ),
-                                //   ),
-                                // );
-                                // context.goNamed(
-                                //   'user',
-                                //   pathParameters: {'author': username},
-                                // );
-                              }
-                            },
+                            onTap: widget.onTapAuthor,
                           ),
                           const SizedBox(width: 8),
                           Expanded(
@@ -221,7 +191,7 @@ class _VideoCardState extends State<VideoCard> {
                           PopupMenuButton<String>(
                             onSelected: (value) {
                               if (value == 'Report') {
-                                print('Report clicked');
+                                widget.onTapReport?.call();
                               }
                             },
                             itemBuilder:
