@@ -13,8 +13,8 @@ const FeatureList = [
         applications, allowing you to add Hive authentication with minimal setup.
       </>
     ),
-    width: 200,
-    height: 200,
+    width: 272,
+    height: 172,
   },
   {
     title: 'Connect to Hive, Not Complexity',
@@ -25,8 +25,8 @@ const FeatureList = [
         so you can focus on building great user experiences on the Hive blockchain.
       </>
     ),
-    width: 200,
-    height: 200,
+    width: 260,
+    height: 138,
   },
   {
     title: 'Open Source & Community Driven',
@@ -37,8 +37,8 @@ const FeatureList = [
         Contributions are welcome to help it grow and thrive!
       </>
     ),
-    width: 200,
-    height: 200,
+    width: 282,
+    height: 166,
   },
 ];
 
