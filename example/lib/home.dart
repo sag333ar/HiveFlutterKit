@@ -802,16 +802,16 @@ class _MyHomePageState extends State<MyHomePage> {
       _uploadedImageUrl = null;
     });
     try {
-      final url = await aioha.pickImageWithMaxSize(
+      final res = await aioha.pickImageWithMaxSize(
         2000,
         "https://images.ecency.com/hs",
       );
       setState(() {
-        _uploadedImageUrl = url['url'];
+        _uploadedImageUrl = res.url;
       });
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Image uploaded: $url')));
+      ).showSnackBar(SnackBar(content: Text('Image uploaded: ${res.url}')));
     } catch (e) {
       ScaffoldMessenger.of(
         context,
