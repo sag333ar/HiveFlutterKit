@@ -1,4 +1,5 @@
 import 'package:hive_flutter_kit/core/models/login_model.dart';
+import 'package:hive_flutter_kit/core/models/upload_image.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:hive_flutter_kit/core/models/account.dart';
 import 'package:hive_flutter_kit/core/models/chain_properties.dart';
@@ -212,7 +213,7 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
     return base64Str;
   }
 
-  Future<Map<String, dynamic>> uploadImage({
+  Future<UploadResponse> uploadImage({
     required Uint8List imageBytes,
     required String fileName,
     required String token,
@@ -243,24 +244,28 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
         final Map<String, dynamic> resJson = jsonDecode(response.body);
         final uploadUrl = resJson['url'];
 
-        return {
-          'success': true,
-          'url': uploadUrl,
-          'message': 'Image uploaded successfully.',
-        };
+        return UploadResponse(
+          success: true,
+          url: uploadUrl,
+          message: 'Image uploaded successfully.',
+        );
       } else {
-        return {
-          'success': false,
-          'url': null,
-          'message': 'Upload failed: ${response.statusCode} - ${response.body}',
-        };
+        return UploadResponse(
+          success: false,
+          url: null,
+          message: 'Upload failed: ${response.statusCode} - ${response.body}',
+        );
       }
     } catch (e) {
-      return {'success': false, 'url': null, 'message': 'Upload error: $e'};
+              return UploadResponse(
+          success: false,
+          url: null,
+          message: 'Upload error: $e',
+        );
     }
   }
 
-  Future<Map<String, dynamic>> pickImageWithMaxSize(
+  Future<UploadResponse> pickImageWithMaxSize(
     int maxDimension,
     String uploadUrlSever,
   ) async {
