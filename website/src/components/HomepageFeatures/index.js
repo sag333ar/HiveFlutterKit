@@ -15,8 +15,6 @@ const FeatureList = [
         applications, allowing you to add Hive authentication with minimal setup.
       </>
     ),
-    width: 272,
-    height: 172,
   },
   {
     title: 'Connect to Hive, Not Complexity',
@@ -29,8 +27,6 @@ const FeatureList = [
         so you can focus on building great user experiences on the Hive blockchain.
       </>
     ),
-    width: 260,
-    height: 138,
   },
   {
     title: 'Open Source & Community Driven',
@@ -43,8 +39,6 @@ const FeatureList = [
         Contributions are welcome to help it grow and thrive!
       </>
     ),
-    width: 282,
-    height: 166,
   },
 ];
 
@@ -52,7 +46,7 @@ function Feature({imgSrc, title, description, width, height}) {
   return (
     <div className={clsx('col col--4')}>
       <div className="text--center">
-        <img src={useBaseUrl(imgSrc)} alt={title} className={styles.featureSvg} width={width} height={height} />
+        <img src={useBaseUrl(imgSrc)} alt={title} className={styles.featureSvg} width={width} height={height}/>
       </div>
       <div className="text--center padding-horiz--md">
         <Heading as="h3">{title}</Heading>
