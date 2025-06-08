@@ -4,7 +4,13 @@ import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_resp
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/video_card_widget.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/visibility_detector.dart';
 
-enum ThreeSpeakFeedType { trending, newUploads, hot, firstUploads }
+enum ThreeSpeakFeedType {
+  trending,
+  newUploads,
+  hot,
+  firstUploads,
+  related,
+} // Add related
 
 class ThreeSpeakFeedList extends StatefulWidget {
   final ThreeSpeakFeedType feedType;
@@ -15,6 +21,9 @@ class ThreeSpeakFeedList extends StatefulWidget {
   final void Function(GQLFeedItem item)? onTapAuthor;
   final void Function(GQLFeedItem item)? onTapReport;
 
+  final String? relatedAuthor;
+  final String? relatedPermlink;
+
   const ThreeSpeakFeedList({
     super.key,
     required this.feedType,
@@ -23,6 +32,8 @@ class ThreeSpeakFeedList extends StatefulWidget {
     this.onTapVideoItem,
     this.onTapAuthor,
     this.onTapReport,
+    this.relatedAuthor,
+    this.relatedPermlink,
   });
 
   @override
@@ -65,6 +76,15 @@ class _ThreeSpeakFeedListState extends State<ThreeSpeakFeedList> {
             0,
             widget.lang,
           );
+          break;
+        case ThreeSpeakFeedType.related:
+          if (widget.relatedAuthor != null && widget.relatedPermlink != null) {
+            items = await _gql.getRelated(
+              widget.relatedAuthor!,
+              widget.relatedPermlink!,
+              widget.lang,
+            );
+          }
           break;
       }
       setState(() {
