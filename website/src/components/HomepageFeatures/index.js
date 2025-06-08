@@ -7,6 +7,8 @@ const FeatureList = [
   {
     title: 'Flutter-Friendly Hive Auth',
     imgSrc: '/img/undraw_docusaurus_mountain.png',
+    width: 290,
+    height: 183,
     description: (
       <>
         HiveFlutterKit is designed for seamless integration into your Flutter
@@ -17,6 +19,8 @@ const FeatureList = [
   {
     title: 'Connect to Hive, Not Complexity',
     imgSrc: '/img/undraw_docusaurus_tree.png',
+    width: 314,
+    height: 184,
     description: (
       <>
         HiveFlutterKit handles the underlying complexities of Hive authentication,
@@ -27,6 +31,8 @@ const FeatureList = [
   {
     title: 'Open Source & Community Driven',
     imgSrc: '/img/undraw_docusaurus_react.png',
+    width: 347,
+    height: 184,
     description: (
       <>
         HiveFlutterKit is an open-source project built for the Hive community.
@@ -36,11 +42,11 @@ const FeatureList = [
   },
 ];
 
-function Feature({imgSrc, title, description}) {
+function Feature({imgSrc, title, description, width, height}) {
   return (
     <div className={clsx('col col--4')}>
       <div className="text--center">
-        <img src={useBaseUrl(imgSrc)} alt={title} className={styles.featureSvg} />
+        <img src={useBaseUrl(imgSrc)} alt={title} className={styles.featureSvg} width={width} height={height}/>
       </div>
       <div className="text--center padding-horiz--md">
         <Heading as="h3">{title}</Heading>
