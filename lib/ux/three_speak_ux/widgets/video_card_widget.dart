@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/server_proxy.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/user_channel_screen/user_channel_screen.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/video_thumbnail.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -31,6 +32,22 @@ class _VideoCardState extends State<VideoCard> {
     final item = widget.item;
     bool isMobile = MediaQuery.of(context).size.width < 600;
 
+    void handleTapAuthor() {
+      if (widget.onTapAuthor != null) {
+        widget.onTapAuthor!();
+      } else {
+        final username = item.author?.username;
+        if (username != null && username.isNotEmpty) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => UserChannelScreen(owner: username),
+            ),
+          );
+        }
+      }
+    }
+
     return GestureDetector(
       onTap: widget.onTap,
       child: Card(
@@ -40,10 +57,7 @@ class _VideoCardState extends State<VideoCard> {
           children: [
             AspectRatio(
               aspectRatio: 16 / 9,
-              child: VideoThumbnail(
-                item: item,
-                isVisible: widget.isVisible,
-              ),
+              child: VideoThumbnail(item: item, isVisible: widget.isVisible),
             ),
             isMobile
                 ? Padding(
@@ -75,7 +89,7 @@ class _VideoCardState extends State<VideoCard> {
                                         const Icon(Icons.error),
                               ),
                             ),
-                            onTap: widget.onTapAuthor,
+                            onTap: handleTapAuthor, // <-- always use this
                           ),
                           const SizedBox(width: 8),
                           Expanded(
@@ -174,7 +188,7 @@ class _VideoCardState extends State<VideoCard> {
                                         const Icon(Icons.error),
                               ),
                             ),
-                            onTap: widget.onTapAuthor,
+                            onTap: handleTapAuthor, // <-- always use this
                           ),
                           const SizedBox(width: 8),
                           Expanded(
