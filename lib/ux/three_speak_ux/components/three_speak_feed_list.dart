@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/graphql/gql_communicator.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/user_channel_screen/user_channel_screen.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/video_card_widget.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/visibility_detector.dart';
 
@@ -10,6 +11,7 @@ enum ThreeSpeakFeedType {
   hot,
   firstUploads,
   related,
+  userFeed, // <-- Add this
 } // Add related
 
 class ThreeSpeakFeedList extends StatefulWidget {
@@ -23,6 +25,7 @@ class ThreeSpeakFeedList extends StatefulWidget {
 
   final String? relatedAuthor;
   final String? relatedPermlink;
+  final String? userChannel; // For userFeed
 
   const ThreeSpeakFeedList({
     super.key,
@@ -34,6 +37,7 @@ class ThreeSpeakFeedList extends StatefulWidget {
     this.onTapReport,
     this.relatedAuthor,
     this.relatedPermlink,
+    this.userChannel,
   });
 
   @override
@@ -86,6 +90,16 @@ class _ThreeSpeakFeedListState extends State<ThreeSpeakFeedList> {
             );
           }
           break;
+        case ThreeSpeakFeedType.userFeed:
+          if (widget.userChannel != null && widget.userChannel!.isNotEmpty) {
+            items = await _gql.getUserFeed(
+              [widget.userChannel!],
+              widget.isShorts,
+              0,
+              widget.lang,
+            );
+          }
+          break;
       }
       setState(() {
         _items = items;
@@ -102,6 +116,20 @@ class _ThreeSpeakFeedListState extends State<ThreeSpeakFeedList> {
   void _openVideo(BuildContext context, GQLFeedItem item) {
     // TODO: Implement navigation or video open logic
     // Example: Navigator.push(...);
+  }
+
+  void _handleTapAuthor(BuildContext context, GQLFeedItem item) {
+    if (widget.onTapAuthor != null) {
+      widget.onTapAuthor!(item);
+    } else {
+      final username = item.author?.username;
+      if (username != null && username.isNotEmpty) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => UserChannelScreen(owner: username)),
+        );
+      }
+    }
   }
 
   @override
@@ -136,7 +164,7 @@ class _ThreeSpeakFeedListState extends State<ThreeSpeakFeedList> {
             item: item,
             isVisible: true,
             onTap: () => widget.onTapVideoItem?.call(item),
-            onTapAuthor: () => widget.onTapAuthor?.call(item),
+            onTapAuthor: () => _handleTapAuthor(context, item),
             onTapReport: () => widget.onTapReport?.call(item),
           );
         },
@@ -149,7 +177,7 @@ class _ThreeSpeakFeedListState extends State<ThreeSpeakFeedList> {
             item: item,
             isVisible: isVisible,
             onTap: () => widget.onTapVideoItem?.call(item),
-            onTapAuthor: () => widget.onTapAuthor?.call(item),
+            onTapAuthor: () => _handleTapAuthor(context, item),
             onTapReport: () => widget.onTapReport?.call(item),
           );
         },
