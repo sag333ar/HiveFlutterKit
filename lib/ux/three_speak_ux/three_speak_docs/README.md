@@ -34,6 +34,22 @@ This widget displays different types of video feeds. You can customize the feed 
 
 #### First Uploads Feed
 ![First Uploads Feed](./firstuploads.png)
+
+### Comments
+![Comments](./comments.png)
+
+### Search screen
+![Search Screen](./searchscreen.png)
+
+### Upvotes
+![Upvotes](./upvotes.png)
+
+### User Feed
+![User Feed](./userfeed.png)
+
+### Video Player Screen
+![Video Player Screen](./videoplayer.png)
+
 **Usage Example (from `example/lib/home.dart`):**
 
 ```dart
