@@ -427,6 +427,322 @@ class MyAccountRepliesScreen extends StatelessWidget {
   **ScreenShots**
   ![UserProfile](userProfile.png)
 
+<<<<<<< HEAD
+=======
+## ViewList
+
+- **Purpose:** A reusable widget for displaying a list of Hive discussions.
+- **Functionality:**
+    - Renders a scrollable list of discussion items.
+    - Integrates with a `ScrollController` to support infinite scrolling and pull-to-refresh.
+    - Displays loading indicators when fetching more data.
+    - Allows customization of tap actions on various parts of the discussion item.
+- **Key Input Parameters:**
+    - `discussions`: A list of `Discussion` objects to display.
+    - `isLoadingMore`: Boolean indicating if more data is currently being loaded.
+    - `hasMore`: Boolean indicating if there is more data to load.
+    - `scrollController`: The `ScrollController` for the list view.
+    - `amoutValues`: A list of strings representing payout values for each discussion.
+    - `onTap`: Callback function when a discussion item is tapped.
+    - `onAuthorTap`: Callback function when an author's name is tapped.
+    - `onCategoryTap`: Callback function when a category is tapped.
+    - `onUpvoteTap`: Callback function for upvoting.
+    - `onDownVoteTap`: Callback function for downvoting.
+    - `onCommentTap`: Callback function for commenting.
+    - `onReblogTap`: Callback function for reblogging.
+- **Usage Example:**
+  ```dart
+  // Typically used within screens like TrendingFeedScreen
+
+  ViewList(
+    discussions: discussionList,
+    isLoadingMore: isLoading,
+    hasMore: hasMoreData,
+    scrollController: _scrollController,
+    amoutValues: payoutValues,
+    // ... other callbacks
+  )
+  ```
+
+## ViewComments
+
+The `ViewComments` widget is a core UI component responsible for rendering a list or grid of `Discussion` objects. These discussions can be posts, comments, or replies. It's designed to be a flexible presentation layer, offering multiple display modes: a compact list view, a space-efficient grid view (on wider screens), and a large card preview mode. It also integrates infinite scrolling capabilities by working with a `ScrollController` and flags for loading states.
+
+This widget is typically used internally by other "Screen" level widgets (like `CommentsScreen`, `RepliesScreen`, etc.) which handle the data fetching and then pass the list of discussions and relevant state (isLoadingMore, hasMore) to `ViewComments` for display.
+
+### Parameters:
+
+-   `key` (Key?): Optional. An optional key for the widget.
+-   `discussions` (List<Discussion>): **Required**. The list of `Discussion` objects to be displayed.
+-   `isLoadingMore` (bool): **Required**. Indicates if more items are currently being loaded. Used to show a loading spinner at the end of the list.
+-   `hasMore` (bool): **Required**. Indicates if there are more items available to be loaded.
+-   `scrollController` (ScrollController): **Required**. The `ScrollController` that manages the scrolling behavior of the list/grid, essential for implementing infinite scroll.
+-   `amoutValues` (List<String>?): Optional. A list of pre-formatted strings representing the payout values for each discussion. If provided, its length should match the `discussions` list.
+-   `onTap` (Function?): Optional. Callback function triggered when a user taps on a discussion item. Typically passes the `Discussion` object as an argument.
+-   `onAuthorTap` (Function?): Optional. Callback function triggered when a user taps on the author's avatar or name. May pass the `Discussion` object or author's username.
+-   `onCategoryTap` (Function?): Optional. Callback function triggered when a user taps on the category or community tag. May pass the `Discussion` object or category string.
+-   `onUpvoteTap` (Function?): Optional. Callback function for when the upvote (favorite) icon is tapped.
+-   `onDownVoteTap` (Function?): Optional. Callback function for when a downvote icon is tapped. (Note: While present in the constructor, its direct usage in the provided card building methods isn't apparent, potentially for future implementation).
+-   `onCommentTap` (Function?): Optional. Callback function for when the comment icon is tapped.
+-   `onReblogTap` (Function?): Optional. Callback function for when the reblog (repeat) icon is tapped.
+
+### Usage Example:
+
+Since `ViewComments` is primarily a display widget, you'd typically use it within a stateful widget that manages fetching discussions and controlling the `ScrollController`.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:hive_flutter_kit/hive_flutter_kit.dart'; // For Discussion model
+import 'package:hive_flutter_kit/ux/dhive/common_list_view/view_comments.dart'; // Path to ViewComments
+
+class MyCustomFeedPage extends StatefulWidget {
+  const MyCustomFeedPage({super.key});
+
+  @override
+  State<MyCustomFeedPage> createState() => _MyCustomFeedPageState();
+}
+
+class _MyCustomFeedPageState extends State<MyCustomFeedPage> {
+  List<Discussion> _discussions = [];
+  bool _isLoadingMore = false;
+  bool _hasMore = true;
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadInitialDiscussions();
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _loadInitialDiscussions() {
+    // Simulate fetching initial data
+    setState(() {
+      _discussions = List.generate(10, (index) => _createMockDiscussion(index));
+      _hasMore = true; // Assume there's more data initially
+    });
+  }
+
+  Future<void> _loadMoreDiscussions() async {
+    if (_isLoadingMore || !_hasMore) return;
+    setState(() => _isLoadingMore = true);
+
+    // Simulate API call delay
+    await Future.delayed(const Duration(seconds: 2));
+    final newDiscussions = List.generate(5, (index) => _createMockDiscussion(_discussions.length + index));
+    
+    setState(() {
+      _discussions.addAll(newDiscussions);
+      _isLoadingMore = false;
+      _hasMore = newDiscussions.isNotEmpty; // Check if the API returned more items
+    });
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200 &&
+        !_isLoadingMore &&
+        _hasMore) {
+      _loadMoreDiscussions();
+    }
+  }
+
+  Discussion _createMockDiscussion(int id) {
+    // Create a basic Discussion object for example purposes
+    return Discussion(
+      author: 'author$id',
+      permlink: 'permlink-$id',
+      title: 'Mock Discussion Title $id: A Story of Adventure',
+      body: 'This is the body of mock discussion $id. It contains some text and maybe an image ![](<https://picsum.photos/seed/$id/200/300>).',
+      created: DateTime.now().subtract(Duration(hours: id)).toIso8601String(),
+      category: 'mock',
+      communityName: 'Mock Community',
+      communityTitle: 'The Mocks',
+      jsonMetadata: JsonMetadata(
+        description: 'A short description for mock discussion $id.',
+        image: ['https://picsum.photos/seed/$id/640/320'],
+        tags: ['mock', 'example', 'flutter'],
+      ),
+      stats: DiscussionStats(totalVotes: id * 5, flagWeight: 0.0),
+      children: id * 2,
+      pendingPayoutValue: Payout(currency: 'HBD', amount: id * 0.5),
+    );
+  }
+  
+  List<String> _getAmountValues() {
+    return _discussions.map((d) => '\$${d.pendingPayoutValue?.amount?.toStringAsFixed(2) ?? '0.00'}').toList();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Feed with ViewComments')),
+      body: ViewComments(
+        discussions: _discussions,
+        isLoadingMore: _isLoadingMore,
+        hasMore: _hasMore,
+        scrollController: _scrollController,
+        amoutValues: _getAmountValues(),
+        onTap: (discussion) {
+          print('Tapped on: ${discussion.title}');
+          // Handle tap, e.g., navigate to detail page
+        },
+        onAuthorTap: (discussionOrAuthor) { // Parameter can vary based on implementation
+          String authorName = discussionOrAuthor is Discussion ? discussionOrAuthor.author! : discussionOrAuthor.toString();
+          print('Author tapped: $authorName');
+        },
+        // Implement other callbacks as needed
+      ),
+    );
+  }
+}
+```
+
+## BlogList
+
+The `BlogList` widget is a versatile UI component for rendering lists or grids of `Discussion` objects, primarily intended for blog-style feeds. It shares much of its core functionality with `ViewComments`, including support for multiple display modes (list, grid, large card), infinite scrolling via a `ScrollController`, and various interaction callbacks. A key visual distinction in `BlogList` is its explicit indication of reblogged posts, which is common in blog feeds.
+
+This widget is typically employed by higher-level "Screen" widgets (like `BlogScreen`) that manage data fetching for blog feeds and then delegate the display logic to `BlogList`.
+
+### Parameters:
+
+-   `key` (Key?): Optional. An optional key for the widget.
+-   `discussions` (List<Discussion>): **Required**. The list of `Discussion` objects (blog posts, reblogs) to be displayed.
+-   `isLoadingMore` (bool): **Required**. True if more items are currently being loaded, to display a loading indicator.
+-   `hasMore` (bool): **Required**. True if more items are available for loading.
+-   `scrollController` (ScrollController): **Required**. The `ScrollController` managing the scroll behavior, crucial for infinite scroll.
+-   `amoutValues` (List<String>?): Optional. A list of pre-formatted strings for payout values, corresponding to each discussion.
+-   `onTap` (Function?): Optional. Callback invoked when a user taps on a discussion item. Usually provides the `Discussion` object.
+-   `onAuthorTap` (Function?): Optional. Callback invoked when a user taps on an author's avatar or name.
+-   `onCategoryTap` (Function?): Optional. Callback invoked when a user taps on a category or community tag.
+-   `onUpvoteTap` (Function?): Optional. Callback for the upvote (favorite) icon tap.
+-   `onDownVoteTap` (Function?): Optional. Callback for a downvote icon tap. (Note: Its direct application in the card rendering logic is not evident from the provided code, possibly for future use).
+-   `onCommentTap` (Function?): Optional. Callback for the comment icon tap.
+-   `onReblogTap` (Function?): Optional. Callback for the reblog (repeat) icon tap.
+
+### Usage Example:
+
+Similar to `ViewComments`, `BlogList` is best used within a stateful widget that handles the data lifecycle (fetching posts/reblogs) and `ScrollController` management.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:hive_flutter_kit/hive_flutter_kit.dart'; // For Discussion model
+import 'package:hive_flutter_kit/ux/dhive/common_list_view/blog_list.dart'; // Path to BlogList
+
+class MyBlogFeedPage extends StatefulWidget {
+  const MyBlogFeedPage({super.key});
+
+  @override
+  State<MyBlogFeedPage> createState() => _MyBlogFeedPageState();
+}
+
+class _MyBlogFeedPageState extends State<MyBlogFeedPage> {
+  List<Discussion> _blogPosts = [];
+  bool _isLoadingMore = false;
+  bool _hasMore = true;
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadInitialPosts();
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _loadInitialPosts() {
+    // Simulate fetching initial blog posts
+    setState(() {
+      _blogPosts = List.generate(10, (index) => _createMockBlogPost(index));
+      _hasMore = true; 
+    });
+  }
+
+  Future<void> _loadMorePosts() async {
+    if (_isLoadingMore || !_hasMore) return;
+    setState(() => _isLoadingMore = true);
+
+    await Future.delayed(const Duration(seconds: 2)); // Simulate API call
+    final newPosts = List.generate(5, (index) => _createMockBlogPost(_blogPosts.length + index, isReblog: (index % 3 == 0)));
+    
+    setState(() {
+      _blogPosts.addAll(newPosts);
+      _isLoadingMore = false;
+      _hasMore = newPosts.isNotEmpty;
+    });
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 300 &&
+        !_isLoadingMore &&
+        _hasMore) {
+      _loadMorePosts();
+    }
+  }
+
+  Discussion _createMockBlogPost(int id, {bool isReblog = false}) {
+    return Discussion(
+      author: 'user${id + 1}',
+      permlink: 'my-awesome-post-$id',
+      title: 'Blog Post Title $id: Insights and Stories',
+      body: 'This is the full content of blog post $id. It might be longer and include various formatting. Here is an image: ![](<https://picsum.photos/seed/post$id/800/400>).',
+      created: DateTime.now().subtract(Duration(days: id)).toIso8601String(),
+      category: isReblog ? 'reblogged-content' : 'original-thoughts',
+      communityTitle: isReblog ? 'Cross-posted Blogs' : 'My Personal Blog',
+      jsonMetadata: JsonMetadata(
+        description: 'A captivating summary for blog post $id.',
+        image: ['https://picsum.photos/seed/post$id/640/320'],
+        tags: ['blog', 'life', 'updates'],
+      ),
+      stats: DiscussionStats(totalVotes: id * 10, flagWeight: 0.0),
+      children: id * 3,
+      pendingPayoutValue: Payout(currency: 'HBD', amount: id * 1.5),
+      // Simulate reblog status
+      rebloggedBy: isReblog ? ['reblogger-account'] : [], 
+    );
+  }
+  
+  List<String> _getAmountValues() {
+    return _blogPosts.map((d) => '\$${d.pendingPayoutValue?.amount?.toStringAsFixed(2) ?? '0.00'}').toList();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('My Blog Feed')),
+      body: BlogList(
+        discussions: _blogPosts,
+        isLoadingMore: _isLoadingMore,
+        hasMore: _hasMore,
+        scrollController: _scrollController,
+        amoutValues: _getAmountValues(),
+        onTap: (discussion) {
+          print('Tapped on blog post: ${discussion.title}');
+        },
+        onAuthorTap: (discussionOrAuthor) {
+           String authorName = discussionOrAuthor is Discussion ? discussionOrAuthor.author! : discussionOrAuthor.toString();
+          print('Author profile tapped: $authorName');
+        },
+        // Other callbacks can be implemented here
+      ),
+    );
+  }
+}
+```
+
+>>>>>>> 76cf99d (Dhive_docs/Readme Updated)
 **Note:** The specific parameters and detailed functionality for these screens would require individual inspection of their source code. The documentation above provides a general overview.
 
 ## Enums
