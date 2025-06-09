@@ -11,6 +11,9 @@ class CustomImagePicker {
     required BuildContext context,
     required PickerType type,
     CameraFacing cameraFacing = CameraFacing.front,
+    int imageQuality = 60,
+    double maxHeight = 600,
+    double maxWidth = 600,
     required void Function(XFile? file, Uint8List? bytes) onPick,
   }) async {
     final ImagePicker picker = ImagePicker();
@@ -27,6 +30,9 @@ class CustomImagePicker {
         image = await picker.pickImage(
           source: ImageSource.camera,
           preferredCameraDevice: preferredCamera,
+          imageQuality: imageQuality,
+          maxHeight: maxHeight,
+          maxWidth: maxWidth,
         );
       }
 
