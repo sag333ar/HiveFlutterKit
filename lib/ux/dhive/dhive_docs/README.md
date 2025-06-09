@@ -39,6 +39,10 @@ The widget is structured into several key components:
     // ... other callbacks
   )
   ```
+  **ScreenShots**
+  ![List View ](trending-feed-1.png)
+  ![Grid View](trending-feed-2.png)
+  ![Large Preview](trending-feed-3.png)
 
 ### 2. UserProfilePicture
 
@@ -66,8 +70,67 @@ The widget is structured into several key components:
     showDetails: true,
   )
   ```
+  **ScreenShots**
+  ![UserProfile](userProfile.png)
 
-### 3. ViewList
+### 3. Account Post Screens
+
+This set of screens is designed to display different types of posts related to a specific Hive account or community.
+
+#### a. `AccountPostsScreen`
+- **Purpose:** Displays a general list of posts for a given account. (Further details would require inspecting the file if specific parameters are needed).
+- **ScreenShots**
+  ![List View ](image.png)
+  ![Grid View](image-1.png)
+  ![Large Preview](image-2.png)
+
+
+#### b. `BlogScreen`
+- **Purpose:** Displays posts in a blog format, typically for a specific user.
+- **Key Input Parameters (Assumed, verify by inspection if needed):**
+    - `dhive`: `HiveFlutterKitPlatform` instance.
+    - `username`: The username whose blog posts are to be displayed.
+    - Callbacks for interactions similar to `TrendingFeedScreen`.
+- **ScreenShots**
+  ![List View ](image-3.png)
+  ![Grid View](image-4.png)
+  ![Large Preview](image-5.png)
+
+#### c. `CommentsScreen`
+- **Purpose:** Displays comments made on a specific post or by a specific user.
+- **Key Input Parameters (Assumed, verify by inspection if needed):**
+    - `dhive`: `HiveFlutterKitPlatform` instance.
+    - `author` (optional): The author of the comments.
+    - `permlink` (optional): The permlink of the post for which comments are displayed.
+    - Callbacks for interactions.
+- **ScreenShots**
+  ![List View ](image-6.png)
+  ![Grid View](image-7.png)
+  ![Large Preview](image-8.png)
+
+#### d. `CommunitySpecificScreen`
+- **Purpose:** Displays posts related to a specific Hive community.
+- **Key Input Parameters (Assumed, verify by inspection if needed):**
+    - `dhive`: `HiveFlutterKitPlatform` instance.
+    - `communityName`: The name of the community.
+    - Callbacks for interactions.
+- **ScreenShots**
+  ![List View ](image-9.png)
+  ![Grid View](image-10.png)
+  ![Large Preview](image-11.png)
+
+#### e. `RepliesScreen`
+- **Purpose:** Displays replies to an account's posts or comments.
+- **Key Input Parameters (Assumed, verify by inspection if needed):**
+    - `dhive`: `HiveFlutterKitPlatform` instance.
+    - `username`: The username whose replies are to be displayed.
+    - Callbacks for interactions.
+- **ScreenShots**
+  ![List View ](image-12.png)
+  ![Grid View](image-13.png)
+  ![Large Preview](image-14.png)
+
+### 4. ViewList
 
 - **Purpose:** A reusable widget for displaying a list of Hive discussions.
 - **Functionality:**
@@ -102,41 +165,9 @@ The widget is structured into several key components:
   )
   ```
 
-### 4. Account Post Screens
+### 5. ViewComments
 
-This set of screens is designed to display different types of posts related to a specific Hive account or community.
-
-#### a. `AccountPostsScreen`
-- **Purpose:** Displays a general list of posts for a given account. (Further details would require inspecting the file if specific parameters are needed).
-
-#### b. `BlogScreen`
-- **Purpose:** Displays posts in a blog format, typically for a specific user.
-- **Key Input Parameters (Assumed, verify by inspection if needed):**
-    - `dhive`: `HiveFlutterKitPlatform` instance.
-    - `username`: The username whose blog posts are to be displayed.
-    - Callbacks for interactions similar to `TrendingFeedScreen`.
-
-#### c. `CommentsScreen`
-- **Purpose:** Displays comments made on a specific post or by a specific user.
-- **Key Input Parameters (Assumed, verify by inspection if needed):**
-    - `dhive`: `HiveFlutterKitPlatform` instance.
-    - `author` (optional): The author of the comments.
-    - `permlink` (optional): The permlink of the post for which comments are displayed.
-    - Callbacks for interactions.
-
-#### d. `CommunitySpecificScreen`
-- **Purpose:** Displays posts related to a specific Hive community.
-- **Key Input Parameters (Assumed, verify by inspection if needed):**
-    - `dhive`: `HiveFlutterKitPlatform` instance.
-    - `communityName`: The name of the community.
-    - Callbacks for interactions.
-
-#### e. `RepliesScreen`
-- **Purpose:** Displays replies to an account's posts or comments.
-- **Key Input Parameters (Assumed, verify by inspection if needed):**
-    - `dhive`: `HiveFlutterKitPlatform` instance.
-    - `username`: The username whose replies are to be displayed.
-    - Callbacks for interactions.
+### 6. BlogList
 
 **Note:** The specific parameters and detailed functionality for these screens would require individual inspection of their source code. The documentation above provides a general overview.
 
