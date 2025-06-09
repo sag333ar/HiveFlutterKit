@@ -11,8 +11,9 @@ enum ThreeSpeakFeedType {
   hot,
   firstUploads,
   related,
-  userFeed, // <-- Add this
-} // Add related
+  userFeed,
+  search,
+} 
 
 class ThreeSpeakFeedList extends StatefulWidget {
   final ThreeSpeakFeedType feedType;
@@ -25,7 +26,8 @@ class ThreeSpeakFeedList extends StatefulWidget {
 
   final String? relatedAuthor;
   final String? relatedPermlink;
-  final String? userChannel; // For userFeed
+  final String? userChannel;
+  final String? searchTerm;
 
   const ThreeSpeakFeedList({
     super.key,
@@ -38,6 +40,7 @@ class ThreeSpeakFeedList extends StatefulWidget {
     this.relatedAuthor,
     this.relatedPermlink,
     this.userChannel,
+    this.searchTerm,
   });
 
   @override
@@ -94,6 +97,16 @@ class _ThreeSpeakFeedListState extends State<ThreeSpeakFeedList> {
           if (widget.userChannel != null && widget.userChannel!.isNotEmpty) {
             items = await _gql.getUserFeed(
               [widget.userChannel!],
+              widget.isShorts,
+              0,
+              widget.lang,
+            );
+          }
+          break;
+        case ThreeSpeakFeedType.search:
+          if (widget.searchTerm != null && widget.searchTerm!.isNotEmpty) {
+            items = await _gql.getSearchFeed(
+              widget.searchTerm!,
               widget.isShorts,
               0,
               widget.lang,
@@ -182,17 +195,6 @@ class _ThreeSpeakFeedListState extends State<ThreeSpeakFeedList> {
           );
         },
       );
-      // return ListView.builder(
-      //   itemCount: _items.length,
-      //   itemBuilder: (context, index) {
-      //     final item = _items[index];
-      //     return VideoCard(
-      //       item: item,
-      //       isVisible: true,
-      //       onTap: () => _openVideo(context, item),
-      //     );
-      //   },
-      // );
     }
   }
 }
