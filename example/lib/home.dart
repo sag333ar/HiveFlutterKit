@@ -1201,7 +1201,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           builder:
                               (_) => CommunitySpecificScreen(
                                 dhive: aioha,
-                                sortBy: 'hot',
+                                sortBy: 'trending',
                                 tag: 'hive-163772',
                                 onTap: (discussion) async {
                                   final url = discussion.url;
@@ -1374,7 +1374,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           builder:
                               (_) => BlogScreen(
                                 dhive: aioha,
-                                account: 'techcoderx',
+                                account: 'sagarkothari88',
                                 onTap: (discussion) {
                                   debugPrint(
                                     'Tapped on blog: ${discussion.title}',
