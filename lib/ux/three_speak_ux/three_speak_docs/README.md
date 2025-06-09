@@ -23,6 +23,17 @@ This widget displays different types of video feeds. You can customize the feed 
 - `first_upload`: Shows first uploads from creators.
 - `related`: Shows videos related to a specific video (requires `videoId` parameter).
 
+#### Trending Feed
+![Trending Feed](./trending.png)
+
+#### Related Feed
+![Related Feed](./related.png)
+
+#### New Uploads Feed
+![New Uploads Feed](./newuploads.png)
+
+#### First Uploads Feed
+![First Uploads Feed](./firstuploads.png)
 **Usage Example (from `example/lib/home.dart`):**
 
 ```dart
