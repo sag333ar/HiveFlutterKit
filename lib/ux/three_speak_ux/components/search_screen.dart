@@ -7,8 +7,8 @@ import 'package:hive_flutter_kit/ux/three_speak_ux/components/video_player.dart'
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/get_video_url.dart';
 
 class SearchScreen extends StatefulWidget {
-  final LoginModel loginModel;
-  const SearchScreen({Key? key, required this.loginModel}) : super(key: key);
+  final String loggedInUser;
+  const SearchScreen({Key? key, required this.loggedInUser}) : super(key: key);
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -43,7 +43,6 @@ class _SearchScreenState extends State<SearchScreen> {
         onChanged: (value) {
           _timer?.cancel();
 
-          // If cleared or less than 4 characters
           if (value.trim().isEmpty || value.trim().length <= 3) {
             setState(() {
               text = '';
@@ -59,16 +58,15 @@ class _SearchScreenState extends State<SearchScreen> {
         },
       ),
       actions: [
-        if (_controller.text.isNotEmpty)
-          IconButton(
-            icon: const Icon(Icons.clear),
-            onPressed: () {
-              _controller.clear();
-              setState(() {
-                text = '';
-              });
-            },
+        Padding(
+          padding: const EdgeInsets.only(right: 8.0),
+          child: CircleAvatar(
+            backgroundImage: NetworkImage(
+              'https://images.hive.blog/u/${widget.loggedInUser}/avatar?id=test',
+            ),
+            backgroundColor: Colors.grey[300],
           ),
+        ),
       ],
     );
   }

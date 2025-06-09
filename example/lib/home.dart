@@ -1856,15 +1856,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: const Text('Show Related Videos'),
               ),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
+                  String username = await aioha.getCurrentUser();
+                  username = username.replaceAll('"', '');
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => SearchScreen(loginModel: LoginModel())),
+                    MaterialPageRoute(
+                      builder:
+                          (context) => SearchScreen(loggedInUser: username),
+                    ),
                   );
                 },
                 child: const Text('Search screen'),
               ),
-              
             ],
           ),
         ),
