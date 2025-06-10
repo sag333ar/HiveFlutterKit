@@ -93,17 +93,6 @@ String _resolveIPFSUrl(String url) {
 - **Android**: Uses 480p/index.m3u8 for optimized mobile playback
 - **Other platforms**: Defaults to manifest.m3u8
 
-### Lifecycle Methods
-
-#### `initState()`
-- Initializes video player
-- Loads Hive post information
-- Loads current user credentials
-
-#### `dispose()`
-- Properly disposes video controllers
-- Prevents memory leaks
-
 ## API Integration
 
 ### Hive Blockchain Integration
@@ -126,21 +115,6 @@ Future<HivePostInfoPostResultBody> fetchHiveInfoForThisVideo() async {
   // ... request handling
 }
 ```
-## Layout Breakpoints
-
-| Screen Width | Layout Type | Container Width | Behavior |
-|--------------|-------------|-----------------|----------|
-| < 800px | Mobile | Full width | Stacked layout |
-| ≥ 800px | Desktop/Web | 1600px (max 1800px) | Centered with margins |
-
-## Error Handling
-
-The component includes comprehensive error handling for:
-- Video player initialization failures
-- Network request failures for Hive data
-- IPFS URL resolution issues
-- User authentication errors
-
 ## Integration Requirements
 
 ### Required Models
