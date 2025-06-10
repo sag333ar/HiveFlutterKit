@@ -3,9 +3,14 @@ import 'dart:convert';
 import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit/core/models/community_model.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter_kit/core/models/login_model.dart';
 import 'package:hive_flutter_kit/ux/aioha_login_screen.dart';
 import 'package:hive_flutter_kit/ux/aioha_switch_user.dart';
 import 'package:hive_flutter_kit/ux/community_list.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/search_screen.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/three_speak_feed_list.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/video_player.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/get_video_url.dart';
 import 'package:hive_flutter_kit/ux/dhive/account_post/account_posts_screen.dart';
 import 'package:hive_flutter_kit/ux/dhive/account_post/blog_screen.dart';
 import 'package:hive_flutter_kit/ux/dhive/account_post/comments_screen.dart';
@@ -1694,6 +1699,176 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
               const Divider(),
+
+              // --- ThreeSpeak Feed List Buttons ---
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => Scaffold(
+                            appBar: AppBar(title: const Text('Trending Feed')),
+                            body: ThreeSpeakFeedList(
+                              feedType: ThreeSpeakFeedType.trending,
+                              onTapVideoItem: (item) {
+                                final videoUrl = getVideoUrl(item);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => VideoPlayerScreen(
+                                          videoUrl: videoUrl ?? '',
+                                          title: item.title ?? 'Untitled',
+                                          author:
+                                              item.author?.username ??
+                                              'Unknown',
+                                          permlink: item.permlink ?? 'Unknown',
+                                          createdAt: item.createdAt,
+                                          item: item,
+                                        ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                    ),
+                  );
+                },
+                child: const Text('Show Trending Feed'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => Scaffold(
+                            appBar: AppBar(
+                              title: const Text('New Uploads Feed'),
+                            ),
+                            body: ThreeSpeakFeedList(
+                              feedType: ThreeSpeakFeedType.newUploads,
+                              onTapVideoItem: (item) {
+                                final videoUrl = getVideoUrl(item);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => VideoPlayerScreen(
+                                          videoUrl: videoUrl ?? '',
+                                          title: item.title ?? 'Untitled',
+                                          author:
+                                              item.author?.username ??
+                                              'Unknown',
+                                          permlink: item.permlink ?? 'Unknown',
+                                          createdAt: item.createdAt,
+                                          item: item,
+                                        ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                    ),
+                  );
+                },
+                child: const Text('Show New Uploads Feed'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => Scaffold(
+                            appBar: AppBar(
+                              title: const Text('First Uploads Feed'),
+                            ),
+                            body: ThreeSpeakFeedList(
+                              feedType: ThreeSpeakFeedType.firstUploads,
+                              onTapVideoItem: (item) {
+                                final videoUrl = getVideoUrl(item);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => VideoPlayerScreen(
+                                          videoUrl: videoUrl ?? '',
+                                          title: item.title ?? 'Untitled',
+                                          author:
+                                              item.author?.username ??
+                                              'Unknown',
+                                          permlink: item.permlink ?? 'Unknown',
+                                          createdAt: item.createdAt,
+                                          item: item,
+                                        ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                    ),
+                  );
+                },
+                child: const Text('Show First Uploads Feed'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // Example author/permlink, replace with actual values or make dynamic as needed
+                  const relatedAuthor = 'buttcoins';
+                  const relatedPermlink = 'wwsrrcpv';
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => Scaffold(
+                            appBar: AppBar(title: const Text('Related Videos')),
+                            body: ThreeSpeakFeedList(
+                              feedType: ThreeSpeakFeedType.related,
+                              relatedAuthor: relatedAuthor,
+                              relatedPermlink: relatedPermlink,
+                              onTapVideoItem: (item) {
+                                final videoUrl = getVideoUrl(item);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => VideoPlayerScreen(
+                                          videoUrl: videoUrl ?? '',
+                                          title: item.title ?? 'Untitled',
+                                          author:
+                                              item.author?.username ??
+                                              'Unknown',
+                                          permlink: item.permlink ?? 'Unknown',
+                                          createdAt: item.createdAt,
+                                          item: item,
+                                        ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                    ),
+                  );
+                },
+                child: const Text('Show Related Videos'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  String username = await aioha.getCurrentUser();
+                  username = username.replaceAll('"', '');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => SearchScreen(loggedInUser: username),
+                    ),
+                  );
+                },
+                child: const Text('Search screen'),
+              ),
             ],
           ),
         ),
