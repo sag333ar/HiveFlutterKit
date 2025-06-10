@@ -1,8 +1,8 @@
-# First Uploads Feed Component
+# User Feed Component
 
 ![User Feed Preview](./userfeed.png)
 
-The `ThreeSpeakFeedList` with `feedType: ThreeSpeakFeedType.` displays a grid/list of user feed from the creators of ThreeSpeak platform.
+The `ThreeSpeakFeedList` with `feedType: ThreeSpeakFeedType.userFeed` displays a grid/list of user feed from the creators of ThreeSpeak platform.
 
 ## Features
 
@@ -12,8 +12,6 @@ The `ThreeSpeakFeedList` with `feedType: ThreeSpeakFeedType.` displays a grid/li
 - 📊 **Engagement Metrics** - Displays view counts, upvotes, and timestamps
 - 🔍 **Visibility Detection** - Only renders visible items for performance
 # UserChannelScreen Component
-
-![User Channel Preview](./userchannel.png)
 
 The `UserChannelScreen` is a comprehensive user profile screen component for the ThreeSpeak platform that displays a creator's channel information, videos, and social connections in a tabbed interface.
 
