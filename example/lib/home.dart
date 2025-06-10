@@ -3,9 +3,8 @@ import 'dart:convert';
 import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit/core/models/community_model.dart';
 import 'package:flutter/material.dart';
-import 'package:hive_flutter_kit/core/models/login_model.dart';
-import 'package:hive_flutter_kit/ux/aioha_login_screen.dart';
-import 'package:hive_flutter_kit/ux/aioha_switch_user.dart';
+import 'package:hive_flutter_kit/ux/login_screen.dart';
+import 'package:hive_flutter_kit/ux/switch_user.dart';
 import 'package:hive_flutter_kit/ux/community_list.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/search_screen.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/three_speak_feed_list.dart';
@@ -1145,7 +1144,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     context: context,
                     builder:
                         (context) =>
-                            AlertDialog(content: AiohaSwitchUser(aioha: aioha)),
+                            AlertDialog(content: SwitchUser(aioha: aioha)),
                   );
                 },
                 child: const Text('Switch User (Dialog)'),
@@ -1572,7 +1571,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   child: SizedBox(
                                     width: MediaQuery.of(context).size.width,
                                     height: MediaQuery.of(context).size.height,
-                                    child: AiohaLoginScreen(aioha: aioha),
+                                    child: LoginScreen(aioha: aioha),
                                   ),
                                 ),
                           );

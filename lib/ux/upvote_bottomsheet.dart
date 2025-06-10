@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
-import 'package:hive_flutter_kit/ux/aioha_upvote.dart';
+import 'package:hive_flutter_kit/ux/upvote.dart';
 
 class UpvoteBottomSheet extends StatelessWidget {
   final HiveFlutterKitPlatform aioha;

@@ -6,7 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 // ignore: must_be_immutable
-class AiohaLoginScreen extends StatefulWidget {
+class LoginScreen extends StatefulWidget {
   final HiveFlutterKitPlatform aioha;
   final List<Color> backgroundColors;
   final Color fontColor;
@@ -27,7 +27,7 @@ class AiohaLoginScreen extends StatefulWidget {
   final String proof;
   final void Function(BuildContext context, dynamic result)? uponLogin;
 
-  AiohaLoginScreen({
+  LoginScreen({
     super.key,
     required this.aioha,
     this.backgroundColors = const [Color(0xFF2C3E50), Color(0xFF3498DB)],
@@ -55,10 +55,10 @@ class AiohaLoginScreen extends StatefulWidget {
   });
 
   @override
-  State<AiohaLoginScreen> createState() => _AiohaLoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _AiohaLoginScreenState extends State<AiohaLoginScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _postingKeyController =
       TextEditingController(); // Added for posting key
