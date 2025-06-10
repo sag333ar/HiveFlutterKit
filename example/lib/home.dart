@@ -5,7 +5,7 @@ import 'package:hive_flutter_kit/core/models/community_model.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/ux/login_screen.dart';
 import 'package:hive_flutter_kit/ux/switch_user.dart';
-import 'package:hive_flutter_kit/ux/community_list.dart';
+import 'package:hive_flutter_kit/ux/dhive/community_list/community_list.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/search_screen.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/three_speak_feed_list.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/video_player.dart';
@@ -1604,7 +1604,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ),
                           );
                         },
-                        child: const Text('Communities List (Dialog)'),
+                        child: const Text('Communities List'),
                       ),
                     ),
                   ],

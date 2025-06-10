@@ -8,7 +8,7 @@ import 'package:hive_flutter_kit/core/three_speak_core/provider/user_favourite_p
 import 'package:hive_flutter_kit/core/three_speak_core/server_proxy.dart';
 import 'package:hive_flutter_kit/ux/upvote_bottomsheet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/comments/video_details_comments.dart';
+import 'package:hive_flutter_kit/ux/dhive/comments/video_details_comments.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/favourite.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:timeago/timeago.dart' as timeago;
