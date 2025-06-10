@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit/core/models/discussion.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/comments/comment_search_bar.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/comments/comment_tile.dart';
+import 'package:hive_flutter_kit/ux/dhive/comments/comment_search_bar.dart';
+import 'package:hive_flutter_kit/ux/dhive/comments/comment_tile.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class VideoDetailsComments extends StatefulWidget {
