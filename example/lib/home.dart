@@ -1858,7 +1858,6 @@ class _MyHomePageState extends State<MyHomePage> {
                             body: ThreeSpeakFeedList(
                               feedType: ThreeSpeakFeedType.trending,
                               onTapVideoItem: (item) {
-                                final videoUrl = getVideoUrl(item);
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
