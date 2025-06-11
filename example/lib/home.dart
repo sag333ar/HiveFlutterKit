@@ -29,7 +29,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late HiveFlutterKitPlatform aioha;
+  late HiveFlutterKitPlatform hfk;
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _postingKeyController = TextEditingController();
 
@@ -54,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    aioha = Provider.of<HiveFlutterKitPlatform>(context, listen: false);
+    hfk = Provider.of<HiveFlutterKitPlatform>(context, listen: false);
   }
 
   @override
@@ -64,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _loginWithHiveKeychain() async {
     try {
-      final result = await aioha.loginWithKeychain(
+      final result = await hfk.loginWithKeychain(
         _usernameController.text,
         '',
       );
@@ -85,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _loginWithHiveAuth() async {
     try {
       _startTimer();
-      final result = await aioha.loginWithHiveAuth(
+      final result = await hfk.loginWithHiveAuth(
         _usernameController.text,
         '',
       );
@@ -119,7 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
         return;
       }
 
-      final result = await aioha.loginWithPlaintextKey(
+      final result = await hfk.loginWithPlaintextKey(
         username,
         postingKey,
         '',
@@ -149,7 +149,7 @@ class _MyHomePageState extends State<MyHomePage> {
         return;
       }
 
-      var result = await aioha.getVotingPower(username);
+      var result = await hfk.getVotingPower(username);
       debugPrint(
         "Voting Power: ${result.downvotePower}, ${result.upvotePower}",
       );
@@ -162,7 +162,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _logout() async {
     try {
-      final userStatus = await aioha.getCurrentUser();
+      final userStatus = await hfk.getCurrentUser();
 
       if (userStatus == null ||
           userStatus == '' ||
@@ -172,7 +172,7 @@ class _MyHomePageState extends State<MyHomePage> {
         );
         return;
       }
-      await aioha.logout();
+      await hfk.logout();
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Successfully logged out')));
@@ -186,7 +186,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _singleVote() async {
     try {
       _startTimer();
-      final result = await aioha.singleVote(
+      final result = await hfk.singleVote(
         'sagarkothari88',
         'aihoa-based-login-with-hiveauth-and-sign-a-message-works-well-with-ios-app-now',
         1000,
@@ -205,7 +205,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _comment() async {
     try {
-      final result = await aioha.comment(
+      final result = await hfk.comment(
         'parentAuthor',
         'parentPermlink',
         'permlink',
@@ -257,11 +257,11 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       };
 
-      final result = await aioha.commentWithOptions(
+      final result = await hfk.commentWithOptions(
         '',
         'hive-184437',
         'asdfasfaasdfsdfasdfasfasdf',
-        'this is a test title from aioha comment with options',
+        'this is a test title from hfk comment with options',
         'I am going to try this comment with options and see how it works and if it works or not and if it works or not asdfafadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfads',
         jsonEncode(jsonMetadata),
         jsonEncode(options),
@@ -279,7 +279,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _deleteComment() async {
     try {
       _startTimer();
-      final result = await aioha.deleteComment(
+      final result = await hfk.deleteComment(
         'permlinktodel',
       ); //Permlink to delete
       // Replace with the actual permlink you want to delete
@@ -297,7 +297,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _reblog() async {
     try {
-      final result = await aioha.reblog('sagarkothari', 'rblmtojs', true);
+      final result = await hfk.reblog('sagarkothari', 'rblmtojs', true);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Reblog Success: $result')));
@@ -310,7 +310,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _removeReblog() async {
     try {
-      final result = await aioha.reblog('sagarkothari', 'rblmtojs', false);
+      final result = await hfk.reblog('sagarkothari', 'rblmtojs', false);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Remove Reblog Success: $result')));
@@ -323,7 +323,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _follow() async {
     try {
-      final result = await aioha.follow('sagarkothari', false);
+      final result = await hfk.follow('sagarkothari', false);
       print('Follow result: $result');
       ScaffoldMessenger.of(
         context,
@@ -337,15 +337,15 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _switchUser() async {
-    if (aioha == null) {
+    if (hfk == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error: Aioha is not initialized')),
+        const SnackBar(content: Text('Error: hfk is not initialized')),
       );
       return;
     }
 
     try {
-      final otherLogins = await aioha.getOtherLogins();
+      final otherLogins = await hfk.getOtherLogins();
       print('Other logged-in users: $otherLogins');
 
       if (otherLogins.isEmpty) {
@@ -373,7 +373,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       icon: const Icon(Icons.close, color: Colors.red),
                       onPressed: () async {
                         try {
-                          final result = await aioha.removeOtherLogin(
+                          final result = await hfk.removeOtherLogin(
                             otherLogins[index],
                           );
                           print('Removed user: $result');
@@ -399,7 +399,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     onTap: () async {
                       final selectedUser = otherLogins[index];
-                      final result = await aioha.switchUser(selectedUser);
+                      final result = await hfk.switchUser(selectedUser);
                       print('Switch user result: $result');
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
@@ -425,7 +425,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _unfollow() async {
     try {
-      final result = await aioha.follow('sagarkothari', true);
+      final result = await hfk.follow('sagarkothari', true);
       print('Unfollow result: $result');
       ScaffoldMessenger.of(
         context,
@@ -440,7 +440,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _claimRewards() async {
     try {
-      final result = await aioha.claimRewards();
+      final result = await hfk.claimRewards();
       print('Claim Rewards result: $result');
       ScaffoldMessenger.of(
         context,
@@ -456,8 +456,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void _signMessage() async {
     try {
       _startTimer();
-      final result = await aioha.signMessage(
-        'Hello, Aioha!',
+      final result = await hfk.signMessage(
+        'Hello, hfk!',
         'Posting', // Add KeyType here
       );
       print('Sign Message result: $result');
@@ -483,8 +483,8 @@ class _MyHomePageState extends State<MyHomePage> {
         ).showSnackBar(const SnackBar(content: Text('Username is required')));
         return;
       }
-      // Example: add 'aioha' to Posting authority with weight 1
-      final result = await aioha.addAccountAuthority(
+      // Example: add 'hfk' to Posting authority with weight 1
+      final result = await hfk.addAccountAuthority(
         "threespeak",
         'posting',
         1,
@@ -508,8 +508,8 @@ class _MyHomePageState extends State<MyHomePage> {
         ).showSnackBar(const SnackBar(content: Text('Username is required')));
         return;
       }
-      // Example: remove 'aioha' from Posting authority
-      final result = await aioha.removeAccountAuthority(
+      // Example: remove 'hfk' from Posting authority
+      final result = await hfk.removeAccountAuthority(
         'threespeak',
         'posting',
       );
@@ -523,24 +523,24 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Future<void> _getChainPropertiesAioha() async {
+  Future<void> _getChainPropertieshfk() async {
     try {
-      var result = await aioha.getChainProperties();
-      debugPrint("Aioha Chain Properties: $result");
+      var result = await hfk.getChainProperties();
+      debugPrint("hfk Chain Properties: $result");
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Chain Properties: $result')));
     } catch (e) {
-      debugPrint('Aioha getChainProperties error: $e');
+      debugPrint('hfk getChainProperties error: $e');
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Chain Properties Error: $e')));
     }
   }
 
-  Future<void> _getDiscussionsAioha() async {
+  Future<void> _getDiscussionshfk() async {
     try {
-      final result = await aioha.getDiscussions(
+      final result = await hfk.getDiscussions(
         'trending',
         limit: 20,
         tag: '',
@@ -564,16 +564,16 @@ class _MyHomePageState extends State<MyHomePage> {
         SnackBar(content: Text('Fetched discussions (see debug output)')),
       );
     } catch (e) {
-      debugPrint('Aioha getDiscussions error: $e');
+      debugPrint('hfk getDiscussions error: $e');
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Get Discussions Error: $e')));
     }
   }
 
-  Future<void> _getAccountsAioha() async {
+  Future<void> _getAccountshfk() async {
     try {
-      var result = await aioha.getAccounts(['sagarkothari88']);
+      var result = await hfk.getAccounts(['sagarkothari88']);
       for (var account in result) {
         debugPrint("Account: ${account.posting?.accountAuths}");
       }
@@ -581,18 +581,18 @@ class _MyHomePageState extends State<MyHomePage> {
         SnackBar(content: Text('Fetched accounts (see debug output)')),
       );
     } catch (e) {
-      debugPrint('Aioha getAccounts error: $e');
+      debugPrint('hfk getAccounts error: $e');
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Get Accounts Error: $e')));
     }
   }
 
-  Future<void> _getAccountPostsAioha() async {
+  Future<void> _getAccountPostshfk() async {
     try {
       String username = 'sagarkothari88';
       String sort = 'comments';
-      var result = await aioha.getAccountPosts(
+      var result = await hfk.getAccountPosts(
         username,
         limit: 20,
         sort,
@@ -631,16 +631,16 @@ class _MyHomePageState extends State<MyHomePage> {
         SnackBar(content: Text('Fetched account posts (see debug output)')),
       );
     } catch (e) {
-      debugPrint('Aioha getAccountPosts error: $e');
+      debugPrint('hfk getAccountPosts error: $e');
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Get AccountPosts Error: $e')));
     }
   }
 
-  Future<void> _getVotingPowerAioha() async {
+  Future<void> _getVotingPowerhfk() async {
     try {
-      var result = await aioha.getVotingPower('sagarkothari88');
+      var result = await hfk.getVotingPower('sagarkothari88');
       debugPrint(
         "Voting Power: ${result.downvotePower}, ${result.upvotePower}",
       );
@@ -652,16 +652,16 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       );
     } catch (e) {
-      debugPrint('Aioha getVotingPower error: $e');
+      debugPrint('hfk getVotingPower error: $e');
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Get Voting Power Error: $e')));
     }
   }
 
-  Future<void> _getResourceCreditsAioha() async {
+  Future<void> _getResourceCreditshfk() async {
     try {
-      var result = await aioha.getResourceCredits('sagarkothari88');
+      var result = await hfk.getResourceCredits('sagarkothari88');
       debugPrint("Resources Credits Percentage: ${result.percentage}");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -669,7 +669,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       );
     } catch (e) {
-      debugPrint('Aioha getResourceCredits error: $e');
+      debugPrint('hfk getResourceCredits error: $e');
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Get Resource Credits Error: $e')));
@@ -685,7 +685,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ).showSnackBar(const SnackBar(content: Text('Username is required')));
         return;
       }
-      bool hasThreespeak = await aioha.hasThreespeakInAccountAuths(username);
+      bool hasThreespeak = await hfk.hasThreespeakInAccountAuths(username);
       debugPrint('threespeak present in accountAuths: $hasThreespeak');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('threespeak present: $hasThreespeak')),
@@ -699,14 +699,14 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _startTimer() async {
-    var result = await aioha.getQrString();
+    var result = await hfk.getQrString();
     setState(() {
       qrString = result;
       timerDuration = 30;
     });
     Timer.periodic(const Duration(seconds: 1), (timer) async {
       if (timerDuration > 0) {
-        var result = await aioha.getQrString();
+        var result = await hfk.getQrString();
         setState(() {
           qrString = result;
           timerDuration--;
@@ -732,7 +732,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     try {
-      final result = await aioha.getListOfCommunities(
+      final result = await hfk.getListOfCommunities(
         _searchQuery.isNotEmpty ? _searchQuery : null,
         limit: _communityPageSize,
         last: loadMore ? _lastCommunityName : null,
@@ -772,12 +772,12 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Future<void> _getCommentsListAioha() async {
+  Future<void> _getCommentsListhfk() async {
     try {
       String author = 'cositav'; // Replace with actual video author
       String permlink = 'miwbidtw'; // Replace with actual video permlink
 
-      final comments = await aioha.getCommentsList(author, permlink);
+      final comments = await hfk.getCommentsList(author, permlink);
 
       if (comments.isEmpty) {
         debugPrint('No comments found.');
@@ -797,7 +797,7 @@ class _MyHomePageState extends State<MyHomePage> {
         SnackBar(content: Text('Fetched ${comments.length} comments')),
       );
     } catch (e) {
-      debugPrint('Aioha getCommentsList error: $e');
+      debugPrint('hfk getCommentsList error: $e');
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Get Comments Error: $e')));
@@ -810,7 +810,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _uploadedImageUrl = null;
     });
     try {
-      final res = await aioha.pickImageWithMaxSize(
+      final res = await hfk.pickImageWithMaxSize(
         2000,
         "https://images.ecency.com/hs",
       );
@@ -847,7 +847,7 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       // Fetch account and decode posting_json_metadata
       final username = "shaktimaaan";
-      final accounts = await aioha.getAccounts([username]);
+      final accounts = await hfk.getAccounts([username]);
       if (accounts.isEmpty) throw Exception("Account not found");
 
       final account = accounts.first;
@@ -884,7 +884,7 @@ class _MyHomePageState extends State<MyHomePage> {
       final dynamic operation = ["account_update2", operationData];
       final dynamic operationRequest = [operation];
 
-      final response = await aioha.signAndBroadcastTx(
+      final response = await hfk.signAndBroadcastTx(
         operationRequest,
         'posting',
       );
@@ -985,7 +985,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               ElevatedButton(
                 onPressed: () async {
-                  String username = await aioha.getCurrentUser();
+                  String username = await hfk.getCurrentUser();
                   username = username.replaceAll('"', '');
 
                   showDialog(
@@ -1062,40 +1062,40 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: const Text('Comment with Options'),
               ),
 
-              // --- AIOHA equivalents for dhive UI ---
+              // --- hfk equivalents for dhive UI ---
               ElevatedButton(
-                child: Text('Get Chain Properties (Aioha)'),
-                onPressed: _getChainPropertiesAioha,
+                child: Text('Get Chain Properties (hfk)'),
+                onPressed: _getChainPropertieshfk,
               ),
               ElevatedButton(
-                child: Text('Get Discussions (Aioha)'),
-                onPressed: _getDiscussionsAioha,
+                child: Text('Get Discussions (hfk)'),
+                onPressed: _getDiscussionshfk,
               ),
               ElevatedButton(
-                child: Text('Get Accounts (Aioha)'),
-                onPressed: _getAccountsAioha,
+                child: Text('Get Accounts (hfk)'),
+                onPressed: _getAccountshfk,
               ),
               ElevatedButton(
-                child: Text('Get AccountPosts (Aioha)'),
-                onPressed: _getAccountPostsAioha,
+                child: Text('Get AccountPosts (hfk)'),
+                onPressed: _getAccountPostshfk,
               ),
               ElevatedButton(
-                child: Text('Get Voting power (Aioha)'),
-                onPressed: _getVotingPowerAioha,
+                child: Text('Get Voting power (hfk)'),
+                onPressed: _getVotingPowerhfk,
               ),
               ElevatedButton(
-                child: Text('Resources Credits Percentage (Aioha)'),
-                onPressed: _getResourceCreditsAioha,
+                child: Text('Resources Credits Percentage (hfk)'),
+                onPressed: _getResourceCreditshfk,
               ),
 
-              // --- End AIOHA equivalents ---
+              // --- End hfk equivalents ---
               ElevatedButton(
                 onPressed: _checkThreespeakInAccountAuths,
                 child: const Text('Check threespeak in accountAuths'),
               ),
               ElevatedButton(
-                child: Text('Get Comments (Aioha)'),
-                onPressed: _getCommentsListAioha,
+                child: Text('Get Comments (hfk)'),
+                onPressed: _getCommentsListhfk,
               ),
               ElevatedButton(
                 onPressed: () {
@@ -1144,7 +1144,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     context: context,
                     builder:
                         (context) =>
-                            AlertDialog(content: SwitchUser(aioha: aioha)),
+                            AlertDialog(content: SwitchUser(hfk: hfk)),
                   );
                 },
                 child: const Text('Switch User (Dialog)'),
@@ -1164,7 +1164,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 height:
                                     MediaQuery.of(context).size.height * 0.85,
                                 child: CommunitySpecificScreen(
-                                  dhive: aioha,
+                                  dhive: hfk,
                                   sortBy: 'trending',
                                   tag: 'hive-163772',
                                   onTap: (discussion) async {
@@ -1200,7 +1200,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         MaterialPageRoute(
                           builder:
                               (_) => CommunitySpecificScreen(
-                                dhive: aioha,
+                                dhive: hfk,
                                 sortBy: 'hot',
                                 tag: 'hive-163772',
                                 onTap: (discussion) async {
@@ -1243,7 +1243,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 height:
                                     MediaQuery.of(context).size.height * 0.85,
                                 child: AccountPostsScreen(
-                                  dhive: aioha,
+                                  dhive: hfk,
                                   account: 'sagarkothari88',
                                   onTap: (discussion) {
                                     debugPrint(
@@ -1267,7 +1267,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         MaterialPageRoute(
                           builder:
                               (_) => AccountPostsScreen(
-                                dhive: aioha,
+                                dhive: hfk,
                                 account: 'sagarkothari88',
                                 onTap: (discussion) {
                                   debugPrint('Tapped on: ${discussion.title}');
@@ -1295,7 +1295,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 height:
                                     MediaQuery.of(context).size.height * 0.85,
                                 child: CommentsScreen(
-                                  dhive: aioha,
+                                  dhive: hfk,
                                   account: 'sagarkothari88',
                                   onTap: (discussion) {
                                     debugPrint(
@@ -1319,7 +1319,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         MaterialPageRoute(
                           builder:
                               (_) => CommentsScreen(
-                                dhive: aioha,
+                                dhive: hfk,
                                 account: 'sagarkothari88',
                                 onTap: (discussion) {
                                   debugPrint(
@@ -1349,7 +1349,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 height:
                                     MediaQuery.of(context).size.height * 0.85,
                                 child: BlogScreen(
-                                  dhive: aioha,
+                                  dhive: hfk,
                                   account: 'sagarkothari88',
                                   onTap: (discussion) {
                                     debugPrint(
@@ -1373,7 +1373,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         MaterialPageRoute(
                           builder:
                               (_) => BlogScreen(
-                                dhive: aioha,
+                                dhive: hfk,
                                 account: 'techcoderx',
                                 onTap: (discussion) {
                                   debugPrint(
@@ -1403,7 +1403,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 height:
                                     MediaQuery.of(context).size.height * 0.85,
                                 child: RepliesScreen(
-                                  dhive: aioha,
+                                  dhive: hfk,
                                   account: 'sagarkothari88',
                                   onTap: (discussion) {
                                     debugPrint(
@@ -1427,7 +1427,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         MaterialPageRoute(
                           builder:
                               (_) => RepliesScreen(
-                                dhive: aioha,
+                                dhive: hfk,
                                 account: 'sagarkothari88',
                                 onTap: (discussion) {
                                   debugPrint(
@@ -1457,7 +1457,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 height:
                                     MediaQuery.of(context).size.height * 0.85,
                                 child: TrendingFeedScreen(
-                                  dhive: aioha,
+                                  dhive: hfk,
                                   onTap: (discussion) {
                                     debugPrint(
                                       'Tapped feed item: ${discussion.title}',
@@ -1480,7 +1480,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         MaterialPageRoute(
                           builder:
                               (_) => TrendingFeedScreen(
-                                dhive: aioha,
+                                dhive: hfk,
                                 onTap: (discussion) {
                                   debugPrint(
                                     'Tapped feed item: ${discussion.title}',
@@ -1510,7 +1510,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   padding: const EdgeInsets.all(16),
                                   child: UserProfilePicture(
                                     username: 'sagarkothari88',
-                                    dhive: aioha,
+                                    dhive: hfk,
                                     showDetails: true,
                                     onTap: () {
                                       debugPrint('Profile picture tapped!');
@@ -1539,7 +1539,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 body: Center(
                                   child: UserProfilePicture(
                                     username: 'sagarkothari88',
-                                    dhive: aioha,
+                                    dhive: hfk,
                                     // showDetails: true,
                                     // showBars:false,
                                     // onTap: () {
@@ -1571,12 +1571,12 @@ class _MyHomePageState extends State<MyHomePage> {
                                   child: SizedBox(
                                     width: MediaQuery.of(context).size.width,
                                     height: MediaQuery.of(context).size.height,
-                                    child: LoginScreen(aioha: aioha),
+                                    child: LoginScreen(hfk: hfk),
                                   ),
                                 ),
                           );
                         },
-                        child: const Text('Aioha Login Screen User (Dialog)'),
+                        child: const Text('hfk Login Screen User (Dialog)'),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -1598,7 +1598,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                         );
                                         Navigator.of(context).pop();
                                       },
-                                      aioha: aioha,
+                                      hfk: hfk,
                                     ),
                                   ),
                                 ),
@@ -1857,13 +1857,13 @@ class _MyHomePageState extends State<MyHomePage> {
               // ),
               ElevatedButton(
                 onPressed: () async {
-                  String username = await aioha.getCurrentUser();
+                  String username = await hfk.getCurrentUser();
                   username = username.replaceAll('"', '');
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder:
-                          (context) => SearchScreen(loggedInUser: username),
+                          (context) => SearchScreen(currentUser: username),
                     ),
                   );
                 },
