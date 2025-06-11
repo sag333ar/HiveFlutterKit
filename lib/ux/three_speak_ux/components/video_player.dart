@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter_kit/core/models/discussion.dart';
 import 'package:hive_flutter_kit/core/models/login_model.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/hive_post_info.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
@@ -20,6 +21,15 @@ class VideoPlayerScreen extends StatefulWidget {
   final DateTime? createdAt;
   final GQLFeedItem item;
 
+  final bool Function()? isUserVoted;
+  final void Function()? onTapComment;
+  final void Function(String body)? onComment;
+  final void Function(Discussion comment)? onUpvoteComment;
+  final void Function(Discussion comment)? onReplyComment;
+  final void Function()? onShare;
+  final void Function(bool isLiked)? onBookmark;
+  final void Function()? onTapAuthor;
+
   const VideoPlayerScreen({
     Key? key,
     required this.videoUrl,
@@ -28,6 +38,14 @@ class VideoPlayerScreen extends StatefulWidget {
     required this.permlink,
     required this.createdAt,
     required this.item,
+    this.isUserVoted,
+    this.onTapComment,
+    this.onComment,
+    this.onUpvoteComment,
+    this.onReplyComment,
+    this.onShare,
+    this.onBookmark,
+    this.onTapAuthor,
   }) : super(key: key);
 
   @override
@@ -228,20 +246,18 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                           currentUser: _currentUser,
                           loggedInUser: _loggedInUser,
                           userFavouriteProvider: userFavouriteProvider,
-                          onUserChanged: (user) {
-                            setState(() {
-                              _loggedInUser = user;
-                            });
-                          },
-                          onLogout: () {
-                            setState(() {
-                              _loggedInUser = null;
-                            });
-                          },
-                          reloadHiveInfo: () async {
-                            loadHiveInfo();
-                          },
-                          isUserVoted: isUserVoted,
+                          onUserChanged:
+                              (user) => setState(() => _loggedInUser = user),
+                          onLogout: () => setState(() => _loggedInUser = null),
+                          reloadHiveInfo: () async => loadHiveInfo(),
+                          isUserVoted: widget.isUserVoted ?? () => false,
+                          onTapComment: widget.onTapComment,
+                          onComment: widget.onComment,
+                          onUpvoteComment: widget.onUpvoteComment,
+                          onReplyComment: widget.onReplyComment,
+                          onShare: widget.onShare,
+                          onBookmark: widget.onBookmark,
+                          onTapAuthor: widget.onTapAuthor,
                         ),
                       ),
                     ),
@@ -269,21 +285,20 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                     currentUser: _currentUser,
                     loggedInUser: _loggedInUser,
                     userFavouriteProvider: userFavouriteProvider,
-                    onUserChanged: (user) {
-                      setState(() {
-                        _loggedInUser = user;
-                      });
-                    },
-                    onLogout: () {
-                      setState(() {
-                        _loggedInUser = null;
-                      });
-                    },
-                    reloadHiveInfo: () async {
-                      loadHiveInfo();
-                    },
-                    isUserVoted: isUserVoted,
+                    onUserChanged:
+                        (user) => setState(() => _loggedInUser = user),
+                    onLogout: () => setState(() => _loggedInUser = null),
+                    reloadHiveInfo: () async => loadHiveInfo(),
+                    isUserVoted: widget.isUserVoted ?? () => false,
+                    onTapComment: widget.onTapComment,
+                    onComment: widget.onComment,
+                    onUpvoteComment: widget.onUpvoteComment,
+                    onReplyComment: widget.onReplyComment,
+                    onShare: widget.onShare,
+                    onBookmark: widget.onBookmark,
+                    onTapAuthor: widget.onTapAuthor,
                   ),
+
                   Divider(height: 1),
                 ],
               );
