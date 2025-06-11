@@ -134,12 +134,21 @@ Navigator.push(
   context,
   MaterialPageRoute(
     builder: (context) => VideoPlayerScreen(
-      videoUrl: videoUrl,
-      title: item.title,
-      author: item.author?.username,
-      permlink: item.permlink,
+      videoUrl: videoUrl ?? '',
+      title: item.title ?? 'Untitled',
+      author: item.author?.username ?? 'Unknown',
+      permlink: item.permlink ?? 'Unknown',
       createdAt: item.createdAt,
       item: item,
+      // ✅ Optional Callbacks
+      isUserVoted: () {},
+      onTapComment: () {},
+      onComment: (body) {},
+      onUpvoteComment: () {},
+      onReplyComment: () {},
+      onShare: () {},
+      onBookmark: () {},
+      onTapAuthor: () {},
     ),
   ),
 );
@@ -197,7 +206,3 @@ The component uses:
 - Social widgets support various display modes
 
 This component provides a complete user channel experience with video content, profile information, and social features, making it ideal for creator-focused platforms like ThreeSpeak.
-## Basic Usage
-
-```dart
-UserChannelScreen(owner: username)
