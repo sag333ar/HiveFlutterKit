@@ -5,12 +5,12 @@ import 'package:hive_flutter_kit/core/models/community_model.dart';
 class CommunitiesList extends StatefulWidget {
   /// onSelectCommunity should return a Future so frontend can handle navigation.
   final Future<void> Function(CommunityItem) onSelectCommunity;
-  final HiveFlutterKitPlatform aioha;
+  final HiveFlutterKitPlatform hfk;
 
   const CommunitiesList({
     Key? key,
     required this.onSelectCommunity,
-    required this.aioha,
+    required this.hfk,
   }) : super(key: key);
 
   @override
@@ -82,7 +82,7 @@ class _CommunitiesListState extends State<CommunitiesList> {
 
     try {
       final query = _searchController.text.trim();
-      final result = await widget.aioha.getListOfCommunities(
+      final result = await widget.hfk.getListOfCommunities(
         query.isEmpty ? null : query,
         limit: _pageSize,
         last: initial ? null : _lastCommunityName,

@@ -8,7 +8,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 // ignore: must_be_immutable
 class LoginScreen extends StatefulWidget {
-  final HiveFlutterKitPlatform aioha;
+  final HiveFlutterKitPlatform hfk;
   final List<Color>? backgroundColors;
   final Color? fontColor;
   final Color? borderColor;
@@ -29,7 +29,7 @@ class LoginScreen extends StatefulWidget {
 
   LoginScreen({
     super.key,
-    required this.aioha,
+    required this.hfk,
     this.backgroundColors,
     this.fontColor,
     this.borderColor,
@@ -130,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _loginWithHiveKeychain() async {
     try {
-      final result = await widget.aioha.loginWithKeychain(
+      final result = await widget.hfk.loginWithKeychain(
         _usernameController.text,
         widget.proof,
       );
@@ -146,7 +146,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _loginWithHiveAuth() async {
     try {
       _startTimer();
-      final result = await widget.aioha.loginWithHiveAuth(
+      final result = await widget.hfk.loginWithHiveAuth(
         _usernameController.text,
         widget.proof,
       );
@@ -175,7 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
 
-      final result = await widget.aioha.loginWithPlaintextKey(
+      final result = await widget.hfk.loginWithPlaintextKey(
         username,
         postingKey,
         widget.proof,
@@ -198,7 +198,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _startTimer() async {
-    qrString = await widget.aioha.getQrString();
+    qrString = await widget.hfk.getQrString();
     setState(() {
       timerDuration = 30;
     });
@@ -206,7 +206,7 @@ class _LoginScreenState extends State<LoginScreen> {
     _authTimer?.cancel();
     _authTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       if (timerDuration > 0) {
-        qrString = await widget.aioha.getQrString();
+        qrString = await widget.hfk.getQrString();
         setState(() {
           timerDuration--;
         });
