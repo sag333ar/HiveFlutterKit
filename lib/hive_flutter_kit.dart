@@ -17,12 +17,11 @@ export 'core/models/voting_power.dart';
 
 
 // Export UX components
-export 'ux/aioha_comments.dart';
-export 'ux/aioha_login_screen.dart';
-export 'ux/aioha_switch_user.dart';
-export 'ux/aioha_upvote_bottomsheet.dart';
-export 'ux/aioha_upvote.dart';
-export 'ux/community_list.dart';
+export 'ux/login_screen.dart';
+export 'ux/switch_user.dart';
+export 'ux/upvote_bottomsheet.dart';
+export 'ux/upvote.dart';
+export 'ux/dhive/community_list/community_list.dart';
 export 'ux/edit_profile.dart';
 export 'ux/image_picker.dart';
 export 'ux/user_profile_bottom_sheet.dart';

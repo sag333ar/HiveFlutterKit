@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
-import 'package:hive_flutter_kit/ux/aioha_login_screen.dart';
+import 'package:hive_flutter_kit/ux/login_screen.dart';
 
-class AiohaSwitchUser extends StatefulWidget {
+class SwitchUser extends StatefulWidget {
   final HiveFlutterKitPlatform aioha;
   final List<Color> backgroundColors;
   final Color fontColor;
@@ -15,7 +15,7 @@ class AiohaSwitchUser extends StatefulWidget {
   final String? logoImagePath;
   final ThemeMode themeMode;
 
-  const AiohaSwitchUser({
+  const SwitchUser({
     required this.aioha,
     super.key,
     this.backgroundColors = const [
@@ -37,10 +37,10 @@ class AiohaSwitchUser extends StatefulWidget {
   });
 
   @override
-  State<AiohaSwitchUser> createState() => _AiohaSwitchUserState();
+  State<SwitchUser> createState() => _SwitchUserState();
 }
 
-class _AiohaSwitchUserState extends State<AiohaSwitchUser> {
+class _SwitchUserState extends State<SwitchUser> {
   List<String> otherLogins = [];
   String? currentUser;
   String _avatarUrl = '';
@@ -281,7 +281,7 @@ class _AiohaSwitchUserState extends State<AiohaSwitchUser> {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder:
-                              (context) => AiohaLoginScreen(
+                              (context) => LoginScreen(
                                 aioha: widget.aioha,
                                 backgroundColors: const [
                                   Color(0xFF2C3E50),
@@ -304,7 +304,7 @@ class _AiohaSwitchUserState extends State<AiohaSwitchUser> {
                                   print('FrontEnd Login Result: $result');
                                   Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
-                                      builder: (context) => AiohaSwitchUser(aioha: widget.aioha,),
+                                      builder: (context) => SwitchUser(aioha: widget.aioha,),
                                     ),
                                   );
                                 },
