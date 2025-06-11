@@ -60,11 +60,13 @@ SearchScreen(
 ### Navigation Integration
 ```dart
 // Navigate to search screen
+String username = await aioha.getCurrentUser();
+username = username.replaceAll('"', '');
 Navigator.push(
   context,
   MaterialPageRoute(
     builder: (context) => SearchScreen(
-      loggedInUser: currentUser.username,
+      loggedInUser: username
     ),
   ),
 );
@@ -119,12 +121,21 @@ onTapVideoItem: (item) {
     context,
     MaterialPageRoute(
       builder: (context) => VideoPlayerScreen(
-        videoUrl: videoUrl ?? '',
-        title: item.title ?? 'Untitled',
-        author: item.author?.username ?? 'Unknown',
-        permlink: item.permlink ?? 'Unknown',
-        createdAt: item.createdAt,
-        item: item,
+      videoUrl: videoUrl ?? '',
+      title: item.title ?? 'Untitled',
+      author: item.author?.username ?? 'Unknown',
+      permlink: item.permlink ?? 'Unknown',
+      createdAt: item.createdAt,
+      item: item,
+      // ✅ Optional Callbacks
+      isUserVoted: () {},
+      onTapComment: () {},
+      onComment: (body) {},
+      onUpvoteComment: () {},
+      onReplyComment: () {},
+      onShare: () {},
+      onBookmark: () {},
+      onTapAuthor: () {},
       ),
     ),
   );

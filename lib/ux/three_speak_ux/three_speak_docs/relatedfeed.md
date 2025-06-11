@@ -24,12 +24,21 @@ ThreeSpeakFeedList(
       context,
       MaterialPageRoute(
         builder: (context) => VideoPlayerScreen(
-          videoUrl: getVideoUrl(item) ?? '',
-          title: item.title ?? 'Untitled',
-          author: item.author?.username ?? 'Unknown',
-          permlink: item.permlink ?? '',
-          createdAt: item.createdAt,
-          item: item,
+        videoUrl: videoUrl ?? '',
+        title: item.title ?? 'Untitled',
+        author: item.author?.username ?? 'Unknown',
+        permlink: item.permlink ?? 'Unknown',
+        createdAt: item.createdAt,
+        item: item,
+        // ✅ Optional Callbacks
+        isUserVoted: () {},
+        onTapComment: () {},
+        onComment: (body) {},
+        onUpvoteComment: () {},
+        onReplyComment: () {},
+        onShare: () {},
+        onBookmark: () {},
+        onTapAuthor: () {},
         ),
       ),
     );
