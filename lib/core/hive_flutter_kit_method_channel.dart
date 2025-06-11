@@ -203,7 +203,11 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
       handlerName: 'onGetCurrentUserResult',
       callback: (args) {
         if (!completer.isCompleted) {
-          completer.complete(args.isNotEmpty ? args[0].toString() : 'null');
+          var data = jsonDecode(args[0]);
+          if (data['username'] == null) {
+            completer.completeError("No user logged in");
+          }
+          completer.complete(data['username'] as String);
         }
       },
     );
@@ -222,9 +226,9 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
 
     await headlessWebView.webViewController?.evaluateJavascript(
       source: """
-      (async () => {
+      (() => {
         try {
-          const res = await getCurrentUser();
+          const res = getCurrentUser();
           window.flutter_inappwebview.callHandler('onGetCurrentUserResult', res ?? 'null');
         } catch (e) {
           window.flutter_inappwebview.callHandler('onGetCurrentUserError', 'Error: ' + e.toString());

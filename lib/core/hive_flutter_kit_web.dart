@@ -197,9 +197,12 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
 
   @override
   Future<String> getCurrentUser() async {
-    var promise = getCurrentUserJS();
-    var contentData = await promiseToFuture(promise);
-    return contentData;
+    var contentData = getCurrentUserJS();
+    var data = jsonDecode(contentData);
+    if (data['username'] == null) {
+      throw Exception("No user logged in");
+    }
+    return data['username'] as String;
   }
 
   @override

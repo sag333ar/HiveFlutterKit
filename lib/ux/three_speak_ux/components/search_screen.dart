@@ -124,15 +124,7 @@ class _SearchScreenState extends State<SearchScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder:
-                (context) => VideoPlayerScreen(
-                  videoUrl: videoUrl ?? '',
-                  title: item.title ?? 'Untitled',
-                  author: item.author?.username ?? 'Unknown',
-                  permlink: item.permlink ?? 'Unknown',
-                  createdAt: item.createdAt,
-                  item: item,
-                ),
+            builder: (context) => VideoPlayerScreen(item: item),
           ),
         );
       },
