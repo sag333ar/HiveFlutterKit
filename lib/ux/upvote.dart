@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 
 class VoteDialog extends StatefulWidget {
-  final HiveFlutterKitPlatform aioha;
+  final HiveFlutterKitPlatform hfk;
   final String author;
   final String permlink;
   final VoidCallback? onVoted;
 
   const VoteDialog({
     super.key,
-    required this.aioha,
+    required this.hfk,
     required this.author,
     required this.permlink,
-    this.onVoted, 
+    this.onVoted,
   });
 
   @override
@@ -27,22 +27,22 @@ class _VoteDialogState extends State<VoteDialog> {
     setState(() => _loading = true);
     try {
       final weight = (_sliderValue.round()) * 100;
-      final result = await widget.aioha.singleVote(
+      final result = await widget.hfk.singleVote(
         widget.author,
         widget.permlink,
         weight,
       );
       if (!mounted) return;
       Navigator.of(context).pop();
-      if (widget.onVoted != null) widget.onVoted!(); 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Vote Success: $result')),
-      );
+      if (widget.onVoted != null) widget.onVoted!();
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Vote Success: $result')));
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Vote Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Vote Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -98,26 +98,27 @@ class _VoteDialogState extends State<VoteDialog> {
                   ),
                 ),
                 onPressed: _loading ? null : _vote,
-                child: _loading
-                    ? const SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
+                child:
+                    _loading
+                        ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                        : const Text(
+                          'Vote',
+                          style: TextStyle(fontSize: 16, color: Colors.white),
                         ),
-                      )
-                    : const Text(
-                        'Vote',
-                        style: TextStyle(fontSize: 16, color: Colors.white),
-                      ),
               ),
             ),
             const SizedBox(height: 10),
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: const Text('Cancel'),
-            )
+            ),
           ],
         ),
       ),

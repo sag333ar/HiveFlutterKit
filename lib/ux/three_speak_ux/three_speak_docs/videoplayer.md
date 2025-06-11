@@ -8,19 +8,7 @@ A Flutter video player component designed for the Hive/3Speak platform that prov
 
 The `VideoPlayerScreen` is a stateful widget that combines video playback capabilities with social features like voting, user authentication, and post information display. It automatically adapts its layout based on screen size and handles IPFS video URL resolution.
 
-## Dependencies
-
-```yaml
-dependencies:
-  flutter/material.dart
-  video_player: ^2.x.x
-  chewie: ^1.x.x
-  flutter_secure_storage: ^9.x.x
-  http: ^1.x.x
-  hive_flutter_kit: # Custom package
-```
-
-## Constructor Parameters
+## Widget Parameters
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
@@ -45,7 +33,6 @@ Navigator.push(
       createdAt: item.createdAt,
       item: item,
       // ✅ Optional Callbacks
-      isUserVoted: () {},
       onTapComment: () {},
       onComment: (body) {},
       onUpvoteComment: () {},

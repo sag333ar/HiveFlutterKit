@@ -7,15 +7,15 @@ import 'package:hive_flutter_kit/ux/dhive/comments/comment_search_bar.dart';
 import 'package:hive_flutter_kit/ux/dhive/comments/comment_tile.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
-class VideoDetailsComments extends StatefulWidget {
-  const VideoDetailsComments({
-    Key? key,
+class HivePostComments extends StatefulWidget {
+  const HivePostComments({
+    super.key,
     required this.author,
     required this.permlink,
     this.onComment,
     this.onUpvoteComment,
     this.onReplyComment,
-  }) : super(key: key);
+  });
   final String author;
   final String permlink;
   final void Function(String body)? onComment;
@@ -23,10 +23,10 @@ class VideoDetailsComments extends StatefulWidget {
   final void Function(Discussion comment)? onReplyComment;
 
   @override
-  State<VideoDetailsComments> createState() => _VideoDetailsCommentsState();
+  State<HivePostComments> createState() => _HivePostCommentsState();
 }
 
-class _VideoDetailsCommentsState extends State<VideoDetailsComments> {
+class _HivePostCommentsState extends State<HivePostComments> {
   final ValueNotifier<bool> showSearchBar = ValueNotifier(false);
   final TextEditingController searchController = TextEditingController();
   final ItemScrollController itemScrollController = ItemScrollController();
@@ -38,7 +38,7 @@ class _VideoDetailsCommentsState extends State<VideoDetailsComments> {
       ScrollOffsetListener.create();
   String _currentUser = "";
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
-  final HiveFlutterKitPlatform aioha = HiveFlutterKitPlatform.instance;
+  final HiveFlutterKitPlatform hfk = HiveFlutterKitPlatform.instance;
 
   List<Discussion> _comments = [];
   bool _loading = true;
@@ -66,7 +66,7 @@ class _VideoDetailsCommentsState extends State<VideoDetailsComments> {
       _error = false;
     });
     try {
-      final comments = await aioha.getCommentsList(
+      final comments = await hfk.getCommentsList(
         widget.author,
         widget.permlink,
       );
@@ -106,7 +106,7 @@ class _VideoDetailsCommentsState extends State<VideoDetailsComments> {
     }
     try {
       final permlink = DateTime.now().millisecondsSinceEpoch.toString();
-      await aioha.comment(
+      await hfk.comment(
         parentAuthor ?? widget.author,
         parentPermlink ?? widget.permlink,
         permlink,
