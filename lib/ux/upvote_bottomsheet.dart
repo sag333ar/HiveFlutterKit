@@ -3,26 +3,26 @@ import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit/ux/upvote.dart';
 
 class UpvoteBottomSheet extends StatelessWidget {
-  final HiveFlutterKitPlatform aioha;
+  final HiveFlutterKitPlatform hfk;
   final List<String> voters;
   final bool currentUserPresentInVoters;
-  final bool isUserVoted;
+  final bool isContentVoted;
   final String currentUser;
   final dynamic postInfo;
   final String author;
   final VoidCallback? onVoted;
 
   const UpvoteBottomSheet({
-    Key? key,
-    required this.aioha,
+    super.key,
+    required this.hfk,
     required this.voters,
     required this.currentUserPresentInVoters,
-    required this.isUserVoted,
+    required this.isContentVoted,
     required this.currentUser,
     required this.postInfo,
     required this.author,
     this.onVoted,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -35,26 +35,19 @@ class UpvoteBottomSheet extends StatelessWidget {
           elevation: 0,
           title: Text(
             "Voters (${voters.length})",
-            style: TextStyle(
-              color: Colors.black,
-            ),
+            style: TextStyle(color: Colors.black),
           ),
           leading: IconButton(
-            icon: Icon(
-              Icons.close,
-              color: Colors.black,
-            ),
+            icon: Icon(Icons.close, color: Colors.black),
             onPressed: () => Navigator.pop(context),
           ),
           actions: [
-            if (!isUserVoted)
+            if (!isContentVoted)
               IconButton(
                 onPressed: () {
                   if (currentUser.isEmpty) {
                     Navigator.pop(context);
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(
+                    ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
                           'You are not logged in. Please log in first to vote for this video.',
@@ -70,13 +63,9 @@ class UpvoteBottomSheet extends StatelessWidget {
                       .map((e) => e.voter)
                       .contains(currentUser)) {
                     Navigator.pop(context);
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(
+                    ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(
-                          'You have already voted for this video',
-                        ),
+                        content: Text('You have already voted for this video'),
                         backgroundColor: Colors.red,
                       ),
                     );
@@ -85,19 +74,20 @@ class UpvoteBottomSheet extends StatelessWidget {
 
                   showDialog(
                     context: context,
-                    builder: (context) => VoteDialog(
-                      aioha: aioha,
-                      author: author,
-                      permlink: postInfo.permlink,
-                      onVoted: () {
-                        if (onVoted != null) onVoted!();
-                      },
-                    ),
+                    builder:
+                        (context) => VoteDialog(
+                          hfk: hfk,
+                          author: author,
+                          permlink: postInfo.permlink,
+                          onVoted: () {
+                            if (onVoted != null) onVoted!();
+                          },
+                        ),
                   );
                 },
                 icon: Icon(
                   Icons.thumb_up,
-                  color: isUserVoted ? Colors.blue : Colors.grey,
+                  color: isContentVoted ? Colors.blue : Colors.grey,
                   size: 20,
                 ),
               ),
@@ -105,10 +95,7 @@ class UpvoteBottomSheet extends StatelessWidget {
         ),
         Expanded(
           child: ListView.builder(
-            padding: EdgeInsets.symmetric(
-              vertical: 15,
-              horizontal: 15,
-            ),
+            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
             itemCount: voters.length,
             itemBuilder: (context, index) {
               final isCurrentUser = index == 0 && currentUserPresentInVoters;
