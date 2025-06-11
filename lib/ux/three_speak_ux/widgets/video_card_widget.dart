@@ -12,6 +12,8 @@ class VideoCard extends StatefulWidget {
   final void Function()? onTap;
   final void Function()? onTapAuthor;
   final void Function()? onTapReport;
+  final void Function()? onTapUpvote;
+  final void Function()? onTapComment;
 
   const VideoCard({
     super.key,
@@ -20,6 +22,8 @@ class VideoCard extends StatefulWidget {
     this.onTap,
     this.onTapAuthor,
     this.onTapReport,
+    this.onTapUpvote,
+    this.onTapComment,
   });
 
   @override
@@ -71,6 +75,7 @@ class _VideoCardState extends State<VideoCard> {
                       Row(
                         children: [
                           InkWell(
+                            onTap: handleTapAuthor,
                             child: ClipOval(
                               child: CachedNetworkImage(
                                 height: 40,
@@ -88,8 +93,7 @@ class _VideoCardState extends State<VideoCard> {
                                     (context, url, error) =>
                                         const Icon(Icons.error),
                               ),
-                            ),
-                            onTap: handleTapAuthor, // <-- always use this
+                            ), // <-- always use this
                           ),
                           const SizedBox(width: 8),
                           Expanded(
@@ -143,14 +147,20 @@ class _VideoCardState extends State<VideoCard> {
                           ),
                           Row(
                             children: [
-                              _buildStatItem(
-                                Icons.thumb_up,
-                                item.stats?.numVotes?.toString() ?? '0',
+                              GestureDetector(
+                                onTap: widget.onTapUpvote,
+                                child: _buildStatItem(
+                                  Icons.thumb_up,
+                                  item.stats?.numVotes?.toString() ?? '0',
+                                ),
                               ),
                               const SizedBox(width: 16),
-                              _buildStatItem(
-                                Icons.comment,
-                                item.stats?.numComments?.toString() ?? '0',
+                              GestureDetector(
+                                onTap: widget.onTapComment,
+                                child: _buildStatItem(
+                                  Icons.comment,
+                                  item.stats?.numComments?.toString() ?? '0',
+                                ),
                               ),
                             ],
                           ),
@@ -170,6 +180,7 @@ class _VideoCardState extends State<VideoCard> {
                       Row(
                         children: [
                           InkWell(
+                            onTap: handleTapAuthor,
                             child: ClipOval(
                               child: CachedNetworkImage(
                                 height: 40,
@@ -187,8 +198,7 @@ class _VideoCardState extends State<VideoCard> {
                                     (context, url, error) =>
                                         const Icon(Icons.error),
                               ),
-                            ),
-                            onTap: handleTapAuthor, // <-- always use this
+                            ), // <-- always use this
                           ),
                           const SizedBox(width: 8),
                           Expanded(
