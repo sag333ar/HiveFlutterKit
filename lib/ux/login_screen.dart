@@ -8,48 +8,46 @@ import 'package:cached_network_image/cached_network_image.dart';
 // ignore: must_be_immutable
 class LoginScreen extends StatefulWidget {
   final HiveFlutterKitPlatform aioha;
-  final List<Color> backgroundColors;
-  final Color fontColor;
-  final Color borderColor;
-  final Color hiveKeychainButtonColor;
-  final Color hiveKeychainTextColor;
-  final Color hiveAuthButtonColor;
-  final Color hiveAuthTextColor;
-  final Color privatePostingKeyButtonColor;
-  final Color privatePostingKeyTextColor;
-  final Color withoutPrivatePostingKeyButtonColor;
-  final Color withoutPrivatePostingKeyTextColor;
+  final List<Color>? backgroundColors;
+  final Color? fontColor;
+  final Color? borderColor;
+  final Color? hiveKeychainButtonColor;
+  final Color? hiveKeychainTextColor;
+  final Color? hiveAuthButtonColor;
+  final Color? hiveAuthTextColor;
+  final Color? privatePostingKeyButtonColor;
+  final Color? privatePostingKeyTextColor;
+  final Color? withoutPrivatePostingKeyButtonColor;
+  final Color? withoutPrivatePostingKeyTextColor;
   final String title;
   final String subtitle;
   final Widget logoIcon;
   final String? logoImagePath;
-  ThemeMode themeMode;
   final String proof;
   final void Function(BuildContext context, dynamic result)? uponLogin;
 
   LoginScreen({
     super.key,
     required this.aioha,
-    this.backgroundColors = const [Color(0xFF2C3E50), Color(0xFF3498DB)],
-    this.fontColor = Colors.white,
-    this.borderColor = const Color(0xFFFFFFFF),
-    this.hiveKeychainButtonColor = const Color(0xFF2ECC71),
+    this.backgroundColors,
+    this.fontColor,
+    this.borderColor,
+    this.hiveKeychainButtonColor,
     this.hiveKeychainTextColor = Colors.white,
-    this.hiveAuthButtonColor = const Color(0xFFF39C12),
+    this.hiveAuthButtonColor,
     this.hiveAuthTextColor = Colors.white,
-    this.privatePostingKeyButtonColor = const Color(0xFF8E44AD),
+    this.privatePostingKeyButtonColor,
     this.privatePostingKeyTextColor = Colors.white,
-    this.withoutPrivatePostingKeyButtonColor = Colors.grey,
+    this.withoutPrivatePostingKeyButtonColor,
     this.withoutPrivatePostingKeyTextColor = Colors.white,
     this.title = 'Welcome to Hive',
     this.subtitle = 'Choose your login method',
     this.logoIcon = const Icon(
       Icons.hexagon_outlined,
       size: 64,
-      color: Colors.white,
+      color: Colors.grey,
     ),
     this.logoImagePath,
-    this.themeMode = ThemeMode.system,
     this.proof = '',
     this.uponLogin,
   });
@@ -66,23 +64,50 @@ class _LoginScreenState extends State<LoginScreen> {
   var timerDuration = 0;
   Timer? _authTimer;
   String _avatarUrl = '';
-  bool _showPostingKeyLogin =
-      false; // Track if posting key login mode is active
+  bool _showPostingKeyLogin = false;
 
-  Color get _dynamicFontColor =>
-      widget.themeMode == ThemeMode.dark
-          ? Colors.white
-          : const Color(0xFF2C3E50);
+  // Auto-detect theme mode
+  bool get _isDarkMode => Theme.of(context).brightness == Brightness.dark;
 
-  List<Color> get _dynamicBackgroundColors =>
-      widget.themeMode == ThemeMode.dark
-          ? widget.backgroundColors
-          : [Colors.white, Color(0xFF3498DB)];
+  // Dynamic colors
+  List<Color> get _dynamicBackgroundColors {
+    return widget.backgroundColors ??
+        (_isDarkMode
+            ? [Color(0xFF121212), Color(0xFF1E1E1E)]
+            : [Colors.white, Colors.white]);
+  }
 
-  Color get _dynamicBorderColor =>
-      widget.themeMode == ThemeMode.dark
-          ? widget.borderColor
-          : const Color(0xFF2C3E50).withOpacity(0.2);
+  Color get _dynamicFontColor {
+    return widget.fontColor ?? (_isDarkMode ? Colors.white : Colors.black);
+  }
+
+  Color get _dynamicBorderColor {
+    return widget.borderColor ??
+        (_isDarkMode
+            ? Colors.white.withOpacity(0.2)
+            : Colors.black.withOpacity(0.2));
+  }
+
+  // Button colors with dark mode variants
+  Color get _hiveKeychainButtonColor {
+    return widget.hiveKeychainButtonColor ??
+        (_isDarkMode ? Colors.green.shade800 : Colors.green);
+  }
+
+  Color get _hiveAuthButtonColor {
+    return widget.hiveAuthButtonColor ??
+        (_isDarkMode ? Colors.orange.shade400 : Colors.orange);
+  }
+
+  Color get _privatePostingKeyButtonColor {
+    return widget.privatePostingKeyButtonColor ??
+        (_isDarkMode ? Colors.deepPurple.shade400 : Colors.deepPurple);
+  }
+
+  Color get _withoutPrivatePostingKeyButtonColor {
+    return widget.withoutPrivatePostingKeyButtonColor ??
+        (_isDarkMode ? Colors.grey.shade800 : Colors.grey);
+  }
 
   @override
   void didChangeDependencies() {
@@ -209,16 +234,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void _toggleThemeMode() {
-    setState(() {
-      if (widget.themeMode == ThemeMode.dark) {
-        widget.themeMode = ThemeMode.light;
-      } else {
-        widget.themeMode = ThemeMode.dark;
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -233,18 +248,6 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              Align(
-                alignment: Alignment.topRight,
-                child: IconButton(
-                  icon: Icon(
-                    widget.themeMode == ThemeMode.dark
-                        ? Icons.light_mode
-                        : Icons.dark_mode,
-                    color: _dynamicFontColor,
-                  ),
-                  onPressed: _toggleThemeMode,
-                ),
-              ),
               Expanded(
                 child: Center(
                   child: SingleChildScrollView(
@@ -255,19 +258,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         Container(
                           padding: const EdgeInsets.all(32),
                           decoration: BoxDecoration(
-                            color: _dynamicFontColor.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(24),
                             border: Border.all(
                               color: _dynamicBorderColor,
                               width: 1,
                             ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 20,
-                                offset: const Offset(0, 10),
-                              ),
-                            ],
                           ),
                           child: Column(
                             children: [
@@ -383,8 +378,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ElevatedButton(
                                   onPressed: _loginWithHiveKeychain,
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        widget.hiveKeychainButtonColor,
+                                    backgroundColor: _hiveKeychainButtonColor,
                                     minimumSize: const Size(
                                       double.infinity,
                                       56,
@@ -419,7 +413,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ElevatedButton(
                                   onPressed: _loginWithHiveAuth,
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: widget.hiveAuthButtonColor,
+                                    backgroundColor: _hiveAuthButtonColor,
                                     minimumSize: const Size(
                                       double.infinity,
                                       56,
@@ -459,7 +453,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor:
-                                        widget.privatePostingKeyButtonColor,
+                                        _privatePostingKeyButtonColor,
                                     minimumSize: const Size(
                                       double.infinity,
                                       56,
@@ -472,7 +466,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Icon(Icons.vpn_key, color: Colors.white),
+                                      Icon(
+                                        Icons.vpn_key,
+                                        color:
+                                            widget.privatePostingKeyTextColor,
+                                      ),
                                       const SizedBox(width: 12),
                                       Text(
                                         'Private Posting Key',
@@ -490,8 +488,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ElevatedButton(
                                   onPressed: _loginWithPlaintextKey,
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        widget.privatePostingKeyButtonColor,
+                                    backgroundColor: _hiveKeychainButtonColor,
                                     minimumSize: const Size(
                                       double.infinity,
                                       56,
@@ -528,8 +525,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor:
-                                        widget
-                                            .withoutPrivatePostingKeyButtonColor,
+                                        _privatePostingKeyButtonColor,
                                     minimumSize: const Size(
                                       double.infinity,
                                       56,
@@ -544,7 +540,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                     children: [
                                       Icon(
                                         Icons.arrow_back,
-                                        color: Colors.white,
+                                        color:
+                                            widget
+                                                .withoutPrivatePostingKeyTextColor,
                                       ),
                                       const SizedBox(width: 12),
                                       Text(
@@ -571,15 +569,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           Container(
                             padding: const EdgeInsets.all(24),
                             decoration: BoxDecoration(
-                              color: Colors.white,
                               borderRadius: BorderRadius.circular(24),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 20,
-                                  offset: const Offset(0, 10),
-                                ),
-                              ],
+                              border: Border.all(
+                                color: _dynamicBorderColor,
+                                width: 1,
+                              ),
                             ),
                             child: Column(
                               children: [
