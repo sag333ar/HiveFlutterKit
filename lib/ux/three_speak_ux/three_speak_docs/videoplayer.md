@@ -10,14 +10,16 @@ The `VideoPlayerScreen` is a stateful widget that combines video playback capabi
 
 ## Widget Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `videoUrl` | `String` | ✅ | URL of the video to play (supports IPFS URLs) |
-| `title` | `String` | ✅ | Title of the video |
-| `author` | `String` | ✅ | Username of the video author |
-| `permlink` | `String` | ✅ | Unique identifier for the post |
-| `createdAt` | `DateTime?` | ❌ | Creation timestamp of the video |
-| `item` | `GQLFeedItem` | ✅ | Complete feed item data |
+| Parameter        | Type                                        | Required | Description                                                                                   |
+|------------------|---------------------------------------------|----------|-----------------------------------------------------------------------------------------------|
+| `item`           | `GQLFeedItem`                               | ✅        | Complete feed item data to render the video card UI.                                          |
+| `onTapComment`   | `void Function(String author, String permlink)?`   | ❌        | Called when the comment button is tapped. Use this to navigate to or open the comment section of the post. |
+| `onTapUpvote`    | `void Function(String author, String permlink)?`   | ❌        | Called when the upvote button is tapped. Use this to trigger your custom upvote logic.        |
+| `onTapShare`     | `void Function(String author, String permlink)?`   | ❌        | Called when the share button is tapped. Useful for invoking your custom share functionality.  |
+| `onTapBookmark`  | `void Function(String author, String permlink)?`   | ❌        | Called when the bookmark button is tapped. Use this to save or unsave the post in your system. |
+| `onTapAuthor`    | `void Function(String username)?`                 | ❌        | Called when the author's name or avatar is tapped. Use this to navigate to the author's profile. |
+| `onTapInfo`      | `void Function(String author, String permlink)?`   | ❌        | Called when the info/details button is tapped. Useful for showing additional metadata or options related to the post. |
+
 
 ## Usage Example
 
@@ -26,20 +28,14 @@ Navigator.push(
   context,
   MaterialPageRoute(
     builder: (context) => VideoPlayerScreen(
-      videoUrl: videoUrl ?? '',
-      title: item.title ?? 'Untitled',
-      author: item.author?.username ?? 'Unknown',
-      permlink: item.permlink ?? 'Unknown',
-      createdAt: item.createdAt,
       item: item,
       // ✅ Optional Callbacks
       onTapComment: () {},
-      onComment: (body) {},
-      onUpvoteComment: () {},
-      onReplyComment: () {},
-      onShare: () {},
-      onBookmark: () {},
+      onTapUpvote: () {},
+      onTapShare: () {},
+      onTapBookmark: () {},
       onTapAuthor: () {},
+      onTapInfo: () {},
     ),
   ),
 );
@@ -57,34 +53,8 @@ Navigator.push(
 - **Desktop/Web Layout**: Centered video player with wider container (1600px max width)
 - Automatic layout switching at 800px breakpoint
 
-### 🔐 User Authentication
-- Secure storage integration for user credentials
-- Login state management
-- User-specific features (voting, favorites)
-
-### 🗳️ Social Features
-- Hive blockchain integration for post information
-- User voting status tracking
-- Real-time post data loading
-- User favorites management
-
 ### Resolution Strategy
 - **Web**: Uses manifest.m3u8 for adaptive streaming
 - **Android**: Uses 480p/index.m3u8 for optimized mobile playback
 - **Other platforms**: Defaults to manifest.m3u8
 
-## Integration Requirements
-
-### Required Models
-- `LoginModel`: User authentication data
-- `GQLFeedItem`: Feed item structure
-- `HivePostInfoPostResultBody`: Hive post information
-- `UserFavoriteProvider`: User favorites management
-
-### Required Widgets
-- `VideoInfo`: Displays video metadata and user interactions
-
-### Secure Storage
-Uses `FlutterSecureStorage` for:
-- Username storage (`'username'` key)
-- Authentication token storage (`'token'` key)
