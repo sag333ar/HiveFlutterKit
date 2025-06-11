@@ -43,7 +43,7 @@ class _CommentTileState extends State<CommentTile>
   late Animation<Color?> _colorAnimation;
   bool isHighlighted = false;
   String _currentUser = "";
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final HiveFlutterKitPlatform hfk = HiveFlutterKitPlatform.instance;
 
   @override
   void initState() {
@@ -67,7 +67,7 @@ class _CommentTileState extends State<CommentTile>
   }
 
   Future<void> _loadCurrentUser() async {
-    final username = await _storage.read(key: 'username');
+    final username = await hfk.getCurrentUser();
     if (mounted) {
       setState(() {
         _currentUser = username ?? "";
