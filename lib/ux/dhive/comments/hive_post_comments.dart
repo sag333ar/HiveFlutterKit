@@ -37,7 +37,7 @@ class _HivePostCommentsState extends State<HivePostComments> {
   final ScrollOffsetListener scrollOffsetListener =
       ScrollOffsetListener.create();
   String _currentUser = "";
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  // final FlutterSecureStorage _storage = const FlutterSecureStorage();
   final HiveFlutterKitPlatform hfk = HiveFlutterKitPlatform.instance;
 
   List<Discussion> _comments = [];
@@ -52,10 +52,10 @@ class _HivePostCommentsState extends State<HivePostComments> {
   }
 
   Future<void> _loadCurrentUser() async {
-    final username = await _storage.read(key: 'username');
+    final username = await hfk.getCurrentUser();
     if (mounted) {
       setState(() {
-        _currentUser = username ?? "";
+        _currentUser = username;
       });
     }
   }

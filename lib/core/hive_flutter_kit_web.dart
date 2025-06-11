@@ -83,7 +83,7 @@ external dynamic loginWithPlaintextKeyJS(
 external dynamic getQrStringJS();
 
 @JS('getCurrentUser')
-external dynamic getCurrentUserJS();
+external String getCurrentUserJS();
 
 @JS('logoutUser')
 external dynamic logoutUserJS();
@@ -189,12 +189,12 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
 
   @override
   Future<String> getCurrentUser() async {
-    var contentData = getCurrentUserJS();
-    var data = jsonDecode(contentData);
-    if (data['username'] == null) {
-      throw Exception("No user logged in");
+    final contentData = getCurrentUserJS();
+    final decoded = jsonDecode(contentData);
+    if (decoded == null || decoded is! String || decoded.trim().isEmpty) {
+      throw Exception("No user logged in or username is invalid");
     }
-    return data['username'] as String;
+    return decoded;
   }
 
   @override
