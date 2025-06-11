@@ -3,14 +3,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit/core/models/discussion.dart';
-import 'package:hive_flutter_kit/core/three_speak_core/models/hive_post_info.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
-import 'package:hive_flutter_kit/core/three_speak_core/provider/user_favourite_provider.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/video_info.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:http/http.dart' as http;
 import 'package:collection/collection.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
