@@ -399,7 +399,7 @@ class _CommentTileState extends State<CommentTile>
                             return;
                           }
                           // Show upvote dialog with slider and thumb icon
-                          final aioha = Provider.of<HiveFlutterKitPlatform>(
+                          final hfk = Provider.of<HiveFlutterKitPlatform>(
                             context,
                             listen: false,
                           );
@@ -407,7 +407,7 @@ class _CommentTileState extends State<CommentTile>
                             context: context,
                             builder:
                                 (context) => VoteDialog(
-                                  aioha: aioha,
+                                  hfk: hfk,
                                   author: widget.comment.author!,
                                   permlink: widget.comment.permlink!,
                                 ),
