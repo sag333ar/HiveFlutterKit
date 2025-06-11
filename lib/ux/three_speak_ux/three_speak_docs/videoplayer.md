@@ -34,16 +34,29 @@ dependencies:
 ## Usage Example
 
 ```dart
-VideoPlayerScreen(
-  videoUrl: videoUrl ?? '',
-  title: item.title ?? 'Untitled',
-  author: item.author?.username ?? 'Unknown',
-  permlink: item.permlink ?? 'Unknown',
-  createdAt: item.createdAt,
-  item: item,
-)
+Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) => VideoPlayerScreen(
+      videoUrl: videoUrl ?? '',
+      title: item.title ?? 'Untitled',
+      author: item.author?.username ?? 'Unknown',
+      permlink: item.permlink ?? 'Unknown',
+      createdAt: item.createdAt,
+      item: item,
+      // ✅ Optional Callbacks
+      isUserVoted: () {},
+      onTapComment: () {},
+      onComment: (body) {},
+      onUpvoteComment: (comment) {},
+      onReplyComment: (comment) {},
+      onShare: () {},
+      onBookmark: (isLiked) {},
+      onTapAuthor: () {},
+    ),
+  ),
+);
 ```
-
 ## Features
 
 ### 🎥 Video Playback
@@ -68,53 +81,11 @@ VideoPlayerScreen(
 - Real-time post data loading
 - User favorites management
 
-## Platform-Specific Video Resolution
-
-The component automatically resolves IPFS URLs based on the platform:
-
-```dart
-String _resolveIPFSUrl(String url) {
-  if (url.startsWith('ipfs://')) {
-    final hash = url.replaceFirst('ipfs://', '').split('/')[0];
-    if (kIsWeb) {
-      return 'https://ipfs-3speak.b-cdn.net/ipfs/$hash/manifest.m3u8';
-    } else if (Platform.isAndroid) {
-      return 'https://ipfs-3speak.b-cdn.net/ipfs/$hash/480p/index.m3u8';
-    } else {
-      return 'https://ipfs-3speak.b-cdn.net/ipfs/$hash/manifest.m3u8';
-    }
-  }
-  return url;
-}
-```
-
 ### Resolution Strategy
 - **Web**: Uses manifest.m3u8 for adaptive streaming
 - **Android**: Uses 480p/index.m3u8 for optimized mobile playback
 - **Other platforms**: Defaults to manifest.m3u8
 
-## API Integration
-
-### Hive Blockchain Integration
-
-The component fetches post information from the Hive blockchain:
-
-```dart
-Future<HivePostInfoPostResultBody> fetchHiveInfoForThisVideo() async {
-  var request = http.Request('POST', Uri.parse('https://api.hive.blog/'));
-  request.body = json.encode({
-    "id": 1,
-    "jsonrpc": "2.0",
-    "method": "bridge.get_discussion",
-    "params": {
-      "author": widget.author,
-      "permlink": widget.permlink,
-      "observer": "",
-    },
-  });
-  // ... request handling
-}
-```
 ## Integration Requirements
 
 ### Required Models
