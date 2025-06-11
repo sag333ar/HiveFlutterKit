@@ -2,7 +2,6 @@ const { initAioha, KeyTypes, Providers, Asset } = require("@aioha/aioha");
 const { PlaintextKeyProvider } = require("@aioha/aioha/build/providers/custom/plaintext.js");
 var Buffer = require('buffer/').Buffer
 const dhive = require('@hiveio/dhive');
-
 let dhiveClient = new dhive.Client(["https://api.hive.blog"]);
 const aioha = initAioha({
   hiveauth: {
@@ -26,10 +25,10 @@ window.getChainProperties = getChainProperties;
 async function getDiscussions(
   by,
   limit = 20,
-  tag = '',
+  tag = "",
   startAuthor = null,
   startPermlink = null,
-  observer = null,
+  observer = null
 ) {
   const query = {
     sort: by,
@@ -40,21 +39,30 @@ async function getDiscussions(
   };
 
   if (observer) query.observer = observer;
-  const discussions = await dhiveClient.call('bridge', 'get_ranked_posts', query);
+  const discussions = await dhiveClient.call(
+    "bridge",
+    "get_ranked_posts",
+    query
+  );
   return JSON.stringify(discussions);
 }
 window.getDiscussions = getDiscussions;
 
-async function getListOfCommunities(last, limit = 20, query = '', observer = null) {
+async function getListOfCommunities(
+  last,
+  limit = 20,
+  query = "",
+  observer = null
+) {
   const params = {
     limit: limit,
   };
 
-  if (last && last.trim() !== '') {
+  if (last && last.trim() !== "") {
     params.last = last;
   }
 
-  if (query && query.trim() !== '') {
+  if (query && query.trim() !== "") {
     params.query = query;
   }
 
@@ -63,10 +71,14 @@ async function getListOfCommunities(last, limit = 20, query = '', observer = nul
   }
 
   try {
-    const listOfCommunities = await dhiveClient.call('bridge', 'list_communities', params);
+    const listOfCommunities = await dhiveClient.call(
+      "bridge",
+      "list_communities",
+      params
+    );
     return JSON.stringify(listOfCommunities);
   } catch (error) {
-    console.error('Error calling list_communities:', error);
+    console.error("Error calling list_communities:", error);
     return JSON.stringify([]);
   }
 }
@@ -78,11 +90,10 @@ async function getCommentsList(author, permlink) {
     permlink: permlink,
   };
 
-  const discussion = await dhiveClient.call('bridge', 'get_discussion', params);
+  const discussion = await dhiveClient.call("bridge", "get_discussion", params);
   return JSON.stringify(discussion);
 }
 window.getCommentsList = getCommentsList;
-
 
 async function getAccounts(usernames) {
   const accounts = await dhiveClient.database.getAccounts(usernames);
@@ -148,7 +159,7 @@ async function getAccountPosts(
   limit = 20,
   startAuthor = null,
   startPermlink = null,
-  observer = null,
+  observer = null
 ) {
   const query = {
     account: username,
@@ -159,7 +170,11 @@ async function getAccountPosts(
   };
 
   if (observer) query.observer = observer;
-  const discussions = await dhiveClient.call('bridge', 'get_account_posts', query);
+  const discussions = await dhiveClient.call(
+    "bridge",
+    "get_account_posts",
+    query
+  );
   return JSON.stringify(discussions);
 }
 window.getAccountPosts = getAccountPosts;
@@ -278,16 +293,15 @@ async function getQrString() {
 }
 window.getQrString = getQrString; // Expose the function to Dart
 
-async function getCurrentUser() {
-  try {
-    const currentUser = aioha.getCurrentUser();
-    if (currentUser) {
-      return JSON.stringify(currentUser);
-    } else {
-      return JSON.stringify({ error: "No user is currently logged in" });
-    }
-  } catch (error) {
-    return JSON.stringify({ error: error.toString() });
+function getCurrentUser() {
+  const currentUser = aioha.getCurrentUser();
+  if (currentUser) {
+    return JSON.stringify({ username: currentUser, error: null });
+  } else {
+    return JSON.stringify({
+      error: "No user is currently logged in",
+      username: null,
+    });
   }
 }
 window.getCurrentUser = getCurrentUser; // Expose the function to Dart
@@ -449,7 +463,7 @@ async function signMessage(message, keyType) {
       keytypeForSignMessage = KeyTypes.Posting;
     }
     const result = await aioha.signMessage(message, keytypeForSignMessage);
-    return JSON.stringify({...result, username: aioha.getCurrentUser()});
+    return JSON.stringify({ ...result, username: aioha.getCurrentUser() });
   } catch (error) {
     return JSON.stringify({ error: error.toString() });
   }
@@ -580,7 +594,6 @@ async function signAndBroadcastTx(operations, keyType) {
     }
 
     const result = await aioha.signAndBroadcastTx(operations, keytypeForTx);
-  
 
     // Assuming `result` is already a JSON-compatible object
     return JSON.stringify({ success: true, result });

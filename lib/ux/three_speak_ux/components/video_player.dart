@@ -1,9 +1,8 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit/core/models/discussion.dart';
-import 'package:hive_flutter_kit/core/models/login_model.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/hive_post_info.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/provider/user_favourite_provider.dart';
@@ -12,41 +11,28 @@ import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:collection/collection.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
-  final String videoUrl;
-  final String title;
-  final String author;
-  final String permlink;
-  final DateTime? createdAt;
   final GQLFeedItem item;
 
-  final bool Function()? isUserVoted;
-  final void Function()? onTapComment;
-  final void Function(String body)? onComment;
-  final void Function(Discussion comment)? onUpvoteComment;
-  final void Function(Discussion comment)? onReplyComment;
-  final void Function()? onShare;
-  final void Function(bool isLiked)? onBookmark;
-  final void Function()? onTapAuthor;
+  final void Function(String, String)? onTapComment;
+  final void Function(String, String)? onTapUpvote;
+  final void Function(String, String)? onTapShare;
+  final void Function(String, String)? onTapBookmark;
+  final void Function(String)? onTapAuthor;
+  final void Function(String, String)? onTapInfo;
 
   const VideoPlayerScreen({
-    Key? key,
-    required this.videoUrl,
-    required this.title,
-    required this.author,
-    required this.permlink,
-    required this.createdAt,
+    super.key,
     required this.item,
-    this.isUserVoted,
     this.onTapComment,
-    this.onComment,
-    this.onUpvoteComment,
-    this.onReplyComment,
-    this.onShare,
-    this.onBookmark,
+    this.onTapUpvote,
+    this.onTapShare,
+    this.onTapBookmark,
     this.onTapAuthor,
-  }) : super(key: key);
+    this.onTapInfo,
+  });
 
   @override
   State<VideoPlayerScreen> createState() => _VideoPlayerScreenState();
@@ -59,39 +45,37 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   List<GQLFeedItem> relatedVideos = [];
   bool isLoadingRelatedVideos = true;
-
-  HivePostInfoPostResultBody? postInfo;
-
-  String _currentUser = "";
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
-  LoginModel? _loggedInUser;
-
-  var userFavouriteProvider = UserFavoriteProvider();
+  Discussion? postInfo;
+  String currentUserName = "";
+  final HiveFlutterKitPlatform hfk = HiveFlutterKitPlatform.instance;
 
   @override
   void initState() {
     super.initState();
     setupPlayer();
     loadHiveInfo();
-    _loadCurrentUser();
+    setupUsername();
   }
 
-  Future<void> _loadCurrentUser() async {
-    final username = await _storage.read(key: 'username');
-    final token = await _storage.read(key: 'token');
-    if (mounted) {
+  void setupUsername() async {
+    try {
+      var user = await hfk.getCurrentUser();
       setState(() {
-        _currentUser = username ?? "";
-        if (username != null && token != null) {
-          _loggedInUser = LoginModel(username: username);
-        }
+        currentUserName = user;
       });
+    } catch (e) {
+      debugPrint("Error fetching current user: $e");
     }
   }
 
-  bool isUserVoted() {
-    if (postInfo == null || _currentUser.isEmpty) return false;
-    return postInfo!.activeVotes.any((vote) => vote.voter == _currentUser);
+  bool isContentVoted() {
+    if (postInfo == null || currentUserName.isEmpty) {
+      return false;
+    }
+
+    var userrname = currentUserName;
+    var votes = postInfo?.activeVotes ?? [];
+    return votes.where((e) => e.voter == userrname).isNotEmpty;
   }
 
   void loadHiveInfo() async {
@@ -108,40 +92,41 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         });
       }
     } catch (e) {
-      print('Error loading Hive info: $e');
+      debugPrint('Error loading Hive info: $e');
     }
   }
 
-  Future<HivePostInfoPostResultBody> fetchHiveInfoForThisVideo() async {
-    var request = http.Request('POST', Uri.parse('https://api.hive.blog/'));
-    request.body = json.encode({
-      "id": 1,
-      "jsonrpc": "2.0",
-      "method": "bridge.get_discussion",
-      "params": {
-        "author": widget.author,
-        "permlink": widget.permlink,
-        "observer": "",
-      },
-    });
-
-    http.StreamedResponse response = await request.send();
-    if (response.statusCode == 200) {
-      var string = await response.stream.bytesToString();
-      var result =
-          HivePostInfo.fromJsonString(string).result.resultData
-              .where((element) => element.permlink == widget.permlink)
-              .first;
-      return result;
+  Future<Discussion> fetchHiveInfoForThisVideo() async {
+    if ((widget.item.author?.username ?? "").isEmpty ||
+        (widget.item.permlink ?? "").isEmpty) {
+      var errorMessage = "Author or permlink is empty, cannot fetch Hive info.";
+      debugPrint(errorMessage);
+      throw errorMessage;
+    }
+    var result = await hfk.getCommentsList(
+      widget.item.author?.username ?? "",
+      widget.item.permlink ?? "",
+    );
+    var discussion = result.firstWhereOrNull(
+      (e) =>
+          e.author == widget.item.author?.username &&
+          e.permlink == widget.item.permlink,
+    );
+    if (discussion == null) {
+      var errorMessage = "No discussion found for this video.";
+      debugPrint(errorMessage);
+      throw errorMessage;
     } else {
-      throw response.reasonPhrase ?? 'Cannot load payout info';
+      return discussion;
     }
   }
 
   void setupPlayer() async {
-    final resolvedUrl = _resolveIPFSUrl(
-      widget.videoUrl,
-    ); // e.g. ends with index.m3u8
+    if (widget.item.playUrl == null || widget.item.playUrl!.isEmpty) {
+      debugPrint("No play URL found for this video.");
+      return;
+    }
+    final resolvedUrl = _resolveIPFSUrl(widget.item.playUrl ?? "");
 
     videoPlayerController = VideoPlayerController.network(resolvedUrl);
 
@@ -163,7 +148,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         });
       }
     } catch (e) {
-      print("Error initializing video player: $e");
+      debugPrint("Error initializing video player: $e");
     }
   }
 
@@ -178,17 +163,36 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     if (url.startsWith('ipfs://')) {
       final hash = url.replaceFirst('ipfs://', '').split('/')[0];
       if (kIsWeb) {
-        print("Running on Web");
+        debugPrint("Running on Web");
         return 'https://ipfs-3speak.b-cdn.net/ipfs/$hash/manifest.m3u8';
       } else if (Platform.isAndroid) {
-        print("Running on Android");
+        debugPrint("Running on Android");
         return 'https://ipfs-3speak.b-cdn.net/ipfs/$hash/480p/index.m3u8';
       } else {
-        print("Running on another platform");
+        debugPrint("Running on another platform");
         return 'https://ipfs-3speak.b-cdn.net/ipfs/$hash/manifest.m3u8';
       }
     }
     return url;
+  }
+
+  Widget _videoInfoWidget() {
+    return VideoInfo(
+      title: widget.item.title ?? "",
+      author: widget.item.author?.username ?? "",
+      permlink: widget.item.permlink ?? "",
+      createdAt: widget.item.createdAt ?? DateTime.now(),
+      video: widget.item,
+      postInfo: postInfo,
+      currentUser: currentUserName,
+      isContentVoted: isContentVoted(),
+      onTapComment: widget.onTapComment,
+      onTapUpvote: widget.onTapUpvote,
+      onTapShare: widget.onTapShare,
+      onTapBookmark: widget.onTapBookmark,
+      onTapAuthor: widget.onTapAuthor,
+      onTapInfo: widget.onTapInfo,
+    );
   }
 
   @override
@@ -237,28 +241,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                           minWidth: 400,
                         ),
                         margin: const EdgeInsets.symmetric(horizontal: 32),
-                        child: VideoInfo(
-                          title: widget.title,
-                          author: widget.author,
-                          createdAt: widget.createdAt,
-                          video: widget.item,
-                          postInfo: postInfo,
-                          currentUser: _currentUser,
-                          loggedInUser: _loggedInUser,
-                          userFavouriteProvider: userFavouriteProvider,
-                          onUserChanged:
-                              (user) => setState(() => _loggedInUser = user),
-                          onLogout: () => setState(() => _loggedInUser = null),
-                          reloadHiveInfo: () async => loadHiveInfo(),
-                          isUserVoted: widget.isUserVoted ?? () => false,
-                          onTapComment: widget.onTapComment,
-                          onComment: widget.onComment,
-                          onUpvoteComment: widget.onUpvoteComment,
-                          onReplyComment: widget.onReplyComment,
-                          onShare: widget.onShare,
-                          onBookmark: widget.onBookmark,
-                          onTapAuthor: widget.onTapAuthor,
-                        ),
+                        child: _videoInfoWidget(),
                       ),
                     ),
                     Divider(height: 1),
@@ -276,29 +259,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                             ? Chewie(controller: chewieController!)
                             : const Center(child: CircularProgressIndicator()),
                   ),
-                  VideoInfo(
-                    title: widget.title,
-                    author: widget.author,
-                    createdAt: widget.createdAt,
-                    video: widget.item,
-                    postInfo: postInfo,
-                    currentUser: _currentUser,
-                    loggedInUser: _loggedInUser,
-                    userFavouriteProvider: userFavouriteProvider,
-                    onUserChanged:
-                        (user) => setState(() => _loggedInUser = user),
-                    onLogout: () => setState(() => _loggedInUser = null),
-                    reloadHiveInfo: () async => loadHiveInfo(),
-                    isUserVoted: widget.isUserVoted ?? () => false,
-                    onTapComment: widget.onTapComment,
-                    onComment: widget.onComment,
-                    onUpvoteComment: widget.onUpvoteComment,
-                    onReplyComment: widget.onReplyComment,
-                    onShare: widget.onShare,
-                    onBookmark: widget.onBookmark,
-                    onTapAuthor: widget.onTapAuthor,
-                  ),
-
+                  _videoInfoWidget(),
                   Divider(height: 1),
                 ],
               );
