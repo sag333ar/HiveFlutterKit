@@ -107,10 +107,6 @@ class _CommentTileState extends State<CommentTile>
     }
   }
 
-  bool _isCurrentUserComment() {
-    return widget.comment.author == _currentUser;
-  }
-
   bool _hasVoted() {
     return widget.comment.activeVotes!
         .where((vote) => vote.voter == _currentUser)
