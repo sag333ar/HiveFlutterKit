@@ -24,7 +24,6 @@ The `UserChannelScreen` is a comprehensive user profile screen component for the
 - 🔗 **Social Sharing** - RSS feed and profile URL sharing capabilities
 - 👥 **Social Connections** - Followers and following lists
 - 🚨 **Reporting System** - Built-in report functionality
-- 📊 **User Analytics** - Profile statistics and engagement metrics
 
 ## Component Architecture
 
@@ -75,15 +74,12 @@ UserChannelScreen
 
 ```dart
 // Navigate to a user's channel
-Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (context) => UserChannelScreen(
-      owner: 'username',
-      loginModel: currentUser, // Optional
-    ),
-  ),
-);
+String username = await aioha.getCurrentUser();
+username = username.replaceAll('"', '');
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => UserChannelScreen(owner: username)),
+    );
 ```
 
 ## Parameters
@@ -199,22 +195,6 @@ The component uses:
 - AppBar actions can be customized or extended
 - Feed display can be configured through `ThreeSpeakFeedList` parameters
 - Social widgets support various display modes
-
-## Example Implementation
-
-```dart
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: UserChannelScreen(
-        owner: 'creator_username',
-        loginModel: getCurrentUser(),
-      ),
-    );
-  }
-}
-```
 
 This component provides a complete user channel experience with video content, profile information, and social features, making it ideal for creator-focused platforms like ThreeSpeak.
 ## Basic Usage
