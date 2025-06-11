@@ -16,10 +16,11 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 /// An implementation of [HiveFlutterKitPlatform] that uses method channels.
 class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
   late HeadlessInAppWebView headlessWebView;
+  late Future<void> _webViewInitFuture;
   var isWebViewRunning = false;
 
   MethodChannelHiveFlutterKit() {
-    initHeadlessWebView();
+    _webViewInitFuture = initHeadlessWebView();
   }
 
   Future<void> initHeadlessWebView() async {
@@ -31,13 +32,11 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
         encoding: "utf-8",
         mimeType: "text/html",
         historyUrl: WebUri.uri(Uri.parse("http://localhost")),
-        baseUrl: WebUri.uri(
-          Uri.parse("http://localhost"),
-        ), // iOS-specific for local file access
+        baseUrl: WebUri.uri(Uri.parse("http://localhost")),
       ),
       initialSettings: InAppWebViewSettings(
         javaScriptEnabled: true,
-        domStorageEnabled: true, // Ensure localStorage is enabled
+        domStorageEnabled: true,
         cacheEnabled: true,
         allowsInlineMediaPlayback: true,
         javaScriptCanOpenWindowsAutomatically: true,
@@ -57,7 +56,7 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
 
   Future<String> _loadHTMLFromAssets() async {
     String aiohajs = await rootBundle.loadString(
-      "packages/hive_flutter_kit/web/aioha.js",
+      "packages/hive_flutter_kit/web/hiveflutterkit.js",
     );
     String longHtml = """
 <html>
@@ -82,6 +81,8 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
 
   @override
   Future<String> getQrString() async {
+    await _webViewInitFuture; // 👈 Ensure initialized before use
+
     final completer = Completer<String>();
     headlessWebView.webViewController?.addJavaScriptHandler(
       handlerName: 'onGetQrStringResult',
@@ -97,13 +98,15 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
         var string = await getQrString();
         window.flutter_inappwebview.callHandler('onGetQrStringResult', string);
       })()
-      """,
+    """,
     );
     return completer.future;
   }
 
   @override
   Future<LoginModel> loginWithHiveAuth(String username, String proof) async {
+    await _webViewInitFuture; // 👈 Ensure initialized before use
+
     final completer = Completer<String>();
     headlessWebView.webViewController?.addJavaScriptHandler(
       handlerName: 'onHiveAuthResult',
@@ -114,15 +117,15 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
       },
     );
     var source = """
-          (async () => {
-            try {
-              const res = await loginWithHiveAuth('$username', '$proof');
-              window.flutter_inappwebview.callHandler('onHiveAuthResult', res ?? 'null');
-            } catch (e) {
-              window.flutter_inappwebview.callHandler('onHiveAuthResult', 'Error: ' + e.toString());
-            }
-          })()
-      """;
+    (async () => {
+      try {
+        const res = await loginWithHiveAuth('$username', '$proof');
+        window.flutter_inappwebview.callHandler('onHiveAuthResult', res ?? 'null');
+      } catch (e) {
+        window.flutter_inappwebview.callHandler('onHiveAuthResult', 'Error: ' + e.toString());
+      }
+    })()
+  """;
     await headlessWebView.webViewController?.evaluateJavascript(source: source);
     final result = await completer.future;
     return LoginModel.fromJsonString(result);
@@ -964,7 +967,8 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
         if (!completer.isCompleted) {
           final resultString =
               (args.isNotEmpty && args[0] is String) ? args[0] as String : null;
-          final response = resultString != null ? jsonDecode(resultString) : null;
+          final response =
+              resultString != null ? jsonDecode(resultString) : null;
           completer.complete(response);
         }
       },

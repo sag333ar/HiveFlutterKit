@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -296,8 +297,38 @@ class _LoginScreenState extends State<LoginScreen> {
                               TextField(
                                 controller: _usernameController,
                                 style: TextStyle(color: _dynamicFontColor),
-                                onChanged: _updateAvatarUrl,
                                 cursorColor: _dynamicFontColor,
+                                onChanged: (value) {
+                                  String sanitized =
+                                      value
+                                          .toLowerCase()
+                                          .replaceAll(
+                                            RegExp(r'[^a-z0-9_]'),
+                                            '',
+                                          )
+                                          .trim();
+
+                                  if (value != sanitized) {
+                                    final cursorPos =
+                                        _usernameController.selection;
+                                    _usernameController
+                                        .value = TextEditingValue(
+                                      text: sanitized,
+                                      selection: cursorPos.copyWith(
+                                        baseOffset: min(
+                                          cursorPos.start,
+                                          sanitized.length,
+                                        ),
+                                        extentOffset: min(
+                                          cursorPos.end,
+                                          sanitized.length,
+                                        ),
+                                      ),
+                                    );
+                                  }
+
+                                  _updateAvatarUrl(sanitized);
+                                },
                                 decoration: InputDecoration(
                                   hintText: 'Enter username',
                                   hintStyle: TextStyle(
@@ -334,6 +365,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   fillColor: _dynamicFontColor.withOpacity(0.1),
                                 ),
                               ),
+
                               // Show posting key textfield if in posting key login mode
                               if (_showPostingKeyLogin) ...[
                                 const SizedBox(height: 16),
@@ -503,13 +535,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                     children: [
                                       Icon(Icons.login, color: Colors.white),
                                       const SizedBox(width: 12),
-                                      Text(
-                                        'Login with Private Posting Key',
-                                        style: TextStyle(
-                                          color:
+                                      Flexible(
+                                        child: Text(
+                                          overflow: TextOverflow.ellipsis,
+                                          'Login with Private Posting Key',
+                                          style: TextStyle(
+                                            color:
                                               widget.privatePostingKeyTextColor,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w600,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -545,14 +580,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                                 .withoutPrivatePostingKeyTextColor,
                                       ),
                                       const SizedBox(width: 12),
-                                      Text(
-                                        'Login without Private Posting Key',
-                                        style: TextStyle(
-                                          color:
-                                              widget
-                                                  .withoutPrivatePostingKeyTextColor,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w600,
+                                      Flexible(
+                                        child: Text(
+                                          overflow: TextOverflow.ellipsis,
+                                          'Login without Private Posting Key',
+                                          style: TextStyle(
+                                            color:
+                                                widget
+                                                    .withoutPrivatePostingKeyTextColor,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                         ),
                                       ),
                                     ],
