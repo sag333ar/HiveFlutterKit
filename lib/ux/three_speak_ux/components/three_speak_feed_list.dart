@@ -23,6 +23,9 @@ class ThreeSpeakFeedList extends StatefulWidget {
   final void Function(GQLFeedItem item)? onTapVideoItem;
   final void Function(GQLFeedItem item)? onTapAuthor;
   final void Function(GQLFeedItem item)? onTapReport;
+  final void Function(GQLFeedItem item)? onTapUpvote;
+  final void Function(GQLFeedItem item)? onTapComment;
+
 
   final String? relatedAuthor;
   final String? relatedPermlink;
@@ -41,6 +44,8 @@ class ThreeSpeakFeedList extends StatefulWidget {
     this.relatedPermlink,
     this.userChannel,
     this.searchTerm,
+    this.onTapUpvote,
+    this.onTapComment,
   });
 
   @override
@@ -179,6 +184,8 @@ class _ThreeSpeakFeedListState extends State<ThreeSpeakFeedList> {
             onTap: () => widget.onTapVideoItem?.call(item),
             onTapAuthor: () => _handleTapAuthor(context, item),
             onTapReport: () => widget.onTapReport?.call(item),
+            onTapUpvote: () => widget.onTapUpvote?.call(item),
+            onTapComment: () => widget.onTapComment?.call(item),
           );
         },
       );
@@ -192,6 +199,8 @@ class _ThreeSpeakFeedListState extends State<ThreeSpeakFeedList> {
             onTap: () => widget.onTapVideoItem?.call(item),
             onTapAuthor: () => _handleTapAuthor(context, item),
             onTapReport: () => widget.onTapReport?.call(item),
+            onTapUpvote: () => widget.onTapUpvote?.call(item),
+            onTapComment: () => widget.onTapComment?.call(item),
           );
         },
       );
