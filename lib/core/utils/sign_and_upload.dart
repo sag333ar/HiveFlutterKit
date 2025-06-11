@@ -4,12 +4,12 @@ import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit/core/models/upload_image.dart';
 
 Future<UploadResponse> signAndUploadImage({
-  required HiveFlutterKitPlatform aioha,
+  required HiveFlutterKitPlatform hfk,
   required String uploadUrlServer,
   required String fileName,
   required Uint8List fileBytes,
 }) async {
-  var username = await aioha.getCurrentUser();
+  var username = await hfk.getCurrentUser();
   username = username.replaceAll("\"", "");
   int timeStamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
 
@@ -19,7 +19,7 @@ Future<UploadResponse> signAndUploadImage({
     "timestamp": timeStamp,
   };
 
-  final resultOfSignature = await aioha.signMessage(
+  final resultOfSignature = await hfk.signMessage(
     jsonEncode(object),
     'posting',
   );
@@ -31,7 +31,7 @@ Future<UploadResponse> signAndUploadImage({
     var base64StringOfObject = toBase64(jsonEncode(object));
 
     // Now call the correct uploadImage (returning a map)
-    final uploadResult = await aioha.uploadImage(
+    final uploadResult = await hfk.uploadImage(
       imageBytes: fileBytes,
       fileName: fileName,
       token: base64StringOfObject,

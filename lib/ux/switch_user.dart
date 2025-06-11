@@ -4,7 +4,7 @@ import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit/ux/login_screen.dart';
 
 class SwitchUser extends StatefulWidget {
-  final HiveFlutterKitPlatform aioha;
+  final HiveFlutterKitPlatform hfk;
   final List<Color> backgroundColors;
   final Color fontColor;
   final Color borderColor;
@@ -16,7 +16,7 @@ class SwitchUser extends StatefulWidget {
   final ThemeMode themeMode;
 
   const SwitchUser({
-    required this.aioha,
+    required this.hfk,
     super.key,
     this.backgroundColors = const [
       Color.fromARGB(255, 160, 163, 165),
@@ -55,8 +55,8 @@ class _SwitchUserState extends State<SwitchUser> {
 
   Future<void> _fetchUsers() async {
     try {
-      final username = await widget.aioha.getCurrentUser();
-      final logins = await widget.aioha.getOtherLogins();
+      final username = await widget.hfk.getCurrentUser();
+      final logins = await widget.hfk.getOtherLogins();
 
       setState(() {
         currentUser = username;
@@ -247,7 +247,7 @@ class _SwitchUserState extends State<SwitchUser> {
                                     });
 
                                     try {
-                                      final result = await widget.aioha
+                                      final result = await widget.hfk
                                           .removeOtherLogin(username);
                                       print('Removed user: $result');
                                       print('Removed user: $username');
@@ -282,7 +282,7 @@ class _SwitchUserState extends State<SwitchUser> {
                         MaterialPageRoute(
                           builder:
                               (context) => LoginScreen(
-                                aioha: widget.aioha,
+                                hfk: widget.hfk,
                                 backgroundColors: const [
                                   Color(0xFF2C3E50),
                                   Color(0xFFA489CB),
@@ -293,7 +293,7 @@ class _SwitchUserState extends State<SwitchUser> {
                                 hiveKeychainTextColor: Colors.white,
                                 hiveAuthButtonColor: Colors.orange,
                                 hiveAuthTextColor: Colors.white,
-                                title: "Welcome to Aioha Hive",
+                                title: "Welcome to hfk Hive",
                                 subtitle: "Choose your login method",
                                 logoIcon: const Icon(
                                   Icons.hexagon_outlined,
@@ -304,7 +304,7 @@ class _SwitchUserState extends State<SwitchUser> {
                                   print('FrontEnd Login Result: $result');
                                   Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
-                                      builder: (context) => SwitchUser(aioha: widget.aioha,),
+                                      builder: (context) => SwitchUser(hfk: widget.hfk,),
                                     ),
                                   );
                                 },
