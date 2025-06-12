@@ -5,48 +5,40 @@ class ContentFavoriteProvider {
   final box = GetStorage();
   final String _contentLocalKey = '_contentLocalKey';
 
-  List getBookmarkedUsers() {
-    final String key = _contentLocalKey;
-    if (box.read(key) != null) {
-      List items = box.read(key);
-      return items;
-    } else {
-      return [];
-    }
+  List<String> getBookmarkedContent() {
+    final List<dynamic>? stored = box.read<List<dynamic>>(_contentLocalKey);
+    return stored?.map((e) => e.toString()).toList() ?? [];
   }
 
-  //check if the liked podcast single episode is present locally
+  /// Check if the content (author/permlink) is already bookmarked
   bool isContentPresentLocally(String author, String permlink) {
     final String key = _contentLocalKey;
-    if (box.read(key) != null) {
-      List json = box.read(key);
-      int index = json.indexWhere((element) => element == '$author/$permlink');
-      return index != -1;
-    } else {
-      return false;
+    final List<dynamic>? json = box.read<List<dynamic>>(key);
+    if (json != null) {
+      return json.contains('$author/$permlink');
     }
+    return false;
   }
 
-  //sotre the single podcast episode locally if user likes it
+  /// Store or remove liked content (based on author/permlink)
   void storeLikedContentLocally(
     String author,
     String permlink, {
     bool forceRemove = false,
   }) {
     final String key = _contentLocalKey;
-    if (box.read(key) != null) {
-      List json = box.read(key);
-      int index = json.indexWhere((element) => element == '$author/$permlink');
-      if (index == -1 && !forceRemove) {
-        json.add('$author/$permlink');
-        box.write(key, json);
-      } else {
-        json.removeWhere((element) => element == '$author/$permlink');
-        box.write(key, json);
-      }
+    final List<dynamic>? raw = box.read<List<dynamic>>(key);
+    List<String> json = raw?.map((e) => e.toString()).toList() ?? [];
+
+    final String entry = '$author/$permlink';
+
+    if (!json.contains(entry) && !forceRemove) {
+      json.add(entry);
     } else {
-      box.write(key, ['$author/$permlink']);
+      json.remove(entry);
     }
-    debugPrint(box.read(key));
+
+    box.write(key, json);
+    debugPrint("Updated bookmarks: $json");
   }
 }
