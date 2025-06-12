@@ -14,7 +14,6 @@ class ViewList extends StatefulWidget {
   final Function? onAuthorTap;
   final Function? onCategoryTap;
   final Function? onUpvoteTap;
-  final Function? onDownVoteTap;
   final Function? onCommentTap;
   final Function? onReblogTap;
 
@@ -28,7 +27,6 @@ class ViewList extends StatefulWidget {
     this.onAuthorTap,
     this.onCategoryTap,
     this.onUpvoteTap,
-    this.onDownVoteTap,
     this.onCommentTap,
     this.onReblogTap,
     this.amoutValues,
