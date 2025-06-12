@@ -14,12 +14,6 @@ The `UserChannelScreen` is a comprehensive user profile screen component for the
 - 👥 **Social Connections** - Followers and following lists
 - 🚨 **Reporting System** - Built-in report functionality
 
-#### 4. **AppBar Components**
-- **CustomCircleAvatar**: User profile picture
-- **FavouriteWidget**: Favorite/unfavorite toggle
-- **Share Actions**: RSS feed and profile sharing
-- **Report Menu**: User reporting functionality
-
 ## Widget Parameters
 
 | Parameter | Type | Required | Description |
