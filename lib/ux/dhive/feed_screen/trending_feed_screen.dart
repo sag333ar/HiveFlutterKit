@@ -9,7 +9,6 @@ class TrendingFeedScreen extends StatefulWidget {
   final Function? onAuthorTap;
   final Function? onCategoryTap;
   final Function? onUpvoteTap;
-  final Function? onDownVoteTap;
   final Function? onCommentTap;
   final Function? onReblogTap;
 
@@ -20,7 +19,6 @@ class TrendingFeedScreen extends StatefulWidget {
     this.onAuthorTap,
     this.onCategoryTap,
     this.onUpvoteTap,
-    this.onDownVoteTap,
     this.onCommentTap,
     this.onReblogTap,
   });
@@ -154,7 +152,6 @@ class _TrendingFeedScreenState extends State<TrendingFeedScreen> {
           onAuthorTap: widget.onAuthorTap,
           onCategoryTap: widget.onCategoryTap,
           onUpvoteTap: widget.onUpvoteTap,
-          onDownVoteTap: widget.onDownVoteTap,
           onCommentTap: widget.onCommentTap,
           onReblogTap: widget.onReblogTap,
         ),

@@ -10,7 +10,6 @@ class BlogScreen extends StatefulWidget {
   final Function? onAuthorTap;
   final Function? onCategoryTap;
   final Function? onUpvoteTap;
-  final Function? onDownVoteTap;
   final Function? onCommentTap;
   final Function? onReblogTap;
 
@@ -22,7 +21,6 @@ class BlogScreen extends StatefulWidget {
     this.onAuthorTap,
     this.onCategoryTap,
     this.onUpvoteTap,
-    this.onDownVoteTap,
     this.onCommentTap,
     this.onReblogTap,
   });
@@ -153,7 +151,6 @@ class _BlogScreenState extends State<BlogScreen> {
           onAuthorTap: widget.onAuthorTap,
           onCategoryTap: widget.onCategoryTap,
           onUpvoteTap: widget.onUpvoteTap,
-          onDownVoteTap: widget.onDownVoteTap,
           onCommentTap: widget.onCommentTap,
           onReblogTap: widget.onReblogTap,
         ),

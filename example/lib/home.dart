@@ -13,7 +13,7 @@ import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/get_video_url.dart';
 import 'package:hive_flutter_kit/ux/dhive/account_post/account_posts_screen.dart';
 import 'package:hive_flutter_kit/ux/dhive/account_post/blog_screen.dart';
 import 'package:hive_flutter_kit/ux/dhive/account_post/comments_screen.dart';
-import 'package:hive_flutter_kit/ux/dhive/account_post/community_specific_screen.dart';
+import 'package:hive_flutter_kit/ux/dhive/account_post/community_screen.dart';
 import 'package:hive_flutter_kit/ux/dhive/account_post/replies_screen.dart';
 import 'package:hive_flutter_kit/ux/dhive/feed_screen/trending_feed_screen.dart';
 import 'package:hive_flutter_kit/ux/dhive/user_profile/user_profile_picture.dart';
@@ -1163,7 +1163,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 width: MediaQuery.of(context).size.width * 0.95,
                                 height:
                                     MediaQuery.of(context).size.height * 0.85,
-                                child: CommunitySpecificScreen(
+                                child: CommunityScreen(
                                   dhive: aioha,
                                   sortBy: 'trending',
                                   tag: 'hive-163772',
@@ -1199,7 +1199,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         context,
                         MaterialPageRoute(
                           builder:
-                              (_) => CommunitySpecificScreen(
+                              (_) => CommunityScreen(
                                 dhive: aioha,
                                 sortBy: 'trending',
                                 tag: 'hive-163772',

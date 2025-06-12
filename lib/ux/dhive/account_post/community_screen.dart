@@ -3,7 +3,7 @@ import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit/core/models/discussion.dart';
 import '../common_list_view/view_list.dart';
 
-class CommunitySpecificScreen extends StatefulWidget {
+class CommunityScreen extends StatefulWidget {
   final HiveFlutterKitPlatform dhive;
   final String tag;
   final String sortBy;
@@ -11,11 +11,10 @@ class CommunitySpecificScreen extends StatefulWidget {
   final Function? onAuthorTap;
   final Function? onCategoryTap;
   final Function? onUpvoteTap;
-  final Function? onDownVoteTap;
   final Function? onCommentTap;
   final Function? onReblogTap;
 
-  const CommunitySpecificScreen({
+  const CommunityScreen({
     super.key,
     required this.dhive,
     required this.tag,
@@ -24,17 +23,16 @@ class CommunitySpecificScreen extends StatefulWidget {
     this.onAuthorTap,
     this.onCategoryTap,
     this.onUpvoteTap,
-    this.onDownVoteTap,
     this.onCommentTap,
     this.onReblogTap,
   });
 
   @override
-  State<CommunitySpecificScreen> createState() =>
-      _CommunitySpecificScreenState();
+  State<CommunityScreen> createState() =>
+      _CommunityScreenState();
 }
 
-class _CommunitySpecificScreenState extends State<CommunitySpecificScreen> {
+class _CommunityScreenState extends State<CommunityScreen> {
   List<Discussion> discussions = [];
   bool isLoading = true;
   bool isLoadingMore = false;
@@ -155,7 +153,6 @@ class _CommunitySpecificScreenState extends State<CommunitySpecificScreen> {
           onAuthorTap: widget.onAuthorTap,
           onCategoryTap: widget.onCategoryTap,
           onUpvoteTap: widget.onUpvoteTap,
-          onDownVoteTap: widget.onDownVoteTap,
           onCommentTap: widget.onCommentTap,
           onReblogTap: widget.onReblogTap,
         ),
