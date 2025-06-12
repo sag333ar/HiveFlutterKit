@@ -20,38 +20,6 @@ The `UserChannelScreen` is a comprehensive user profile screen component for the
 - **Share Actions**: RSS feed and profile sharing
 - **Report Menu**: User reporting functionality
 
-## Basic Usage
-
-```dart
-void _handleTapAuthor(BuildContext context, GQLFeedItem item) {
-      final username = item.author?.username;
-      if (username != null && username.isNotEmpty) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => UserChannelScreen(owner: username)),
-        );
-      }
-  }
-
-ThreeSpeakFeedList(
-  feedType: ThreeSpeakFeedType.trending,
-  onTapVideoItem: (item) {
-    // Custom navigation or video player screen
-  },
-  // No need to define onTapAuthor unless you want to override default behavior
-)
-
-```
-## How it works:
-- item.author?.username retrieves the username of the content creator from the GQLFeedItem object.
-
-- If a valid username exists, the function uses Flutter’s Navigator.push to open the UserChannelScreen, passing the username as the owner    parameter.
-
-🛠️ Note:
-- You don't need to manually navigate to UserChannelScreen in most cases.
-- The ThreeSpeakFeedList component already includes a default implementation for the onTapAuthor callback.
-- If no custom onTapAuthor function is provided, it will automatically open the UserChannelScreen with the tapped author's profile avtar.
-
 ## Widget Parameters
 
 | Parameter | Type | Required | Description |
@@ -65,6 +33,51 @@ ThreeSpeakFeedList(
 | `onTapRssFeed` | `void Function(String author, String permlink)?` | ❌ | Triggered when the RSS feed icon is tapped. |
 | `onTapShare` | `void Function(String author, String permlink)?` | ❌ | Triggered when the share icon is tapped. |
 | `onTapReport` | `void Function(String author, String permlink)?` | ❌ | Triggered when the "Report" option is selected from the menu. |
+| `onTapVideoItem` | `final void Function(GQLFeedItem item)?` | ❌ | Triggered when the particular video item is tapped. |
+| `onTapVideoReport` | `void Function(String author, String permlink)?` | ❌ | Triggered when the "Report" option is selected from the video item. |
+| `onTapAuthor` | `final void Function(String)?` | ❌ | Triggered when the profile avtar of the user is tapped. |
+
+## Basic Usage
+
+```dart
+void _handleTapAuthor(BuildContext context, GQLFeedItem item) {
+      final username = item.author?.username;
+      if (username != null && username.isNotEmpty) {
+        Navigator.push(
+          context,
+          builder: (context) =>  UserChannelScreen(
+            owner: username,
+            onTapVideoIcon: (){},
+            onTapInfoIcon: (){},
+            onTapFollowers: (){},
+            onTapFollowing: (){},
+            onTapBookmark: (){},
+            onTapRssFeed: (){},
+            onTapShare: (){},
+            onTapReport: (){},
+            onTapVideoItem: (){},
+            onTapVideoReport: (){},
+            onTapAuthor: (){}
+          )
+        ),
+      }
+    }
+
+VideoCard(
+    item: item,
+    isVisible: isVisible,
+    onTapAuthor: () => _handleTapAuthor(context, item),
+  );
+```
+## How it works:
+- item.author?.username retrieves the username of the content creator from the GQLFeedItem object.
+
+- If a valid username exists, the function uses Flutter’s Navigator.push to open the UserChannelScreen, passing the username as the owner    parameter.
+
+🛠️ Note:
+- You don't need to manually navigate to UserChannelScreen in most cases.
+- The ThreeSpeakFeedList component already includes a default implementation for the onTapAuthor callback.
+- If no custom onTapAuthor function is provided, it will automatically open the UserChannelScreen with the tapped author's profile avtar.
 
 ## Tab Structure
 
