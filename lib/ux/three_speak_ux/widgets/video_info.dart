@@ -49,6 +49,13 @@ class VideoInfo extends StatefulWidget {
   State<VideoInfo> createState() => _VideoInfoState();
 }
 
+String extractFirstIfList(dynamic input) {
+  if (input is List && input.isNotEmpty) {
+    return input.first.toString(); // or input.first as String if you're sure
+  }
+  return input.toString(); // fallback for single strings or numbers
+}
+
 class _VideoInfoState extends State<VideoInfo> {
   final HiveFlutterKitPlatform hfk = HiveFlutterKitPlatform.instance;
   var contentFavoriteProvider = ContentFavoriteProvider();
@@ -288,36 +295,20 @@ class _VideoInfoState extends State<VideoInfo> {
                             toastType: "Video",
                             isLiked: contentFavoriteProvider
                                 .isContentPresentLocally(
-                                  widget.author,
-                                  widget.permlink,
+                                  extractFirstIfList(widget.author),
+                                  extractFirstIfList(widget.permlink),
                                 ),
                             onAdd: () {
-                              if (widget.onTapBookmark != null) {
-                                widget.onTapBookmark!(
-                                  widget.author,
-                                  widget.permlink,
-                                );
-                              } else {
-                                contentFavoriteProvider
-                                    .storeLikedContentLocally(
-                                      widget.author,
-                                      widget.permlink,
-                                    );
-                              }
+                              contentFavoriteProvider.storeLikedContentLocally(
+                                extractFirstIfList(widget.author),
+                                extractFirstIfList(widget.permlink),
+                              );
                             },
                             onRemove: () {
-                              if (widget.onTapBookmark != null) {
-                                widget.onTapBookmark!(
-                                  widget.author,
-                                  widget.permlink,
-                                );
-                              } else {
-                                contentFavoriteProvider
-                                    .storeLikedContentLocally(
-                                      widget.author,
-                                      widget.permlink,
-                                    );
-                              }
+                              contentFavoriteProvider.storeLikedContentLocally(
+                                extractFirstIfList(widget.author),
+                                extractFirstIfList(widget.permlink),
+                              );
                             },
                             iconSize: 16,
                             iconColor: Colors.grey,
