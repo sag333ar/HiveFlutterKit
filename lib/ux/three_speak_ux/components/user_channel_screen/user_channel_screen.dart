@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/provider/user_favourite_provider.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/server_proxy.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/user_channel_screen/user_channel_following.dart';
@@ -6,7 +7,6 @@ import 'package:hive_flutter_kit/ux/three_speak_ux/components/user_channel_scree
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/three_speak_feed_list.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/custom_circle_avatar.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/favourite.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/components/video_player.dart';
 import 'package:share_plus/share_plus.dart';
 
 class UserChannelScreen extends StatefulWidget {
@@ -21,6 +21,9 @@ class UserChannelScreen extends StatefulWidget {
     this.onTapRssFeed,
     this.onTapShare,
     this.onTapReport,
+    this.onTapVideoItem,
+    this.onTapVideoReport,
+    this.onTapAuthor,
   });
 
   final String owner;
@@ -32,6 +35,9 @@ class UserChannelScreen extends StatefulWidget {
   final void Function(String, String)? onTapRssFeed;
   final void Function(String, String)? onTapShare;
   final void Function(String, String)? onTapReport;
+  final void Function(GQLFeedItem item)? onTapVideoItem;
+  final void Function(String, String)? onTapVideoReport;
+  final void Function(String)? onTapAuthor;
 
   @override
   _UserChannelScreenState createState() => _UserChannelScreenState();
@@ -187,18 +193,20 @@ class _UserChannelScreenState extends State<UserChannelScreen>
           ThreeSpeakFeedList(
             feedType: ThreeSpeakFeedType.userFeed,
             userChannel: widget.owner,
-            onTapAuthor: (item) {
-              // Optionally handle author tap, or leave null for default
-            },
-            onTapVideoItem: (item) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => VideoPlayerScreen(item: item),
-                ),
-              );
-            },
+            onTapAuthor:
+                widget.onTapAuthor != null
+                    ? (item) => widget.onTapAuthor!(item.author?.username ?? '')
+                    : null,
+            onTapVideoItem: widget.onTapVideoItem,
+            onTapReport:
+                widget.onTapVideoReport != null
+                    ? (item) => widget.onTapVideoReport!(
+                      item.author?.username ?? '',
+                      item.permlink ?? '',
+                    )
+                    : null,
           ),
+
           // 2nd tab: Bio, created at, and other info
           UserChannelProfileWidget(owner: widget.owner),
           // 3rd tab: Followers
