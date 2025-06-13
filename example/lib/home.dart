@@ -125,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     try {
-      final result = await aioha.transfer(
+      final result = await hfk.transfer(
         recipient,
         amount,
         _transferAssetSymbol,
