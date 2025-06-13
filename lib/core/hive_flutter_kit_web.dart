@@ -148,6 +148,14 @@ external dynamic signAndBroadcastTxJS(
   String keyType,
 );
 
+@JS('transfer')
+external dynamic transferJS(
+  String recipient,
+  double amount,
+  String assetSymbol, // 'HIVE' or 'HBD'
+  String? memo,
+);
+
 /// A web implementation of the HiveFlutterKitPlatform of the HiveFlutterKit plugin.
 class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
   /// Constructs a HiveFlutterKitWeb
@@ -490,5 +498,21 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
     var promise = signAndBroadcastTxJS(jsonEncode(operationRequest), keyType);
     var result = await promiseToFuture(promise);
     return jsonDecode(result);
+  }
+
+  @override
+  Future<String> transfer(
+    String recipient,
+    double amount,
+    String assetSymbol,
+    String? memo,
+  ) async {
+    var promise = transferJS(recipient, amount, assetSymbol, memo);
+    var result = await promiseToFuture(promise);
+    // Assuming the JS function returns a JSON string that might represent
+    // success or an error object, similar to other methods.
+    // For now, we'll return the raw string, but ideally, this should be
+    // parsed into a structured Dart object or throw a Dart exception.
+    return result as String;
   }
 }
