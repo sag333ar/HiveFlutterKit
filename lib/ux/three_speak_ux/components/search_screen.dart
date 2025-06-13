@@ -1,15 +1,12 @@
 import 'dart:async';
-import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:hive_flutter_kit/core/models/login_model.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/three_speak_feed_list.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/video_player.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/get_video_url.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/user_profile_image.dart';
 
 class SearchScreen extends StatefulWidget {
-  final String loggedInUser;
-  const SearchScreen({Key? key, required this.loggedInUser}) : super(key: key);
+  final String currentUser;
+  const SearchScreen({super.key, required this.currentUser});
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -94,18 +91,6 @@ class _SearchScreenState extends State<SearchScreen> {
           });
         },
       ),
-
-      actions: [
-        // Padding(
-        //   padding: const EdgeInsets.only(right: 8.0),
-        //   child: CircleAvatar(
-        //     backgroundImage: NetworkImage(
-        //       'https://images.hive.blog/u/${widget.loggedInUser}/avatar?id=test',
-        //     ),
-        //     backgroundColor: Colors.grey[300],
-        //   ),
-        // ),
-      ],
     );
   }
 
@@ -120,19 +105,10 @@ class _SearchScreenState extends State<SearchScreen> {
       feedType: ThreeSpeakFeedType.search,
       searchTerm: text,
       onTapVideoItem: (item) {
-        final videoUrl = getVideoUrl(item);
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder:
-                (context) => VideoPlayerScreen(
-                  videoUrl: videoUrl ?? '',
-                  title: item.title ?? 'Untitled',
-                  author: item.author?.username ?? 'Unknown',
-                  permlink: item.permlink ?? 'Unknown',
-                  createdAt: item.createdAt,
-                  item: item,
-                ),
+            builder: (context) => VideoPlayerScreen(item: item),
           ),
         );
       },

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/graphql/gql_communicator.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/user_channel_screen/user_channel_screen.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/video_player.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/video_card_widget.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/visibility_detector.dart';
 
@@ -144,11 +145,25 @@ class _ThreeSpeakFeedListState extends State<ThreeSpeakFeedList> {
       if (username != null && username.isNotEmpty) {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => UserChannelScreen(owner: username)),
+          MaterialPageRoute(builder: (_) => UserChannelScreen(owner: username,)),
         );
       }
     }
   }
+
+  void _handleTapVideoItem(BuildContext context, GQLFeedItem item) {
+  if (widget.onTapVideoItem != null) {
+    widget.onTapVideoItem!(item);
+  } else {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => VideoPlayerScreen(item: item),
+      ),
+    );
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -181,7 +196,7 @@ class _ThreeSpeakFeedListState extends State<ThreeSpeakFeedList> {
           return VideoCard(
             item: item,
             isVisible: true,
-            onTap: () => widget.onTapVideoItem?.call(item),
+            onTap: () => _handleTapVideoItem(context, item),
             onTapAuthor: () => _handleTapAuthor(context, item),
             onTapReport: () => widget.onTapReport?.call(item),
             onTapUpvote: () => widget.onTapUpvote?.call(item),
@@ -196,7 +211,7 @@ class _ThreeSpeakFeedListState extends State<ThreeSpeakFeedList> {
           return VideoCard(
             item: item,
             isVisible: isVisible,
-            onTap: () => widget.onTapVideoItem?.call(item),
+            onTap: () => _handleTapVideoItem(context, item),
             onTapAuthor: () => _handleTapAuthor(context, item),
             onTapReport: () => widget.onTapReport?.call(item),
             onTapUpvote: () => widget.onTapUpvote?.call(item),

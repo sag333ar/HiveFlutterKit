@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter_kit/core/models/login_model.dart';
+import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/provider/user_favourite_provider.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/server_proxy.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/user_channel_screen/user_channel_following.dart';
@@ -7,16 +7,37 @@ import 'package:hive_flutter_kit/ux/three_speak_ux/components/user_channel_scree
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/three_speak_feed_list.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/custom_circle_avatar.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/favourite.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/components/video_player.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/get_video_url.dart';
 import 'package:share_plus/share_plus.dart';
 
 class UserChannelScreen extends StatefulWidget {
-  const UserChannelScreen({Key? key, required this.owner, this.loginModel})
-    : super(key: key);
+  const UserChannelScreen({
+    super.key,
+    required this.owner,
+    this.onTapVideoIcon,
+    this.onTapInfoIcon,
+    this.onTapFollowers,
+    this.onTapFollowing,
+    this.onTapBookmark,
+    this.onTapRssFeed,
+    this.onTapShare,
+    this.onTapReport,
+    this.onTapVideoItem,
+    this.onTapVideoReport,
+    this.onTapAuthor,
+  });
 
   final String owner;
-  final LoginModel? loginModel;
+  final void Function(String, String)? onTapVideoIcon;
+  final void Function(String, String)? onTapInfoIcon;
+  final void Function(String, String)? onTapFollowers;
+  final void Function(String, String)? onTapFollowing;
+  final void Function(String, String)? onTapBookmark;
+  final void Function(String, String)? onTapRssFeed;
+  final void Function(String, String)? onTapShare;
+  final void Function(String, String)? onTapReport;
+  final void Function(GQLFeedItem item)? onTapVideoItem;
+  final void Function(String, String)? onTapVideoReport;
+  final void Function(String)? onTapAuthor;
 
   @override
   _UserChannelScreenState createState() => _UserChannelScreenState();
@@ -43,6 +64,23 @@ class _UserChannelScreenState extends State<UserChannelScreen>
       setState(() {
         currentIndex = _tabController.index;
       });
+
+      final index = _tabController.index;
+
+      switch (index) {
+        case 0:
+          widget.onTapVideoIcon?.call(widget.owner, "videos");
+          break;
+        case 1:
+          widget.onTapInfoIcon?.call(widget.owner, "info");
+          break;
+        case 2:
+          widget.onTapFollowers?.call(widget.owner, "followers");
+          break;
+        case 3:
+          widget.onTapFollowing?.call(widget.owner, "following");
+          break;
+      }
     });
   }
 
@@ -80,28 +118,58 @@ class _UserChannelScreenState extends State<UserChannelScreen>
             toastType: "User",
             isLiked: userFavouriteProvider.isUserPresentLocally(widget.owner),
             onAdd: () {
-              userFavouriteProvider.storeLikedUserLocally(widget.owner);
+              if (widget.onTapBookmark != null) {
+                widget.onTapBookmark!(widget.owner, "add_bookmark");
+              } else {
+                userFavouriteProvider.storeLikedUserLocally(widget.owner);
+              }
             },
             onRemove: () {
-              userFavouriteProvider.storeLikedUserLocally(widget.owner);
+              if (widget.onTapBookmark != null) {
+                widget.onTapBookmark!(widget.owner, "remove_bookmark");
+              } else {
+                userFavouriteProvider.storeLikedUserLocally(widget.owner);
+              }
             },
           ),
+
           IconButton(
-            onPressed: () async {
-              Share.share("https://3speak.tv/rss/${widget.owner}.xml");
+            onPressed: () {
+              if (widget.onTapRssFeed != null) {
+                widget.onTapRssFeed!(widget.owner, "rss");
+              } else {
+                Share.share("https://3speak.tv/rss/${widget.owner}.xml");
+              }
             },
             icon: Icon(Icons.rss_feed),
           ),
+
           IconButton(
-            onPressed: () async {
-              Share.share("https://3speak.tv/user/${widget.owner}");
+            onPressed: () {
+              if (widget.onTapShare != null) {
+                widget.onTapShare!(widget.owner, "share");
+              } else {
+                Share.share("https://3speak.tv/user/${widget.owner}");
+              }
             },
             icon: Icon(Icons.share),
           ),
+
           PopupMenuButton<String>(
             onSelected: (value) {
-              // Add your report logic here if needed
+              if (value == 'Report') {
+                if (widget.onTapReport != null) {
+                  widget.onTapReport!(widget.owner, "report");
+                } else {
+                  // fallback default report logic, if any
+                  // for now, you might just show a simple dialog or snackbar
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Reported ${widget.owner}')),
+                  );
+                }
+              }
             },
+
             itemBuilder:
                 (context) => const [
                   PopupMenuItem(
@@ -111,7 +179,6 @@ class _UserChannelScreenState extends State<UserChannelScreen>
                 ],
             icon: const Icon(Icons.more_vert),
           ),
-          //ReportPopUpMenu(type: Report.user, author: widget.owner),
         ],
         bottom: TabBar(
           controller: _tabController,
@@ -126,27 +193,20 @@ class _UserChannelScreenState extends State<UserChannelScreen>
           ThreeSpeakFeedList(
             feedType: ThreeSpeakFeedType.userFeed,
             userChannel: widget.owner,
-            onTapAuthor: (item) {
-              // Optionally handle author tap, or leave null for default
-            },
-            onTapVideoItem: (item) {
-              final videoUrl = getVideoUrl(item);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder:
-                      (context) => VideoPlayerScreen(
-                        videoUrl: videoUrl ?? '',
-                        title: item.title ?? 'Untitled',
-                        author: item.author?.username ?? 'Unknown',
-                        permlink: item.permlink ?? 'Unknown',
-                        createdAt: item.createdAt,
-                        item: item,
-                      ),
-                ),
-              );
-            },
+            onTapAuthor:
+                widget.onTapAuthor != null
+                    ? (item) => widget.onTapAuthor!(item.author?.username ?? '')
+                    : null,
+            onTapVideoItem: widget.onTapVideoItem,
+            onTapReport:
+                widget.onTapVideoReport != null
+                    ? (item) => widget.onTapVideoReport!(
+                      item.author?.username ?? '',
+                      item.permlink ?? '',
+                    )
+                    : null,
           ),
+
           // 2nd tab: Bio, created at, and other info
           UserChannelProfileWidget(owner: widget.owner),
           // 3rd tab: Followers
