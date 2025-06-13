@@ -203,7 +203,20 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
       handlerName: 'onGetCurrentUserResult',
       callback: (args) {
         if (!completer.isCompleted) {
-          completer.complete(args.isNotEmpty ? args[0].toString() : 'null');
+          try {
+            final decoded = jsonDecode(args[0]);
+            if (decoded == null ||
+                decoded is! String ||
+                decoded.trim().isEmpty) {
+              completer.completeError(
+                "No user logged in or username is invalid",
+              );
+            } else {
+              completer.complete(decoded);
+            }
+          } catch (e) {
+            completer.completeError("Parsing error: $e");
+          }
         }
       },
     );
@@ -222,9 +235,9 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
 
     await headlessWebView.webViewController?.evaluateJavascript(
       source: """
-      (async () => {
+      (() => {
         try {
-          const res = await getCurrentUser();
+          const res = getCurrentUser(); 
           window.flutter_inappwebview.callHandler('onGetCurrentUserResult', res ?? 'null');
         } catch (e) {
           window.flutter_inappwebview.callHandler('onGetCurrentUserError', 'Error: ' + e.toString());
@@ -233,12 +246,7 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
     """,
     );
 
-    try {
-      final result = await completer.future;
-      return result;
-    } catch (e) {
-      rethrow;
-    }
+    return completer.future;
   }
 
   @override

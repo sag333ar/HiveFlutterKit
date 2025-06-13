@@ -257,11 +257,11 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
         );
       }
     } catch (e) {
-              return UploadResponse(
-          success: false,
-          url: null,
-          message: 'Upload error: $e',
-        );
+      return UploadResponse(
+        success: false,
+        url: null,
+        message: 'Upload error: $e',
+      );
     }
   }
 

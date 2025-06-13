@@ -43,7 +43,7 @@ class _CommentTileState extends State<CommentTile>
   late Animation<Color?> _colorAnimation;
   bool isHighlighted = false;
   String _currentUser = "";
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final HiveFlutterKitPlatform hfk = HiveFlutterKitPlatform.instance;
 
   @override
   void initState() {
@@ -67,7 +67,7 @@ class _CommentTileState extends State<CommentTile>
   }
 
   Future<void> _loadCurrentUser() async {
-    final username = await _storage.read(key: 'username');
+    final username = await hfk.getCurrentUser();
     if (mounted) {
       setState(() {
         _currentUser = username ?? "";
@@ -105,10 +105,6 @@ class _CommentTileState extends State<CommentTile>
     } else {
       return 'just now';
     }
-  }
-
-  bool _isCurrentUserComment() {
-    return widget.comment.author == _currentUser;
   }
 
   bool _hasVoted() {
@@ -399,7 +395,7 @@ class _CommentTileState extends State<CommentTile>
                             return;
                           }
                           // Show upvote dialog with slider and thumb icon
-                          final aioha = Provider.of<HiveFlutterKitPlatform>(
+                          final hfk = Provider.of<HiveFlutterKitPlatform>(
                             context,
                             listen: false,
                           );
@@ -407,7 +403,7 @@ class _CommentTileState extends State<CommentTile>
                             context: context,
                             builder:
                                 (context) => VoteDialog(
-                                  aioha: aioha,
+                                  hfk: hfk,
                                   author: widget.comment.author!,
                                   permlink: widget.comment.permlink!,
                                 ),

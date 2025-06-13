@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // For optional haptic feedback
 
 class FavouriteWidget extends StatefulWidget {
-  const FavouriteWidget(
-      {Key? key,
-      required this.isLiked,
-      required this.onAdd,
-      required this.onRemove,
-      this.iconColor,
-      this.iconSize,
-      this.alignment,
-      this.disablePadding = false,
-      required this.toastType})
-      : super(key: key);
+  const FavouriteWidget({
+    Key? key,
+    required this.isLiked,
+    required this.onAdd,
+    required this.onRemove,
+    this.iconColor,
+    this.iconSize,
+    this.alignment,
+    this.disablePadding = false,
+    this.snackDuration = const Duration(seconds: 3),
+    this.enableHaptic = true,
+    required this.toastType,
+  }) : super(key: key);
 
   final bool isLiked;
   final VoidCallback onAdd;
@@ -21,69 +24,80 @@ class FavouriteWidget extends StatefulWidget {
   final String toastType;
   final double? iconSize;
   final Alignment? alignment;
+  final Duration snackDuration;
+  final bool enableHaptic;
 
   @override
   State<FavouriteWidget> createState() => _FavouriteWidgetState();
 }
 
 class _FavouriteWidgetState extends State<FavouriteWidget> {
-  late bool isLiked;
+  late bool _isLiked;
+
   @override
   void initState() {
-    isLiked = widget.isLiked;
+    _isLiked = widget.isLiked;
     super.initState();
   }
 
   @override
   void didUpdateWidget(covariant FavouriteWidget oldWidget) {
-    isLiked = widget.isLiked;
+    if (oldWidget.isLiked != widget.isLiked) {
+      _isLiked = widget.isLiked;
+    }
     super.didUpdateWidget(oldWidget);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        if (isLiked) {
-          widget.onRemove();
-          setState(() {
-            isLiked = false;
-          });
-          showSnackBar(false);
-        } else {
-          widget.onAdd();
-          setState(() {
-            isLiked = true;
-          });
-          showSnackBar(true);
-        }
-      },
-      borderRadius: BorderRadius.circular(24),
-      child: Container(
-        alignment: widget.alignment,
-        constraints: widget.disablePadding ? BoxConstraints() : null,
-        padding: widget.disablePadding ? EdgeInsets.zero : null,
-        child: Icon(
-          isLiked ? Icons.bookmark : Icons.bookmark_border,
-          size: widget.iconSize,
-          color: widget.iconColor,
+  void _toggleLike() {
+    if (_isLiked) {
+      widget.onRemove();
+      _showSnackBar(false);
+    } else {
+      widget.onAdd();
+      _showSnackBar(true);
+    }
+
+    if (widget.enableHaptic) {
+      HapticFeedback.selectionClick();
+    }
+
+    setState(() {
+      _isLiked = !_isLiked;
+    });
+  }
+
+  void _showSnackBar(bool isAdding) {
+    final String action = isAdding ? "added to" : "removed from";
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.black,
+        duration: widget.snackDuration,
+        content: Text(
+          'The ${widget.toastType} is $action your bookmarks',
+          style: const TextStyle(color: Colors.white),
         ),
       ),
     );
   }
 
-  void showSnackBar(bool isAdding) {
-    final String message = isAdding
-        ? "is added to your bookmarks"
-        : "is removed from your bookmarks";
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      backgroundColor: Colors.black,
-      content: Text(
-        'The ${widget.toastType} $message',
-        style: TextStyle(color: Colors.white),
+  @override
+  Widget build(BuildContext context) {
+    final padding =
+        widget.disablePadding ? EdgeInsets.zero : const EdgeInsets.all(4);
+
+    return InkWell(
+      onTap: _toggleLike,
+      borderRadius: BorderRadius.circular(24),
+      child: Container(
+        alignment: widget.alignment,
+        padding: padding,
+        child: Icon(
+          _isLiked ? Icons.bookmark : Icons.bookmark_border,
+          size: widget.iconSize ?? 20,
+          color: widget.iconColor ?? Colors.grey,
+        ),
       ),
-      duration: Duration(seconds: 3),
-    ));
+    );
   }
 }

@@ -2,17 +2,6 @@
 
 ![User Feed Preview](./userfeed.png)
 
-The `ThreeSpeakFeedList` with `feedType: ThreeSpeakFeedType.userFeed` displays a grid/list of user feed from the creators of ThreeSpeak platform.
-
-## Features
-
-- 🚀 **Smart Layout** - Automatically switches between grid and list view based on screen width
-- ♻️ **Pull-to-Refresh** - Built-in refresh functionality
-- 🖼️ **Optimized Thumbnails** - Efficient image loading with placeholder
-- 📊 **Engagement Metrics** - Displays view counts, upvotes, and timestamps
-- 🔍 **Visibility Detection** - Only renders visible items for performance
-# UserChannelScreen Component
-
 The `UserChannelScreen` is a comprehensive user profile screen component for the ThreeSpeak platform that displays a creator's channel information, videos, and social connections in a tabbed interface.
 
 ## Features
@@ -25,69 +14,64 @@ The `UserChannelScreen` is a comprehensive user profile screen component for the
 - 👥 **Social Connections** - Followers and following lists
 - 🚨 **Reporting System** - Built-in report functionality
 
-## Component Architecture
+## Widget Parameters
 
-### Main Screen Structure
-```
-UserChannelScreen
-├── AppBar (with user info and actions)
-├── TabBar (4 tabs)
-└── TabBarView (4 tab content views)
-```
-
-### Sub-Components
-
-#### 1. **ThreeSpeakFeedList** (Videos Tab)
-- **Purpose**: Displays the user's video content feed
-- **Type**: `ThreeSpeakFeedType.userFeed`
-- **Features**: 
-  - Grid/list view switching
-  - Video thumbnail optimization
-  - Tap-to-play video functionality
-  - Navigation to `VideoPlayerScreen`
-
-#### 2. **UserChannelProfileWidget** (Info Tab)
-- **Purpose**: Shows detailed user profile information
-- **Features**:
-  - User bio display
-  - Account creation date
-  - Profile statistics
-  - Additional user metadata
-
-#### 3. **UserChannelFollowingWidget** (Social Tabs)
-- **Purpose**: Displays followers and following lists
-- **Dual Mode**: 
-  - `isFollowers: true` - Shows user's followers
-  - `isFollowers: false` - Shows users being followed
-- **Features**:
-  - User list with avatars
-  - Follow/unfollow functionality
-  - Social connection management
-
-#### 4. **AppBar Components**
-- **CustomCircleAvatar**: User profile picture
-- **FavouriteWidget**: Favorite/unfavorite toggle
-- **Share Actions**: RSS feed and profile sharing
-- **Report Menu**: User reporting functionality
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `owner` | `String` | ✅ | The username of the channel owner whose profile and content are displayed. |
+| `onTapVideoIcon` | `void Function(String author, String permlink)?` | ❌ | Triggered when the "Videos" tab is selected. |
+| `onTapInfoIcon` | `void Function(String author, String permlink)?` | ❌ | Triggered when the "Info" tab is selected. |
+| `onTapFollowers` | `void Function(String author, String permlink)?` | ❌ | Triggered when the "Followers" tab is selected. |
+| `onTapFollowing` | `void Function(String author, String permlink)?` | ❌ | Triggered when the "Following" tab is selected. |
+| `onTapBookmark` | `void Function(String author, String permlink)?` | ❌ | Triggered when the user bookmarks or unbookmarks the channel. |
+| `onTapRssFeed` | `void Function(String author, String permlink)?` | ❌ | Triggered when the RSS feed icon is tapped. |
+| `onTapShare` | `void Function(String author, String permlink)?` | ❌ | Triggered when the share icon is tapped. |
+| `onTapReport` | `void Function(String author, String permlink)?` | ❌ | Triggered when the "Report" option is selected from the menu. |
+| `onTapVideoItem` | `final void Function(GQLFeedItem item)?` | ❌ | Triggered when the particular video item is tapped. |
+| `onTapVideoReport` | `void Function(String author, String permlink)?` | ❌ | Triggered when the "Report" option is selected from the video item. |
+| `onTapAuthor` | `final void Function(String)?` | ❌ | Triggered when the profile avtar of the user is tapped. |
 
 ## Basic Usage
 
 ```dart
-// Navigate to a user's channel
-String username = await aioha.getCurrentUser();
-username = username.replaceAll('"', '');
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => UserChannelScreen(owner: username)),
-    );
+void _handleTapAuthor(BuildContext context, GQLFeedItem item) {
+      final username = item.author?.username;
+      if (username != null && username.isNotEmpty) {
+        Navigator.push(
+          context,
+          builder: (context) =>  UserChannelScreen(
+            owner: username,
+            onTapVideoIcon: (){},
+            onTapInfoIcon: (){},
+            onTapFollowers: (){},
+            onTapFollowing: (){},
+            onTapBookmark: (){},
+            onTapRssFeed: (){},
+            onTapShare: (){},
+            onTapReport: (){},
+            onTapVideoItem: (){},
+            onTapVideoReport: (){},
+            onTapAuthor: (){}
+          )
+        ),
+      }
+    }
+
+VideoCard(
+    item: item,
+    isVisible: isVisible,
+    onTapAuthor: () => _handleTapAuthor(context, item),
+  );
 ```
+## How it works:
+- item.author?.username retrieves the username of the content creator from the GQLFeedItem object.
 
-## Parameters
+- If a valid username exists, the function uses Flutter’s Navigator.push to open the UserChannelScreen, passing the username as the owner    parameter.
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `owner` | `String` | ✅ | The username of the channel owner |
-| `loginModel` | `LoginModel?` | ❌ | Current logged-in user model for personalization |
+🛠️ Note:
+- You don't need to manually navigate to UserChannelScreen in most cases.
+- The ThreeSpeakFeedList component already includes a default implementation for the onTapAuthor callback.
+- If no custom onTapAuthor function is provided, it will automatically open the UserChannelScreen with the tapped author's profile avtar.
 
 ## Tab Structure
 
@@ -104,105 +88,16 @@ username = username.replaceAll('"', '');
 
 ### 3. 👥 Followers Tab
 - Lists users following this channel
-- Uses `UserChannelFollowingWidget` with `isFollowers: true`
-- Interactive follower management
 
 ### 4. 👤 Following Tab
 - Lists users this channel follows
-- Uses `UserChannelFollowingWidget` with `isFollowers: false`
-- Following relationship management
 
 ## AppBar Actions
 
 ### Core Actions
 - **Favorite Toggle**: Add/remove user from favorites
-- **RSS Share**: Share user's RSS feed (`https://3speak.tv/rss/{username}.xml`)
-- **Profile Share**: Share user's profile URL (`https://3speak.tv/user/{username}`)
+- **RSS Share**: Share user's RSS feed
+- **Profile Share**: Share user's profile URL
 - **Report Menu**: Report user functionality
-
-### User Avatar Display
-- Shows user's profile picture using `CustomCircleAvatar`
-- Fetches image from `server.userOwnerThumb(username)`
-- 36x36 pixel circular avatar
-
-## Integration Points
-
-### Video Playback
-When a video is tapped in the feed:
-```dart
-Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (context) => VideoPlayerScreen(
-      videoUrl: videoUrl ?? '',
-      title: item.title ?? 'Untitled',
-      author: item.author?.username ?? 'Unknown',
-      permlink: item.permlink ?? 'Unknown',
-      createdAt: item.createdAt,
-      item: item,
-      // ✅ Optional Callbacks
-      isUserVoted: () {},
-      onTapComment: () {},
-      onComment: (body) {},
-      onUpvoteComment: () {},
-      onReplyComment: () {},
-      onShare: () {},
-      onBookmark: () {},
-      onTapAuthor: () {},
-    ),
-  ),
-);
-```
-
-### Favorite Management
-- Uses `UserFavoriteProvider` for local storage
-- Persistent favorite state across app sessions
-- Toast notifications for user feedback
-
-### Social Features
-- RSS feed integration for content syndication
-- Native share functionality via `share_plus` package
-- Cross-platform sharing support
-
-## Dependencies
-
-### Core Flutter
-- `flutter/material.dart` - Material Design components
-- `share_plus` - Native sharing functionality
-
-### Custom Components
-- `ThreeSpeakFeedList` - Video feed display
-- `UserChannelProfileWidget` - Profile information
-- `UserChannelFollowingWidget` - Social connections
-- `CustomCircleAvatar` - Profile picture display
-- `FavouriteWidget` - Favorite toggle functionality
-- `VideoPlayerScreen` - Video playback interface
-
-### Data Management
-- `UserFavoriteProvider` - Favorite user management
-- `LoginModel` - User authentication data
-- `ServerProxy` - API communication
-
-## Performance Considerations
-
-- **Tab-based Loading**: Content loads only when tabs are accessed
-- **Optimized Images**: Efficient avatar and thumbnail loading
-- **Memory Management**: Proper disposal of TabController
-- **Lazy Loading**: Feed content loads progressively
-
-## State Management
-
-The component uses:
-- **StatefulWidget** with **SingleTickerProviderStateMixin**
-- **TabController** for tab navigation
-- **UserFavoriteProvider** for favorite state management
-- Local state for current tab index tracking
-
-## Customization Options
-
-- Tab icons and labels can be modified in the `tabs` static list
-- AppBar actions can be customized or extended
-- Feed display can be configured through `ThreeSpeakFeedList` parameters
-- Social widgets support various display modes
 
 This component provides a complete user channel experience with video content, profile information, and social features, making it ideal for creator-focused platforms like ThreeSpeak.
