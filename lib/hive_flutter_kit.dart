@@ -30,7 +30,7 @@ export 'ux/user_profile_bottom_sheet.dart';
 export 'ux/dhive/account_post/account_posts_screen.dart';
 export 'ux/dhive/account_post/blog_screen.dart';
 export 'ux/dhive/account_post/comments_screen.dart';
-export 'ux/dhive/account_post/community_specific_screen.dart';
+export 'ux/dhive/account_post/community_screen.dart';
 export 'ux/dhive/account_post/replies_screen.dart';
 export 'ux/dhive//common_list_view/blog_list.dart';
 export 'ux/dhive/common_list_view/view_list.dart';
