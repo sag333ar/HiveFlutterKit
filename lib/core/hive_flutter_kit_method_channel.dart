@@ -991,4 +991,54 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
 
     return completer.future;
   }
+
+  @override
+  Future<String> transfer(
+    String recipient,
+    double amount,
+    String assetSymbol,
+    String? memo,
+  ) async {
+    await _webViewInitFuture; // Ensure WebView is initialized
+
+    final completer = Completer<String>();
+    // Unique handler name to avoid conflicts with concurrent calls
+    final handlerName = 'onTransferResult_${DateTime.now().millisecondsSinceEpoch}';
+
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: handlerName,
+      callback: (args) {
+        if (!completer.isCompleted) {
+          if (args.isNotEmpty && args[0] != null) {
+            completer.complete(args[0].toString());
+          } else {
+            completer.complete('{"error":"No result or null returned from JavaScript for transfer"}');
+          }
+        }
+        // Clean up the handler after completion
+        headlessWebView.webViewController?.removeJavaScriptHandler(handlerName: handlerName);
+      },
+    );
+
+    // Properly escape strings for JavaScript
+    final jsRecipient = jsonEncode(recipient);
+    final jsAssetSymbol = jsonEncode(assetSymbol);
+    final jsMemo = memo == null ? 'null' : jsonEncode(memo); // Handle null memo correctly
+
+    final String jsCall = """
+    (async () => {
+      try {
+        const result = await transfer($jsRecipient, ${amount.toString()}, $jsAssetSymbol, $jsMemo);
+        // The transfer function in JS should already return a JSON string.
+        window.flutter_inappwebview.callHandler('$handlerName', result || 'null');
+      } catch (e) {
+        // Send error back as a JSON string
+        window.flutter_inappwebview.callHandler('$handlerName', JSON.stringify({ error: e.message || e.toString() }));
+      }
+    })();
+    """;
+
+    await headlessWebView.webViewController?.evaluateJavascript(source: jsCall);
+    return completer.future;
+  }
 }

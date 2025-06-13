@@ -325,4 +325,13 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
   Future<dynamic> signAndBroadcastTx(dynamic operationRequest, String keyType) {
     throw UnimplementedError('signAndBroadcastTx has not been implemented.');
   }
+
+  Future<String> transfer(
+    String recipient,
+    double amount,
+    String assetSymbol, // 'HIVE' or 'HBD'
+    String? memo,
+  ) {
+    throw UnimplementedError('transfer() has not been implemented.');
+  }
 }
