@@ -1,4 +1,4 @@
-const { initAioha, KeyTypes, Providers } = require("@aioha/aioha");
+const { initAioha, KeyTypes, Providers, Asset } = require("@aioha/aioha");
 const { PlaintextKeyProvider } = require("@aioha/aioha/build/providers/custom/plaintext.js");
 var Buffer = require('buffer/').Buffer
 const dhive = require('@hiveio/dhive');
@@ -522,6 +522,40 @@ async function removeAccountAuthority(account, keyType) {
   }
 }
 window.removeAccountAuthority = removeAccountAuthority;
+
+async function transfer(recipient, amount, assetSymbol, memo) {
+  try {
+    const currentUser = aioha.getCurrentUser();
+    if (!currentUser) {
+      return JSON.stringify({ error: "No user is currently logged in" });
+    }
+
+    let assetEnum;
+    if (assetSymbol === 'HIVE') {
+      assetEnum = Asset.HIVE;
+    } else if (assetSymbol === 'HBD') {
+      assetEnum = Asset.HBD;
+    } else {
+      return JSON.stringify({ error: "Invalid asset type. Must be HIVE or HBD." });
+    }
+
+    const numericAmount = parseFloat(amount);
+    if (isNaN(numericAmount) || numericAmount <= 0) {
+        return JSON.stringify({ error: "Invalid amount. Amount must be a positive number." });
+    }
+
+    let result;
+    if (memo && memo.trim() !== '') {
+      result = await aioha.transfer(recipient, numericAmount, assetEnum, memo);
+    } else {
+      result = await aioha.transfer(recipient, numericAmount, assetEnum);
+    }
+    return JSON.stringify(result);
+  } catch (error) {
+    return JSON.stringify({ error: error.message || error.toString() });
+  }
+}
+window.transfer = transfer;
 
 async function signAndBroadcastTx(operations, keyType) {
   try {
