@@ -1,12 +1,51 @@
+---
+title: Video Player
+sidebar_label: Video Player
+slug: /video-player
+---
+
 # Video Player Screen Component
 
-![User Feed Preview](./videoplayer.png)
+![User Feed Preview](/img/threespeak/videoplayer.png)
 
-A Flutter video player component designed for the Hive/3Speak platform that provides adaptive layouts for mobile and desktop/web platforms with integrated user interaction features.
+A Flutter video player component, is designed for 3Speak Video. which is published on hive, that provides adaptive layouts for mobile and desktop/web platforms, with integrated user interaction features.
 
 ## Overview
 
 The `VideoPlayerScreen` is a stateful widget that combines video playback capabilities with social features like voting, user authentication, and post information display. It automatically adapts its layout based on screen size and handles IPFS video URL resolution.
+
+## Usage Example
+
+```dart
+Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) => VideoPlayerScreen(
+      item: item, // GQLFeedItem instance containing all necessary data for the video post
+      // ✅ Optional Callbacks
+      onTapComment: (author, permlink) {
+        debugPrint('User tapped on comment button below video for $author/$permlink');
+      },
+      onTapUpvote: (author, permlink) {
+        debugPrint('User tapped on upvote button below video for $author/$permlink');
+      },
+      onTapShare: (author, permlink) {
+        debugPrint('User tapped on share button below video for $author/$permlink');
+      },
+      onTapBookmark: (author, permlink) {
+        debugPrint('User tapped on bookmark button below video for $author/$permlink');
+      },
+      onTapAuthor: (author) {
+        debugPrint('User tapped on author $author');
+      },
+      onTapInfo: (author, permlink) {
+        debugPrint('User tapped on info button for post $author/$permlink');
+      },
+    ),
+  ),
+);
+```
+
 
 ## Widget Parameters
 
@@ -21,25 +60,6 @@ The `VideoPlayerScreen` is a stateful widget that combines video playback capabi
 | `onTapInfo`      | `void Function(String author, String permlink)?`   | ❌        | Called when the info/details button is tapped. Useful for showing additional metadata or options related to the post. |
 
 
-## Usage Example
-
-```dart
-Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (context) => VideoPlayerScreen(
-      item: item,
-      // ✅ Optional Callbacks
-      onTapComment: () {},
-      onTapUpvote: () {},
-      onTapShare: () {},
-      onTapBookmark: () {},
-      onTapAuthor: () {},
-      onTapInfo: () {},
-    ),
-  ),
-);
-```
 ## Features
 
 ### 🎥 Video Playback
@@ -53,7 +73,7 @@ Navigator.push(
 - **Desktop/Web Layout**: Centered video player with wider container (1600px max width)
 - Automatic layout switching at 800px breakpoint
 
-### Resolution Strategy
+### 🔁 Resolution Strategy
 - **Web**: Uses manifest.m3u8 for adaptive streaming
 - **Android**: Uses 480p/index.m3u8 for optimized mobile playback
 - **Other platforms**: Defaults to manifest.m3u8
