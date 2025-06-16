@@ -1050,7 +1050,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () async {
                   String username = await hfk.getCurrentUser();
                   username = username.replaceAll('"', '');
-
                   showDialog(
                     context: context,
                     builder: (context) {
