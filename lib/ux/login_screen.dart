@@ -303,7 +303,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       value
                                           .toLowerCase()
                                           .replaceAll(
-                                            RegExp(r'[^a-z0-9_]'),
+                                            RegExp(r'[^a-z0-9._-]'),
                                             '',
                                           )
                                           .trim();
