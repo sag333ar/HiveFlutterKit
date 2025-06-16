@@ -13,7 +13,6 @@ dependencies:
   flutter:
     sdk: flutter
   hive_flutter_kit: ^latest_version # Replace with the actual latest version
-  provider: ^latest_provider_version # Replace if you use provider
 ```
 
 Then, run `flutter pub get`.
@@ -25,16 +24,10 @@ Update your `main.dart` function as follows to make the Aioha instance available
 ```dart
 import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/hive_flutter_kit.dart'; // Ensure correct import
-import 'package:provider/provider.dart'; // If using Provider
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(
-    Provider<HiveFlutterKitPlatform>.value(
-      value: HiveFlutterKitPlatform.instance,
-      child: const MyApp(), // Your main application widget
-    ),
-  );
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {

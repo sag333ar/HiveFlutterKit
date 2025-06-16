@@ -29,6 +29,15 @@ const sidebars = {
     },
     {
       type: 'category',
+      label: '3Speak',
+      items: [
+        'threespeak/introduction',
+        'threespeak/video-feed',
+        'threespeak/video-player',
+      ],
+    },
+    {
+      type: 'category',
       label: 'Use AIOHA',
       link: {
         type: 'doc',
