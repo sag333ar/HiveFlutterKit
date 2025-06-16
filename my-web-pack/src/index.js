@@ -293,18 +293,19 @@ async function getQrString() {
 }
 window.getQrString = getQrString; // Expose the function to Dart
 
-function getCurrentUser() {
-  const currentUser = aioha.getCurrentUser();
-  if (currentUser) {
-    return JSON.stringify({ username: currentUser, error: null });
-  } else {
-    return JSON.stringify({
-      error: "No user is currently logged in",
-      username: null,
-    });
+async function getCurrentUser() {
+  try {
+    const currentUser = aioha.getCurrentUser();
+    if (currentUser) {
+      return JSON.stringify(currentUser);
+    } else {
+      return JSON.stringify({ error: "No user is currently logged in" });
+    }
+  } catch (error) {
+    return JSON.stringify({ error: error.toString() });
   }
 }
-window.getCurrentUser = getCurrentUser; // Expose the function to Dart
+window.getCurrentUser = getCurrentUser;
 
 async function logoutUser() {
   try {
