@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/components/three_speak_feed_list.dart';
+import 'package:hive_flutter_kit/core/common/enum.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/three_speak_video_feed.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/video_player.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/user_profile_image.dart';
 
@@ -101,8 +102,8 @@ class _SearchScreenState extends State<SearchScreen> {
       );
     }
 
-    return ThreeSpeakFeedList(
-      feedType: ThreeSpeakFeedType.search,
+    return ThreeSpeakVideoFeed(
+      feedType: ThreeSpeakVideoFeedType.search,
       searchTerm: text,
       onTapVideoItem: (item) {
         Navigator.push(
