@@ -17,7 +17,7 @@ The `ThreeSpeakVideoFeed` widget displays a grid/list of videos from the ThreeSp
 - `hot` - Hot videos based on engagement metrics
 - `firstUploads` - First uploads from creators on the 3Speak platform
 - `related` - Shows videos related to a specific video (requires `author` & `permlink` parameter)
-- `userFeed` - Shows videos from a specific user (requires `author` parameter)
+- `userFeed` - Shows videos from a specific user (requires `username` parameter)
 - `search` - Shows videos based on a search query (supports built-in search bar with `isSearch: true`)
 
 ## Usage
@@ -47,6 +47,23 @@ ThreeSpeakVideoFeed(
   },
 )
 ```
+
+### User Feed
+
+Shows all videos uploaded by a specific user. Pass the username via the `username` parameter.
+
+```dart
+ThreeSpeakVideoFeed(
+  feedType: ThreeSpeakVideoFeedType.userFeed,
+  username: 'someuser', // required: username whose videos you want to show
+  onTapVideoItem: (item) {
+    debugPrint('User tapped on video item: ${item.author}/${item.permlink}');
+    navigateToVideoPlayerScreen(item);
+  },
+)
+```
+
+- **Parameter:** `username` (String, required) — the Hive/3Speak username whose videos you want to display.
 
 ### Search Feed (with built-in search bar)
 
@@ -157,6 +174,7 @@ void navigateToVideoPlayerScreen(GQLFeedItem item) {
 - 📊 **Engagement Metrics** - Displays view counts, upvotes, and timestamps
 - 🔍 **Visibility Detection** - Only renders visible items for performance
 - 🔍 **Integrated Search** - Use `feedType: ThreeSpeakVideoFeedType.search` and `isSearch: true` for a built-in search experience
+- 👤 **User Feed** - Use `feedType: ThreeSpeakVideoFeedType.userFeed` and `username` to show a user's videos
 
 ### Screenshots for other feed types
 
