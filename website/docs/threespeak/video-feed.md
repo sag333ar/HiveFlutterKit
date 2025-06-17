@@ -8,7 +8,7 @@ slug: /video-feed
 
 ![Videos Feed Component Preview](/img/threespeak/firstuploads.png)
 
-The `ThreeSpeakVideoFeed` with `feedType: ThreeSpeakVideoFeedType.firstUploads` displays a grid/list of first uploads from the creators of ThreeSpeak platform.
+The `ThreeSpeakVideoFeed` widget displays a grid/list of videos from the ThreeSpeak platform. It supports multiple feed types, including a built-in search experience.
 
 **Feed Types:**
 
@@ -18,11 +18,11 @@ The `ThreeSpeakVideoFeed` with `feedType: ThreeSpeakVideoFeedType.firstUploads` 
 - `firstUploads` - First uploads from creators on the 3Speak platform
 - `related` - Shows videos related to a specific video (requires `author` & `permlink` parameter)
 - `userFeed` - Shows videos from a specific user (requires `author` parameter)
-- `search` - Shows videos based on a search query (requires `query` parameter)
+- `search` - Shows videos based on a search query (supports built-in search bar with `isSearch: true`)
 
 ## Usage
 
-### trending, newUploads, hot, and firstUploads Feed
+### Trending, New Uploads, Hot, and First Uploads Feed
 
 ```dart
 ThreeSpeakVideoFeed(
@@ -46,6 +46,73 @@ ThreeSpeakVideoFeed(
     navigateToVideoPlayerScreen(item);
   },
 )
+```
+
+### Search Feed (with built-in search bar)
+
+```dart
+ThreeSpeakVideoFeed(
+  feedType: ThreeSpeakVideoFeedType.search,
+  isSearch: true, // Enables built-in search bar and handles search state
+  onTapVideoItem: (item) {
+    debugPrint('User tapped on video item: ${item.author}/${item.permlink}');
+    navigateToVideoPlayerScreen(item);
+  },
+)
+```
+
+> **Note:** When `isSearch: true` and `feedType: ThreeSpeakVideoFeedType.search`, the widget displays a search bar in the app bar, handles debounce, and manages search state internally. You do **not** need to provide a `searchTerm` parameter in this mode.
+
+### Search Feed (controlled externally)
+
+If you want to control the search query from outside, you can use:
+
+```dart
+ThreeSpeakVideoFeed(
+  feedType: ThreeSpeakVideoFeedType.search,
+  searchTerm: 'hive', // must be at least 4 characters
+  onTapVideoItem: (item) {
+    debugPrint('User tapped on video item: ${item.author}/${item.permlink}');
+    navigateToVideoPlayerScreen(item);
+  },
+)
+```
+
+### Example: Custom Search UI (external control)
+
+```dart
+class SearchFeedWidget extends StatefulWidget {
+  @override
+  State<SearchFeedWidget> createState() => _SearchFeedWidgetState();
+}
+
+class _SearchFeedWidgetState extends State<SearchFeedWidget> {
+  String searchQuery = '';
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        TextField(
+          decoration: InputDecoration(
+            hintText: 'Search videos...',
+          ),
+          onChanged: (value) {
+            setState(() {
+              searchQuery = value.trim();
+            });
+          },
+        ),
+        Expanded(
+          child: ThreeSpeakVideoFeed(
+            feedType: ThreeSpeakVideoFeedType.search,
+            searchTerm: searchQuery.length >= 4 ? searchQuery : null,
+          ),
+        ),
+      ],
+    );
+  }
+}
 ```
 
 ### Optional Navigation Function
@@ -89,6 +156,7 @@ void navigateToVideoPlayerScreen(GQLFeedItem item) {
 - 🖼️ **Optimized Thumbnails** - Efficient image loading with placeholder
 - 📊 **Engagement Metrics** - Displays view counts, upvotes, and timestamps
 - 🔍 **Visibility Detection** - Only renders visible items for performance
+- 🔍 **Integrated Search** - Use `feedType: ThreeSpeakVideoFeedType.search` and `isSearch: true` for a built-in search experience
 
 ### Screenshots for other feed types
 

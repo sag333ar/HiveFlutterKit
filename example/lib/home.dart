@@ -2001,14 +2001,22 @@ class _MyHomePageState extends State<MyHomePage> {
               //   child: const Text('Show Related Videos'),
               // ),
               ElevatedButton(
-                onPressed: () async {
-                  String username = await hfk.getCurrentUser();
-                  username = username.replaceAll('"', '');
+                onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder:
-                          (context) => SearchScreen(currentUser: username),
+                      builder: (context) => ThreeSpeakVideoFeed(
+                        feedType: ThreeSpeakVideoFeedType.search,
+                        isSearch: true,
+                        onTapVideoItem: (item) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => VideoPlayerScreen(item: item),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   );
                 },
