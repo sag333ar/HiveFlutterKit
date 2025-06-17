@@ -14,7 +14,7 @@ The `SearchScreen` component provides a comprehensive search interface for the T
 - 📱 **Responsive Design** - Adaptive layout for all screen sizes
 - ⌨️ **Keyboard Friendly** - Optimized text input experience
 - 🔄 **State Management** - Efficient state handling with timers
-- 📊 **Feed Integration** - Uses `ThreeSpeakFeedList` for results display
+- 📊 **Feed Integration** - Uses `ThreeSpeakVideoFeed` for results display
 - 🎯 **Minimum Character Requirement** - Prevents unnecessary searches
 
 ## Basic Usage
@@ -61,6 +61,6 @@ Navigator.push(
 4. If input < 4 characters, shows empty state
 5. If input ≥ 4 characters, starts 800ms timer
 6. Timer completes → triggers search API call
-7. Results display in `ThreeSpeakFeedList`
+7. Results display in `ThreeSpeakVideoFeed`
 
 This component provides a complete search experience for the ThreeSpeak platform with optimized performance, intuitive user interface, and seamless integration with video playback functionality.
