@@ -12,7 +12,7 @@ The main components of this package are:
 
 ## Widgets
 
-### `ThreeSpeakFeedList`
+### `ThreeSpeakVideoFeed`
 
 This widget displays different types of video feeds. You can customize the feed type and handle taps on video items.
 
@@ -54,8 +54,8 @@ This widget displays different types of video feeds. You can customize the feed 
 
 ```dart
 // Display trending videos
-ThreeSpeakFeedList(
-  feedType: 'trending',
+ThreeSpeakVideoFeed(
+  feedType: ThreeSpeakVideoFeedType.trending,
   onVideoTap: (video) {
     // Handle video tap, e.g., navigate to VideoPlayerScreen
     Navigator.push(
@@ -68,8 +68,8 @@ ThreeSpeakFeedList(
 )
 
 // Display related videos
-ThreeSpeakFeedList(
-  feedType: 'related',
+ThreeSpeakVideoFeed(
+  feedType: ThreeSpeakVideoFeedType.related,
   videoId: 'some_video_id',
   onVideoTap: (video) {
     // Handle video tap

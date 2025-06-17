@@ -8,7 +8,7 @@ slug: /video-feed
 
 ![Videos Feed Component Preview](/img/threespeak/firstuploads.png)
 
-The `ThreeSpeakFeedList` with `feedType: ThreeSpeakFeedType.firstUploads` displays a grid/list of first uploads from the creators of ThreeSpeak platform.
+The `ThreeSpeakVideoFeed` with `feedType: ThreeSpeakVideoFeedType.firstUploads` displays a grid/list of first uploads from the creators of ThreeSpeak platform.
 
 **Feed Types:**
 
@@ -25,8 +25,8 @@ The `ThreeSpeakFeedList` with `feedType: ThreeSpeakFeedType.firstUploads` displa
 ### trending, newUploads, hot, and firstUploads Feed
 
 ```dart
-ThreeSpeakFeedList(
-  feedType: ThreeSpeakFeedType.firstUploads,
+ThreeSpeakVideoFeed(
+  feedType: ThreeSpeakVideoFeedType.firstUploads,
   onTapVideoItem: (item) {
     debugPrint('User tapped on video item: ${item.author}/${item.permlink}');
     navigateToVideoPlayerScreen(item);
@@ -37,8 +37,8 @@ ThreeSpeakFeedList(
 ### Related Feed
 
 ```dart
-ThreeSpeakFeedList(
-  feedType: ThreeSpeakFeedType.related,
+ThreeSpeakVideoFeed(
+  feedType: ThreeSpeakVideoFeedType.related,
   relatedAuthor: relatedAuthor,
   relatedPermlink: relatedPermlink,
   onTapVideoItem: (item) {

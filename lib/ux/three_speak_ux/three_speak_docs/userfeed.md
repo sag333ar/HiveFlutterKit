@@ -6,7 +6,7 @@ The `UserChannelScreen` is a comprehensive user profile screen component for the
 
 ## Features
 
-- 🎬 **Video Feed Integration** - Displays user's video content using `ThreeSpeakFeedList`
+- 🎬 **Video Feed Integration** - Displays user's video content using `ThreeSpeakVideoFeed`
 - 📱 **Tabbed Navigation** - Four distinct tabs for different content types
 - 👤 **Profile Display** - Shows user avatar, username, and profile information
 - ❤️ **Favorite System** - Built-in favorite/unfavorite functionality for users
@@ -70,13 +70,13 @@ VideoCard(
 
 🛠️ Note:
 - You don't need to manually navigate to UserChannelScreen in most cases.
-- The ThreeSpeakFeedList component already includes a default implementation for the onTapAuthor callback.
+- The ThreeSpeakVideoFeed component already includes a default implementation for the onTapAuthor callback.
 - If no custom onTapAuthor function is provided, it will automatically open the UserChannelScreen with the tapped author's profile avtar.
 
 ## Tab Structure
 
 ### 1. 🎥 Videos Tab
-- Displays user's video content using `ThreeSpeakFeedList`
+- Displays user's video content using `ThreeSpeakVideoFeed`
 - Smart layout switching (grid/list)
 - Direct video playback integration
 - Optimized thumbnail loading
