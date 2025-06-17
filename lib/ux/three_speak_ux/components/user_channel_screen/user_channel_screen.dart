@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter_kit/core/common/enum.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/provider/user_favourite_provider.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/server_proxy.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/user_channel_screen/user_channel_following.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/user_channel_screen/user_channel_profile.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/components/three_speak_feed_list.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/three_speak_video_feed.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/custom_circle_avatar.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/favourite.dart';
 import 'package:share_plus/share_plus.dart';
@@ -190,8 +191,8 @@ class _UserChannelScreenState extends State<UserChannelScreen>
         controller: _tabController,
         children: [
           // 1st tab: Videos list
-          ThreeSpeakFeedList(
-            feedType: ThreeSpeakFeedType.userFeed,
+          ThreeSpeakVideoFeed(
+            feedType: ThreeSpeakVideoFeedType.userFeed,
             userChannel: widget.owner,
             onTapAuthor:
                 widget.onTapAuthor != null

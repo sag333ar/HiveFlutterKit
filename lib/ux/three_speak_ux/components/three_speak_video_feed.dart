@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter_kit/core/common/enum.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/graphql/gql_communicator.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/user_channel_screen/user_channel_screen.dart';
@@ -6,18 +7,8 @@ import 'package:hive_flutter_kit/ux/three_speak_ux/components/video_player.dart'
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/video_card_widget.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/visibility_detector.dart';
 
-enum ThreeSpeakFeedType {
-  trending,
-  newUploads,
-  hot,
-  firstUploads,
-  related,
-  userFeed,
-  search,
-} 
-
-class ThreeSpeakFeedList extends StatefulWidget {
-  final ThreeSpeakFeedType feedType;
+class ThreeSpeakVideoFeed extends StatefulWidget {
+  final ThreeSpeakVideoFeedType feedType;
   final bool isShorts;
   final String? lang;
 
@@ -33,7 +24,7 @@ class ThreeSpeakFeedList extends StatefulWidget {
   final String? userChannel;
   final String? searchTerm;
 
-  const ThreeSpeakFeedList({
+  const ThreeSpeakVideoFeed({
     super.key,
     required this.feedType,
     this.isShorts = false,
@@ -50,10 +41,10 @@ class ThreeSpeakFeedList extends StatefulWidget {
   });
 
   @override
-  State<ThreeSpeakFeedList> createState() => _ThreeSpeakFeedListState();
+  State<ThreeSpeakVideoFeed> createState() => _ThreeSpeakVideoFeedState();
 }
 
-class _ThreeSpeakFeedListState extends State<ThreeSpeakFeedList> {
+class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
   final GQLCommunicator _gql = GQLCommunicator();
   List<GQLFeedItem> _items = [];
   bool _loading = true;
@@ -73,24 +64,24 @@ class _ThreeSpeakFeedListState extends State<ThreeSpeakFeedList> {
     try {
       List<GQLFeedItem> items = [];
       switch (widget.feedType) {
-        case ThreeSpeakFeedType.trending:
+        case ThreeSpeakVideoFeedType.trending:
           items = await _gql.getTrendingFeed(widget.isShorts, 0, widget.lang);
           break;
-        case ThreeSpeakFeedType.newUploads:
+        case ThreeSpeakVideoFeedType.newUploads:
           items = await _gql.getNewUploadsFeed(widget.isShorts, 0, widget.lang);
           break;
-        case ThreeSpeakFeedType.hot:
+        case ThreeSpeakVideoFeedType.hot:
           // If you have a hot feed, implement here
           // items = await _gql.getHotFeed(widget.isShorts, 0, widget.lang);
           break;
-        case ThreeSpeakFeedType.firstUploads:
+        case ThreeSpeakVideoFeedType.firstUploads:
           items = await _gql.getFirstUploadsFeed(
             widget.isShorts,
             0,
             widget.lang,
           );
           break;
-        case ThreeSpeakFeedType.related:
+        case ThreeSpeakVideoFeedType.related:
           if (widget.relatedAuthor != null && widget.relatedPermlink != null) {
             items = await _gql.getRelated(
               widget.relatedAuthor!,
@@ -99,7 +90,7 @@ class _ThreeSpeakFeedListState extends State<ThreeSpeakFeedList> {
             );
           }
           break;
-        case ThreeSpeakFeedType.userFeed:
+        case ThreeSpeakVideoFeedType.userFeed:
           if (widget.userChannel != null && widget.userChannel!.isNotEmpty) {
             items = await _gql.getUserFeed(
               [widget.userChannel!],
@@ -109,7 +100,7 @@ class _ThreeSpeakFeedListState extends State<ThreeSpeakFeedList> {
             );
           }
           break;
-        case ThreeSpeakFeedType.search:
+        case ThreeSpeakVideoFeedType.search:
           if (widget.searchTerm != null && widget.searchTerm!.isNotEmpty) {
             items = await _gql.getSearchFeed(
               widget.searchTerm!,
@@ -130,11 +121,6 @@ class _ThreeSpeakFeedListState extends State<ThreeSpeakFeedList> {
         _loading = false;
       });
     }
-  }
-
-  void _openVideo(BuildContext context, GQLFeedItem item) {
-    // TODO: Implement navigation or video open logic
-    // Example: Navigator.push(...);
   }
 
   void _handleTapAuthor(BuildContext context, GQLFeedItem item) {
