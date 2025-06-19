@@ -18,6 +18,7 @@ The `ThreeSpeakVideoFeed` widget displays a grid/list of videos from the ThreeSp
 - `firstUploads` - First uploads from creators on the 3Speak platform
 - `related` - Shows videos related to a specific video (requires `author` & `permlink` parameter)
 - `userFeed` - Shows videos from a specific user (requires `username` parameter)
+- `commnuityFeed` - Shows videos from a specific community (requires `commnuityId` parameter)
 - `search` - Shows videos based on a search query (supports built-in search bar with `isSearch: true`)
 
 ## Usage
@@ -64,6 +65,23 @@ ThreeSpeakVideoFeed(
 ```
 
 - **Parameter:** `username` (String, required) — the Hive/3Speak username whose videos you want to display.
+
+### Community Feed
+
+Shows all videos from a specific community. Pass the community id via the `commnuityId` parameter.
+
+```dart
+ThreeSpeakVideoFeed(
+  feedType: ThreeSpeakVideoFeedType.commnuityFeed,
+  commnuityId: 'hive-163772', // required: community id
+  onTapVideoItem: (item) {
+    debugPrint('User tapped on video item: ${item.author}/${item.permlink}');
+    navigateToVideoPlayerScreen(item);
+  },
+)
+```
+
+- **Parameter:** `commnuityId` (String, required) — the Hive/3Speak community id whose videos you want to display.
 
 ### Search Feed (with built-in search bar)
 
@@ -175,6 +193,7 @@ void navigateToVideoPlayerScreen(GQLFeedItem item) {
 - 🔍 **Visibility Detection** - Only renders visible items for performance
 - 🔍 **Integrated Search** - Use `feedType: ThreeSpeakVideoFeedType.search` and `isSearch: true` for a built-in search experience
 - 👤 **User Feed** - Use `feedType: ThreeSpeakVideoFeedType.userFeed` and `username` to show a user's videos
+- 🏘️ **Community Feed** - Use `feedType: ThreeSpeakVideoFeedType.commnuityFeed` and `commnuityId` to show a community's videos
 
 ### Screenshots for other feed types
 
@@ -195,3 +214,6 @@ void navigateToVideoPlayerScreen(GQLFeedItem item) {
 
 ### User Feed
 ![User Feed](/img/threespeak/userfeed.png)
+
+### Community Feed
+![Community Feed](/img/threespeak/communityfeed.png)

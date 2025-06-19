@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/ux/login_screen.dart';
 import 'package:hive_flutter_kit/ux/switch_user.dart';
 import 'package:hive_flutter_kit/ux/dhive/community_list/community_list.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/components/search_screen.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/three_speak_video_feed.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_community_screen/threespeak_commnuity_screen.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/video_player.dart';
 import 'package:hive_flutter_kit/ux/dhive/account_post/account_posts_screen.dart';
 import 'package:hive_flutter_kit/ux/dhive/account_post/blog_screen.dart';
@@ -2013,6 +2013,29 @@ class _MyHomePageState extends State<MyHomePage> {
                   );
                 },
                 child: const Text('Search screen'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ThreespeakCommnuityScreen(
+                        communityId: 'hive-163772',
+                        title: 'Worldmappin',
+                        onTapVideoItem: (item) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => VideoPlayerScreen(item: item),
+                            ),
+                          );
+                        },
+                        // Optionally add onTapAuthor, onTapVideosTab, etc.
+                      ),
+                    ),
+                  );
+                },
+                child: const Text('Show 3Speak Community Screen'),
               ),
             ],
           ),
