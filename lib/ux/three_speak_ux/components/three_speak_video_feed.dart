@@ -25,6 +25,7 @@ class ThreeSpeakVideoFeed extends StatefulWidget {
   final String? relatedPermlink;
   final String? username;
   final String? searchTerm;
+  final String? commnuityId;
 
   const ThreeSpeakVideoFeed({
     super.key,
@@ -39,6 +40,7 @@ class ThreeSpeakVideoFeed extends StatefulWidget {
     this.relatedPermlink,
     this.username,
     this.searchTerm,
+    this.commnuityId,
     this.onTapUpvote,
     this.onTapComment,
   });
@@ -210,6 +212,17 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
             if (user != null && user.isNotEmpty) {
               items = await _gql.getUserFeed(
                 [user],
+                widget.isShorts,
+                0,
+                widget.lang,
+              );
+            }
+            break;
+          case ThreeSpeakVideoFeedType.commnuityFeed:
+            final communityId = widget.commnuityId;
+            if (communityId != null && communityId.isNotEmpty) {
+              items = await _gql.getCommunity(
+                communityId,
                 widget.isShorts,
                 0,
                 widget.lang,
