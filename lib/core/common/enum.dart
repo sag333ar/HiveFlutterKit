@@ -6,5 +6,6 @@ enum ThreeSpeakVideoFeedType {
   firstUploads,
   related,
   userFeed,
+  commnuityFeed,
   search,
 } 
