@@ -93,21 +93,6 @@ Navigator.push(
 );
 ```
 
-### `SearchScreen`
-
-This screen allows users to search for videos on Three Speak.
-
-**Usage Example (from `example/lib/home.dart`):**
-
-```dart
-// Navigate to SearchScreen
-Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (context) => SearchScreen(),
-  ),
-);
-```
 
 ## Core Components
 

@@ -1959,56 +1959,56 @@ class _MyHomePageState extends State<MyHomePage> {
               //   },
               //   child: const Text('Show First Uploads Feed'),
               // ),
-              // ElevatedButton(
-              //   onPressed: () {
-              //     // Example author/permlink, replace with actual values or make dynamic as needed
-              //     const relatedAuthor = 'buttcoins';
-              //     const relatedPermlink = 'wwsrrcpv';
-              //     Navigator.push(
-              //       context,
-              //       MaterialPageRoute(
-              //         builder:
-              //             (context) => Scaffold(
-              //               appBar: AppBar(title: const Text('Related Videos')),
-              //               body: ThreeSpeakFeedList(
-              //                 feedType: ThreeSpeakFeedType.related,
-              //                 relatedAuthor: relatedAuthor,
-              //                 relatedPermlink: relatedPermlink,
-              //                 onTapVideoItem: (item) {
-              //                   final videoUrl = getVideoUrl(item);
-              //                   Navigator.push(
-              //                     context,
-              //                     MaterialPageRoute(
-              //                       builder:
-              //                           (context) => VideoPlayerScreen(
-              //                             videoUrl: videoUrl ?? '',
-              //                             title: item.title ?? 'Untitled',
-              //                             author:
-              //                                 item.author?.username ??
-              //                                 'Unknown',
-              //                             permlink: item.permlink ?? 'Unknown',
-              //                             createdAt: item.createdAt,
-              //                             item: item,
-              //                           ),
-              //                     ),
-              //                   );
-              //                 },
-              //               ),
-              //             ),
-              //       ),
-              //     );
-              //   },
-              //   child: const Text('Show Related Videos'),
-              // ),
               ElevatedButton(
-                onPressed: () async {
-                  String username = await hfk.getCurrentUser();
-                  username = username.replaceAll('"', '');
+                onPressed: () {
+                  // Example author/permlink, replace with actual values or make dynamic as needed
+                  const relatedAuthor = 'buttcoins';
+                  const relatedPermlink = 'wwsrrcpv';
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder:
-                          (context) => SearchScreen(currentUser: username),
+                          (context) => Scaffold(
+                            appBar: AppBar(title: const Text('Related Videos')),
+                            body: ThreeSpeakVideoFeed(
+                              feedType: ThreeSpeakVideoFeedType.related,
+                              relatedAuthor: relatedAuthor,
+                              relatedPermlink: relatedPermlink,
+                              onTapVideoItem: (item) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => VideoPlayerScreen(
+                                          item: item,
+                                        ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                    ),
+                  );
+                },
+                child: const Text('Show Related Videos'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ThreeSpeakVideoFeed(
+                        feedType: ThreeSpeakVideoFeedType.search,
+                        isSearch: true,
+                        onTapVideoItem: (item) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => VideoPlayerScreen(item: item),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   );
                 },

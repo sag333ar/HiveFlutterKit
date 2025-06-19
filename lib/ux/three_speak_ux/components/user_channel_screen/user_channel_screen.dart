@@ -193,7 +193,7 @@ class _UserChannelScreenState extends State<UserChannelScreen>
           // 1st tab: Videos list
           ThreeSpeakVideoFeed(
             feedType: ThreeSpeakVideoFeedType.userFeed,
-            userChannel: widget.owner,
+            username: widget.owner, 
             onTapAuthor:
                 widget.onTapAuthor != null
                     ? (item) => widget.onTapAuthor!(item.author?.username ?? '')
