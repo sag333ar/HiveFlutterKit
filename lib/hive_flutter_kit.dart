@@ -14,6 +14,7 @@ export 'core/models/discussion.dart';
 export 'core/models/login_model.dart';
 export 'core/models/resource_credits.dart';
 export 'core/models/voting_power.dart';
+export 'core/three_speak_core//models//communities_models/community_subscriber.dart';
 
 
 // Export UX components
@@ -38,6 +39,11 @@ export 'ux/dhive/common_list_view/view_comments.dart';
 export 'ux/dhive/feed_screen/trending_feed_screen.dart';
 export 'ux/dhive/user_profile/user_profile_picture.dart';
 
+// Export ThreeSpeak UX components
+export 'ux/three_speak_ux/components/threespeak_community_screen/threespeak_commnuity_screen.dart';
+export 'ux/three_speak_ux/components/user_channel_screen/user_channel_screen.dart';
+export 'ux/three_speak_ux/components/three_speak_video_feed.dart';
+export 'ux/three_speak_ux/components/video_player.dart';
 
 // Potentially export other specific classes if they are part of the public API
 // For example, if there are specific error types or helper classes defined elsewhere.
