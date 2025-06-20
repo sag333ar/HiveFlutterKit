@@ -607,3 +607,24 @@ async function signAndBroadcastTx(operations, keyType) {
 }
 
 window.signAndBroadcastTx = signAndBroadcastTx;
+
+async function getCommunitySubscribers(community, limit = 100, last = null) {
+  const params = {
+    community,
+    limit,
+    last,
+  };
+  try {
+    const result = await dhiveClient.call(
+      "bridge",
+      "list_subscribers",
+      params
+    );
+    // result is an array of arrays, return as JSON string
+    return JSON.stringify(result);
+  } catch (error) {
+    console.error("Error calling list_subscribers:", error);
+    return JSON.stringify([]);
+  }
+}
+window.getCommunitySubscribers = getCommunitySubscribers;
