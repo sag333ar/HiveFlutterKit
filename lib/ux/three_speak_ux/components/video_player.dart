@@ -1,9 +1,12 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter_kit/core/common/enum.dart';
 import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit/core/models/discussion.dart';
+import 'package:hive_flutter_kit/core/three_speak_core/graphql/gql_communicator.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/three_speak_video_feed.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/video_info.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
@@ -18,6 +21,7 @@ class VideoPlayerScreen extends StatefulWidget {
   final void Function(String, String)? onTapBookmark;
   final void Function(String)? onTapAuthor;
   final void Function(String, String)? onTapInfo;
+  final Widget Function(BuildContext context, GQLFeedItem item)? relatedBuilder;
 
   const VideoPlayerScreen({
     super.key,
@@ -28,6 +32,7 @@ class VideoPlayerScreen extends StatefulWidget {
     this.onTapBookmark,
     this.onTapAuthor,
     this.onTapInfo,
+    this.relatedBuilder,
   });
 
   @override
@@ -241,6 +246,21 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                       ),
                     ),
                     Divider(height: 1),
+                    widget.relatedBuilder != null
+                        ? widget.relatedBuilder!(context, widget.item)
+                        : Container(
+                            constraints: BoxConstraints(
+                              maxWidth: 1800,
+                              minWidth: 400,
+                              maxHeight: 700, // Set a max height for the related feed
+                            ),
+                            margin: const EdgeInsets.symmetric(horizontal: 32),
+                            child: ThreeSpeakVideoFeed(
+                              feedType: ThreeSpeakVideoFeedType.related,
+                              relatedAuthor: widget.item.author?.username,
+                              relatedPermlink: widget.item.permlink,
+                            ),
+                          ),
                   ],
                 ),
               );
@@ -257,6 +277,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                   ),
                   _videoInfoWidget(),
                   Divider(height: 1),
+                  Expanded(
+                    child: widget.relatedBuilder != null
+                        ? widget.relatedBuilder!(context, widget.item)
+                        : ThreeSpeakVideoFeed(
+                            feedType: ThreeSpeakVideoFeedType.related,
+                            relatedAuthor: widget.item.author?.username,
+                            relatedPermlink: widget.item.permlink,
+                          ),
+                  ),
                 ],
               );
             }
