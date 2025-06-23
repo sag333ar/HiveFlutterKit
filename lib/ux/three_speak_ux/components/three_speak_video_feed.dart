@@ -9,7 +9,7 @@ import 'package:hive_flutter_kit/ux/three_speak_ux/components/video_player.dart'
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/user_profile_image.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/video_card_widget.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/visibility_detector.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/trending_tags.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/trending_tags/trending_tags.dart';
 
 class ThreeSpeakVideoFeed extends StatefulWidget {
   final ThreeSpeakVideoFeedType feedType;
@@ -28,6 +28,7 @@ class ThreeSpeakVideoFeed extends StatefulWidget {
   final String? username;
   final String? searchTerm;
   final String? commnuityId;
+  final String? tag;
 
   const ThreeSpeakVideoFeed({
     super.key,
@@ -45,6 +46,7 @@ class ThreeSpeakVideoFeed extends StatefulWidget {
     this.commnuityId,
     this.onTapUpvote,
     this.onTapComment,
+    this.tag,
   });
 
   @override
@@ -198,6 +200,13 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
           _loading = false;
         });
         return;
+      } else if (widget.feedType == ThreeSpeakVideoFeedType.trendingTagFeed) {
+        items = await _gql.getTrendingTagFeed(
+          widget.tag ?? '',
+          widget.isShorts,
+          0,
+          widget.lang,
+        );
       } else {
         switch (widget.feedType) {
           case ThreeSpeakVideoFeedType.trending:
@@ -268,6 +277,9 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
             // Already handled above
             break;
           case ThreeSpeakVideoFeedType.trendingTags:
+            // Already handled above
+            break;
+          case ThreeSpeakVideoFeedType.trendingTagFeed:
             // Already handled above
             break;
         }
