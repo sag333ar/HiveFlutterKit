@@ -199,28 +199,35 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        titleSpacing: 0,
+        leading: BackButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: Text(widget.item.title ?? "Video Player"),
+      ),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
             final isWideScreen = constraints.maxWidth >= 800;
 
             if (isWideScreen) {
-              // Web/Desktop layout: video player + info on top, related videos grid below
               return SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Centered video player with more width and side padding
                     Center(
                       child: Container(
-                        width: 1600, // Increased width (e.g. 1120px)
+                        width: 1600, 
                         constraints: BoxConstraints(
                           maxWidth: 1800,
                           minWidth: 400,
                         ),
                         margin: const EdgeInsets.symmetric(
                           horizontal: 32,
-                        ), // Space from both sides
+                        ),
                         height: 540,
                         child: AspectRatio(
                           aspectRatio: 16 / 9,
@@ -233,7 +240,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                         ),
                       ),
                     ),
-                    //Video info (centered to match player)
                     Center(
                       child: Container(
                         width: 1600,
@@ -249,23 +255,22 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                     widget.relatedBuilder != null
                         ? widget.relatedBuilder!(context, widget.item)
                         : Container(
-                            constraints: BoxConstraints(
-                              maxWidth: 1800,
-                              minWidth: 400,
-                              maxHeight: 700, // Set a max height for the related feed
-                            ),
-                            margin: const EdgeInsets.symmetric(horizontal: 32),
-                            child: ThreeSpeakVideoFeed(
-                              feedType: ThreeSpeakVideoFeedType.related,
-                              relatedAuthor: widget.item.author?.username,
-                              relatedPermlink: widget.item.permlink,
-                            ),
+                          constraints: BoxConstraints(
+                            maxWidth: 1800,
+                            minWidth: 400,
+                              maxHeight: 700, 
                           ),
+                          margin: const EdgeInsets.symmetric(horizontal: 32),
+                          child: ThreeSpeakVideoFeed(
+                            feedType: ThreeSpeakVideoFeedType.related,
+                            relatedAuthor: widget.item.author?.username,
+                            relatedPermlink: widget.item.permlink,
+                          ),
+                        ),
                   ],
                 ),
               );
             } else {
-              // Mobile layout (stacked)
               return Column(
                 children: [
                   AspectRatio(
@@ -279,12 +284,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                   Divider(height: 1),
                   Expanded(
                     child: widget.relatedBuilder != null
-                        ? widget.relatedBuilder!(context, widget.item)
-                        : ThreeSpeakVideoFeed(
-                            feedType: ThreeSpeakVideoFeedType.related,
-                            relatedAuthor: widget.item.author?.username,
-                            relatedPermlink: widget.item.permlink,
-                          ),
+                            ? widget.relatedBuilder!(context, widget.item)
+                            : ThreeSpeakVideoFeed(
+                              feedType: ThreeSpeakVideoFeedType.related,
+                              relatedAuthor: widget.item.author?.username,
+                              relatedPermlink: widget.item.permlink,
+                            ),
                   ),
                 ],
               );
