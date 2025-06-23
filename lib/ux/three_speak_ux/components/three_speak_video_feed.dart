@@ -112,7 +112,8 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
   }
 
   PreferredSizeWidget? _buildSearchAppBar() {
-    if (!(widget.isSearch && widget.feedType == ThreeSpeakVideoFeedType.search)) {
+    if (!(widget.isSearch &&
+        widget.feedType == ThreeSpeakVideoFeedType.search)) {
       return null;
     }
     return AppBar(
@@ -127,33 +128,35 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
           border: InputBorder.none,
           isDense: true,
           contentPadding: const EdgeInsets.symmetric(vertical: 14),
-          prefixIcon: (_controller!.text.trim().length >= 4)
-              ? Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: UserProfileimage(
-                    url: _controller!.text.trim(),
-                    radius: 16,
-                    verticalPadding: 0,
-                  ),
-                )
-              : null,
+          prefixIcon:
+              (_controller!.text.trim().length >= 4)
+                  ? Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: UserProfileimage(
+                      url: _controller!.text.trim(),
+                      radius: 16,
+                      verticalPadding: 0,
+                    ),
+                  )
+                  : null,
           prefixIconConstraints: const BoxConstraints(
             minWidth: 40,
             minHeight: 40,
           ),
-          suffixIcon: (_controller!.text.isNotEmpty)
-              ? IconButton(
-                  icon: const Icon(Icons.clear, color: Colors.black),
-                  onPressed: () {
-                    setState(() {
-                      _controller!.clear();
-                      _searchText = '';
-                      _debouncedText = '';
-                    });
-                    _fetchFeed();
-                  },
-                )
-              : null,
+          suffixIcon:
+              (_controller!.text.isNotEmpty)
+                  ? IconButton(
+                    icon: const Icon(Icons.clear, color: Colors.black),
+                    onPressed: () {
+                      setState(() {
+                        _controller!.clear();
+                        _searchText = '';
+                        _debouncedText = '';
+                      });
+                      _fetchFeed();
+                    },
+                  )
+                  : null,
         ),
         style: const TextStyle(color: Colors.black),
         onChanged: _onSearchChanged,
@@ -170,7 +173,8 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
       List<GQLFeedItem> items = [];
       // If searchTerm is provided and feedType is search, use search
       if (widget.feedType == ThreeSpeakVideoFeedType.search) {
-        final searchValue = widget.isSearch ? _debouncedText : widget.searchTerm;
+        final searchValue =
+            widget.isSearch ? _debouncedText : widget.searchTerm;
         if (searchValue != null && searchValue.trim().length >= 4) {
           items = await _gql.getSearchFeed(
             searchValue.trim(),
@@ -185,7 +189,11 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
             items = await _gql.getTrendingFeed(widget.isShorts, 0, widget.lang);
             break;
           case ThreeSpeakVideoFeedType.newUploads:
-            items = await _gql.getNewUploadsFeed(widget.isShorts, 0, widget.lang);
+            items = await _gql.getNewUploadsFeed(
+              widget.isShorts,
+              0,
+              widget.lang,
+            );
             break;
           case ThreeSpeakVideoFeedType.hot:
             // If you have a hot feed, implement here
@@ -199,7 +207,8 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
             );
             break;
           case ThreeSpeakVideoFeedType.related:
-            if (widget.relatedAuthor != null && widget.relatedPermlink != null) {
+            if (widget.relatedAuthor != null &&
+                widget.relatedPermlink != null) {
               items = await _gql.getRelated(
                 widget.relatedAuthor!,
                 widget.relatedPermlink!,
@@ -265,29 +274,27 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
       if (username != null && username.isNotEmpty) {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => UserChannelScreen(owner: username,)),
+          MaterialPageRoute(builder: (_) => UserChannelScreen(owner: username)),
         );
       }
     }
   }
 
   void _handleTapVideoItem(BuildContext context, GQLFeedItem item) {
-  if (widget.onTapVideoItem != null) {
-    widget.onTapVideoItem!(item);
-  } else {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => VideoPlayerScreen(item: item),
-      ),
-    );
+    if (widget.onTapVideoItem != null) {
+      widget.onTapVideoItem!(item);
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => VideoPlayerScreen(item: item)),
+      );
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
-    final showSearchBar = widget.isSearch && widget.feedType == ThreeSpeakVideoFeedType.search;
+    final showSearchBar =
+        widget.isSearch && widget.feedType == ThreeSpeakVideoFeedType.search;
     Widget content;
     if (_loading) {
       content = const Center(child: CircularProgressIndicator());
@@ -349,10 +356,7 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
     }
 
     if (showSearchBar) {
-      return Scaffold(
-        appBar: _buildSearchAppBar(),
-        body: content,
-      );
+      return Scaffold(appBar: _buildSearchAppBar(), body: content);
     } else {
       return content;
     }
