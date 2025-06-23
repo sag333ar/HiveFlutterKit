@@ -11,4 +11,5 @@ enum ThreeSpeakVideoFeedType {
   search,
   myFeed,
   trendingTags,
+  trendingTagFeed,
 }
