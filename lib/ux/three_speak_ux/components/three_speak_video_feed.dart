@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/core/common/enum.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/graphql/gql_communicator.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
+import 'package:hive_flutter_kit/core/three_speak_core/models/trending_tags_response.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/user_channel_screen/user_channel_screen.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/video_player.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/user_profile_image.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/video_card_widget.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/visibility_detector.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/trending_tags.dart';
 
 class ThreeSpeakVideoFeed extends StatefulWidget {
   final ThreeSpeakVideoFeedType feedType;
@@ -54,6 +56,8 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
   List<GQLFeedItem> _items = [];
   bool _loading = true;
   String? _error;
+  List<String> _trendingTags = [];
+  TrendingTagResponse? _trendingTagResponse;
 
   // For search bar logic
   String _searchText = '';
@@ -171,7 +175,6 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
     });
     try {
       List<GQLFeedItem> items = [];
-      // If searchTerm is provided and feedType is search, use search
       if (widget.feedType == ThreeSpeakVideoFeedType.search) {
         final searchValue =
             widget.isSearch ? _debouncedText : widget.searchTerm;
@@ -183,6 +186,18 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
             widget.lang,
           );
         }
+      } else if (widget.feedType == ThreeSpeakVideoFeedType.trendingTags) {
+        final tagResponse = await _gql.getTrendingTags();
+        setState(() {
+          _trendingTagResponse = tagResponse;
+          _trendingTags =
+              tagResponse.data?.trendingTags?.tags
+                  ?.map((e) => e.tag)
+                  .toList() ??
+              [];
+          _loading = false;
+        });
+        return;
       } else {
         switch (widget.feedType) {
           case ThreeSpeakVideoFeedType.trending:
@@ -252,6 +267,9 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
           case ThreeSpeakVideoFeedType.search:
             // Already handled above
             break;
+          case ThreeSpeakVideoFeedType.trendingTags:
+            // Already handled above
+            break;
         }
       }
       setState(() {
@@ -300,6 +318,9 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
       content = const Center(child: CircularProgressIndicator());
     } else if (_error != null) {
       content = Center(child: Text('Error: $_error'));
+    } else if (widget.feedType == ThreeSpeakVideoFeedType.trendingTags) {
+      final tags = _trendingTagResponse?.data?.trendingTags?.tags ?? [];
+      content = TrendingTags(tags: tags);
     } else if (_items.isEmpty) {
       content = Center(
         child: Text(
@@ -357,6 +378,8 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
 
     if (showSearchBar) {
       return Scaffold(appBar: _buildSearchAppBar(), body: content);
+    } else if (widget.feedType == ThreeSpeakVideoFeedType.trendingTags) {
+      return Scaffold(body: content);
     } else {
       return content;
     }
