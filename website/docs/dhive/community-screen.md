@@ -1,4 +1,10 @@
-# CommunityScreen
+---
+title: CommunityScreen Widget
+sidebar_label: CommunityScreen
+slug: /dhive/community-screen
+---
+
+# 🏠 CommunityScreen Widget
 
 The `CommunityScreen` widget provides a way to display a feed of posts ("discussions") based on a specific tag, often used to show content from a particular Hive community or posts related to a certain topic. It allows sorting these posts by various criteria (e.g., trending, created, hot). The widget includes features like infinite scrolling for loading more posts and provides callbacks for common user interactions.
 
@@ -6,10 +12,10 @@ The `CommunityScreen` widget provides a way to display a feed of posts ("discuss
 
 ## Features
 
-* Displays discussions based on a tag or community
-* Supports sort options (trending, hot, created, etc.)
-* Infinite scrolling
-* Interaction callbacks for tap, vote, comment, and reblog
+- Displays discussions based on a tag or community
+- Supports sort options (trending, hot, created, etc.)
+- Infinite scrolling
+- Interaction callbacks for tap, vote, comment, and reblog
 
 ---
 
@@ -94,21 +100,23 @@ class MyCommunityFeedScreen extends StatelessWidget {
 
 | List View                 | Grid View                  | Large Preview                  |
 | ------------------------- | -------------------------- | ------------------------------ |
-| ![List View](image-9.png) | ![Grid View](image-10.png) | ![Large Preview](image-11.png) |
+| ![List View](/img/dhive/image-9.png) | ![Grid View](/img/dhive/image-10.png) | ![Large Preview](/img/dhive/image-11.png) |
 
 ---
 
 ## Notes
 
-* Ensure `HiveFlutterKitPlatform` is properly initialized before rendering the screen.
-* Sorting behavior may differ depending on Hive API support for specific sort types.
+- Ensure `HiveFlutterKitPlatform` is properly initialized before rendering the screen.
+- Sorting behavior may differ depending on Hive API support for specific sort types.
 
 ---
 
 ## Related
 
-* `BlogScreen`
-* `CommentsScreen`
-* `Discussion` model
-* `HiveFlutterKitPlatform`
-* `UserProfilePicture`, `ViewList` components
+- [BlogScreen](/dhive/blog-screen.md)
+- [CommentsScreen](/dhive/comments-screen.md)
+- `Discussion` model
+- `HiveFlutterKitPlatform`
+- `UserProfilePicture`, `ViewList` components
+
+---

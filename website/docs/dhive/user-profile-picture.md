@@ -1,15 +1,21 @@
-# UserProfilePicture
+---
+title: UserProfilePicture Widget
+sidebar_label: UserProfilePicture
+slug: /dhive/user-profile-picture
+---
 
-The `UserProfilePicture` widget is designed to display a Hive user's avatar along with their username and key account statistics, such as voting power and resource credits. It is often used in headers, profile pages, or user info popups.
+# 🧑‍💼 UserProfilePicture Widget
+
+The `UserProfilePicture` widget is designed to display a Hive user's avatar, username, and key account statistics such as voting power and resource credits. It is commonly used in headers, profile pages, or user info popups.
 
 ---
 
 ## Features
 
-* Fetches and shows the user's profile picture.
-* Displays username with account stats.
-* Shows upvote/downvote power and resource credits.
-* Optional detail expansion via tap.
+- Fetches and shows the user's profile picture
+- Displays username with account stats
+- Shows upvote/downvote power and resource credits
+- Optional detail expansion via tap
 
 ---
 
@@ -81,21 +87,23 @@ class ProfileHeader extends StatelessWidget {
 
 ## Screenshot
 
-![UserProfile](userProfile.png)
+![UserProfile](/img/dhive/userProfile.png)
 
 ---
 
 ## Notes
 
-* If `onTap` is provided, it disables the built-in toggle for showing/hiding detailed stats.
-* Ensure that `HiveFlutterKitPlatform` is initialized before using this widget.
+- If `onTap` is provided, it disables the built-in toggle for showing/hiding detailed stats.
+- Ensure that `HiveFlutterKitPlatform` is initialized before using this widget.
 
 ---
 
 ## Related
 
-* `RepliesScreen`
-* `CommunityScreen`
-* `Discussion` model
-* `HiveFlutterKitPlatform`
-* `TrendingFeedScreen`
+- [RepliesScreen](/dhive/replies-screen.md)
+- [CommunityScreen](/dhive/community-screen.md)
+- `Discussion` model
+- `HiveFlutterKitPlatform`
+- [TrendingFeedScreen](/dhive/trending-feed-screen.md)
+
+---

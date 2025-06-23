@@ -1,4 +1,10 @@
-# RepliesScreen
+---
+title: RepliesScreen Widget
+sidebar_label: RepliesScreen
+slug: /dhive/replies-screen
+---
+
+# 💬 RepliesScreen Widget
 
 The `RepliesScreen` widget is used to display a scrollable list of replies that a specific Hive account has received on their posts or comments. It fetches discussions using the "replies" filter specific to that account. The widget handles pagination (infinite scrolling) and provides standard interaction callbacks.
 
@@ -6,10 +12,10 @@ The `RepliesScreen` widget is used to display a scrollable list of replies that 
 
 ## Features
 
-* Displays replies received by a Hive account
-* Supports infinite scrolling
-* Interaction callbacks (tap, vote, reply, etc.)
-* Easy to integrate with custom UI
+- Displays replies received by a Hive account
+- Supports infinite scrolling
+- Interaction callbacks (tap, vote, reply, etc.)
+- Easy to integrate with custom UI
 
 ---
 
@@ -61,7 +67,7 @@ class MyAccountRepliesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Replies to @\$accountName"),
+        title: Text("Replies to @$accountName"),
       ),
       body: RepliesScreen(
         dhive: dhive,
@@ -92,21 +98,23 @@ class MyAccountRepliesScreen extends StatelessWidget {
 
 | List View                  | Grid View                  | Large Preview                  |
 | -------------------------- | -------------------------- | ------------------------------ |
-| ![List View](image-12.png) | ![Grid View](image-13.png) | ![Large Preview](image-14.png) |
+| ![List View](/img/dhive/image-12.png) | ![Grid View](/img/dhive/image-13.png) | ![Large Preview](/img/dhive/image-14.png) |
 
 ---
 
 ## Notes
 
-* Reblogging replies may not be supported by default on Hive; customize based on your app behavior.
-* Always ensure `HiveFlutterKitPlatform` is initialized before using the widget.
+- Reblogging replies may not be supported by default on Hive; customize based on your app behavior.
+- Always ensure `HiveFlutterKitPlatform` is initialized before using the widget.
 
 ---
 
 ## Related
 
-* `CommentsScreen`
-* `BlogScreen`
-* `Discussion` model
-* `HiveFlutterKitPlatform`
-* `UserProfilePicture`, `ViewList` components
+- [CommentsScreen](/dhive/comments-screen.md)
+- [BlogScreen](/dhive/blog-screen.md)
+- `Discussion` model
+- `HiveFlutterKitPlatform`
+- `ViewList` components
+
+---

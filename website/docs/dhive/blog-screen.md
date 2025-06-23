@@ -1,4 +1,10 @@
-# BlogScreen
+---
+title: BlogScreen Widget
+sidebar_label: BlogScreen
+slug: /dhive/blog-screen
+---
+
+# 📝 BlogScreen Widget
 
 The `BlogScreen` is a Flutter widget provided by the `hive_flutter_kit` package, used to display a scrollable list of blog entries (original posts and reblogs) from a Hive blockchain account.
 
@@ -8,10 +14,10 @@ It offers a familiar "blog" format of content display, complete with infinite sc
 
 ## Features
 
-* Displays original posts and reblogs
-* Infinite scrolling support
-* Customizable interaction callbacks
-* Easy integration with existing Flutter views
+- Displays original posts and reblogs
+- Infinite scrolling support
+- Customizable interaction callbacks
+- Easy integration with existing Flutter views
 
 ---
 
@@ -63,7 +69,7 @@ class MyBlogDisplayScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Blog of @\$accountName"),
+        title: Text("Blog of @$accountName"),
       ),
       body: BlogScreen(
         dhive: dhive,
@@ -101,20 +107,22 @@ class MyBlogDisplayScreen extends StatelessWidget {
 
 | List View                 | Grid View                 | Large Preview                 |
 | ------------------------- | ------------------------- | ----------------------------- |
-| ![List View](image-3.png) | ![Grid View](image-4.png) | ![Large Preview](image-5.png) |
+| ![List View](/img/dhive/image-3.png) | ![Grid View](/img/dhive/image-4.png) | ![Large Preview](/img/dhive/image-5.png) |
 
 ---
 
 ## Notes
 
-* Ensure the `HiveFlutterKitPlatform` is initialized before passing to `BlogScreen`.
-* Useful for profile-style content feeds or public blog viewers.
+- Ensure the `HiveFlutterKitPlatform` is initialized before passing to `BlogScreen`.
+- Useful for profile-style content feeds or public blog viewers.
 
 ---
 
 ## Related
 
-* `AccountPostsScreen`
-* `Discussion` model
-* `HiveFlutterKitPlatform`
-* `UserProfilePicture`, `ViewList` components
+- [AccountPostsScreen](/dhive/account-posts-screen.md)
+- `Discussion` model
+- `HiveFlutterKitPlatform`
+- `ViewList` components
+
+---

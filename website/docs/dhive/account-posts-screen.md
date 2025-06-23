@@ -1,14 +1,22 @@
-# AccountPostsScreen
+---
+title: AccountPostsScreen Widget
+sidebar_label: AccountPostsScreen
+slug: /dhive/account-posts-screen
+---
+
+# 🧑‍💻 AccountPostsScreen Widget
 
 The `AccountPostsScreen` is a Flutter widget provided by the `hive_flutter_kit` package, designed to display a scrollable list of blog posts for a specific Hive blockchain user.
 
 It provides a rich UI experience with optional interactions like tapping on authors, upvoting, commenting, or reblogging.
 
+---
+
 ## Features
 
-* Infinite scroll of posts by a Hive user
-* Fully customizable callbacks for tap interactions
-* Reusable and embeddable in any Flutter screen
+- Infinite scroll of posts by a Hive user
+- Fully customizable callbacks for tap interactions
+- Reusable and embeddable in any Flutter screen
 
 ---
 
@@ -95,20 +103,21 @@ class MyFeedScreen extends StatelessWidget {
 
 | List View               | Grid View                 | Large Preview                 |
 | ----------------------- | ------------------------- | ----------------------------- |
-| ![List View](image.png) | ![Grid View](image-1.png) | ![Large Preview](image-2.png) |
+| ![List View](/img/dhive/image.png) | ![Grid View](/img/dhive/image-1.png) | ![Large Preview](/img/dhive/image-2.png) |
 
 ---
 
 ## Notes
 
-* Ensure `HiveFlutterKitPlatform` is properly initialized before using this widget.
-* Works best with a `Discussion` model as defined in your core Hive types.
+- Ensure `HiveFlutterKitPlatform` is properly initialized before using this widget.
+- Works best with a `Discussion` model as defined in your core Hive types.
 
 ---
 
 ## Related
 
-* `ViewList`
-* `ViewComments`
-* `UserProfilePicture`
-* `ViewMode` enum for layout types
+- `ViewList`
+- `ViewComments`
+- `ViewMode` enum for layout types
+
+---
