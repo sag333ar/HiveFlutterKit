@@ -229,6 +229,17 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
               );
             }
             break;
+          case ThreeSpeakVideoFeedType.myFeed:
+            final user = widget.username;
+            if (user != null && user.isNotEmpty) {
+              items = await _gql.getMyFeed(
+                user,
+                widget.isShorts,
+                0,
+                widget.lang,
+              );
+            }
+            break;
           case ThreeSpeakVideoFeedType.search:
             // Already handled above
             break;
