@@ -7,6 +7,7 @@ import 'package:hive_flutter_kit/core/models/discussion.dart';
 import 'package:hive_flutter_kit/core/models/resource_credits.dart';
 import 'package:hive_flutter_kit/core/models/voting_power.dart';
 import 'package:hive_flutter_kit/core/models/community_model.dart';
+import 'package:hive_flutter_kit/core/three_speak_core/models/communities_models/community_subscriber.dart';
 
 import 'dart:typed_data';
 import 'package:image_picker/image_picker.dart';
@@ -333,5 +334,13 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
     String? memo,
   ) {
     throw UnimplementedError('transfer() has not been implemented.');
+  }
+
+  Future<List<CommunitySubscriber>> getCommunitySubscribers(
+    String community, {
+    int limit = 100,
+    String? last,
+  }) {
+    throw UnimplementedError('getCommunitySubscribers has not been implemented.');
   }
 }

@@ -10,6 +10,7 @@ import 'package:hive_flutter_kit/core/models/discussion.dart';
 import 'package:hive_flutter_kit/core/models/resource_credits.dart';
 import 'package:hive_flutter_kit/core/models/voting_power.dart';
 import 'package:hive_flutter_kit/core/models/community_model.dart';
+import 'package:hive_flutter_kit/core/three_speak_core/models/communities_models/community_subscriber.dart';
 
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
@@ -1034,6 +1035,53 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
       } catch (e) {
         // Send error back as a JSON string
         window.flutter_inappwebview.callHandler('$handlerName', JSON.stringify({ error: e.message || e.toString() }));
+      }
+    })();
+    """;
+
+    await headlessWebView.webViewController?.evaluateJavascript(source: jsCall);
+    return completer.future;
+  }
+
+  @override
+  Future<List<CommunitySubscriber>> getCommunitySubscribers(
+    String community, {
+    int limit = 100,
+    String? last,
+  }) async {
+    final completer = Completer<List<CommunitySubscriber>>();
+    final handlerName = 'getCommunitySubscribersResult_${DateTime.now().millisecondsSinceEpoch}';
+
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: handlerName,
+      callback: (args) {
+        if (!completer.isCompleted) {
+          final contentData = args.isNotEmpty ? args[0].toString() : null;
+          if (contentData != null && contentData != 'null' && contentData.isNotEmpty) {
+            try {
+              final subscribers = CommunitySubscriber.listFromJsonString(contentData);
+              completer.complete(subscribers);
+            } catch (e) {
+              completer.completeError('Failed to parse subscribers: $e');
+            }
+          } else {
+            completer.completeError('Failed to get subscribers or empty response');
+          }
+        }
+        headlessWebView.webViewController?.removeJavaScriptHandler(handlerName: handlerName);
+      },
+    );
+
+    final jsCommunity = jsonEncode(community);
+    final jsLast = last == null ? 'null' : jsonEncode(last);
+
+    final jsCall = """
+    (async () => {
+      try {
+        const result = await getCommunitySubscribers($jsCommunity, $limit, $jsLast);
+        window.flutter_inappwebview.callHandler('$handlerName', result || 'null');
+      } catch (e) {
+        window.flutter_inappwebview.callHandler('$handlerName', JSON.stringify([]));
       }
     })();
     """;

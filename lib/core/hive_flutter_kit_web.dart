@@ -18,6 +18,7 @@ import 'package:hive_flutter_kit/core/models/discussion.dart';
 import 'package:hive_flutter_kit/core/models/resource_credits.dart';
 import 'package:hive_flutter_kit/core/models/voting_power.dart';
 import 'package:hive_flutter_kit/core/models/community_model.dart';
+import 'package:hive_flutter_kit/core/three_speak_core/models/communities_models/community_subscriber.dart';
 
 import 'hive_flutter_kit_platform_interface.dart';
 
@@ -63,6 +64,13 @@ external dynamic getListOfCommunitiesJS(
 
 @JS('getCommentsList')
 external Object getCommentsListJS(String author, String permlink);
+
+@JS('getCommunitySubscribers')
+external dynamic getCommunitySubscribersJS(
+  String community,
+  int limit,
+  String? last,
+);
 
 // -------------------------------------------------------------------------
 
@@ -514,5 +522,16 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
     // For now, we'll return the raw string, but ideally, this should be
     // parsed into a structured Dart object or throw a Dart exception.
     return result as String;
+  }
+
+  @override
+  Future<List<CommunitySubscriber>> getCommunitySubscribers(
+    String community, {
+    int limit = 100,
+    String? last,
+  }) async {
+    var promise = getCommunitySubscribersJS(community, limit, last);
+    var jsonString = await promiseToFuture(promise);
+    return CommunitySubscriber.listFromJsonString(jsonString);
   }
 }
