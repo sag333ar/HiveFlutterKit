@@ -1,4 +1,5 @@
 enum ViewMode { list, grid, large }
+
 enum ThreeSpeakVideoFeedType {
   trending,
   newUploads,
@@ -9,4 +10,5 @@ enum ThreeSpeakVideoFeedType {
   commnuityFeed,
   search,
   myFeed,
-} 
+  trendingTags,
+}
