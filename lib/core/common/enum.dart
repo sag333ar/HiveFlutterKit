@@ -8,4 +8,5 @@ enum ThreeSpeakVideoFeedType {
   userFeed,
   commnuityFeed,
   search,
+  myFeed,
 } 
