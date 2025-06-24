@@ -4,7 +4,7 @@ import 'package:hive_flutter_kit/core/models/discussion.dart';
 import 'package:hive_flutter_kit/ux/dhive/common_list_view/view_comments.dart';
 
 class CommentsScreen extends StatefulWidget {
-  final HiveFlutterKitPlatform dhive;
+  final HiveFlutterKitPlatform hfk;
   final String account;
   final Function? onTap;
   final Function? onAuthorTap;
@@ -16,7 +16,7 @@ class CommentsScreen extends StatefulWidget {
 
   const CommentsScreen({
     super.key,
-    required this.dhive,
+    required this.hfk,
     required this.account,
     this.onTap,
     this.onAuthorTap,
@@ -62,7 +62,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
     });
 
     try {
-      final result = await widget.dhive.getAccountPosts(
+      final result = await widget.hfk.getAccountPosts(
         widget.account,
         "comments",
         limit: pageSize,
@@ -86,7 +86,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
     final lastComment = comments.last;
 
     try {
-      final moreComments = await widget.dhive.getAccountPosts(
+      final moreComments = await widget.hfk.getAccountPosts(
         widget.account,
         "comments",
         limit: pageSize + 1,

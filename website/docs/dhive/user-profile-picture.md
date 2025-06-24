@@ -24,7 +24,7 @@ The `UserProfilePicture` widget is designed to display a Hive user's avatar, use
 ```dart
 UserProfilePicture({
   required String username,
-  required HiveFlutterKitPlatform dhive,
+  required HiveFlutterKitPlatform hfk,
   bool showDetails = false,
   bool showDetailsDisabled = false,
   Color upvoteColor = Colors.green,
@@ -40,7 +40,7 @@ UserProfilePicture({
 | Parameter              | Type                     | Default        | Description                              |
 | ---------------------- | ------------------------ | -------------- | ---------------------------------------- |
 | `username`             | `String`                 | —              | Hive username to fetch and display       |
-| `dhive`                | `HiveFlutterKitPlatform` | —              | Instance used to fetch user data         |
+| `hfk`                | `HiveFlutterKitPlatform` | —              | Instance used to fetch user data         |
 | `showDetails`          | `bool`                   | `false`        | Whether to initially show detailed stats |
 | `showDetailsDisabled`  | `bool`                   | `false`        | Prevents toggling stats display on tap   |
 | `upvoteColor`          | `Color`                  | `Colors.green` | Color of the upvote power bar            |
@@ -58,16 +58,16 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/hive_flutter_kit.dart';
 
 class ProfileHeader extends StatelessWidget {
-  final HiveFlutterKitPlatform dhive;
+  final HiveFlutterKitPlatform hfk;
 
-  const ProfileHeader({super.key, required this.dhive});
+  const ProfileHeader({super.key, required this.hfk});
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: UserProfilePicture(
         username: "someuser",
-        dhive: dhive,
+        hfk: hfk,
         showDetails: true,
         showDetailsDisabled: false,
         upvoteColor: Colors.green,

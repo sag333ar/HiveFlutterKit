@@ -24,7 +24,7 @@ The `CommentsScreen` widget is designed to display a scrollable list of comments
 ```dart
 CommentsScreen({
   Key? key,
-  required HiveFlutterKitPlatform dhive,
+  required HiveFlutterKitPlatform hfk,
   required String account,
   void Function(Discussion comment)? onTap,
   void Function(String author)? onAuthorTap,
@@ -40,7 +40,7 @@ CommentsScreen({
 | Parameter       | Type                     | Required | Description                                       |
 | --------------- | ------------------------ | -------- | ------------------------------------------------- |
 | `key`           | `Key?`                   | No       | Flutter widget key                                |
-| `dhive`         | `HiveFlutterKitPlatform` | Yes      | Hive platform instance used for fetching comments |
+| `hfk`         | `HiveFlutterKitPlatform` | Yes      | Hive platform instance used for fetching comments |
 | `account`       | `String`                 | Yes      | Hive account username                             |
 | `onTap`         | `Function(Discussion)?`  | No       | Called when a comment is tapped                   |
 | `onAuthorTap`   | `Function(String)?`      | No       | Called when author's avatar/name is tapped        |
@@ -58,10 +58,10 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/hive_flutter_kit.dart';
 
 class MyCommentsViewScreen extends StatelessWidget {
-  final HiveFlutterKitPlatform dhive;
+  final HiveFlutterKitPlatform hfk;
   final String accountName = "gtg";
 
-  const MyCommentsViewScreen({super.key, required this.dhive});
+  const MyCommentsViewScreen({super.key, required this.hfk});
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +70,7 @@ class MyCommentsViewScreen extends StatelessWidget {
         title: Text("Comments by @$accountName"),
       ),
       body: CommentsScreen(
-        dhive: dhive,
+        hfk: hfk,
         account: accountName,
         onTap: (Discussion comment) {
           print("Tapped on comment: \${comment.permlink}");
@@ -89,8 +89,8 @@ class MyCommentsViewScreen extends StatelessWidget {
 
 // main() async {
 //   WidgetsFlutterBinding.ensureInitialized();
-//   final dhive = await HiveFlutterKit.platform.initialize(...);
-//   runApp(MaterialApp(home: MyCommentsViewScreen(dhive: dhive)));
+//   final hfk = await HiveFlutterKit.platform.initialize(...);
+//   runApp(MaterialApp(home: MyCommentsViewScreen(hfk: hfk)));
 // }
 ```
 

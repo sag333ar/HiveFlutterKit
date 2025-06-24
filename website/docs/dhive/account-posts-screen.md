@@ -25,7 +25,7 @@ It provides a rich UI experience with optional interactions like tapping on auth
 ```dart
 AccountPostsScreen({
   Key? key,
-  required HiveFlutterKitPlatform dhive,
+  required HiveFlutterKitPlatform hfk,
   required String account,
   void Function(Discussion post)? onTap,
   void Function(String author)? onAuthorTap,
@@ -41,7 +41,7 @@ AccountPostsScreen({
 | Parameter       | Type                     | Required | Description                                 |
 | --------------- | ------------------------ | -------- | ------------------------------------------- |
 | `key`           | `Key?`                   | No       | Flutter widget key                          |
-| `dhive`         | `HiveFlutterKitPlatform` | Yes      | The platform instance for Hive interactions |
+| `hfk`         | `HiveFlutterKitPlatform` | Yes      | The platform instance for Hive interactions |
 | `account`       | `String`                 | Yes      | Hive username whose posts to load           |
 | `onTap`         | `Function(Discussion)?`  | No       | Called when a post is tapped                |
 | `onAuthorTap`   | `Function(String)?`      | No       | Called when author name or avatar is tapped |
@@ -59,10 +59,10 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/hive_flutter_kit.dart';
 
 class MyFeedScreen extends StatelessWidget {
-  final HiveFlutterKitPlatform dhive;
+  final HiveFlutterKitPlatform hfk;
   final String accountName = "hivebuzz";
 
-  const MyFeedScreen({super.key, required this.dhive});
+  const MyFeedScreen({super.key, required this.hfk});
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +71,7 @@ class MyFeedScreen extends StatelessWidget {
         title: Text("Posts by @$accountName"),
       ),
       body: AccountPostsScreen(
-        dhive: dhive,
+        hfk: hfk,
         account: accountName,
         onTap: (post) {
           print("Tapped on post: \${post.permlink}");

@@ -25,7 +25,7 @@ The `TrendingFeedScreen` widget displays a feed of trending posts from the Hive 
 ```dart
 TrendingFeedScreen({
   Key? key,
-  required HiveFlutterKitPlatform dhive,
+  required HiveFlutterKitPlatform hfk,
   String sortBy = "trending",
   void Function(Discussion post)? onTap,
   void Function(String author)? onAuthorTap,
@@ -41,7 +41,7 @@ TrendingFeedScreen({
 | Parameter       | Type                     | Required | Description                                 |
 | --------------- | ------------------------ | -------- | ------------------------------------------- |
 | `key`           | `Key?`                   | No       | Flutter widget key                          |
-| `dhive`         | `HiveFlutterKitPlatform` | Yes      | Hive platform instance for API access       |
+| `hfk`         | `HiveFlutterKitPlatform` | Yes      | Hive platform instance for API access       |
 | `sortBy`        | `String`                 | No       | Sort method (default: "trending")           |
 | `onTap`         | `Function(Discussion)?`  | No       | Called when a post is tapped                |
 | `onAuthorTap`   | `Function(String)?`      | No       | Called when author name/avatar is tapped    |
@@ -59,9 +59,9 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/hive_flutter_kit.dart';
 
 class MyTrendingFeedScreen extends StatelessWidget {
-  final HiveFlutterKitPlatform dhive;
+  final HiveFlutterKitPlatform hfk;
 
-  const MyTrendingFeedScreen({super.key, required this.dhive});
+  const MyTrendingFeedScreen({super.key, required this.hfk});
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +70,7 @@ class MyTrendingFeedScreen extends StatelessWidget {
         title: Text("Trending Posts"),
       ),
       body: TrendingFeedScreen(
-        dhive: dhive,
+        hfk: hfk,
         sortBy: "trending",
         onTap: (Discussion post) {
           print("Tapped on post: @\${post.author}/\${post.permlink}");

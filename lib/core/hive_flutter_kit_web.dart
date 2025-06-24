@@ -3,7 +3,6 @@
 // package as the core of your plugin.
 // ignore: avoid_web_libraries_in_flutter
 
-import 'dart:html' as html;
 import 'dart:async';
 import 'dart:convert';
 import 'package:hive_flutter_kit/core/models/login_model.dart';

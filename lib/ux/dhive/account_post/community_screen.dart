@@ -4,7 +4,7 @@ import 'package:hive_flutter_kit/core/models/discussion.dart';
 import '../common_list_view/view_list.dart';
 
 class CommunityScreen extends StatefulWidget {
-  final HiveFlutterKitPlatform dhive;
+  final HiveFlutterKitPlatform hfk;
   final String tag;
   final String sortBy;
   final Function? onTap;
@@ -17,7 +17,7 @@ class CommunityScreen extends StatefulWidget {
 
   const CommunityScreen({
     super.key,
-    required this.dhive,
+    required this.hfk,
     required this.tag,
     required this.sortBy,
     this.onTap,
@@ -64,7 +64,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
     });
 
     try {
-      final posts = await widget.dhive.getDiscussions(
+      final posts = await widget.hfk.getDiscussions(
         widget.sortBy,
         limit: pageSize,
         tag: widget.tag,
@@ -88,7 +88,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
     final lastPost = discussions.last;
 
     try {
-      final morePosts = await widget.dhive.getDiscussions(
+      final morePosts = await widget.hfk.getDiscussions(
         widget.sortBy,
         limit: pageSize + 1,
         tag: widget.tag,

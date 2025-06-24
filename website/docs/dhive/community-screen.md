@@ -24,7 +24,7 @@ The `CommunityScreen` widget provides a way to display a feed of posts ("discuss
 ```dart
 CommunityScreen({
   Key? key,
-  required HiveFlutterKitPlatform dhive,
+  required HiveFlutterKitPlatform hfk,
   required String tag,
   required String sortBy,
   void Function(Discussion post)? onTap,
@@ -41,7 +41,7 @@ CommunityScreen({
 | Parameter       | Type                     | Required | Description                                |
 | --------------- | ------------------------ | -------- | ------------------------------------------ |
 | `key`           | `Key?`                   | No       | Flutter widget key                         |
-| `dhive`         | `HiveFlutterKitPlatform` | Yes      | Hive platform instance for API access      |
+| `hfk`         | `HiveFlutterKitPlatform` | Yes      | Hive platform instance for API access      |
 | `tag`           | `String`                 | Yes      | Community tag or topic to fetch posts from |
 | `sortBy`        | `String`                 | Yes      | Sort method (e.g., trending, hot, created) |
 | `onTap`         | `Function(Discussion)?`  | No       | Called when a post is tapped               |
@@ -60,11 +60,11 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/hive_flutter_kit.dart';
 
 class MyCommunityFeedScreen extends StatelessWidget {
-  final HiveFlutterKitPlatform dhive;
+  final HiveFlutterKitPlatform hfk;
   final String communityTag = "hive-125125";
   final String sortOrder = "trending";
 
-  const MyCommunityFeedScreen({super.key, required this.dhive});
+  const MyCommunityFeedScreen({super.key, required this.hfk});
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +73,7 @@ class MyCommunityFeedScreen extends StatelessWidget {
         title: Text("Trending in \$communityTag"),
       ),
       body: CommunityScreen(
-        dhive: dhive,
+        hfk: hfk,
         tag: communityTag,
         sortBy: sortOrder,
         onTap: (Discussion post) {
@@ -89,8 +89,8 @@ class MyCommunityFeedScreen extends StatelessWidget {
 
 // main() async {
 //   WidgetsFlutterBinding.ensureInitialized();
-//   final dhive = await HiveFlutterKit.platform.initialize(...);
-//   runApp(MaterialApp(home: MyCommunityFeedScreen(dhive: dhive)));
+//   final hfk = await HiveFlutterKit.platform.initialize(...);
+//   runApp(MaterialApp(home: MyCommunityFeedScreen(hfk: hfk)));
 // }
 ```
 
