@@ -23,7 +23,7 @@ The `UpvoteBottomSheet` widget provides a modal interface for viewing the list o
 
 ## Screenshot
 
-![UpvoteBottomSheet Example](/img/dhive/upvote-bottom-sheet.png)
+<!-- ![UpvoteBottomSheet Example](/img/dhive/upvote-bottom-sheet.png) -->
 
 ---
 

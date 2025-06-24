@@ -216,4 +216,4 @@ void navigateToVideoPlayerScreen(GQLFeedItem item) {
 ![User Feed](/img/threespeak/userfeed.png)
 
 ### Community Feed
-![Community Feed](/img/threespeak/communityfeed.png)
+<!-- ![Community Feed](/img/threespeak/communityfeed.png) -->

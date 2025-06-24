@@ -90,7 +90,7 @@ class MyTrendingFeedScreen extends StatelessWidget {
 
 | List View                 | Grid View                  | Large Preview                  |
 | ------------------------- | -------------------------- | ------------------------------ |
-| ![List View](/img/dhive/image-16.png) | ![Grid View](/img/dhive/image-17.png) | ![Large Preview](/img/dhive/image-18.png) |
+<!-- | ![List View](/img/dhive/image-16.png) | ![Grid View](/img/dhive/image-17.png) | ![Large Preview](/img/dhive/image-18.png) | -->
 
 ---
 
