@@ -1991,6 +1991,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
                 child: const Text('Show Related Videos'),
               ),
+              
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -2035,6 +2036,20 @@ class _MyHomePageState extends State<MyHomePage> {
                   );
                 },
                 child: const Text('Show 3Speak Community Screen'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ThreeSpeakVideoFeed(
+                        feedType: ThreeSpeakVideoFeedType.trendingTags,
+
+                      ),
+                    ),
+                  );
+                },
+                child: const Text('trending tags'),
               ),
             ],
           ),
