@@ -1,4 +1,10 @@
-# CommentsScreen
+---
+title: CommentsScreen Widget
+sidebar_label: CommentsScreen
+slug: /dhive/comments-screen
+---
+
+# 🗨️ CommentsScreen Widget
 
 The `CommentsScreen` widget is designed to display a scrollable list of comments authored by a specific Hive account. It manages fetching these comments from the blockchain, presenting them to the user, and implementing an infinite scroll mechanism to load older comments as the user scrolls. Like other similar widgets in the kit, it supports various callbacks for user interactions.
 
@@ -6,10 +12,10 @@ The `CommentsScreen` widget is designed to display a scrollable list of comments
 
 ## Features
 
-* Displays user-authored comments from Hive
-* Supports infinite scrolling
-* Offers interaction callbacks (tap, upvote, etc.)
-* Customizable UI integration
+- Displays user-authored comments from Hive
+- Supports infinite scrolling
+- Offers interaction callbacks (tap, upvote, etc.)
+- Customizable UI integration
 
 ---
 
@@ -18,7 +24,7 @@ The `CommentsScreen` widget is designed to display a scrollable list of comments
 ```dart
 CommentsScreen({
   Key? key,
-  required HiveFlutterKitPlatform dhive,
+  required HiveFlutterKitPlatform hfk,
   required String account,
   void Function(Discussion comment)? onTap,
   void Function(String author)? onAuthorTap,
@@ -34,7 +40,7 @@ CommentsScreen({
 | Parameter       | Type                     | Required | Description                                       |
 | --------------- | ------------------------ | -------- | ------------------------------------------------- |
 | `key`           | `Key?`                   | No       | Flutter widget key                                |
-| `dhive`         | `HiveFlutterKitPlatform` | Yes      | Hive platform instance used for fetching comments |
+| `hfk`         | `HiveFlutterKitPlatform` | Yes      | Hive platform instance used for fetching comments |
 | `account`       | `String`                 | Yes      | Hive account username                             |
 | `onTap`         | `Function(Discussion)?`  | No       | Called when a comment is tapped                   |
 | `onAuthorTap`   | `Function(String)?`      | No       | Called when author's avatar/name is tapped        |
@@ -52,19 +58,19 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/hive_flutter_kit.dart';
 
 class MyCommentsViewScreen extends StatelessWidget {
-  final HiveFlutterKitPlatform dhive;
+  final HiveFlutterKitPlatform hfk;
   final String accountName = "gtg";
 
-  const MyCommentsViewScreen({super.key, required this.dhive});
+  const MyCommentsViewScreen({super.key, required this.hfk});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Comments by @\$accountName"),
+        title: Text("Comments by @$accountName"),
       ),
       body: CommentsScreen(
-        dhive: dhive,
+        hfk: hfk,
         account: accountName,
         onTap: (Discussion comment) {
           print("Tapped on comment: \${comment.permlink}");
@@ -83,8 +89,8 @@ class MyCommentsViewScreen extends StatelessWidget {
 
 // main() async {
 //   WidgetsFlutterBinding.ensureInitialized();
-//   final dhive = await HiveFlutterKit.platform.initialize(...);
-//   runApp(MaterialApp(home: MyCommentsViewScreen(dhive: dhive)));
+//   final hfk = await HiveFlutterKit.platform.initialize(...);
+//   runApp(MaterialApp(home: MyCommentsViewScreen(hfk: hfk)));
 // }
 ```
 
@@ -94,20 +100,22 @@ class MyCommentsViewScreen extends StatelessWidget {
 
 | List View                 | Grid View                 | Large Preview                 |
 | ------------------------- | ------------------------- | ----------------------------- |
-| ![List View](image-6.png) | ![Grid View](image-7.png) | ![Large Preview](image-8.png) |
+| ![List View](/img/dhive/image-6.png) | ![Grid View](/img/dhive/image-7.png) | ![Large Preview](/img/dhive/image-8.png) |
 
 ---
 
 ## Notes
 
-* Reblogging comments is not natively supported by Hive; custom behavior might be app-specific.
-* Ensure `HiveFlutterKitPlatform` is properly initialized before use.
+- Reblogging comments is not natively supported by Hive; custom behavior might be app-specific.
+- Ensure `HiveFlutterKitPlatform` is properly initialized before use.
 
 ---
 
 ## Related
 
-* `BlogScreen`
-* `Discussion` model
-* `HiveFlutterKitPlatform`
-* `UserProfilePicture`, `ViewList` components
+- [BlogScreen](/dhive/blog-screen.md)
+- `Discussion` model
+- `HiveFlutterKitPlatform`
+- `ViewList` components
+
+---

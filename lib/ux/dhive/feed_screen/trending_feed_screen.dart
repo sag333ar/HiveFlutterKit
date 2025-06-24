@@ -4,7 +4,7 @@ import 'package:hive_flutter_kit/core/models/discussion.dart';
 import '../common_list_view/view_list.dart';
 
 class TrendingFeedScreen extends StatefulWidget {
-  final HiveFlutterKitPlatform dhive;
+  final HiveFlutterKitPlatform hfk;
   final Function? onTap;
   final Function? onAuthorTap;
   final Function? onCategoryTap;
@@ -15,7 +15,7 @@ class TrendingFeedScreen extends StatefulWidget {
 
   const TrendingFeedScreen({
     super.key,
-    required this.dhive,
+    required this.hfk,
     this.onTap,
     this.onAuthorTap,
     this.onCategoryTap,
@@ -63,7 +63,7 @@ class _TrendingFeedScreenState extends State<TrendingFeedScreen> {
     });
 
     try {
-      final posts = await widget.dhive.getDiscussions(
+      final posts = await widget.hfk.getDiscussions(
         sortBy,
         limit: pageSize,
         tag: tag,
@@ -87,7 +87,7 @@ class _TrendingFeedScreenState extends State<TrendingFeedScreen> {
     final lastPost = discussions.last;
 
     try {
-      final morePosts = await widget.dhive.getDiscussions(
+      final morePosts = await widget.hfk.getDiscussions(
         sortBy,
         limit: pageSize + 1,
         tag: tag,

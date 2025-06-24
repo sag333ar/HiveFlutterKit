@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit/core/models/discussion.dart';
 import 'package:hive_flutter_kit/ux/upvote.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:provider/provider.dart';
 import 'dart:math' as math;
 
 class CommentTile extends StatefulWidget {
@@ -395,10 +393,7 @@ class _CommentTileState extends State<CommentTile>
                             return;
                           }
                           // Show upvote dialog with slider and thumb icon
-                          final hfk = Provider.of<HiveFlutterKitPlatform>(
-                            context,
-                            listen: false,
-                          );
+                          final hfk = HiveFlutterKitPlatform.instance;
                           final result = await showDialog(
                             context: context,
                             builder:

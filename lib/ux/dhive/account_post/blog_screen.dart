@@ -4,7 +4,7 @@ import 'package:hive_flutter_kit/core/models/discussion.dart';
 import 'package:hive_flutter_kit/ux/dhive/common_list_view/blog_list.dart';
 
 class BlogScreen extends StatefulWidget {
-  final HiveFlutterKitPlatform dhive;
+  final HiveFlutterKitPlatform hfk;
   final String account;
   final Function? onTap;
   final Function? onAuthorTap;
@@ -16,7 +16,7 @@ class BlogScreen extends StatefulWidget {
 
   const BlogScreen({
     super.key,
-    required this.dhive,
+    required this.hfk,
     required this.account,
     this.onTap,
     this.onAuthorTap,
@@ -62,7 +62,7 @@ class _BlogScreenState extends State<BlogScreen> {
     });
 
     try {
-      final result = await widget.dhive.getAccountPosts(
+      final result = await widget.hfk.getAccountPosts(
         widget.account,
         "blog",
         limit: pageSize,
@@ -86,7 +86,7 @@ class _BlogScreenState extends State<BlogScreen> {
     final lastPost = posts.last;
 
     try {
-      final morePosts = await widget.dhive.getAccountPosts(
+      final morePosts = await widget.hfk.getAccountPosts(
         widget.account,
         "blog",
         limit: pageSize + 1,

@@ -1,14 +1,22 @@
-# AccountPostsScreen
+---
+title: AccountPostsScreen Widget
+sidebar_label: AccountPostsScreen
+slug: /dhive/account-posts-screen
+---
+
+# 🧑‍💻 AccountPostsScreen Widget
 
 The `AccountPostsScreen` is a Flutter widget provided by the `hive_flutter_kit` package, designed to display a scrollable list of blog posts for a specific Hive blockchain user.
 
 It provides a rich UI experience with optional interactions like tapping on authors, upvoting, commenting, or reblogging.
 
+---
+
 ## Features
 
-* Infinite scroll of posts by a Hive user
-* Fully customizable callbacks for tap interactions
-* Reusable and embeddable in any Flutter screen
+- Infinite scroll of posts by a Hive user
+- Fully customizable callbacks for tap interactions
+- Reusable and embeddable in any Flutter screen
 
 ---
 
@@ -17,7 +25,7 @@ It provides a rich UI experience with optional interactions like tapping on auth
 ```dart
 AccountPostsScreen({
   Key? key,
-  required HiveFlutterKitPlatform dhive,
+  required HiveFlutterKitPlatform hfk,
   required String account,
   void Function(Discussion post)? onTap,
   void Function(String author)? onAuthorTap,
@@ -33,7 +41,7 @@ AccountPostsScreen({
 | Parameter       | Type                     | Required | Description                                 |
 | --------------- | ------------------------ | -------- | ------------------------------------------- |
 | `key`           | `Key?`                   | No       | Flutter widget key                          |
-| `dhive`         | `HiveFlutterKitPlatform` | Yes      | The platform instance for Hive interactions |
+| `hfk`         | `HiveFlutterKitPlatform` | Yes      | The platform instance for Hive interactions |
 | `account`       | `String`                 | Yes      | Hive username whose posts to load           |
 | `onTap`         | `Function(Discussion)?`  | No       | Called when a post is tapped                |
 | `onAuthorTap`   | `Function(String)?`      | No       | Called when author name or avatar is tapped |
@@ -51,10 +59,10 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/hive_flutter_kit.dart';
 
 class MyFeedScreen extends StatelessWidget {
-  final HiveFlutterKitPlatform dhive;
+  final HiveFlutterKitPlatform hfk;
   final String accountName = "hivebuzz";
 
-  const MyFeedScreen({super.key, required this.dhive});
+  const MyFeedScreen({super.key, required this.hfk});
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +71,7 @@ class MyFeedScreen extends StatelessWidget {
         title: Text("Posts by @$accountName"),
       ),
       body: AccountPostsScreen(
-        dhive: dhive,
+        hfk: hfk,
         account: accountName,
         onTap: (post) {
           print("Tapped on post: \${post.permlink}");
@@ -95,20 +103,21 @@ class MyFeedScreen extends StatelessWidget {
 
 | List View               | Grid View                 | Large Preview                 |
 | ----------------------- | ------------------------- | ----------------------------- |
-| ![List View](image.png) | ![Grid View](image-1.png) | ![Large Preview](image-2.png) |
+| ![List View](/img/dhive/image.png) | ![Grid View](/img/dhive/image-1.png) | ![Large Preview](/img/dhive/image-2.png) |
 
 ---
 
 ## Notes
 
-* Ensure `HiveFlutterKitPlatform` is properly initialized before using this widget.
-* Works best with a `Discussion` model as defined in your core Hive types.
+- Ensure `HiveFlutterKitPlatform` is properly initialized before using this widget.
+- Works best with a `Discussion` model as defined in your core Hive types.
 
 ---
 
 ## Related
 
-* `ViewList`
-* `ViewComments`
-* `UserProfilePicture`
-* `ViewMode` enum for layout types
+- `ViewList`
+- `ViewComments`
+- `ViewMode` enum for layout types
+
+---

@@ -1,4 +1,10 @@
-# RepliesScreen
+---
+title: RepliesScreen Widget
+sidebar_label: RepliesScreen
+slug: /dhive/replies-screen
+---
+
+# 💬 RepliesScreen Widget
 
 The `RepliesScreen` widget is used to display a scrollable list of replies that a specific Hive account has received on their posts or comments. It fetches discussions using the "replies" filter specific to that account. The widget handles pagination (infinite scrolling) and provides standard interaction callbacks.
 
@@ -6,10 +12,10 @@ The `RepliesScreen` widget is used to display a scrollable list of replies that 
 
 ## Features
 
-* Displays replies received by a Hive account
-* Supports infinite scrolling
-* Interaction callbacks (tap, vote, reply, etc.)
-* Easy to integrate with custom UI
+- Displays replies received by a Hive account
+- Supports infinite scrolling
+- Interaction callbacks (tap, vote, reply, etc.)
+- Easy to integrate with custom UI
 
 ---
 
@@ -18,7 +24,7 @@ The `RepliesScreen` widget is used to display a scrollable list of replies that 
 ```dart
 RepliesScreen({
   Key? key,
-  required HiveFlutterKitPlatform dhive,
+  required HiveFlutterKitPlatform hfk,
   required String account,
   void Function(Discussion reply)? onTap,
   void Function(String author)? onAuthorTap,
@@ -34,7 +40,7 @@ RepliesScreen({
 | Parameter       | Type                     | Required | Description                                      |
 | --------------- | ------------------------ | -------- | ------------------------------------------------ |
 | `key`           | `Key?`                   | No       | Flutter widget key                               |
-| `dhive`         | `HiveFlutterKitPlatform` | Yes      | Hive platform instance used for fetching replies |
+| `hfk`         | `HiveFlutterKitPlatform` | Yes      | Hive platform instance used for fetching replies |
 | `account`       | `String`                 | Yes      | Hive account username to get replies for         |
 | `onTap`         | `Function(Discussion)?`  | No       | Called when a reply is tapped                    |
 | `onAuthorTap`   | `Function(String)?`      | No       | Called when author's avatar/name is tapped       |
@@ -52,19 +58,19 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/hive_flutter_kit.dart';
 
 class MyAccountRepliesScreen extends StatelessWidget {
-  final HiveFlutterKitPlatform dhive;
+  final HiveFlutterKitPlatform hfk;
   final String accountName = "peakd";
 
-  const MyAccountRepliesScreen({super.key, required this.dhive});
+  const MyAccountRepliesScreen({super.key, required this.hfk});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Replies to @\$accountName"),
+        title: Text("Replies to @$accountName"),
       ),
       body: RepliesScreen(
-        dhive: dhive,
+        hfk: hfk,
         account: accountName,
         onTap: (Discussion reply) {
           print("Tapped on reply from @\${reply.author}: \${reply.permlink}");
@@ -81,8 +87,8 @@ class MyAccountRepliesScreen extends StatelessWidget {
 // Example initialization
 // void main() async {
 //   WidgetsFlutterBinding.ensureInitialized();
-//   final dhive = await HiveFlutterKit.platform.initialize(...);
-//   runApp(MaterialApp(home: MyAccountRepliesScreen(dhive: dhive)));
+//   final hfk = await HiveFlutterKit.platform.initialize(...);
+//   runApp(MaterialApp(home: MyAccountRepliesScreen(hfk: hfk)));
 // }
 ```
 
@@ -92,21 +98,23 @@ class MyAccountRepliesScreen extends StatelessWidget {
 
 | List View                  | Grid View                  | Large Preview                  |
 | -------------------------- | -------------------------- | ------------------------------ |
-| ![List View](image-12.png) | ![Grid View](image-13.png) | ![Large Preview](image-14.png) |
+| ![List View](/img/dhive/image-12.png) | ![Grid View](/img/dhive/image-13.png) | ![Large Preview](/img/dhive/image-14.png) |
 
 ---
 
 ## Notes
 
-* Reblogging replies may not be supported by default on Hive; customize based on your app behavior.
-* Always ensure `HiveFlutterKitPlatform` is initialized before using the widget.
+- Reblogging replies may not be supported by default on Hive; customize based on your app behavior.
+- Always ensure `HiveFlutterKitPlatform` is initialized before using the widget.
 
 ---
 
 ## Related
 
-* `CommentsScreen`
-* `BlogScreen`
-* `Discussion` model
-* `HiveFlutterKitPlatform`
-* `UserProfilePicture`, `ViewList` components
+- [CommentsScreen](/dhive/comments-screen.md)
+- [BlogScreen](/dhive/blog-screen.md)
+- `Discussion` model
+- `HiveFlutterKitPlatform`
+- `ViewList` components
+
+---

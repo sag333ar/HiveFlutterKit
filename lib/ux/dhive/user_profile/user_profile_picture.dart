@@ -4,7 +4,7 @@ import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 
 class UserProfilePicture extends StatefulWidget {
   final String username;
-  final HiveFlutterKitPlatform dhive;
+  final HiveFlutterKitPlatform hfk;
   final bool showDetails;
   final bool showDetailsDisabled;
   final Color upvoteColor;
@@ -16,7 +16,7 @@ class UserProfilePicture extends StatefulWidget {
   const UserProfilePicture({
     super.key,
     required this.username,
-    required this.dhive,
+    required this.hfk,
     this.showDetails = false,
     this.showDetailsDisabled = false,
     this.upvoteColor = Colors.green,
@@ -48,8 +48,8 @@ class _UserProfilePictureState extends State<UserProfilePicture> {
       await Future.delayed(
         const Duration(seconds: 1),
       ); // For simulating loading
-      final voting = await widget.dhive.getVotingPower(widget.username);
-      final rc = await widget.dhive.getResourceCredits(widget.username);
+      final voting = await widget.hfk.getVotingPower(widget.username);
+      final rc = await widget.hfk.getResourceCredits(widget.username);
 
       setState(() {
         upvotePower = voting.upvotePower ?? 0;

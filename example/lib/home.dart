@@ -17,7 +17,6 @@ import 'package:hive_flutter_kit/ux/dhive/account_post/community_screen.dart';
 import 'package:hive_flutter_kit/ux/dhive/account_post/replies_screen.dart';
 import 'package:hive_flutter_kit/ux/dhive/feed_screen/trending_feed_screen.dart';
 import 'package:hive_flutter_kit/ux/dhive/user_profile/user_profile_picture.dart';
-import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -63,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    hfk = Provider.of<HiveFlutterKitPlatform>(context, listen: false);
+    hfk = HiveFlutterKitPlatform.instance;
   }
 
   @override
@@ -1227,7 +1226,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 height:
                                     MediaQuery.of(context).size.height * 0.85,
                                 child: CommunityScreen(
-                                  dhive: hfk,
+                                  hfk: hfk,
                                   sortBy: 'trending',
                                   tag: 'hive-163772',
                                   onTap: (discussion) async {
@@ -1263,7 +1262,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         MaterialPageRoute(
                           builder:
                               (_) => CommunityScreen(
-                                dhive: hfk,
+                                hfk: hfk,
                                 sortBy: 'hot',
                                 tag: 'hive-163772',
                                 onTap: (discussion) async {
@@ -1306,7 +1305,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 height:
                                     MediaQuery.of(context).size.height * 0.85,
                                 child: AccountPostsScreen(
-                                  dhive: hfk,
+                                  hfk: hfk,
                                   account: 'sagarkothari88',
                                   onTap: (discussion) {
                                     debugPrint(
@@ -1330,7 +1329,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         MaterialPageRoute(
                           builder:
                               (_) => AccountPostsScreen(
-                                dhive: hfk,
+                                hfk: hfk,
                                 account: 'sagarkothari88',
                                 onTap: (discussion) {
                                   debugPrint('Tapped on: ${discussion.title}');
@@ -1358,7 +1357,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 height:
                                     MediaQuery.of(context).size.height * 0.85,
                                 child: CommentsScreen(
-                                  dhive: hfk,
+                                  hfk: hfk,
                                   account: 'sagarkothari88',
                                   onTap: (discussion) {
                                     debugPrint(
@@ -1382,7 +1381,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         MaterialPageRoute(
                           builder:
                               (_) => CommentsScreen(
-                                dhive: hfk,
+                                hfk: hfk,
                                 account: 'sagarkothari88',
                                 onTap: (discussion) {
                                   debugPrint(
@@ -1412,7 +1411,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 height:
                                     MediaQuery.of(context).size.height * 0.85,
                                 child: BlogScreen(
-                                  dhive: hfk,
+                                  hfk: hfk,
                                   account: 'sagarkothari88',
                                   onTap: (discussion) {
                                     debugPrint(
@@ -1436,7 +1435,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         MaterialPageRoute(
                           builder:
                               (_) => BlogScreen(
-                                dhive: hfk,
+                                hfk: hfk,
                                 account: 'techcoderx',
                                 onTap: (discussion) {
                                   debugPrint(
@@ -1466,7 +1465,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 height:
                                     MediaQuery.of(context).size.height * 0.85,
                                 child: RepliesScreen(
-                                  dhive: hfk,
+                                  hfk: hfk,
                                   account: 'sagarkothari88',
                                   onTap: (discussion) {
                                     debugPrint(
@@ -1490,7 +1489,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         MaterialPageRoute(
                           builder:
                               (_) => RepliesScreen(
-                                dhive: hfk,
+                                hfk: hfk,
                                 account: 'sagarkothari88',
                                 onTap: (discussion) {
                                   debugPrint(
@@ -1520,7 +1519,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 height:
                                     MediaQuery.of(context).size.height * 0.85,
                                 child: TrendingFeedScreen(
-                                  dhive: hfk,
+                                  hfk: hfk,
                                   onTap: (discussion) {
                                     debugPrint(
                                       'Tapped feed item: ${discussion.title}',
@@ -1543,7 +1542,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         MaterialPageRoute(
                           builder:
                               (_) => TrendingFeedScreen(
-                                dhive: hfk,
+                                hfk: hfk,
                                 onTap: (discussion) {
                                   debugPrint(
                                     'Tapped feed item: ${discussion.title}',
@@ -1573,7 +1572,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   padding: const EdgeInsets.all(16),
                                   child: UserProfilePicture(
                                     username: 'sagarkothari88',
-                                    dhive: hfk,
+                                    hfk: hfk,
                                     showDetails: true,
                                     onTap: () {
                                       debugPrint('Profile picture tapped!');
@@ -1602,7 +1601,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 body: Center(
                                   child: UserProfilePicture(
                                     username: 'sagarkothari88',
-                                    dhive: hfk,
+                                    hfk: hfk,
                                     // showDetails: true,
                                     // showBars:false,
                                     // onTap: () {

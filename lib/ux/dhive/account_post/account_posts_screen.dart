@@ -4,7 +4,7 @@ import 'package:hive_flutter_kit/core/models/discussion.dart';
 import '../common_list_view/view_list.dart';
 
 class AccountPostsScreen extends StatefulWidget {
-  final HiveFlutterKitPlatform dhive;
+  final HiveFlutterKitPlatform hfk;
   final String account;
   final Function? onTap;
   final Function? onAuthorTap;
@@ -16,7 +16,7 @@ class AccountPostsScreen extends StatefulWidget {
 
   const AccountPostsScreen({
     super.key,
-    required this.dhive,
+    required this.hfk,
     required this.account,
     this.onTap,
     this.onAuthorTap,
@@ -62,7 +62,7 @@ class _AccountPostsScreenState extends State<AccountPostsScreen> {
     });
 
     try {
-      final result = await widget.dhive.getAccountPosts(
+      final result = await widget.hfk.getAccountPosts(
         widget.account,
         "posts",
         limit: pageSize,
@@ -86,7 +86,7 @@ class _AccountPostsScreenState extends State<AccountPostsScreen> {
     final lastPost = posts.last;
 
     try {
-      final morePosts = await widget.dhive.getAccountPosts(
+      final morePosts = await widget.hfk.getAccountPosts(
         widget.account,
         "posts",
         limit: pageSize + 1,

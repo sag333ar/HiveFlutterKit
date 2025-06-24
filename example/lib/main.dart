@@ -1,21 +1,10 @@
-import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit_example/home.dart';
 import 'package:flutter/material.dart';
 
-import 'package:provider/provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(
-    MultiProvider(
-      providers: [
-        Provider<HiveFlutterKitPlatform>.value(
-          value: HiveFlutterKitPlatform.instance,
-        ),
-      ],
-      child: const MyApp(),
-    ),
-  );
+  runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {

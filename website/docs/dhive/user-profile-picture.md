@@ -1,15 +1,21 @@
-# UserProfilePicture
+---
+title: UserProfilePicture Widget
+sidebar_label: UserProfilePicture
+slug: /dhive/user-profile-picture
+---
 
-The `UserProfilePicture` widget is designed to display a Hive user's avatar along with their username and key account statistics, such as voting power and resource credits. It is often used in headers, profile pages, or user info popups.
+# 🧑‍💼 UserProfilePicture Widget
+
+The `UserProfilePicture` widget is designed to display a Hive user's avatar, username, and key account statistics such as voting power and resource credits. It is commonly used in headers, profile pages, or user info popups.
 
 ---
 
 ## Features
 
-* Fetches and shows the user's profile picture.
-* Displays username with account stats.
-* Shows upvote/downvote power and resource credits.
-* Optional detail expansion via tap.
+- Fetches and shows the user's profile picture
+- Displays username with account stats
+- Shows upvote/downvote power and resource credits
+- Optional detail expansion via tap
 
 ---
 
@@ -18,7 +24,7 @@ The `UserProfilePicture` widget is designed to display a Hive user's avatar alon
 ```dart
 UserProfilePicture({
   required String username,
-  required HiveFlutterKitPlatform dhive,
+  required HiveFlutterKitPlatform hfk,
   bool showDetails = false,
   bool showDetailsDisabled = false,
   Color upvoteColor = Colors.green,
@@ -34,7 +40,7 @@ UserProfilePicture({
 | Parameter              | Type                     | Default        | Description                              |
 | ---------------------- | ------------------------ | -------------- | ---------------------------------------- |
 | `username`             | `String`                 | —              | Hive username to fetch and display       |
-| `dhive`                | `HiveFlutterKitPlatform` | —              | Instance used to fetch user data         |
+| `hfk`                | `HiveFlutterKitPlatform` | —              | Instance used to fetch user data         |
 | `showDetails`          | `bool`                   | `false`        | Whether to initially show detailed stats |
 | `showDetailsDisabled`  | `bool`                   | `false`        | Prevents toggling stats display on tap   |
 | `upvoteColor`          | `Color`                  | `Colors.green` | Color of the upvote power bar            |
@@ -52,16 +58,16 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/hive_flutter_kit.dart';
 
 class ProfileHeader extends StatelessWidget {
-  final HiveFlutterKitPlatform dhive;
+  final HiveFlutterKitPlatform hfk;
 
-  const ProfileHeader({super.key, required this.dhive});
+  const ProfileHeader({super.key, required this.hfk});
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: UserProfilePicture(
         username: "someuser",
-        dhive: dhive,
+        hfk: hfk,
         showDetails: true,
         showDetailsDisabled: false,
         upvoteColor: Colors.green,
@@ -81,21 +87,23 @@ class ProfileHeader extends StatelessWidget {
 
 ## Screenshot
 
-![UserProfile](userProfile.png)
+![UserProfile](/img/dhive/userProfile.png)
 
 ---
 
 ## Notes
 
-* If `onTap` is provided, it disables the built-in toggle for showing/hiding detailed stats.
-* Ensure that `HiveFlutterKitPlatform` is initialized before using this widget.
+- If `onTap` is provided, it disables the built-in toggle for showing/hiding detailed stats.
+- Ensure that `HiveFlutterKitPlatform` is initialized before using this widget.
 
 ---
 
 ## Related
 
-* `RepliesScreen`
-* `CommunityScreen`
-* `Discussion` model
-* `HiveFlutterKitPlatform`
-* `TrendingFeedScreen`
+- [RepliesScreen](/dhive/replies-screen.md)
+- [CommunityScreen](/dhive/community-screen.md)
+- `Discussion` model
+- `HiveFlutterKitPlatform`
+- [TrendingFeedScreen](/dhive/trending-feed-screen.md)
+
+---

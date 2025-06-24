@@ -1,4 +1,10 @@
-# CommunityScreen
+---
+title: CommunityScreen Widget
+sidebar_label: CommunityScreen
+slug: /dhive/community-screen
+---
+
+# 🏠 CommunityScreen Widget
 
 The `CommunityScreen` widget provides a way to display a feed of posts ("discussions") based on a specific tag, often used to show content from a particular Hive community or posts related to a certain topic. It allows sorting these posts by various criteria (e.g., trending, created, hot). The widget includes features like infinite scrolling for loading more posts and provides callbacks for common user interactions.
 
@@ -6,10 +12,10 @@ The `CommunityScreen` widget provides a way to display a feed of posts ("discuss
 
 ## Features
 
-* Displays discussions based on a tag or community
-* Supports sort options (trending, hot, created, etc.)
-* Infinite scrolling
-* Interaction callbacks for tap, vote, comment, and reblog
+- Displays discussions based on a tag or community
+- Supports sort options (trending, hot, created, etc.)
+- Infinite scrolling
+- Interaction callbacks for tap, vote, comment, and reblog
 
 ---
 
@@ -18,7 +24,7 @@ The `CommunityScreen` widget provides a way to display a feed of posts ("discuss
 ```dart
 CommunityScreen({
   Key? key,
-  required HiveFlutterKitPlatform dhive,
+  required HiveFlutterKitPlatform hfk,
   required String tag,
   required String sortBy,
   void Function(Discussion post)? onTap,
@@ -35,7 +41,7 @@ CommunityScreen({
 | Parameter       | Type                     | Required | Description                                |
 | --------------- | ------------------------ | -------- | ------------------------------------------ |
 | `key`           | `Key?`                   | No       | Flutter widget key                         |
-| `dhive`         | `HiveFlutterKitPlatform` | Yes      | Hive platform instance for API access      |
+| `hfk`         | `HiveFlutterKitPlatform` | Yes      | Hive platform instance for API access      |
 | `tag`           | `String`                 | Yes      | Community tag or topic to fetch posts from |
 | `sortBy`        | `String`                 | Yes      | Sort method (e.g., trending, hot, created) |
 | `onTap`         | `Function(Discussion)?`  | No       | Called when a post is tapped               |
@@ -54,11 +60,11 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/hive_flutter_kit.dart';
 
 class MyCommunityFeedScreen extends StatelessWidget {
-  final HiveFlutterKitPlatform dhive;
+  final HiveFlutterKitPlatform hfk;
   final String communityTag = "hive-125125";
   final String sortOrder = "trending";
 
-  const MyCommunityFeedScreen({super.key, required this.dhive});
+  const MyCommunityFeedScreen({super.key, required this.hfk});
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +73,7 @@ class MyCommunityFeedScreen extends StatelessWidget {
         title: Text("Trending in \$communityTag"),
       ),
       body: CommunityScreen(
-        dhive: dhive,
+        hfk: hfk,
         tag: communityTag,
         sortBy: sortOrder,
         onTap: (Discussion post) {
@@ -83,8 +89,8 @@ class MyCommunityFeedScreen extends StatelessWidget {
 
 // main() async {
 //   WidgetsFlutterBinding.ensureInitialized();
-//   final dhive = await HiveFlutterKit.platform.initialize(...);
-//   runApp(MaterialApp(home: MyCommunityFeedScreen(dhive: dhive)));
+//   final hfk = await HiveFlutterKit.platform.initialize(...);
+//   runApp(MaterialApp(home: MyCommunityFeedScreen(hfk: hfk)));
 // }
 ```
 
@@ -94,21 +100,23 @@ class MyCommunityFeedScreen extends StatelessWidget {
 
 | List View                 | Grid View                  | Large Preview                  |
 | ------------------------- | -------------------------- | ------------------------------ |
-| ![List View](image-9.png) | ![Grid View](image-10.png) | ![Large Preview](image-11.png) |
+| ![List View](/img/dhive/image-9.png) | ![Grid View](/img/dhive/image-10.png) | ![Large Preview](/img/dhive/image-11.png) |
 
 ---
 
 ## Notes
 
-* Ensure `HiveFlutterKitPlatform` is properly initialized before rendering the screen.
-* Sorting behavior may differ depending on Hive API support for specific sort types.
+- Ensure `HiveFlutterKitPlatform` is properly initialized before rendering the screen.
+- Sorting behavior may differ depending on Hive API support for specific sort types.
 
 ---
 
 ## Related
 
-* `BlogScreen`
-* `CommentsScreen`
-* `Discussion` model
-* `HiveFlutterKitPlatform`
-* `UserProfilePicture`, `ViewList` components
+- [BlogScreen](/dhive/blog-screen.md)
+- [CommentsScreen](/dhive/comments-screen.md)
+- `Discussion` model
+- `HiveFlutterKitPlatform`
+- `UserProfilePicture`, `ViewList` components
+
+---
