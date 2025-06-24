@@ -4,7 +4,7 @@ import 'package:hive_flutter_kit/core/models/discussion.dart';
 import '../common_list_view/view_comments.dart';
 
 class RepliesScreen extends StatefulWidget {
-  final HiveFlutterKitPlatform dhive;
+  final HiveFlutterKitPlatform hfk;
   final String account;
   final Function? onTap;
   final Function? onAuthorTap;
@@ -16,7 +16,7 @@ class RepliesScreen extends StatefulWidget {
 
   const RepliesScreen({
     super.key,
-    required this.dhive,
+    required this.hfk,
     required this.account,
     this.onTap,
     this.onAuthorTap,
@@ -62,7 +62,7 @@ class _RepliesScreenState extends State<RepliesScreen> {
     });
 
     try {
-      final result = await widget.dhive.getAccountPosts(
+      final result = await widget.hfk.getAccountPosts(
         widget.account,
         "replies",
         limit: pageSize,
@@ -86,7 +86,7 @@ class _RepliesScreenState extends State<RepliesScreen> {
     final lastReply = replies.last;
 
     try {
-      final moreReplies = await widget.dhive.getAccountPosts(
+      final moreReplies = await widget.hfk.getAccountPosts(
         widget.account,
         "replies",
         limit: pageSize + 1,
