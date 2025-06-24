@@ -4,6 +4,7 @@ import 'package:hive_flutter_kit/core/common/enum.dart';
 import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit/core/models/community_model.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter_kit/ux/dhive/comments/hive_post_comments.dart';
 import 'package:hive_flutter_kit/ux/login_screen.dart';
 import 'package:hive_flutter_kit/ux/switch_user.dart';
 import 'package:hive_flutter_kit/ux/dhive/community_list/community_list.dart';
@@ -51,8 +52,10 @@ class _MyHomePageState extends State<MyHomePage> {
   String? _broadcastResult;
 
   // --- Transfer State Variables ---
-  final TextEditingController _transferRecipientController = TextEditingController();
-  final TextEditingController _transferAmountController = TextEditingController();
+  final TextEditingController _transferRecipientController =
+      TextEditingController();
+  final TextEditingController _transferAmountController =
+      TextEditingController();
   final TextEditingController _transferMemoController = TextEditingController();
   String _transferAssetSymbol = 'HIVE'; // Default asset
   String? _transferResult;
@@ -72,10 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _loginWithHiveKeychain() async {
     try {
-      final result = await hfk.loginWithKeychain(
-        _usernameController.text,
-        '',
-      );
+      final result = await hfk.loginWithKeychain(_usernameController.text, '');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -98,9 +98,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final recipient = _transferRecipientController.text;
     final amountString = _transferAmountController.text;
-    final memo = _transferMemoController.text.isEmpty
-        ? null
-        : _transferMemoController.text;
+    final memo =
+        _transferMemoController.text.isEmpty
+            ? null
+            : _transferMemoController.text;
 
     if (recipient.isEmpty) {
       setState(() {
@@ -118,7 +119,8 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     } catch (e) {
       setState(() {
-        _transferResult = 'Error: Invalid amount. Please enter a positive number.';
+        _transferResult =
+            'Error: Invalid amount. Please enter a positive number.';
         _isTransferring = false;
       });
       return;
@@ -148,10 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _loginWithHiveAuth() async {
     try {
       _startTimer();
-      final result = await hfk.loginWithHiveAuth(
-        _usernameController.text,
-        '',
-      );
+      final result = await hfk.loginWithHiveAuth(_usernameController.text, '');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -182,11 +181,7 @@ class _MyHomePageState extends State<MyHomePage> {
         return;
       }
 
-      final result = await hfk.loginWithPlaintextKey(
-        username,
-        postingKey,
-        '',
-      );
+      final result = await hfk.loginWithPlaintextKey(username, postingKey, '');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -547,11 +542,7 @@ class _MyHomePageState extends State<MyHomePage> {
         return;
       }
       // Example: add 'hfk' to Posting authority with weight 1
-      final result = await hfk.addAccountAuthority(
-        "threespeak",
-        'posting',
-        1,
-      );
+      final result = await hfk.addAccountAuthority("threespeak", 'posting', 1);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Add Account Authority: $result')));
@@ -572,10 +563,7 @@ class _MyHomePageState extends State<MyHomePage> {
         return;
       }
       // Example: remove 'hfk' from Posting authority
-      final result = await hfk.removeAccountAuthority(
-        'threespeak',
-        'posting',
-      );
+      final result = await hfk.removeAccountAuthority('threespeak', 'posting');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Remove Account Authority: $result')),
       );
@@ -1205,8 +1193,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   showDialog(
                     context: context,
                     builder:
-                        (context) =>
-                            AlertDialog(content: SwitchUser(hfk: hfk)),
+                        (context) => AlertDialog(content: SwitchUser(hfk: hfk)),
                   );
                 },
                 child: const Text('Switch User (Dialog)'),
@@ -1672,6 +1659,21 @@ class _MyHomePageState extends State<MyHomePage> {
                   ],
                 ),
               ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => HivePostComments(
+                            author: 'sagarkothari88', // Example author
+                            permlink: 'fuhitntzfw', // Example permlink
+                          ),
+                    ),
+                  );
+                },
+                child: const Text('Show HivePostComments'),
+              ),
 
               qrString.isEmpty || timerDuration == 0
                   ? const SizedBox.shrink()
@@ -1768,7 +1770,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8.0,
+                  vertical: 4.0,
+                ),
                 child: TextField(
                   controller: _transferRecipientController,
                   decoration: const InputDecoration(
@@ -1778,7 +1783,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8.0,
+                  vertical: 4.0,
+                ),
                 child: TextField(
                   controller: _transferAmountController,
                   decoration: const InputDecoration(
@@ -1789,20 +1797,25 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8.0,
+                  vertical: 4.0,
+                ),
                 child: DropdownButtonFormField<String>(
                   value: _transferAssetSymbol,
                   decoration: const InputDecoration(
                     labelText: 'Asset',
                     border: OutlineInputBorder(),
                   ),
-                  items: <String>['HIVE', 'HBD']
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
+                  items:
+                      <String>['HIVE', 'HBD'].map<DropdownMenuItem<String>>((
+                        String value,
+                      ) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
                   onChanged: (String? newValue) {
                     if (newValue != null) {
                       setState(() {
@@ -1813,7 +1826,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8.0,
+                  vertical: 4.0,
+                ),
                 child: TextField(
                   controller: _transferMemoController,
                   decoration: const InputDecoration(
@@ -1824,13 +1840,14 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               ElevatedButton(
                 onPressed: _isTransferring ? null : _transferFunds,
-                child: _isTransferring
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Text('Transfer Funds'),
+                child:
+                    _isTransferring
+                        ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                        : const Text('Transfer Funds'),
               ),
               if (_transferResult != null)
                 Padding(
@@ -1978,9 +1995,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                   context,
                                   MaterialPageRoute(
                                     builder:
-                                        (context) => VideoPlayerScreen(
-                                          item: item,
-                                        ),
+                                        (context) =>
+                                            VideoPlayerScreen(item: item),
                                   ),
                                 );
                               },
@@ -1991,24 +2007,27 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
                 child: const Text('Show Related Videos'),
               ),
-              
+
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ThreeSpeakVideoFeed(
-                        feedType: ThreeSpeakVideoFeedType.search,
-                        isSearch: true,
-                        onTapVideoItem: (item) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => VideoPlayerScreen(item: item),
-                            ),
-                          );
-                        },
-                      ),
+                      builder:
+                          (context) => ThreeSpeakVideoFeed(
+                            feedType: ThreeSpeakVideoFeedType.search,
+                            isSearch: true,
+                            onTapVideoItem: (item) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) =>
+                                          VideoPlayerScreen(item: item),
+                                ),
+                              );
+                            },
+                          ),
                     ),
                   );
                 },
@@ -2019,19 +2038,22 @@ class _MyHomePageState extends State<MyHomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ThreespeakCommnuityScreen(
-                        communityId: 'hive-163772',
-                        title: 'Worldmappin',
-                        onTapVideoItem: (item) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => VideoPlayerScreen(item: item),
-                            ),
-                          );
-                        },
-                        // Optionally add onTapAuthor, onTapVideosTab, etc.
-                      ),
+                      builder:
+                          (context) => ThreespeakCommnuityScreen(
+                            communityId: 'hive-163772',
+                            title: 'Worldmappin',
+                            onTapVideoItem: (item) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) =>
+                                          VideoPlayerScreen(item: item),
+                                ),
+                              );
+                            },
+                            // Optionally add onTapAuthor, onTapVideosTab, etc.
+                          ),
                     ),
                   );
                 },
@@ -2042,10 +2064,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ThreeSpeakVideoFeed(
-                        feedType: ThreeSpeakVideoFeedType.trendingTags,
-
-                      ),
+                      builder:
+                          (context) => ThreeSpeakVideoFeed(
+                            feedType: ThreeSpeakVideoFeedType.trendingTags,
+                          ),
                     ),
                   );
                 },

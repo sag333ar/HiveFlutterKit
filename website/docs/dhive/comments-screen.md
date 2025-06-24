@@ -4,9 +4,23 @@ sidebar_label: Comments
 slug: /dhive/comments-screen
 ---
 
-# 🗨️ Dhive - User's Comments
+# 🗨️ DHive - User's Comments
 
 The `CommentsScreen` widget is designed to display a scrollable list of comments authored by a specific Hive account. It manages fetching these comments from the blockchain, presenting them to the user, and implementing an infinite scroll mechanism to load older comments as the user scrolls. Like other similar widgets in the kit, it supports various callbacks for user interactions.
+
+---
+
+## Screenshots
+
+### List View
+![List View](/img/dhive/image-6.png)
+
+### Grid View
+![Grid View](/img/dhive/image-7.png)
+
+### Large Preview
+ ![Large Preview](/img/dhive/image-8.png)
+
 
 ---
 
@@ -93,14 +107,6 @@ class MyCommentsViewScreen extends StatelessWidget {
 //   runApp(MaterialApp(home: MyCommentsViewScreen(hfk: hfk)));
 // }
 ```
-
----
-
-## Screenshots
-
-| List View                 | Grid View                 | Large Preview                 |
-| ------------------------- | ------------------------- | ----------------------------- |
-| ![List View](/img/dhive/image-6.png) | ![Grid View](/img/dhive/image-7.png) | ![Large Preview](/img/dhive/image-8.png) |
 
 ---
 
