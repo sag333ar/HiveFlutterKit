@@ -10,6 +10,10 @@ import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_u
 import 'package:another_tus_client/another_tus_client.dart';
 import 'package:http/http.dart' as http;
 
+// Global endpoints
+const String kThreeSpeakUploadUrl = 'https://uploads.3speak.tv/files/';
+const String kThreeSpeakApiUrl = 'https://studio.3speak.tv/mobile/api';
+
 class ThumbnailUploadScreen extends StatefulWidget {
   final String uploadUrl;
   final String oFilename;
@@ -18,6 +22,7 @@ class ThumbnailUploadScreen extends StatefulWidget {
   final double duration;
   final String owner;
   final String token;
+  final UploadSuccessCallback? onUploadSuccess;
 
   const ThumbnailUploadScreen({
     super.key,
@@ -28,6 +33,7 @@ class ThumbnailUploadScreen extends StatefulWidget {
     required this.owner,
     required this.filename,
     required this.token,
+    this.onUploadSuccess,
   });
 
   @override
@@ -91,7 +97,7 @@ class _ThumbnailUploadScreenState extends State<ThumbnailUploadScreen> {
       final client = TusClient(_thumbnailFile!, store: TusMemoryStore());
 
       await client.upload(
-        uri: Uri.parse("https://uploads.3speak.tv/files"),
+        uri: Uri.parse(kThreeSpeakUploadUrl),
         onProgress: (progress, _) {
           if (mounted) {
             setState(() {
@@ -104,12 +110,12 @@ class _ThumbnailUploadScreenState extends State<ThumbnailUploadScreen> {
 
       final thumbnailUrl = client.uploadUrl.toString();
       final thumbnailFilename = thumbnailUrl.replaceAll(
-        'https://uploads.3speak.tv/files/',
+        kThreeSpeakUploadUrl,
         '',
       );
 
       final response = await http.post(
-        Uri.parse('https://studio.3speak.tv/mobile/api/upload_info'),
+        Uri.parse('$kThreeSpeakApiUrl/upload_info'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ${widget.token}',
@@ -131,13 +137,13 @@ class _ThumbnailUploadScreenState extends State<ThumbnailUploadScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder:
-                  (context) => UploadInfoScreen(
-                    videoId: resp['_id'],
-                    thumbnail: thumbnailFilename,
-                    token: widget.token,
-                    owner: widget.owner,
-                  ),
+              builder: (context) => UploadInfoScreen(
+                videoId: resp['_id'],
+                thumbnail: thumbnailFilename,
+                token: widget.token,
+                owner: widget.owner,
+                onUploadSuccess: widget.onUploadSuccess,
+              ),
             ),
           );
         }

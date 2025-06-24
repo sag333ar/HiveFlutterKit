@@ -1,17 +1,21 @@
 import 'dart:convert';
-import 'package:hive_flutter_kit/core/models/login_model.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/video_ops.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/components/beneficaries_tile.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/my_videos_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+
+// Global endpoints
+const String kThreeSpeakApiUrl = 'https://studio.3speak.tv/mobile/api';
+
+typedef UploadSuccessCallback = void Function(Map<String, dynamic> response);
 
 class UploadInfoScreen extends StatefulWidget {
   final String videoId;
   final String thumbnail;
   final String token;
   final String owner;
+  final UploadSuccessCallback? onUploadSuccess;
 
   const UploadInfoScreen({
     super.key,
@@ -19,6 +23,7 @@ class UploadInfoScreen extends StatefulWidget {
     required this.thumbnail,
     required this.token,
     required this.owner,
+    this.onUploadSuccess,
   });
 
   @override
@@ -135,7 +140,7 @@ class _UploadInfoScreenState extends State<UploadInfoScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse('https://studio.3speak.tv/mobile/api/update_info'),
+        Uri.parse('$kThreeSpeakApiUrl/update_info'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': '${widget.token}',
@@ -144,16 +149,15 @@ class _UploadInfoScreenState extends State<UploadInfoScreen> {
       );
 
       if (response.statusCode == 200) {
+        final respObj = jsonDecode(response.body);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Video info updated successfully!')),
         );
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MyVideosScreen(token: widget.token),
-          ),
-        );
+        if (widget.onUploadSuccess != null) {
+          widget.onUploadSuccess!(respObj);
+        }
+        // Optionally pop this screen if needed:
+        Navigator.of(context).maybePop();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

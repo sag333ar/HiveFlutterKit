@@ -1877,6 +1877,11 @@ class _MyHomePageState extends State<MyHomePage> {
                             owner: 'shaktimaaan',
                             token:
                                 "REMOVED",
+                            onUploadSuccess: (response) {
+                              // Handle the response object here
+                              print('Upload success: $response');
+                              // You can update state, show a dialog, etc.
+                            },
                           ),
                     ),
                   );
