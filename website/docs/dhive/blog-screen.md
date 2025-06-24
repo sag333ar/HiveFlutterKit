@@ -1,10 +1,10 @@
 ---
-title: BlogScreen Widget
-sidebar_label: BlogScreen
+title: DHive - User's Blog
+sidebar_label: Blog
 slug: /dhive/blog-screen
 ---
 
-# 📝 BlogScreen Widget
+# 📝 DHive - User's Blog
 
 The `BlogScreen` is a Flutter widget provided by the `hive_flutter_kit` package, used to display a scrollable list of blog entries (original posts and reblogs) from a Hive blockchain account.
 
