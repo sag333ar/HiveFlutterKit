@@ -130,7 +130,7 @@ class _UploadInfoScreenState extends State<UploadInfoScreen> {
       'beneficiaries': json.encode(bene.map((e) => e.toJson()).toList()),
       if (scheduledDate != null)
         'scheduledPublishTime': scheduledDate.toUtc().toIso8601String(),
-      // 'jsonMetaDataAppName': 'your_app_name', // Optional
+      if (isPowerEnabled) 'rewardPowerup': true,
     };
 
     try {
@@ -270,7 +270,7 @@ class _UploadInfoScreenState extends State<UploadInfoScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('50% power'),
+                Text(isPowerEnabled ? '100% power' : '50% power'),
                 Switch(
                   value: isPowerEnabled,
                   onChanged: (value) {
