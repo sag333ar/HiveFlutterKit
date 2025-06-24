@@ -628,3 +628,18 @@ async function getCommunitySubscribers(community, limit = 100, last = null) {
   }
 }
 window.getCommunitySubscribers = getCommunitySubscribers;
+
+async function getActiveVotes(author, permlink) {
+  try {
+    const result = await dhiveClient.call(
+      "condenser_api",
+      "get_active_votes",
+      [author, permlink]
+    );
+    return JSON.stringify(result);
+  } catch (error) {
+    console.error("Error calling get_active_votes:", error);
+    return JSON.stringify([]);
+  }
+}
+window.getActiveVotes = getActiveVotes;

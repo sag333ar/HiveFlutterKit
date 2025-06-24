@@ -343,4 +343,8 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
   }) {
     throw UnimplementedError('getCommunitySubscribers has not been implemented.');
   }
+
+  Future<List<ActiveVote>> getActiveVotes(String author, String permlink) {
+    throw UnimplementedError('getActiveVotes has not been implemented.');
+  }
 }

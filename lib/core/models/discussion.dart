@@ -216,13 +216,37 @@ class Comment {
 class ActiveVote {
   final String voter;
   final int rshares;
+  final int? percent;
+  final int? reputation;
+  final String? time;
+  final int? weight;
 
-  ActiveVote({required this.voter, required this.rshares});
+  ActiveVote({
+    required this.voter,
+    required this.rshares,
+    this.percent,
+    this.reputation,
+    this.time,
+    this.weight,
+  });
 
-  factory ActiveVote.fromJson(Map<String, dynamic> json) =>
-      ActiveVote(voter: json['voter'], rshares: json['rshares']);
+  factory ActiveVote.fromJson(Map<String, dynamic> json) => ActiveVote(
+        voter: json['voter'],
+        rshares: json['rshares'],
+        percent: json['percent'],
+        reputation: json['reputation'],
+        time: json['time'],
+        weight: json['weight'],
+      );
 
-  Map<String, dynamic> toJson() => {'voter': voter, 'rshares': rshares};
+  Map<String, dynamic> toJson() => {
+        'voter': voter,
+        'rshares': rshares,
+        'percent': percent,
+        'reputation': reputation,
+        'time': time,
+        'weight': weight,
+      };
 }
 
 /// Represents a discussion or post, extending [Comment].
