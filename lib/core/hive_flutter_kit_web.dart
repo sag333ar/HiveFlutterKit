@@ -71,6 +71,9 @@ external dynamic getCommunitySubscribersJS(
   String? last,
 );
 
+@JS('getActiveVotes')
+external dynamic getActiveVotesJS(String author, String permlink);
+
 // -------------------------------------------------------------------------
 
 @JS('loginWithKeychain')
@@ -532,5 +535,13 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
     var promise = getCommunitySubscribersJS(community, limit, last);
     var jsonString = await promiseToFuture(promise);
     return CommunitySubscriber.listFromJsonString(jsonString);
+  }
+
+  @override
+  Future<List<ActiveVote>> getActiveVotes(String author, String permlink) async {
+    var promise = getActiveVotesJS(author, permlink);
+    var jsonString = await promiseToFuture(promise);
+    final List<dynamic> jsonList = jsonDecode(jsonString);
+    return jsonList.map((e) => ActiveVote.fromJson(e)).toList();
   }
 }
