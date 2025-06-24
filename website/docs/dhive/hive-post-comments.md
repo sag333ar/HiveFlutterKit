@@ -81,7 +81,7 @@ _showCommentInput() → _addComment() → hfk.comment(...) → _fetchComments()
 
 | Threaded Comments         | Add Comment Dialog         | Search Comments         |
 |--------------------------|---------------------------|------------------------|
-| ![Threaded](/img/dhive/hivepostcomments-thread.png) | ![Add Comment](/img/dhive/hivepostcomments-add.png) | ![Search](/img/dhive/hivepostcomments-search.png) |
+<!-- | ![Threaded](/img/dhive/hivepostcomments-thread.png) | ![Add Comment](/img/dhive/hivepostcomments-add.png) | ![Search](/img/dhive/hivepostcomments-search.png) | -->
 
 ---
 
