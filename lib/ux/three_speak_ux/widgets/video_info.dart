@@ -239,13 +239,10 @@ class _VideoInfoState extends State<VideoInfo> {
                                       builder: (context) {
                                         return UpvoteBottomSheet(
                                           hfk: hfk,
-                                          voters: voters,
-                                          currentUserPresentInVoters:
-                                              currentUserPresentInVoters,
+                                          author: widget.author,
+                                          permlink: widget.permlink,
                                           isContentVoted: widget.isContentVoted,
                                           currentUser: widget.currentUser ?? "",
-                                          postInfo: widget.postInfo,
-                                          author: widget.author,
                                           onVoted: () {
                                             Navigator.pop(context);
                                           },

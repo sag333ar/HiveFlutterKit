@@ -1089,4 +1089,48 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
     await headlessWebView.webViewController?.evaluateJavascript(source: jsCall);
     return completer.future;
   }
+
+  @override
+  Future<List<ActiveVote>> getActiveVotes(String author, String permlink) async {
+    final completer = Completer<List<ActiveVote>>();
+    final handlerName = 'onGetActiveVotesResult_${DateTime.now().millisecondsSinceEpoch}';
+
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: handlerName,
+      callback: (args) {
+        if (!completer.isCompleted) {
+          final contentData = args.isNotEmpty ? args[0].toString() : null;
+          if (contentData != null && contentData != 'null' && contentData.isNotEmpty) {
+            try {
+              final List<dynamic> jsonList = jsonDecode(contentData);
+              final votes = jsonList.map((e) => ActiveVote.fromJson(e)).toList();
+              completer.complete(votes);
+            } catch (e) {
+              completer.completeError('Failed to parse active votes: $e');
+            }
+          } else {
+            completer.completeError('Failed to get active votes or empty response');
+          }
+        }
+        headlessWebView.webViewController?.removeJavaScriptHandler(handlerName: handlerName);
+      },
+    );
+
+    final jsAuthor = jsonEncode(author);
+    final jsPermlink = jsonEncode(permlink);
+
+    final jsCall = """
+    (async () => {
+      try {
+        const result = await getActiveVotes($jsAuthor, $jsPermlink);
+        window.flutter_inappwebview.callHandler('$handlerName', result || 'null');
+      } catch (e) {
+        window.flutter_inappwebview.callHandler('$handlerName', JSON.stringify([]));
+      }
+    })();
+    """;
+
+    await headlessWebView.webViewController?.evaluateJavascript(source: jsCall);
+    return completer.future;
+  }
 }
