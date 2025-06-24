@@ -1,12 +1,26 @@
 ---
-title: CommunityScreen Widget
-sidebar_label: CommunityScreen
+title: DHive's - Community
+sidebar_label: Community
 slug: /dhive/community-screen
 ---
 
-# 🏠 CommunityScreen Widget
+# 🏠 DHive's - Community
 
 The `CommunityScreen` widget provides a way to display a feed of posts ("discussions") based on a specific tag, often used to show content from a particular Hive community or posts related to a certain topic. It allows sorting these posts by various criteria (e.g., trending, created, hot). The widget includes features like infinite scrolling for loading more posts and provides callbacks for common user interactions.
+
+---
+
+## Screenshots
+
+### List View
+![List View](/img/dhive/image-9.png)
+
+### Grid View
+![Grid View](/img/dhive/image-10.png)
+
+### Large Preview
+ ![Large Preview](/img/dhive/image-11.png)
+
 
 ---
 
@@ -96,14 +110,6 @@ class MyCommunityFeedScreen extends StatelessWidget {
 
 ---
 
-## Screenshots
-
-| List View                 | Grid View                  | Large Preview                  |
-| ------------------------- | -------------------------- | ------------------------------ |
-| ![List View](/img/dhive/image-9.png) | ![Grid View](/img/dhive/image-10.png) | ![Large Preview](/img/dhive/image-11.png) |
-
----
-
 ## Notes
 
 - Ensure `HiveFlutterKitPlatform` is properly initialized before rendering the screen.
@@ -113,10 +119,12 @@ class MyCommunityFeedScreen extends StatelessWidget {
 
 ## Related
 
+- [AccountPostsScreen](/dhive/account-posts-screen.md)
 - [BlogScreen](/dhive/blog-screen.md)
-- [CommentsScreen](/dhive/comments-screen.md)
-- `Discussion` model
-- `HiveFlutterKitPlatform`
-- `UserProfilePicture`, `ViewList` components
+- [Comments](/dhive/comments-screen.md)
+- [Replies](/dhive/replies-screen.md)
+- [CommunitiesList](/dhive/communities-list.md)
+- `Discussion` Model
+- `CommunityItem` Model
 
 ---

@@ -1,12 +1,18 @@
 ---
-title: CommunitiesList Widget
-sidebar_label: CommunitiesList
+title: DHive's - Communities List
+sidebar_label: Communities List
 slug: /dhive/communities-list
 ---
 
-# 📃 CommunitiesList Widget
+# 📃 DHive's - Communities List
 
 The `CommunitiesList` widget displays a list of Hive communities with search and infinite scrolling support. It is ideal for letting users select or browse communities interactively in your Flutter app.
+
+---
+
+## Screenshot
+
+![CommunityListScreenshot](/img/dhive/image-15.png)
 
 ---
 
@@ -42,20 +48,12 @@ CommunitiesList(
 
 ---
 
-## Screenshot
-
-![CommunityListScreenshot](/img/dhive/image-15.png)
-
----
-
 ## See Also
 
 - [AccountPostsScreen](/dhive/account-posts-screen.md)
 - [BlogScreen](/dhive/blog-screen.md)
-- [CommentsScreen](/dhive/comments-screen.md)
-- [CommunityScreen](/dhive/community-screen.md)
-- [RepliesScreen](/dhive/replies-screen.md)
-- [TrendingFeedScreen](/dhive/trending-feed-screen.md)
+- [Comments](/dhive/comments-screen.md)
+- [Replies](/dhive/replies-screen.md)
 - `Discussion` Model
 - `CommunityItem` Model
 

@@ -1,12 +1,26 @@
 ---
-title: TrendingFeedScreen Widget
-sidebar_label: TrendingFeedScreen
+title: Hive Trending Feed
+sidebar_label: Trending Feed
 slug: /dhive/trending-feed-screen
 ---
 
-# 🔥 TrendingFeedScreen Widget
+# 🔥 Hive Trending Feed
 
 The `TrendingFeedScreen` widget displays a feed of trending posts from the Hive blockchain. It is ideal for showing the most popular or upvoted content, and supports infinite scrolling, sorting, and user interaction callbacks.
+
+---
+
+## Screenshots
+
+### List View
+![List View](/img/dhive/image-17.png)
+
+### Grid View
+![Grid View](/img/dhive/image-18.png)
+
+### Large Preview
+![Large Preview](/img/dhive/image-19.png)
+
 
 ---
 
@@ -83,14 +97,6 @@ class MyTrendingFeedScreen extends StatelessWidget {
   }
 }
 ```
-
----
-
-## Screenshots
-
-| List View                 | Grid View                  | Large Preview                  |
-| ------------------------- | -------------------------- | ------------------------------ |
-| ![List View](/img/dhive/image-16.png) | ![Grid View](/img/dhive/image-17.png) | ![Large Preview](/img/dhive/image-18.png) |
 
 ---
 

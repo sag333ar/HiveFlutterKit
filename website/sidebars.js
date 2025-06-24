@@ -18,90 +18,116 @@ const sidebars = {
 
   // But we want to create a custom sidebar
   docsSidebar: [
-    'intro', // Points to docs/intro.md
+    "intro", // Points to docs/intro
     {
-      type: 'category',
-      label: 'Getting Started',
+      type: "category",
+      label: "Getting Started",
       items: [
-        'getting-started/setup', // Points to docs/getting-started/setup.md
-        'getting-started/basic-usage', // Points to docs/getting-started/basic-usage.md
+        "getting-started/setup", // Points to docs/getting-started/setup
+        "getting-started/basic-usage", // Points to docs/getting-started/basic-usage
       ],
     },
     {
-      type: 'category',
-      label: '3Speak',
+      type: "category",
+      label: "3Speak",
       items: [
-        'threespeak/introduction',
-        'threespeak/video-feed',
-        'threespeak/video-player',
+        "threespeak/introduction",
+        "threespeak/video-feed",
+        "threespeak/video-player",
       ],
     },
     {
-      type: 'category',
-      label: 'Use AIOHA',
+      type: "category",
+      label: "DHive UX - User",
+      items: [
+        "dhive/account-posts-screen",
+        "dhive/blog-screen",
+        "dhive/comments-screen",
+        "dhive/replies-screen",
+      ],
+    },
+    {
+      type: "category",
+      label: "DHive UX - Community",
+      items: [
+        "dhive/communities-list",
+        "dhive/community-screen",
+      ],
+    },
+    {
+      type: "category",
+      label: "DHive UX - Hive Post",
+      items: [
+        "dhive/hive-post-comments",
+        "dhive/trending-feed-screen",
+      ],
+    },
+    {
+      type: "category",
+      label: "Use AIOHA",
       link: {
-        type: 'doc',
-        id: 'use-aioha',
+        type: "doc",
+        id: "use-aioha",
       },
       items: [
         {
-          type: 'link',
-          label: 'Authentication',
-          href: '/docs/use-aioha#authentication',
+          type: "link",
+          label: "Authentication",
+          href: "/docs/use-aioha#authentication",
         },
         {
-          type: 'link',
-          label: 'User management',
-          href: '/docs/use-aioha#user-management',
+          type: "link",
+          label: "User management",
+          href: "/docs/use-aioha#user-management",
         },
         {
-          type: 'link',
-          label: 'Onchain Operations',
-          href: '/docs/use-aioha#onchain-operations',
+          type: "link",
+          label: "Onchain Operations",
+          href: "/docs/use-aioha#onchain-operations",
         },
         {
-          type: 'link',
-          label: 'Helpers',
-          href: '/docs/use-aioha#helpers',
+          type: "link",
+          label: "Helpers",
+          href: "/docs/use-aioha#helpers",
         },
       ],
     },
     {
-      type: 'category',
-      label: 'Use DHive',
+      type: "category",
+      label: "Use DHive",
       link: {
-        type: 'doc',
-        id: 'use-dhive',
+        type: "doc",
+        id: "use-dhive",
       },
       items: [
         {
-          type: 'link',
-          label: 'Database API',
-          href: '/docs/use-dhive#database-api',
+          type: "link",
+          label: "Database API",
+          href: "/docs/use-dhive#database-api",
         },
         {
-          type: 'link',
-          label: 'Helpers & Utilities',
-          href: '/docs/use-dhive#helpers--utilities',
+          type: "link",
+          label: "Helpers & Utilities",
+          href: "/docs/use-dhive#helpers--utilities",
         },
         {
-          type: 'link',
-          label: 'HiveMind',
-          href: '/docs/use-dhive#hivemind',
+          type: "link",
+          label: "HiveMind",
+          href: "/docs/use-dhive#hivemind",
         },
         {
-          type: 'link',
-          label: 'Bridge',
-          href: '/docs/use-dhive#bridge',
+          type: "link",
+          label: "Bridge",
+          href: "/docs/use-dhive#bridge",
         },
       ],
     },
-    'extra-utilities',
+    "extra-utilities",
     // Example for a future "Guides" section
     // {
     //   type: 'category',
     //   label: 'Guides',
-    //   items: ['guides/some-guide'], // Points to docs/guides/some-guide.md
+    //   items: ['guides/some-guide'], // Points to docs/guides/some-guide
     // },
   ],
 };
