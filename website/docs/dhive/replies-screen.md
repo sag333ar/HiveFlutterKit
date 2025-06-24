@@ -24,7 +24,7 @@ The `RepliesScreen` widget is used to display a scrollable list of replies that 
 ```dart
 RepliesScreen({
   Key? key,
-  required HiveFlutterKitPlatform dhive,
+  required HiveFlutterKitPlatform hfk,
   required String account,
   void Function(Discussion reply)? onTap,
   void Function(String author)? onAuthorTap,
@@ -40,7 +40,7 @@ RepliesScreen({
 | Parameter       | Type                     | Required | Description                                      |
 | --------------- | ------------------------ | -------- | ------------------------------------------------ |
 | `key`           | `Key?`                   | No       | Flutter widget key                               |
-| `dhive`         | `HiveFlutterKitPlatform` | Yes      | Hive platform instance used for fetching replies |
+| `hfk`         | `HiveFlutterKitPlatform` | Yes      | Hive platform instance used for fetching replies |
 | `account`       | `String`                 | Yes      | Hive account username to get replies for         |
 | `onTap`         | `Function(Discussion)?`  | No       | Called when a reply is tapped                    |
 | `onAuthorTap`   | `Function(String)?`      | No       | Called when author's avatar/name is tapped       |
@@ -58,10 +58,10 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/hive_flutter_kit.dart';
 
 class MyAccountRepliesScreen extends StatelessWidget {
-  final HiveFlutterKitPlatform dhive;
+  final HiveFlutterKitPlatform hfk;
   final String accountName = "peakd";
 
-  const MyAccountRepliesScreen({super.key, required this.dhive});
+  const MyAccountRepliesScreen({super.key, required this.hfk});
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +70,7 @@ class MyAccountRepliesScreen extends StatelessWidget {
         title: Text("Replies to @$accountName"),
       ),
       body: RepliesScreen(
-        dhive: dhive,
+        hfk: hfk,
         account: accountName,
         onTap: (Discussion reply) {
           print("Tapped on reply from @\${reply.author}: \${reply.permlink}");
@@ -87,8 +87,8 @@ class MyAccountRepliesScreen extends StatelessWidget {
 // Example initialization
 // void main() async {
 //   WidgetsFlutterBinding.ensureInitialized();
-//   final dhive = await HiveFlutterKit.platform.initialize(...);
-//   runApp(MaterialApp(home: MyAccountRepliesScreen(dhive: dhive)));
+//   final hfk = await HiveFlutterKit.platform.initialize(...);
+//   runApp(MaterialApp(home: MyAccountRepliesScreen(hfk: hfk)));
 // }
 ```
 

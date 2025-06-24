@@ -26,7 +26,7 @@ It offers a familiar "blog" format of content display, complete with infinite sc
 ```dart
 BlogScreen({
   Key? key,
-  required HiveFlutterKitPlatform dhive,
+  required HiveFlutterKitPlatform hfk,
   required String account,
   void Function(Discussion blogEntry)? onTap,
   void Function(String author)? onAuthorTap,
@@ -42,7 +42,7 @@ BlogScreen({
 | Parameter       | Type                     | Required | Description                              |
 | --------------- | ------------------------ | -------- | ---------------------------------------- |
 | `key`           | `Key?`                   | No       | Flutter widget key                       |
-| `dhive`         | `HiveFlutterKitPlatform` | Yes      | Hive platform instance                   |
+| `hfk`         | `HiveFlutterKitPlatform` | Yes      | Hive platform instance                   |
 | `account`       | `String`                 | Yes      | Hive account username                    |
 | `onTap`         | `Function(Discussion)?`  | No       | Called when a blog entry is tapped       |
 | `onAuthorTap`   | `Function(String)?`      | No       | Called when author name/avatar is tapped |
@@ -60,10 +60,10 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/hive_flutter_kit.dart';
 
 class MyBlogDisplayScreen extends StatelessWidget {
-  final HiveFlutterKitPlatform dhive;
+  final HiveFlutterKitPlatform hfk;
   final String accountName = "ecency";
 
-  const MyBlogDisplayScreen({super.key, required this.dhive});
+  const MyBlogDisplayScreen({super.key, required this.hfk});
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +72,7 @@ class MyBlogDisplayScreen extends StatelessWidget {
         title: Text("Blog of @$accountName"),
       ),
       body: BlogScreen(
-        dhive: dhive,
+        hfk: hfk,
         account: accountName,
         onTap: (blogEntry) {
           print("Tapped on blog entry: \${blogEntry.permlink}");
