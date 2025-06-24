@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/image_thumbs.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/inkwell_wrapper.dart';
 
-class UserProfileimage extends StatefulWidget {
-  const UserProfileimage(
+class UserProfileImage extends StatefulWidget {
+  const UserProfileImage(
       {super.key,
       this.isOverride = false,
       required this.url,
@@ -24,14 +24,14 @@ class UserProfileimage extends StatefulWidget {
   final bool isOverride;
 
   @override
-  State<UserProfileimage> createState() => _UserProfileimageState();
+  State<UserProfileImage> createState() => _UserProfileImageState();
 }
 
-class _UserProfileimageState extends State<UserProfileimage> {
+class _UserProfileImageState extends State<UserProfileImage> {
   bool isErrorImage = false;
 
   @override
-  void didUpdateWidget(covariant UserProfileimage oldWidget) {
+  void didUpdateWidget(covariant UserProfileImage oldWidget) {
     isErrorImage = false;
     super.didUpdateWidget(oldWidget);
   }

@@ -138,7 +138,7 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
               (_controller!.text.trim().length >= 4)
                   ? Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: UserProfileimage(
+                    child: UserProfileImage(
                       url: _controller!.text.trim(),
                       radius: 16,
                       verticalPadding: 0,

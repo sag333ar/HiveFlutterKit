@@ -41,6 +41,8 @@ dependencies:
   video_player_web_hls: ^1.3.0
   web: ^1.1.1
   collection: ^1.19.1
+  file_picker: ^10.2.0
+  another_tus_client: ^3.2.6
 
 dev_dependencies:
   flutter_test:

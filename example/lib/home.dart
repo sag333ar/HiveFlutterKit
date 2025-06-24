@@ -10,6 +10,7 @@ import 'package:hive_flutter_kit/ux/switch_user.dart';
 import 'package:hive_flutter_kit/ux/dhive/community_list/community_list.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/three_speak_video_feed.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_community_screen/threespeak_commnuity_screen.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/video_upload_screen.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/video_player.dart';
 import 'package:hive_flutter_kit/ux/dhive/account_post/account_posts_screen.dart';
 import 'package:hive_flutter_kit/ux/dhive/account_post/blog_screen.dart';
@@ -1861,6 +1862,22 @@ class _MyHomePageState extends State<MyHomePage> {
               // --- End Transfer UI ---
 
               // --- ThreeSpeak Feed List Buttons ---
+              const SizedBox(height: 16),
+              const Text(
+                'ThreeSpeak Video Feeds',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => VideoUploadScreen(owner: 'shaktimaaan', token: "REMOVED"),
+                    ),
+                  );
+                },
+                child: const Text('Upload Video'),
+              ),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
