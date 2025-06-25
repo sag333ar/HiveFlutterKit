@@ -75,7 +75,8 @@ class _HivePostCommentsState extends State<HivePostComments> {
         _comments = comments.cast<Discussion>();
         _loading = false;
       });
-    } catch (e) {
+    } catch (e, st) {
+      print('[HivePostComments] Error fetching comments: $e\n$st');
       setState(() {
         _error = true;
         _loading = false;

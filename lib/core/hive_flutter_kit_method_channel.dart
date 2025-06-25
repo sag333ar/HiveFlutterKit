@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter_kit/core/models/login_model.dart';
 import 'package:flutter/services.dart';
 
@@ -905,6 +906,8 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
     String author,
     String permlink,
   ) async {
+    await _webViewInitFuture;
+
     final completer = Completer<List<Discussion>>();
 
     headlessWebView.webViewController?.addJavaScriptHandler(
@@ -918,10 +921,32 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
               contentData.isNotEmpty) {
             try {
               final Map<String, dynamic> parsedMap = jsonDecode(contentData);
+
+              // Patch: Convert all int to double for known double fields
+              Map<String, dynamic> fixNumericFields(Map<String, dynamic> map) {
+                final fieldsToDouble = [
+                  'payout',
+                  'author_reputation',
+                  'curator_payout_value',
+                  'pending_payout_value',
+                  'author_payout_value',
+                  'max_accepted_payout',
+                  // add more fields as needed
+                ];
+                for (final key in fieldsToDouble) {
+                  if (map.containsKey(key) && map[key] is int) {
+                    map[key] = (map[key] as int).toDouble();
+                  }
+                }
+                return map;
+              }
+
               final comments =
                   parsedMap.values
                       .map(
-                        (e) => Discussion.fromJson(e as Map<String, dynamic>),
+                        (e) => Discussion.fromJson(
+                          fixNumericFields(Map<String, dynamic>.from(e)),
+                        ),
                       )
                       .toList();
               completer.complete(comments);
@@ -935,17 +960,25 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
       },
     );
 
-    await headlessWebView.webViewController?.evaluateJavascript(
-      source: """
-    (async () => {
-      var string = await getCommentsList(
-        ${jsonEncode(author)},
-        ${jsonEncode(permlink)}
+    try {
+      await headlessWebView.webViewController?.evaluateJavascript(
+        source: """
+      (async () => {
+        try {
+          var string = await getCommentsList(
+            ${jsonEncode(author)},
+            ${jsonEncode(permlink)}
+          );
+          window.flutter_inappwebview.callHandler('getCommentsListResult', string);
+        } catch (e) {
+          window.flutter_inappwebview.callHandler('getCommentsListResult', null);
+        }
+      })()
+      """,
       );
-      window.flutter_inappwebview.callHandler('getCommentsListResult', string);
-    })()
-    """,
-    );
+    } catch (e) {
+      completer.completeError('JavaScript execution failed: $e');
+    }
 
     return completer.future;
   }

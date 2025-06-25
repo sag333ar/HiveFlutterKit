@@ -404,7 +404,7 @@ class Discussion extends Comment {
               : null,
       url: json['url'],
       rootTitle: json['root_title'],
-      payout: json['payout'],
+      payout: json['payout'] != null ? (json['payout'] as num).toDouble() : null,
       payoutAt: json['payout_at'],
       pendingPayoutValue:
           json['pending_payout_value'] != null
