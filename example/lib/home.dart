@@ -10,7 +10,7 @@ import 'package:hive_flutter_kit/ux/switch_user.dart';
 import 'package:hive_flutter_kit/ux/dhive/community_list/community_list.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/three_speak_video_feed.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_community_screen/threespeak_commnuity_screen.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/threespeak_user_account.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_login_screen.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/video_upload_screen.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/video_player.dart';
 import 'package:hive_flutter_kit/ux/dhive/account_post/account_posts_screen.dart';
@@ -1661,6 +1661,36 @@ class _MyHomePageState extends State<MyHomePage> {
                   ],
                 ),
               ),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder:
+                              (context) => Dialog(
+                                insetPadding: EdgeInsets.zero,
+                                child: SizedBox(
+                                  width: MediaQuery.of(context).size.width,
+                                  height: MediaQuery.of(context).size.height,
+                                  child: ThreeSpeakLoginScreen(hfk: hfk, uponLogin: (context, token, username) {
+                                    debugPrint(
+                                      'Logged in with token: $token, username: $username',
+                                    );
+                                    // Navigator.of(context).pop();
+                                  }
+                                  )
+                                ),
+                              ),
+                        );
+                      },
+                      child: const Text('ThreeSpeak Login Screen User (Dialog)'),
+                    ),
+                  ),
+                ],
+              ),
+              
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -1888,23 +1918,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   );
                 },
                 child: const Text('Upload Video'),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) => ThreeSpeakCurrentUserAccount(
-                            username: 'shaktimaaan',
-                            token:
-                                'REMOVED',
-                          ),
-                    ),
-                  );
-                },
-                child: const Text('My Account'),
               ),
               const SizedBox(height: 16),
               ElevatedButton(
