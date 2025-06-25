@@ -134,7 +134,7 @@ class _ThumbnailUploadScreenState extends State<ThumbnailUploadScreen> {
         final Map<String, dynamic> resp = jsonDecode(response.body);
 
         if (mounted) {
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (context) => UploadInfoScreen(

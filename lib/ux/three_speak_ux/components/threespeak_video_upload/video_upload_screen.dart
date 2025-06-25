@@ -134,7 +134,7 @@ class _VideoUploadScreenState extends State<VideoUploadScreen> {
             '',
           );
 
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (context) => ThumbnailUploadScreen(
