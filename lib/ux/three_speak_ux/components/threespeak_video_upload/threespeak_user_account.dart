@@ -1,19 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/components/user_profile_image.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:hive_flutter_kit/core/three_speak_core/server_proxy.dart';
 
 enum VideoListType { publishNow, myVideos, encoding }
 
-class MyAccount extends StatefulWidget {
+class ThreeSpeakCurrentUserAccount extends StatefulWidget {
   final String token;
-  const MyAccount({super.key, required this.token});
+  final String username;
+  final void Function(int)? onTabChanged;
+  final VoidCallback? onLogout;
+  final void Function(String username, String permlink)? onPublish;
+  final void Function(String username, String permlink)? onViewMyVideo;
+  final void Function(String username, String permlink)? onViewDetails;
+  final void Function(String videoId)? onMoreOptions;
+  final VoidCallback? onTapBackButton;  
+  const ThreeSpeakCurrentUserAccount({
+    super.key,
+    required this.token,
+    required this.username,
+    this.onTabChanged,
+    this.onLogout,
+    this.onPublish,
+    this.onViewMyVideo,
+    this.onViewDetails,
+    this.onMoreOptions,
+    this.onTapBackButton,
+  });
 
   @override
-  State<MyAccount> createState() => _MyAccountState();
+  State<ThreeSpeakCurrentUserAccount> createState() =>
+      _ThreeSpeakCurrentUserAccountState();
 }
 
-class _MyAccountState extends State<MyAccount>
+class _ThreeSpeakCurrentUserAccountState
+    extends State<ThreeSpeakCurrentUserAccount>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   List<dynamic> allVideos = [];
@@ -24,11 +47,16 @@ class _MyAccountState extends State<MyAccount>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging && widget.onTabChanged != null) {
+        widget.onTabChanged!(_tabController.index);
+      }
+    });
     fetchVideos();
   }
 
   Future<void> fetchVideos() async {
-    final uri = Uri.parse('https://studio.3speak.tv/mobile/api/my-videos');
+    final uri = Uri.parse(server.myVideosApiUrl);
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': widget.token,
@@ -82,12 +110,12 @@ class _MyAccountState extends State<MyAccount>
         final video = videos[index];
         final thumbnailUrl = video['thumbUrl'] ?? '';
         final title = video['title'] ?? 'No Title';
-
+        final permlink = video['permlink'] ?? '';
+        final username = video['owner'] ?? widget.username;
         return Padding(
           padding: const EdgeInsets.all(8),
           child: Row(
             children: [
-              // Thumbnail
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image.network(
@@ -101,8 +129,6 @@ class _MyAccountState extends State<MyAccount>
                 ),
               ),
               const SizedBox(width: 12),
-
-              // Title and spacing
               Expanded(
                 child: Text(
                   title,
@@ -116,21 +142,47 @@ class _MyAccountState extends State<MyAccount>
               ),
 
               const SizedBox(width: 8),
-
-              // Publish button only for 'publishNow' tab
               if (listType == VideoListType.publishNow)
                 ElevatedButton(
                   onPressed: () {
-                    print("Publish video: ${video['_id']}");
+                    if (widget.onPublish != null) {
+                      widget.onPublish!(username, permlink);
+                    } else {
+                      print("Publish video: \\${video['_id']}");
+                    }
                   },
                   child: const Text("Publish"),
                 ),
-
-              // Always show the 3-dot icon
+              if (listType == VideoListType.myVideos)
+                ElevatedButton(
+                  onPressed: () {
+                    if (widget.onViewMyVideo != null) {
+                      widget.onViewMyVideo!(username, permlink);
+                    } else {
+                      print("View My Video: \\${video['_id']}");
+                    }
+                  },
+                  child: const Text("View My Video"),
+                ),
+              if (listType == VideoListType.encoding)
+                ElevatedButton(
+                  onPressed: () {
+                    if (widget.onViewDetails != null) {
+                      widget.onViewDetails!(username, permlink);
+                    } else {
+                      print("View Details: \\${video['_id']}");
+                    }
+                  },
+                  child: const Text("View Details"),
+                ),
               IconButton(
                 icon: const Icon(Icons.more_vert),
                 onPressed: () {
-                  print("More options for: ${video['_id']}");
+                  if (widget.onMoreOptions != null) {
+                    widget.onMoreOptions!(video['_id'] ?? '');
+                  } else {
+                    print("More options for: \\${video['_id']}");
+                  }
                 },
               ),
             ],
@@ -144,7 +196,42 @@ class _MyAccountState extends State<MyAccount>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("My Videos"),
+        titleSpacing: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (widget.onTapBackButton != null) {
+              widget.onTapBackButton!();
+            } else {
+              Navigator.of(context).pop();
+            }
+          },
+        ),
+        title: Row(
+          children: [
+            UserProfileImage(userName: widget.username, radius: 40),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                widget.username,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              if (widget.onLogout != null) {
+                widget.onLogout!();
+              } else {
+                // Default action
+              }
+            },
+          ),
+        ],
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
@@ -154,6 +241,7 @@ class _MyAccountState extends State<MyAccount>
           ],
         ),
       ),
+
       body:
           isLoading
               ? const Center(child: CircularProgressIndicator())

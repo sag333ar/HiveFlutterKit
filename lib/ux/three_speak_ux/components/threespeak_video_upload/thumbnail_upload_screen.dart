@@ -6,13 +6,10 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:hive_flutter_kit/core/three_speak_core/server_proxy.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/upload_info_screen.dart';
 import 'package:another_tus_client/another_tus_client.dart';
 import 'package:http/http.dart' as http;
-
-// Global endpoints
-const String kThreeSpeakUploadUrl = 'https://uploads.3speak.tv/files/';
-const String kThreeSpeakApiUrl = 'https://studio.3speak.tv/mobile/api';
 
 class ThumbnailUploadScreen extends StatefulWidget {
   final String uploadUrl;
@@ -97,7 +94,7 @@ class _ThumbnailUploadScreenState extends State<ThumbnailUploadScreen> {
       final client = TusClient(_thumbnailFile!, store: TusMemoryStore());
 
       await client.upload(
-        uri: Uri.parse(kThreeSpeakUploadUrl),
+        uri: Uri.parse(server.kThreeSpeakUploadUrl),
         onProgress: (progress, _) {
           if (mounted) {
             setState(() {
@@ -110,7 +107,7 @@ class _ThumbnailUploadScreenState extends State<ThumbnailUploadScreen> {
 
       final thumbnailUrl = client.uploadUrl.toString();
       final thumbnailFilename = thumbnailUrl.replaceAll(
-        kThreeSpeakUploadUrl,
+        server.kThreeSpeakUploadUrl,
         '',
       );
 
