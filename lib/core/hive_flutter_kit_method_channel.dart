@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:hive_flutter_kit/core/models/login_model.dart';
 import 'package:flutter/services.dart';
 
@@ -1037,7 +1036,8 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
 
     final completer = Completer<String>();
     // Unique handler name to avoid conflicts with concurrent calls
-    final handlerName = 'onTransferResult_${DateTime.now().millisecondsSinceEpoch}';
+    final handlerName =
+        'onTransferResult_${DateTime.now().millisecondsSinceEpoch}';
 
     headlessWebView.webViewController?.addJavaScriptHandler(
       handlerName: handlerName,
@@ -1046,18 +1046,23 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
           if (args.isNotEmpty && args[0] != null) {
             completer.complete(args[0].toString());
           } else {
-            completer.complete('{"error":"No result or null returned from JavaScript for transfer"}');
+            completer.complete(
+              '{"error":"No result or null returned from JavaScript for transfer"}',
+            );
           }
         }
         // Clean up the handler after completion
-        headlessWebView.webViewController?.removeJavaScriptHandler(handlerName: handlerName);
+        headlessWebView.webViewController?.removeJavaScriptHandler(
+          handlerName: handlerName,
+        );
       },
     );
 
     // Properly escape strings for JavaScript
     final jsRecipient = jsonEncode(recipient);
     final jsAssetSymbol = jsonEncode(assetSymbol);
-    final jsMemo = memo == null ? 'null' : jsonEncode(memo); // Handle null memo correctly
+    final jsMemo =
+        memo == null ? 'null' : jsonEncode(memo); // Handle null memo correctly
 
     final String jsCall = """
     (async () => {
@@ -1083,25 +1088,34 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
     String? last,
   }) async {
     final completer = Completer<List<CommunitySubscriber>>();
-    final handlerName = 'getCommunitySubscribersResult_${DateTime.now().millisecondsSinceEpoch}';
+    final handlerName =
+        'getCommunitySubscribersResult_${DateTime.now().millisecondsSinceEpoch}';
 
     headlessWebView.webViewController?.addJavaScriptHandler(
       handlerName: handlerName,
       callback: (args) {
         if (!completer.isCompleted) {
           final contentData = args.isNotEmpty ? args[0].toString() : null;
-          if (contentData != null && contentData != 'null' && contentData.isNotEmpty) {
+          if (contentData != null &&
+              contentData != 'null' &&
+              contentData.isNotEmpty) {
             try {
-              final subscribers = CommunitySubscriber.listFromJsonString(contentData);
+              final subscribers = CommunitySubscriber.listFromJsonString(
+                contentData,
+              );
               completer.complete(subscribers);
             } catch (e) {
               completer.completeError('Failed to parse subscribers: $e');
             }
           } else {
-            completer.completeError('Failed to get subscribers or empty response');
+            completer.completeError(
+              'Failed to get subscribers or empty response',
+            );
           }
         }
-        headlessWebView.webViewController?.removeJavaScriptHandler(handlerName: handlerName);
+        headlessWebView.webViewController?.removeJavaScriptHandler(
+          handlerName: handlerName,
+        );
       },
     );
 
@@ -1124,28 +1138,39 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
   }
 
   @override
-  Future<List<ActiveVote>> getActiveVotes(String author, String permlink) async {
+  Future<List<ActiveVote>> getActiveVotes(
+    String author,
+    String permlink,
+  ) async {
     final completer = Completer<List<ActiveVote>>();
-    final handlerName = 'onGetActiveVotesResult_${DateTime.now().millisecondsSinceEpoch}';
+    final handlerName =
+        'onGetActiveVotesResult_${DateTime.now().millisecondsSinceEpoch}';
 
     headlessWebView.webViewController?.addJavaScriptHandler(
       handlerName: handlerName,
       callback: (args) {
         if (!completer.isCompleted) {
           final contentData = args.isNotEmpty ? args[0].toString() : null;
-          if (contentData != null && contentData != 'null' && contentData.isNotEmpty) {
+          if (contentData != null &&
+              contentData != 'null' &&
+              contentData.isNotEmpty) {
             try {
               final List<dynamic> jsonList = jsonDecode(contentData);
-              final votes = jsonList.map((e) => ActiveVote.fromJson(e)).toList();
+              final votes =
+                  jsonList.map((e) => ActiveVote.fromJson(e)).toList();
               completer.complete(votes);
             } catch (e) {
               completer.completeError('Failed to parse active votes: $e');
             }
           } else {
-            completer.completeError('Failed to get active votes or empty response');
+            completer.completeError(
+              'Failed to get active votes or empty response',
+            );
           }
         }
-        headlessWebView.webViewController?.removeJavaScriptHandler(handlerName: handlerName);
+        headlessWebView.webViewController?.removeJavaScriptHandler(
+          handlerName: handlerName,
+        );
       },
     );
 

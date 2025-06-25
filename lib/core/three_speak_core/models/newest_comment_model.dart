@@ -7,11 +7,7 @@ class CommentResponseModel {
   final List<CommentItemModel> comments;
   final int? id;
 
-  CommentResponseModel({
-    this.jsonrpc,
-    this.comments = const [],
-    this.id,
-  });
+  CommentResponseModel({this.jsonrpc, this.comments = const [], this.id});
 
   factory CommentResponseModel.fromRawJson(String str) =>
       CommentResponseModel.fromJson(json.decode(str));
@@ -79,43 +75,44 @@ class CommentItemModel extends Equatable {
   var visited = false;
   final bool isLocallyAdded;
 
-  CommentItemModel(
-      {this.postId,
-      required this.author,
-      required this.permlink,
-      this.category,
-      this.title,
-      required this.body,
-      this.jsonMetadata,
-      required this.created,
-      this.updated,
-      required this.depth,
-      required this.children,
-      this.netRshares,
-      this.isPaidout,
-      this.payoutAt,
-      this.payout,
-      this.pendingPayoutValue,
-      this.authorPayoutValue,
-      this.curatorPayoutValue,
-      this.promoted,
-      this.replies = const [],
-      this.reblogs,
-      this.authorReputation,
-      this.stats,
-      this.url,
-      this.beneficiaries,
-      this.maxAcceptedPayout,
-      this.percentHbd,
-      this.parentAuthor,
-      this.parentPermlink,
-      this.activeVotes = const [],
-      this.blacklists = const [],
-      this.community,
-      this.communityTitle,
-      this.authorRole,
-      this.authorTitle,
-      this.isLocallyAdded = false});
+  CommentItemModel({
+    this.postId,
+    required this.author,
+    required this.permlink,
+    this.category,
+    this.title,
+    required this.body,
+    this.jsonMetadata,
+    required this.created,
+    this.updated,
+    required this.depth,
+    required this.children,
+    this.netRshares,
+    this.isPaidout,
+    this.payoutAt,
+    this.payout,
+    this.pendingPayoutValue,
+    this.authorPayoutValue,
+    this.curatorPayoutValue,
+    this.promoted,
+    this.replies = const [],
+    this.reblogs,
+    this.authorReputation,
+    this.stats,
+    this.url,
+    this.beneficiaries,
+    this.maxAcceptedPayout,
+    this.percentHbd,
+    this.parentAuthor,
+    this.parentPermlink,
+    this.activeVotes = const [],
+    this.blacklists = const [],
+    this.community,
+    this.communityTitle,
+    this.authorRole,
+    this.authorTitle,
+    this.isLocallyAdded = false,
+  });
 
   CommentItemModel copyWith({
     int? postId,
@@ -198,112 +195,121 @@ class CommentItemModel extends Equatable {
 
   String toRawJson() => json.encode(toJson());
 
-  factory CommentItemModel.fromJson(Map<String, dynamic> json) =>
-      CommentItemModel(
-        postId: json["post_id"],
-        author: json["author"],
-        permlink: json["permlink"],
-        category: json["category"],
-        title: json["title"],
-        body: json["body"],
-        jsonMetadata: json["json_metadata"] == null
+  factory CommentItemModel.fromJson(
+    Map<String, dynamic> json,
+  ) => CommentItemModel(
+    postId: json["post_id"],
+    author: json["author"],
+    permlink: json["permlink"],
+    category: json["category"],
+    title: json["title"],
+    body: json["body"],
+    jsonMetadata:
+        json["json_metadata"] == null
             ? null
             : CommentMetaDataModel.fromJson(json["json_metadata"]),
-        created: DateTime.parse(json["created"]),
-        updated:
-            json["updated"] == null ? null : DateTime.parse(json["updated"]),
-        depth: json["depth"],
-        children: json["children"],
-        netRshares: json["net_rshares"],
-        isPaidout: json["is_paidout"],
-        payoutAt: json["payout_at"] == null
-            ? null
-            : DateTime.parse(json["payout_at"]),
-        payout: json["payout"]?.toDouble(),
-        pendingPayoutValue: json["pending_payout_value"],
-        authorPayoutValue: json["author_payout_value"],
-        curatorPayoutValue: json["curator_payout_value"],
-        promoted: json["promoted"],
-        replies: json["replies"] == null
+    created: DateTime.parse(json["created"]),
+    updated: json["updated"] == null ? null : DateTime.parse(json["updated"]),
+    depth: json["depth"],
+    children: json["children"],
+    netRshares: json["net_rshares"],
+    isPaidout: json["is_paidout"],
+    payoutAt:
+        json["payout_at"] == null ? null : DateTime.parse(json["payout_at"]),
+    payout: json["payout"]?.toDouble(),
+    pendingPayoutValue: json["pending_payout_value"],
+    authorPayoutValue: json["author_payout_value"],
+    curatorPayoutValue: json["curator_payout_value"],
+    promoted: json["promoted"],
+    replies:
+        json["replies"] == null
             ? []
             : List<String>.from(json["replies"]!.map((x) => x)),
-        reblogs: json["reblogs"],
-        authorReputation: json["author_reputation"]?.toDouble(),
-        stats: json["stats"] == null ? null : Stats.fromJson(json["stats"]),
-        url: json["url"],
-        beneficiaries: json["beneficiaries"] == null
+    reblogs: json["reblogs"],
+    authorReputation: json["author_reputation"]?.toDouble(),
+    stats: json["stats"] == null ? null : Stats.fromJson(json["stats"]),
+    url: json["url"],
+    beneficiaries:
+        json["beneficiaries"] == null
             ? []
             : List<dynamic>.from(json["beneficiaries"]!.map((x) => x)),
-        maxAcceptedPayout: json["max_accepted_payout"],
-        percentHbd: json["percent_hbd"],
-        parentAuthor: json["parent_author"],
-        parentPermlink: json["parent_permlink"],
-        activeVotes: json["active_votes"] == null
+    maxAcceptedPayout: json["max_accepted_payout"],
+    percentHbd: json["percent_hbd"],
+    parentAuthor: json["parent_author"],
+    parentPermlink: json["parent_permlink"],
+    activeVotes:
+        json["active_votes"] == null
             ? []
-            : List<CommentActiveVote>.from(json["active_votes"]!
-                .map((x) => CommentActiveVote.fromJson(x))),
-        blacklists: json["blacklists"] == null
+            : List<CommentActiveVote>.from(
+              json["active_votes"]!.map((x) => CommentActiveVote.fromJson(x)),
+            ),
+    blacklists:
+        json["blacklists"] == null
             ? []
             : List<dynamic>.from(json["blacklists"]!.map((x) => x)),
-        community: json["community"],
-        communityTitle: json["community_title"],
-        authorRole: json["author_role"],
-        authorTitle: json["author_title"],
-      );
+    community: json["community"],
+    communityTitle: json["community_title"],
+    authorRole: json["author_role"],
+    authorTitle: json["author_title"],
+  );
 
   Map<String, dynamic> toJson() => {
-        "post_id": postId,
-        "author": author,
-        "permlink": permlink,
-        "category": category,
-        "title": title,
-        "body": body,
-        "json_metadata": jsonMetadata?.toJson(),
-        "created": created.toIso8601String(),
-        "updated": updated?.toIso8601String(),
-        "depth": depth,
-        "children": children,
-        "net_rshares": netRshares,
-        "is_paidout": isPaidout,
-        "payout_at": payoutAt?.toIso8601String(),
-        "payout": payout,
-        "pending_payout_value": pendingPayoutValue,
-        "author_payout_value": authorPayoutValue,
-        "curator_payout_value": curatorPayoutValue,
-        "promoted": promoted,
-        "replies": List<dynamic>.from(replies.map((x) => x)),
-        "reblogs": reblogs,
-        "author_reputation": authorReputation,
-        "stats": stats?.toJson(),
-        "url": url,
-        "beneficiaries": beneficiaries == null
+    "post_id": postId,
+    "author": author,
+    "permlink": permlink,
+    "category": category,
+    "title": title,
+    "body": body,
+    "json_metadata": jsonMetadata?.toJson(),
+    "created": created.toIso8601String(),
+    "updated": updated?.toIso8601String(),
+    "depth": depth,
+    "children": children,
+    "net_rshares": netRshares,
+    "is_paidout": isPaidout,
+    "payout_at": payoutAt?.toIso8601String(),
+    "payout": payout,
+    "pending_payout_value": pendingPayoutValue,
+    "author_payout_value": authorPayoutValue,
+    "curator_payout_value": curatorPayoutValue,
+    "promoted": promoted,
+    "replies": List<dynamic>.from(replies.map((x) => x)),
+    "reblogs": reblogs,
+    "author_reputation": authorReputation,
+    "stats": stats?.toJson(),
+    "url": url,
+    "beneficiaries":
+        beneficiaries == null
             ? []
             : List<dynamic>.from(beneficiaries!.map((x) => x)),
-        "max_accepted_payout": maxAcceptedPayout,
-        "percent_hbd": percentHbd,
-        "parent_author": parentAuthor,
-        "parent_permlink": parentPermlink,
-        "active_votes": List<dynamic>.from(activeVotes!.map((x) => x.toJson())),
-        "blacklists": List<dynamic>.from(blacklists!.map((x) => x)),
-        "community": community,
-        "community_title": communityTitle,
-        "author_role": authorRole,
-        "author_title": authorTitle,
-      };
+    "max_accepted_payout": maxAcceptedPayout,
+    "percent_hbd": percentHbd,
+    "parent_author": parentAuthor,
+    "parent_permlink": parentPermlink,
+    "active_votes": List<dynamic>.from(activeVotes.map((x) => x.toJson())),
+    "blacklists": List<dynamic>.from(blacklists.map((x) => x)),
+    "community": community,
+    "community_title": communityTitle,
+    "author_role": authorRole,
+    "author_title": authorTitle,
+  };
 
   @override
-  List<Object?> get props =>
-      [postId, permlink, author, parentPermlink, parentAuthor, created];
+  List<Object?> get props => [
+    postId,
+    permlink,
+    author,
+    parentPermlink,
+    parentAuthor,
+    created,
+  ];
 }
 
 class CommentActiveVote extends Equatable {
   final int? rshares;
   final String? voter;
 
-  CommentActiveVote({
-    this.rshares,
-    this.voter,
-  });
+  CommentActiveVote({this.rshares, this.voter});
 
   factory CommentActiveVote.fromRawJson(String str) =>
       CommentActiveVote.fromJson(json.decode(str));
@@ -311,15 +317,9 @@ class CommentActiveVote extends Equatable {
   String toRawJson() => json.encode(toJson());
 
   factory CommentActiveVote.fromJson(Map<String, dynamic> json) =>
-      CommentActiveVote(
-        rshares: json["rshares"],
-        voter: json["voter"],
-      );
+      CommentActiveVote(rshares: json["rshares"], voter: json["voter"]);
 
-  Map<String, dynamic> toJson() => {
-        "rshares": rshares,
-        "voter": voter,
-      };
+  Map<String, dynamic> toJson() => {"rshares": rshares, "voter": voter};
 
   @override
   List<Object?> get props => [voter];
@@ -329,10 +329,7 @@ class CommentMetaDataModel {
   final List<String>? tags;
   final String? app;
 
-  CommentMetaDataModel({
-    this.tags,
-    this.app,
-  });
+  CommentMetaDataModel({this.tags, this.app});
 
   factory CommentMetaDataModel.fromRawJson(String str) =>
       CommentMetaDataModel.fromJson(json.decode(str));
@@ -341,16 +338,19 @@ class CommentMetaDataModel {
 
   factory CommentMetaDataModel.fromJson(Map<String, dynamic> json) =>
       CommentMetaDataModel(
-        tags: json["tags"] == null
-            ? []
-            : json['tags'] is String ? [json['tags']] : List<String>.from(json["tags"]!.map((x) => x)),
+        tags:
+            json["tags"] == null
+                ? []
+                : json['tags'] is String
+                ? [json['tags']]
+                : List<String>.from(json["tags"]!.map((x) => x)),
         app: json["app"],
       );
 
   Map<String, dynamic> toJson() => {
-        "tags": tags == null ? [] : List<dynamic>.from(tags!.map((x) => x)),
-        "app": app,
-      };
+    "tags": tags == null ? [] : List<dynamic>.from(tags!.map((x) => x)),
+    "app": app,
+  };
 }
 
 class Stats {
@@ -359,12 +359,7 @@ class Stats {
   final int? totalVotes;
   final double? flagWeight;
 
-  Stats({
-    this.hide,
-    this.gray,
-    this.totalVotes,
-    this.flagWeight,
-  });
+  Stats({this.hide, this.gray, this.totalVotes, this.flagWeight});
 
   Stats copyWith({
     bool? hide,
@@ -385,16 +380,16 @@ class Stats {
   String toRawJson() => json.encode(toJson());
 
   factory Stats.fromJson(Map<String, dynamic> json) => Stats(
-        hide: json["hide"],
-        gray: json["gray"],
-        totalVotes: json["total_votes"],
-        flagWeight: json["flag_weight"],
-      );
+    hide: json["hide"],
+    gray: json["gray"],
+    totalVotes: json["total_votes"],
+    flagWeight: json["flag_weight"],
+  );
 
   Map<String, dynamic> toJson() => {
-        "hide": hide,
-        "gray": gray,
-        "total_votes": totalVotes,
-        "flag_weight": flagWeight,
-      };
+    "hide": hide,
+    "gray": gray,
+    "total_votes": totalVotes,
+    "flag_weight": flagWeight,
+  };
 }

@@ -50,8 +50,8 @@ class UpvoteBottomSheet extends StatelessWidget {
           return bTime.compareTo(aTime);
         });
         final voters = votes.map((e) => e.voter).toList();
-        final currentUserPresentInVoters = currentUser.isNotEmpty &&
-            voters.contains(currentUser);
+        final currentUserPresentInVoters =
+            currentUser.isNotEmpty && voters.contains(currentUser);
 
         return Column(
           mainAxisSize: MainAxisSize.min,
@@ -73,8 +73,10 @@ class UpvoteBottomSheet extends StatelessWidget {
                   IconButton(
                     onPressed: () {
                       // Handle both "" and error json for currentUser
-                      bool isNotLoggedIn = currentUser.isEmpty ||
-                          currentUser.trim() == '{"error":"No user is currently logged in"}';
+                      bool isNotLoggedIn =
+                          currentUser.isEmpty ||
+                          currentUser.trim() ==
+                              '{"error":"No user is currently logged in"}';
                       if (isNotLoggedIn) {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -93,7 +95,9 @@ class UpvoteBottomSheet extends StatelessWidget {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('You have already voted for this video'),
+                            content: Text(
+                              'You have already voted for this video',
+                            ),
                             backgroundColor: Colors.red,
                           ),
                         );
@@ -102,14 +106,15 @@ class UpvoteBottomSheet extends StatelessWidget {
 
                       showDialog(
                         context: context,
-                        builder: (context) => VoteDialog(
-                          hfk: hfk,
-                          author: author,
-                          permlink: permlink,
-                          onVoted: () {
-                            if (onVoted != null) onVoted!();
-                          },
-                        ),
+                        builder:
+                            (context) => VoteDialog(
+                              hfk: hfk,
+                              author: author,
+                              permlink: permlink,
+                              onVoted: () {
+                                if (onVoted != null) onVoted!();
+                              },
+                            ),
                       );
                     },
                     icon: Icon(
@@ -121,81 +126,91 @@ class UpvoteBottomSheet extends StatelessWidget {
               ],
             ),
             Expanded(
-              child: snapshot.connectionState == ConnectionState.waiting
-                  ? Center(child: CircularProgressIndicator())
-                  : ListView.builder(
-                      padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-                      itemCount: votes.length,
-                      itemBuilder: (context, index) {
-                        final vote = votes[index];
-                        final isCurrentUser = vote.voter == currentUser;
-                        String? timeAgo;
-                        if (vote.time != null && vote.time!.isNotEmpty) {
-                          // Ensure 'Z' at the end for UTC
-                          String timeStr = vote.time!;
-                          if (!timeStr.endsWith('Z')) {
-                            timeStr = timeStr + 'Z';
+              child:
+                  snapshot.connectionState == ConnectionState.waiting
+                      ? Center(child: CircularProgressIndicator())
+                      : ListView.builder(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 15,
+                          horizontal: 15,
+                        ),
+                        itemCount: votes.length,
+                        itemBuilder: (context, index) {
+                          final vote = votes[index];
+                          final isCurrentUser = vote.voter == currentUser;
+                          String? timeAgo;
+                          if (vote.time != null && vote.time!.isNotEmpty) {
+                            // Ensure 'Z' at the end for UTC
+                            String timeStr = vote.time!;
+                            if (!timeStr.endsWith('Z')) {
+                              timeStr = '${timeStr}Z';
+                            }
+                            try {
+                              final dt = DateTime.parse(timeStr);
+                              timeAgo = timeago.format(dt);
+                            } catch (_) {
+                              timeAgo = vote.time;
+                            }
                           }
-                          try {
-                            final dt = DateTime.parse(timeStr);
-                            timeAgo = timeago.format(dt);
-                          } catch (_) {
-                            timeAgo = vote.time;
-                          }
-                        }
-                        return ListTile(
-                          leading: CircleAvatar(
-                            backgroundImage: NetworkImage(
-                              'https://images.hive.blog/160x40/https://images.hive.blog/u/${vote.voter}/avatar',
-                            ),
-                            radius: 15,
-                          ),
-                          title: Row(
-                            children: [
-                              Text(
-                                vote.voter,
-                                style: TextStyle(
-                                  color: isCurrentUser ? Colors.blue : Colors.black,
-                                ),
+                          return ListTile(
+                            leading: CircleAvatar(
+                              backgroundImage: NetworkImage(
+                                'https://images.hive.blog/160x40/https://images.hive.blog/u/${vote.voter}/avatar',
                               ),
-                              if (isCurrentUser)
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 8.0),
-                                  child: Text(
-                                    "(You've already voted for this content)",
-                                    style: TextStyle(
-                                      color: Colors.blue,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w500,
-                                    ),
+                              radius: 15,
+                            ),
+                            title: Row(
+                              children: [
+                                Text(
+                                  vote.voter,
+                                  style: TextStyle(
+                                    color:
+                                        isCurrentUser
+                                            ? Colors.blue
+                                            : Colors.black,
                                   ),
                                 ),
-                            ],
-                          ),
-                          subtitle: Row(
-                            children: [
-                              Text(
-                                "${((vote.percent ?? 0) / 100).toStringAsFixed(0)}%",
-                                style: TextStyle(color: Colors.grey[700]),
-                              ),
-                              SizedBox(width: 12),
-                              if (timeAgo != null)
+                                if (isCurrentUser)
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 8.0),
+                                    child: Text(
+                                      "(You've already voted for this content)",
+                                      style: TextStyle(
+                                        color: Colors.blue,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            subtitle: Row(
+                              children: [
                                 Text(
-                                  timeAgo,
-                                  style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                                  "${((vote.percent ?? 0) / 100).toStringAsFixed(0)}%",
+                                  style: TextStyle(color: Colors.grey[700]),
                                 ),
-                            ],
-                          ),
-                          // trailing: Text(
-                          //   vote.rshares.toString(),
-                          //   style: TextStyle(
-                          //     color: Colors.black,
-                          //     fontWeight: FontWeight.w500,
-                          //   ),
-                          // ),
-                        );
-                      },
-                    ),
+                                SizedBox(width: 12),
+                                if (timeAgo != null)
+                                  Text(
+                                    timeAgo,
+                                    style: TextStyle(
+                                      color: Colors.grey[500],
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            // trailing: Text(
+                            //   vote.rshares.toString(),
+                            //   style: TextStyle(
+                            //     color: Colors.black,
+                            //     fontWeight: FontWeight.w500,
+                            //   ),
+                            // ),
+                          );
+                        },
+                      ),
             ),
           ],
         );

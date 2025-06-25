@@ -203,11 +203,6 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
     throw UnimplementedError('getCommentsList has not been implemented.');
   }
 
-  String _computeSha256(Uint8List data) {
-    Digest digest = sha256.convert(data);
-    return digest.toString();
-  }
-
   String _toBase64(String input) {
     List<int> bytes = utf8.encode(input); // Convert string to bytes
     String base64Str = base64Encode(bytes); // Encode to Base64
@@ -341,7 +336,9 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
     int limit = 100,
     String? last,
   }) {
-    throw UnimplementedError('getCommunitySubscribers has not been implemented.');
+    throw UnimplementedError(
+      'getCommunitySubscribers has not been implemented.',
+    );
   }
 
   Future<List<ActiveVote>> getActiveVotes(String author, String permlink) {
@@ -349,6 +346,8 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
   }
 
   Future<bool> isHiveKeychainAvailable() {
-    throw UnimplementedError('isHiveKeychainAvailable has not been implemented.');
+    throw UnimplementedError(
+      'isHiveKeychainAvailable has not been implemented.',
+    );
   }
 }
