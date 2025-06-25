@@ -34,6 +34,8 @@ const sidebars = {
         "threespeak/introduction",
         "threespeak/video-feed",
         "threespeak/video-player",
+        "threespeak/video-upload",
+        "threespeak/current-account",
       ],
     },
     {
