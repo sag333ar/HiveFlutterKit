@@ -43,6 +43,8 @@ dependencies:
   collection: ^1.19.1
   file_picker: ^10.2.0
   another_tus_client: ^3.2.6
+  cross_file: ^0.3.4+2
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:
