@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -66,6 +68,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Timer? _authTimer;
   String _avatarUrl = '';
   bool _showPostingKeyLogin = false;
+  bool _isKeychainAvailable = false;
+  bool _checkedKeychain = false;
 
   // Auto-detect theme mode
   bool get _isDarkMode => Theme.of(context).brightness == Brightness.dark;
@@ -233,6 +237,36 @@ class _LoginScreenState extends State<LoginScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _checkKeychainAvailability();
+  }
+
+  Future<void> _checkKeychainAvailability() async {
+    // Only check on web, always hide on mobile
+    if (kIsWeb) {
+      try {
+        final available = await widget.hfk.isHiveKeychainAvailable();
+        setState(() {
+          _isKeychainAvailable = available == true;
+          _checkedKeychain = true;
+        });
+      } catch (_) {
+        setState(() {
+          _isKeychainAvailable = false;
+          _checkedKeychain = true;
+        });
+      }
+    } else {
+      // On mobile, always hide
+      setState(() {
+        _isKeychainAvailable = false;
+        _checkedKeychain = true;
+      });
+    }
   }
 
   @override
@@ -407,41 +441,44 @@ class _LoginScreenState extends State<LoginScreen> {
                               const SizedBox(height: 24),
                               // Show login buttons or posting key login buttons based on mode
                               if (!_showPostingKeyLogin) ...[
-                                ElevatedButton(
-                                  onPressed: _loginWithHiveKeychain,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: _hiveKeychainButtonColor,
-                                    minimumSize: const Size(
-                                      double.infinity,
-                                      56,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                    elevation: 4,
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      // const Icon(Icons.key),
-                                      Image.asset(
-                                        'packages/hive_flutter_kit/assets/images/hive-keychain-logo.png',
-                                        height: 24,
-                                        width: 24,
+                                // Only show Hive Keychain button if available and not on mobile
+                                if (_isKeychainAvailable && _checkedKeychain)
+                                  ElevatedButton(
+                                    onPressed: _loginWithHiveKeychain,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: _hiveKeychainButtonColor,
+                                      minimumSize: const Size(
+                                        double.infinity,
+                                        56,
                                       ),
-                                      const SizedBox(width: 12),
-                                      Text(
-                                        'Hive Keychain',
-                                        style: TextStyle(
-                                          color: widget.hiveKeychainTextColor,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w600,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      elevation: 4,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        // const Icon(Icons.key),
+                                        Image.asset(
+                                          'packages/hive_flutter_kit/assets/images/hive-keychain-logo.png',
+                                          height: 24,
+                                          width: 24,
                                         ),
-                                      ),
-                                    ],
+                                        const SizedBox(width: 12),
+                                        Text(
+                                          'Hive Keychain',
+                                          style: TextStyle(
+                                            color: widget.hiveKeychainTextColor,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 16),
+                                if (_isKeychainAvailable && _checkedKeychain)
+                                  const SizedBox(height: 16),
                                 ElevatedButton(
                                   onPressed: _loginWithHiveAuth,
                                   style: ElevatedButton.styleFrom(

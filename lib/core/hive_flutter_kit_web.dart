@@ -166,6 +166,9 @@ external dynamic transferJS(
   String? memo,
 );
 
+@JS('isHiveKeychainAvailable')
+external dynamic isHiveKeychainAvailableJS();
+
 /// A web implementation of the HiveFlutterKitPlatform of the HiveFlutterKit plugin.
 class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
   /// Constructs a HiveFlutterKitWeb
@@ -543,5 +546,12 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
     var jsonString = await promiseToFuture(promise);
     final List<dynamic> jsonList = jsonDecode(jsonString);
     return jsonList.map((e) => ActiveVote.fromJson(e)).toList();
+  }
+
+  @override
+  Future<bool> isHiveKeychainAvailable() async {
+    var promise = isHiveKeychainAvailableJS();
+    var result = await promiseToFuture(promise);
+    return result == true;
   }
 }

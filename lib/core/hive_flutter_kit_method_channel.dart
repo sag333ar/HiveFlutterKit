@@ -1133,4 +1133,10 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
     await headlessWebView.webViewController?.evaluateJavascript(source: jsCall);
     return completer.future;
   }
+
+  @override
+  Future<bool> isHiveKeychainAvailable() async {
+    // Not available on non-web platforms by default
+    return false;
+  }
 }
