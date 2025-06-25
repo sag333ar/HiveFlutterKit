@@ -643,3 +643,12 @@ async function getActiveVotes(author, permlink) {
   }
 }
 window.getActiveVotes = getActiveVotes;
+
+async function isHiveKeychainAvailable() {
+  try {
+    return aioha.isProviderEnabled(Providers.Keychain);
+  } catch (error) {
+    return false;
+  }
+}
+window.isHiveKeychainAvailable = isHiveKeychainAvailable;

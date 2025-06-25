@@ -347,4 +347,8 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
   Future<List<ActiveVote>> getActiveVotes(String author, String permlink) {
     throw UnimplementedError('getActiveVotes has not been implemented.');
   }
+
+  Future<bool> isHiveKeychainAvailable() {
+    throw UnimplementedError('isHiveKeychainAvailable has not been implemented.');
+  }
 }
