@@ -32,6 +32,7 @@ const sidebars = {
       label: "3Speak",
       items: [
         "threespeak/introduction",
+        "threespeak/login",
         "threespeak/video-feed",
         "threespeak/video-player",
         "threespeak/video-upload",

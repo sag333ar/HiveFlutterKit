@@ -44,6 +44,8 @@ export 'ux/three_speak_ux/components/threespeak_community_screen/threespeak_comm
 export 'ux/three_speak_ux/components/user_channel_screen/user_channel_screen.dart';
 export 'ux/three_speak_ux/components/three_speak_video_feed.dart';
 export 'ux/three_speak_ux/components/video_player.dart';
+export 'ux/three_speak_ux/components/threespeak_login_screen.dart';
+export 'ux/three_speak_ux/components/threespeak_video_upload/video_upload_screen.dart';
 
 // Potentially export other specific classes if they are part of the public API
 // For example, if there are specific error types or helper classes defined elsewhere.
