@@ -4,13 +4,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:cross_file/cross_file.dart';
+import 'package:hive_flutter_kit/core/three_speak_core/server_proxy.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/thumbnail_upload_screen.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/upload_info_screen.dart';
 import 'package:video_player/video_player.dart';
-
-// Global endpoints
-const String kThreeSpeakUploadUrl = 'https://uploads.3speak.tv/files/';
-const String kThreeSpeakApiUrl = 'https://studio.3speak.tv/mobile/api';
 
 class VideoUploadScreen extends StatefulWidget {
   const VideoUploadScreen({
@@ -116,7 +113,7 @@ class _VideoUploadScreenState extends State<VideoUploadScreen> {
 
     try {
       await client.upload(
-        uri: Uri.parse(kThreeSpeakUploadUrl),
+        uri: Uri.parse(server.kThreeSpeakUploadUrl),
         onProgress: (progress, _) {
           setState(() {
             _uploadProgress = progress / 100.0;
@@ -130,11 +127,11 @@ class _VideoUploadScreenState extends State<VideoUploadScreen> {
 
           final videoUrl = client.uploadUrl.toString();
           final videoFilename = videoUrl.replaceAll(
-            kThreeSpeakUploadUrl,
+            server.kThreeSpeakUploadUrl,
             '',
           );
 
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (context) => ThumbnailUploadScreen(
