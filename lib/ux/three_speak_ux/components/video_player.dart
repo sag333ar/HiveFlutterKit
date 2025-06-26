@@ -24,6 +24,7 @@ class VideoPlayerScreen extends StatefulWidget {
   final void Function(String)? onTapAuthor;
   final void Function(String, String)? onTapInfo;
   final Widget Function(BuildContext context, GQLFeedItem item)? relatedBuilder;
+  final VoidCallback? onTapBack; 
 
   const VideoPlayerScreen({
     super.key,
@@ -37,6 +38,7 @@ class VideoPlayerScreen extends StatefulWidget {
     this.relatedBuilder,
     this.author,
     this.permlink,
+    this.onTapBack,
   }) : assert(
          (item != null && author == null && permlink == null) ||
              (item == null && author != null && permlink != null),
@@ -237,7 +239,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         titleSpacing: 0,
         leading: BackButton(
           onPressed: () {
-            Navigator.pop(context);
+            if (widget.onTapBack != null) {
+              widget.onTapBack!();
+            } else {
+              Navigator.pop(context);
+            }
           },
         ),
         title: Text(item?.title ?? "Loading Data"),
