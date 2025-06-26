@@ -25,6 +25,7 @@ class UserChannelScreen extends StatefulWidget {
     this.onTapVideoItem,
     this.onTapVideoReport,
     this.onTapAuthor,
+    this.onTapBack,
   });
 
   final String owner;
@@ -39,6 +40,7 @@ class UserChannelScreen extends StatefulWidget {
   final void Function(GQLFeedItem item)? onTapVideoItem;
   final void Function(String, String)? onTapVideoReport;
   final void Function(String)? onTapAuthor;
+  final VoidCallback? onTapBack; 
 
   @override
   _UserChannelScreenState createState() => _UserChannelScreenState();
@@ -96,6 +98,15 @@ class _UserChannelScreenState extends State<UserChannelScreen>
     return Scaffold(
       appBar: AppBar(
         leadingWidth: 30,
+        leading: BackButton(
+          onPressed: () {
+            if (widget.onTapBack != null) {
+              widget.onTapBack!();
+            } else {
+              Navigator.pop(context);
+            }
+          },
+        ),
         title: Row(
           children: [
             CustomCircleAvatar(
