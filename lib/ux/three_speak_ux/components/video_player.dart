@@ -240,7 +240,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
             Navigator.pop(context);
           },
         ),
-        title: Text(item!.title ?? "Video Player"),
+        title: Text(item?.title ?? "Loading Data"),
       ),
       body: SafeArea(
         child:
