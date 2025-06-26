@@ -13,7 +13,9 @@ import 'package:chewie/chewie.dart';
 import 'package:collection/collection.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
-  final GQLFeedItem item;
+  final GQLFeedItem? item;
+  final String? author;
+  final String? permlink;
 
   final void Function(String, String)? onTapComment;
   final void Function(String, String)? onTapUpvote;
@@ -33,7 +35,13 @@ class VideoPlayerScreen extends StatefulWidget {
     this.onTapAuthor,
     this.onTapInfo,
     this.relatedBuilder,
-  });
+    this.author,
+    this.permlink,
+  }) : assert(
+         (item != null && author == null && permlink == null) ||
+             (item == null && author != null && permlink != null),
+         'You must either provide a post OR both author and permlink',
+       );
 
   @override
   State<VideoPlayerScreen> createState() => _VideoPlayerScreenState();
@@ -43,19 +51,43 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   late VideoPlayerController videoPlayerController;
   ChewieController? chewieController;
   var setupDone = false;
+  GQLFeedItem? item;
 
   List<GQLFeedItem> relatedVideos = [];
   bool isLoadingRelatedVideos = true;
   Discussion? postInfo;
   String currentUserName = "";
   final HiveFlutterKitPlatform hfk = HiveFlutterKitPlatform.instance;
+  final GQLCommunicator _gql = GQLCommunicator();
 
   @override
   void initState() {
     super.initState();
-    setupPlayer();
-    loadHiveInfo();
-    setupUsername();
+    if (widget.item != null) {
+      item = widget.item!;
+      setupPlayer();
+      loadHiveInfo();
+      setupUsername();
+    } else {
+      getVideoItem();
+    }
+  }
+
+  void getVideoItem() async {
+    try {
+      var videoItem = await _gql.getVideoItem(
+        widget.author ?? '',
+        widget.permlink ?? '',
+      );
+      setState(() {
+        item = videoItem;
+        setupPlayer();
+        loadHiveInfo();
+        setupUsername();
+      });
+    } catch (e) {
+      debugPrint("Error getting video item: $e");
+    }
   }
 
   void setupUsername() async {
@@ -98,20 +130,18 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   }
 
   Future<Discussion> fetchHiveInfoForThisVideo() async {
-    if ((widget.item.author?.username ?? "").isEmpty ||
-        (widget.item.permlink ?? "").isEmpty) {
+    if ((item!.author?.username ?? "").isEmpty ||
+        (item!.permlink ?? "").isEmpty) {
       var errorMessage = "Author or permlink is empty, cannot fetch Hive info.";
       debugPrint(errorMessage);
       throw errorMessage;
     }
     var result = await hfk.getCommentsList(
-      widget.item.author?.username ?? "",
-      widget.item.permlink ?? "",
+      item!.author?.username ?? "",
+      item!.permlink ?? "",
     );
     var discussion = result.firstWhereOrNull(
-      (e) =>
-          e.author == widget.item.author?.username &&
-          e.permlink == widget.item.permlink,
+      (e) => e.author == item!.author?.username && e.permlink == item!.permlink,
     );
     if (discussion == null) {
       var errorMessage = "No discussion found for this video.";
@@ -123,11 +153,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   }
 
   void setupPlayer() async {
-    if (widget.item.playUrl == null || widget.item.playUrl!.isEmpty) {
+    if (item!.playUrl == null || item!.playUrl!.isEmpty) {
       debugPrint("No play URL found for this video.");
       return;
     }
-    final resolvedUrl = _resolveIPFSUrl(widget.item.playUrl ?? "");
+    final resolvedUrl = _resolveIPFSUrl(item!.playUrl ?? "");
 
     videoPlayerController = VideoPlayerController.network(resolvedUrl);
 
@@ -179,11 +209,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   Widget _videoInfoWidget() {
     return VideoInfo(
-      title: widget.item.title ?? "",
-      author: widget.item.author?.username ?? "",
-      permlink: widget.item.permlink ?? "",
-      createdAt: widget.item.createdAt ?? DateTime.now(),
-      video: widget.item,
+      title: item!.title ?? "",
+      author: item!.author?.username ?? "",
+      permlink: item!.permlink ?? "",
+      createdAt: item!.createdAt ?? DateTime.now(),
+      video: item!,
       postInfo: postInfo,
       currentUser: currentUserName,
       isContentVoted: isContentVoted(),
@@ -196,6 +226,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     );
   }
 
+  Widget loader() {
+    return const Center(child: CircularProgressIndicator());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -206,96 +240,108 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
             Navigator.pop(context);
           },
         ),
-        title: Text(widget.item.title ?? "Video Player"),
+        title: Text(item?.title ?? "Loading Data"),
       ),
       body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final isWideScreen = constraints.maxWidth >= 800;
+        child:
+            item == null
+                ? loader()
+                : LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isWideScreen = constraints.maxWidth >= 800;
 
-            if (isWideScreen) {
-              return SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Center(
-                      child: Container(
-                        width: 1600, 
-                        constraints: BoxConstraints(
-                          maxWidth: 1800,
-                          minWidth: 400,
-                        ),
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 32,
-                        ),
-                        height: 540,
-                        child: AspectRatio(
-                          aspectRatio: 16 / 9,
-                          child:
-                              setupDone && chewieController != null
-                                  ? Chewie(controller: chewieController!)
-                                  : const Center(
-                                    child: CircularProgressIndicator(),
-                                  ),
-                        ),
-                      ),
-                    ),
-                    Center(
-                      child: Container(
-                        width: 1600,
-                        constraints: BoxConstraints(
-                          maxWidth: 1800,
-                          minWidth: 400,
-                        ),
-                        margin: const EdgeInsets.symmetric(horizontal: 32),
-                        child: _videoInfoWidget(),
-                      ),
-                    ),
-                    Divider(height: 1),
-                    widget.relatedBuilder != null
-                        ? widget.relatedBuilder!(context, widget.item)
-                        : Container(
-                          constraints: BoxConstraints(
-                            maxWidth: 1800,
-                            minWidth: 400,
-                              maxHeight: 700, 
-                          ),
-                          margin: const EdgeInsets.symmetric(horizontal: 32),
-                          child: ThreeSpeakVideoFeed(
-                            feedType: ThreeSpeakVideoFeedType.related,
-                            relatedAuthor: widget.item.author?.username,
-                            relatedPermlink: widget.item.permlink,
-                          ),
-                        ),
-                  ],
-                ),
-              );
-            } else {
-              return Column(
-                children: [
-                  AspectRatio(
-                    aspectRatio: 16 / 9,
-                    child:
-                        setupDone && chewieController != null
-                            ? Chewie(controller: chewieController!)
-                            : const Center(child: CircularProgressIndicator()),
-                  ),
-                  _videoInfoWidget(),
-                  Divider(height: 1),
-                  Expanded(
-                    child: widget.relatedBuilder != null
-                            ? widget.relatedBuilder!(context, widget.item)
-                            : ThreeSpeakVideoFeed(
-                              feedType: ThreeSpeakVideoFeedType.related,
-                              relatedAuthor: widget.item.author?.username,
-                              relatedPermlink: widget.item.permlink,
+                    if (isWideScreen) {
+                      return SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Center(
+                              child: Container(
+                                width: 1600,
+                                constraints: BoxConstraints(
+                                  maxWidth: 1800,
+                                  minWidth: 400,
+                                ),
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 32,
+                                ),
+                                height: 540,
+                                child: AspectRatio(
+                                  aspectRatio: 16 / 9,
+                                  child:
+                                      setupDone && chewieController != null
+                                          ? Chewie(
+                                            controller: chewieController!,
+                                          )
+                                          : const Center(
+                                            child: CircularProgressIndicator(),
+                                          ),
+                                ),
+                              ),
                             ),
-                  ),
-                ],
-              );
-            }
-          },
-        ),
+                            Center(
+                              child: Container(
+                                width: 1600,
+                                constraints: BoxConstraints(
+                                  maxWidth: 1800,
+                                  minWidth: 400,
+                                ),
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 32,
+                                ),
+                                child: _videoInfoWidget(),
+                              ),
+                            ),
+                            Divider(height: 1),
+                            widget.relatedBuilder != null
+                                ? widget.relatedBuilder!(context, item!)
+                                : Container(
+                                  constraints: BoxConstraints(
+                                    maxWidth: 1800,
+                                    minWidth: 400,
+                                    maxHeight: 700,
+                                  ),
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 32,
+                                  ),
+                                  child: ThreeSpeakVideoFeed(
+                                    feedType: ThreeSpeakVideoFeedType.related,
+                                    relatedAuthor: item!.author?.username,
+                                    relatedPermlink: item!.permlink,
+                                  ),
+                                ),
+                          ],
+                        ),
+                      );
+                    } else {
+                      return Column(
+                        children: [
+                          AspectRatio(
+                            aspectRatio: 16 / 9,
+                            child:
+                                setupDone && chewieController != null
+                                    ? Chewie(controller: chewieController!)
+                                    : const Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
+                          ),
+                          _videoInfoWidget(),
+                          Divider(height: 1),
+                          Expanded(
+                            child:
+                                widget.relatedBuilder != null
+                                    ? widget.relatedBuilder!(context, item!)
+                                    : ThreeSpeakVideoFeed(
+                                      feedType: ThreeSpeakVideoFeedType.related,
+                                      relatedAuthor: item!.author?.username,
+                                      relatedPermlink: item!.permlink,
+                                    ),
+                          ),
+                        ],
+                      );
+                    }
+                  },
+                ),
       ),
     );
   }

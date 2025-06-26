@@ -1036,6 +1036,24 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: _switchUser,
                 child: const Text('Switch User'),
               ),
+
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => VideoPlayerScreen(
+                            item: null,
+                            author: 'ninaeatshere',
+                            permlink: 'movrcxlslz',
+                          ),
+                    ),
+                  );
+                },
+                child: const Text('video player'),
+              ),
+
               ElevatedButton(
                 onPressed: () async {
                   String username = await hfk.getCurrentUser();
@@ -1674,23 +1692,27 @@ class _MyHomePageState extends State<MyHomePage> {
                                 child: SizedBox(
                                   width: MediaQuery.of(context).size.width,
                                   height: MediaQuery.of(context).size.height,
-                                  child: ThreeSpeakLoginScreen(hfk: hfk, uponLogin: (context, token, username) {
-                                    debugPrint(
-                                      'Logged in with token: $token, username: $username',
-                                    );
-                                    // Navigator.of(context).pop();
-                                  }
-                                  )
+                                  child: ThreeSpeakLoginScreen(
+                                    hfk: hfk,
+                                    uponLogin: (context, token, username) {
+                                      debugPrint(
+                                        'Logged in with token: $token, username: $username',
+                                      );
+                                      // Navigator.of(context).pop();
+                                    },
+                                  ),
                                 ),
                               ),
                         );
                       },
-                      child: const Text('ThreeSpeak Login Screen User (Dialog)'),
+                      child: const Text(
+                        'ThreeSpeak Login Screen User (Dialog)',
+                      ),
                     ),
                   ),
                 ],
               ),
-              
+
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -1906,8 +1928,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       builder:
                           (context) => VideoUploadScreen(
                             owner: 'shaktimaaan',
-                            token:
-                                "REMOVED",
+                            token: "REMOVED",
                             onUploadSuccess: (response) {
                               // Handle the response object here
                               print('Upload success: $response');
