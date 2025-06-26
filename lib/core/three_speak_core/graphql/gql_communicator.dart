@@ -146,6 +146,20 @@ class GQLCommunicator {
     );
   }
 
+  Future<GQLFeedItem> getVideoItem(String author, String permlink) async {
+    var items = await getGQLFeed(
+      'MyQuery',
+      '{"query":"query MyQuery {\n  trendingFeed(\n    feedOptions: {byCreator: {_eq: \"$author\"}, byPermlink: {_eq: \"$permlink\"}}\n  ) {\n    items {\n      body\n      title\n    }\n  }\n}","operationName":"MyQuery","extensions":{}}',
+    );
+    if (items.isNotEmpty) {
+      return items.first;
+    } else {
+      throw Exception(
+        "No video found for author: $author, permlink: $permlink",
+      );
+    }
+  }
+
   Future<List<GQLFeedItem>> getNewUploadsFeed(
     bool isShorts,
     int skip,
@@ -163,16 +177,21 @@ class GQLCommunicator {
   }
 
   Future<List<GQLFeedItem>> getMyFeed(
-      String username, bool isShorts, int skip, String? lang) async {
+    String username,
+    bool isShorts,
+    int skip,
+    String? lang,
+  ) async {
     var spkVideoQuery =
         "\nspkvideo: {only: true${isShorts ? ", isShort: true" : ""}}\n";
     var feedOptionsQuery =
         "\nfeedOptions: { byFollower: \"$username\"${lang != null ? ", byLang: {_eq: \"$lang\"}" : ""} }\n";
     var paginationQuery = "\npagination: { limit: 50, skip: $skip }\n";
-    return getGQLFeed('MyFeed',
-        "query MyFeed {\n  socialFeed($spkVideoQuery$feedOptionsQuery$paginationQuery)\n$dataQuery");
+    return getGQLFeed(
+      'MyFeed',
+      "query MyFeed {\n  socialFeed($spkVideoQuery$feedOptionsQuery$paginationQuery)\n$dataQuery",
+    );
   }
-
 
   Future<List<GQLFeedItem>> getUserFeed(
     List<String> authors,
@@ -191,7 +210,7 @@ class GQLCommunicator {
       "query UserChannelFeed {\n  socialFeed($spkVideoQuery$feedOptionsQuery$paginationQuery)\n$dataQuery",
     );
   }
-  
+
   Future<List<GQLFeedItem>> getRelated(
     String author,
     String permlink,
