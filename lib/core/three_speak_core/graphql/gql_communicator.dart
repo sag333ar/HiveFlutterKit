@@ -147,18 +147,33 @@ class GQLCommunicator {
   }
 
   Future<GQLFeedItem> getVideoItem(String author, String permlink) async {
-    var items = await getGQLFeed(
-      'MyQuery',
-      '{"query":"query MyQuery {\n  trendingFeed(\n    feedOptions: {byCreator: {_eq: \"$author\"}, byPermlink: {_eq: \"$permlink\"}}\n  ) {\n    items {\n      body\n      title\n    }\n  }\n}","operationName":"MyQuery","extensions":{}}',
-    );
-    if (items.isNotEmpty) {
-      return items.first;
-    } else {
-      throw Exception(
-        "No video found for author: $author, permlink: $permlink",
-      );
+  final query = '''
+    query MyQuery {
+      trendingFeed(
+        feedOptions: {
+          byCreator: { _eq: "$author" },
+          byPermlink: { _eq: "$permlink" }
+        }
+      ) {
+        items {
+          body
+          title
+        }
+      }
     }
+  ''';
+
+  final items = await getGQLFeed('MyQuery', query);
+
+  if (items.isNotEmpty) {
+    return items.first;
+  } else {
+    throw Exception(
+      "No video found for author: $author, permlink: $permlink",
+    );
   }
+}
+
 
   Future<List<GQLFeedItem>> getNewUploadsFeed(
     bool isShorts,
