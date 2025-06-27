@@ -4,10 +4,12 @@ import 'package:hive_flutter_kit/core/common/enum.dart';
 import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit/core/models/community_model.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 import 'package:hive_flutter_kit/ux/dhive/comments/hive_post_comments.dart';
 import 'package:hive_flutter_kit/ux/login_screen.dart';
 import 'package:hive_flutter_kit/ux/switch_user.dart';
 import 'package:hive_flutter_kit/ux/dhive/community_list/community_list.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/three_speak_trending_tags.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/three_speak_video_feed.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_community_screen/threespeak_commnuity_screen.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_login_screen.dart';
@@ -979,6 +981,46 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  VideoPlayerScreen getVideoPlayer(
+    String? author,
+    String? permlink,
+    GQLFeedItem? item,
+  ) {
+    return VideoPlayerScreen(
+      item: item,
+      author: author, //'ninaeatshere',
+      permlink: permlink, // 'movrcxlslz',
+      onTapBackButton: () {
+        Navigator.pop(context);
+      },
+      shouldShowBackButton: true,
+      videoFeed: () {
+        return ThreeSpeakVideoFeed(
+          feedType: ThreeSpeakVideoFeedType.related,
+          onTapVideoItem: (tappedItem) {
+            var screen = getVideoPlayer(null, null, tappedItem);
+            var route = MaterialPageRoute(builder: (context) => screen);
+            Navigator.push(context, route);
+          },
+          relatedAuthor: 'ninaeatshere',
+          relatedPermlink: 'movrcxlslz',
+          onTapAuthor: (GQLFeedItem item) {
+            debugPrint('Tapped author: ${item.author}');
+          },
+          onTapReport: (GQLFeedItem item) {
+            debugPrint('Tapped report: ${item.permlink}');
+          },
+          onTapUpvote: (GQLFeedItem item) {
+            debugPrint('Tapped upvote: ${item.permlink}');
+          },
+          onTapComment: (GQLFeedItem item) {
+            debugPrint('Tapped comment: ${item.permlink}');
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1039,17 +1081,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
               ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) => VideoPlayerScreen(
-                            item: null,
-                            author: 'ninaeatshere',
-                            permlink: 'movrcxlslz',
-                          ),
-                    ),
+                  var screen = getVideoPlayer(
+                    "ninaeatshere",
+                    "movrcxlslz",
+                    null,
                   );
+                  var route = MaterialPageRoute(builder: (context) => screen);
+                  Navigator.push(context, route);
                 },
                 child: const Text('video player'),
               ),
@@ -1951,25 +1989,29 @@ class _MyHomePageState extends State<MyHomePage> {
                             appBar: AppBar(title: const Text('Trending Feed')),
                             body: ThreeSpeakVideoFeed(
                               feedType: ThreeSpeakVideoFeedType.trending,
-                              onTapVideoItem: (item) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder:
-                                        (context) =>
-                                            VideoPlayerScreen(item: item),
-                                    // VideoPlayerScreen(
-                                    //   videoUrl: videoUrl ?? '',
-                                    //   title: item.title ?? 'Untitled',
-                                    //   author:
-                                    //       item.author?.username ??
-                                    //       'Unknown',
-                                    //   permlink: item.permlink ?? 'Unknown',
-                                    //   createdAt: item.createdAt,
-                                    //   item: item,
-                                    // ),
-                                  ),
+                              onTapVideoItem: (tappedItem) {
+                                debugPrint('Tapped video item: $tappedItem');
+                                var screen = getVideoPlayer(
+                                  null,
+                                  null,
+                                  tappedItem,
                                 );
+                                var route = MaterialPageRoute(
+                                  builder: (context) => screen,
+                                );
+                                Navigator.push(context, route);
+                              },
+                              onTapAuthor: (GQLFeedItem item) {
+                                debugPrint('Tapped author: ${item.author}');
+                              },
+                              onTapReport: (GQLFeedItem item) {
+                                debugPrint('Tapped report: ${item.permlink}');
+                              },
+                              onTapUpvote: (GQLFeedItem item) {
+                                debugPrint('Tapped upvote: ${item.permlink}');
+                              },
+                              onTapComment: (GQLFeedItem item) {
+                                debugPrint('Tapped comment: ${item.permlink}');
                               },
                             ),
                           ),
@@ -1978,6 +2020,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
                 child: const Text('Show Trending Feed'),
               ),
+
               // ElevatedButton(
               //   onPressed: () {
               //     Navigator.push(
@@ -2056,39 +2099,6 @@ class _MyHomePageState extends State<MyHomePage> {
               // ),
               ElevatedButton(
                 onPressed: () {
-                  // Example author/permlink, replace with actual values or make dynamic as needed
-                  const relatedAuthor = 'buttcoins';
-                  const relatedPermlink = 'wwsrrcpv';
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) => Scaffold(
-                            appBar: AppBar(title: const Text('Related Videos')),
-                            body: ThreeSpeakVideoFeed(
-                              feedType: ThreeSpeakVideoFeedType.related,
-                              relatedAuthor: relatedAuthor,
-                              relatedPermlink: relatedPermlink,
-                              onTapVideoItem: (item) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder:
-                                        (context) =>
-                                            VideoPlayerScreen(item: item),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                    ),
-                  );
-                },
-                child: const Text('Show Related Videos'),
-              ),
-
-              ElevatedButton(
-                onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -2096,15 +2106,20 @@ class _MyHomePageState extends State<MyHomePage> {
                           (context) => ThreeSpeakVideoFeed(
                             feedType: ThreeSpeakVideoFeedType.search,
                             isSearch: true,
-                            onTapVideoItem: (item) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder:
-                                      (context) =>
-                                          VideoPlayerScreen(item: item),
-                                ),
-                              );
+                            onTapVideoItem: (tappedItem) {
+                              debugPrint('Tapped video item: $tappedItem');
+                            },
+                            onTapAuthor: (GQLFeedItem item) {
+                              debugPrint('Tapped author: ${item.author}');
+                            },
+                            onTapReport: (GQLFeedItem item) {
+                              debugPrint('Tapped report: ${item.permlink}');
+                            },
+                            onTapUpvote: (GQLFeedItem item) {
+                              debugPrint('Tapped upvote: ${item.permlink}');
+                            },
+                            onTapComment: (GQLFeedItem item) {
+                              debugPrint('Tapped comment: ${item.permlink}');
                             },
                           ),
                     ),
@@ -2122,13 +2137,29 @@ class _MyHomePageState extends State<MyHomePage> {
                             communityId: 'hive-163772',
                             title: 'Worldmappin',
                             onTapVideoItem: (item) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder:
-                                      (context) =>
-                                          VideoPlayerScreen(item: item),
-                                ),
+                              debugPrint('Tapped video item: ${item.title}');
+                            },
+                            videoFeed: () {
+                              return ThreeSpeakVideoFeed(
+                                feedType: ThreeSpeakVideoFeedType.commnuityFeed,
+                                commnuityId: 'hive-163772',
+                                onTapVideoItem: (tappedItem) {
+                                  debugPrint('Tapped video item: $tappedItem');
+                                },
+                                onTapAuthor: (GQLFeedItem item) {
+                                  debugPrint('Tapped author: ${item.author}');
+                                },
+                                onTapReport: (GQLFeedItem item) {
+                                  debugPrint('Tapped report: ${item.permlink}');
+                                },
+                                onTapUpvote: (GQLFeedItem item) {
+                                  debugPrint('Tapped upvote: ${item.permlink}');
+                                },
+                                onTapComment: (GQLFeedItem item) {
+                                  debugPrint(
+                                    'Tapped comment: ${item.permlink}',
+                                  );
+                                },
                               );
                             },
                             // Optionally add onTapAuthor, onTapVideosTab, etc.
@@ -2144,8 +2175,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     context,
                     MaterialPageRoute(
                       builder:
-                          (context) => ThreeSpeakVideoFeed(
-                            feedType: ThreeSpeakVideoFeedType.trendingTags,
+                          (context) => ThreeSpeakTrendingTags(
+                            onTapTag: (tag) {
+                              debugPrint('Tapped tag: $tag');
+                            },
                           ),
                     ),
                   );

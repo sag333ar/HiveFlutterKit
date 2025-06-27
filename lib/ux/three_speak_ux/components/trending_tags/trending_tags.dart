@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_tags_response.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/trending_tags/trending_tag_videos.dart';
 
 class TrendingTags extends StatelessWidget {
   final List<TrendingTagResponseDataTrendingTag> tags;
-  const TrendingTags({Key? key, required this.tags}) : super(key: key);
+  final void Function(String tag) onTapTag;
+  const TrendingTags({Key? key, required this.tags, required this.onTapTag});
 
   @override
   Widget build(BuildContext context) {
@@ -52,12 +54,21 @@ class TrendingTags extends StatelessWidget {
         final scorePercent = maxScore > 0 ? tagItem.score / maxScore : 0;
         return InkWell(
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => TrendingTagVideos(tag: tagItem.tag),
-              ),
-            );
+            onTapTag(tagItem.tag);
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(
+            //     builder:
+            //         (context) => TrendingTagVideos(
+            //           tag: tagItem.tag,
+            //           onTapVideoItem: onTapVideoItem,
+            //           onTapAuthor: onTapAuthor,
+            //           onTapReport: onTapReport,
+            //           onTapUpvote: onTapUpvote,
+            //           onTapComment: onTapComment,
+            //         ),
+            //   ),
+            // );
           },
           child: Card(
             margin: const EdgeInsets.all(8),

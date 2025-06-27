@@ -9,21 +9,21 @@ import 'package:timeago/timeago.dart' as timeago;
 class VideoCard extends StatefulWidget {
   final GQLFeedItem item;
   final bool isVisible;
-  final void Function()? onTap;
-  final void Function()? onTapAuthor;
-  final void Function()? onTapReport;
-  final void Function()? onTapUpvote;
-  final void Function()? onTapComment;
+  final void Function() onTap;
+  final void Function() onTapAuthor;
+  final void Function() onTapReport;
+  final void Function() onTapUpvote;
+  final void Function() onTapComment;
 
   const VideoCard({
     super.key,
     required this.item,
     required this.isVisible,
-    this.onTap,
-    this.onTapAuthor,
-    this.onTapReport,
-    this.onTapUpvote,
-    this.onTapComment,
+    required this.onTap,
+    required this.onTapAuthor,
+    required this.onTapReport,
+    required this.onTapUpvote,
+    required this.onTapComment,
   });
 
   @override
@@ -37,19 +37,7 @@ class _VideoCardState extends State<VideoCard> {
     bool isMobile = MediaQuery.of(context).size.width < 600;
 
     void handleTapAuthor() {
-      if (widget.onTapAuthor != null) {
-        widget.onTapAuthor!();
-      } else {
-        final username = item.author?.username;
-        if (username != null && username.isNotEmpty) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => UserChannelScreen(owner: username),
-            ),
-          );
-        }
-      }
+      widget.onTapAuthor();
     }
 
     return GestureDetector(
@@ -110,7 +98,7 @@ class _VideoCardState extends State<VideoCard> {
                           PopupMenuButton<String>(
                             onSelected: (value) {
                               if (value == 'Report') {
-                                widget.onTapReport?.call();
+                                widget.onTapReport.call();
                               }
                             },
                             itemBuilder:
@@ -215,7 +203,7 @@ class _VideoCardState extends State<VideoCard> {
                           PopupMenuButton<String>(
                             onSelected: (value) {
                               if (value == 'Report') {
-                                widget.onTapReport?.call();
+                                widget.onTapReport.call();
                               }
                             },
                             itemBuilder:
