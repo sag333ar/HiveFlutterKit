@@ -11,6 +11,7 @@ import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/video_info.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
 import 'package:collection/collection.dart';
+import 'package:go_router/go_router.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
   final GQLFeedItem? item;
@@ -22,6 +23,7 @@ class VideoPlayerScreen extends StatefulWidget {
   final void Function(String, String)? onTapShare;
   final void Function(String, String)? onTapBookmark;
   final void Function(String)? onTapAuthor;
+  final VoidCallback? onTapBackButton;
   final void Function(String, String)? onTapInfo;
   final void Function(String, String)? onTapSuggestedItem;
   final Widget Function(BuildContext context, GQLFeedItem item)? relatedBuilder;
@@ -33,6 +35,7 @@ class VideoPlayerScreen extends StatefulWidget {
     this.onTapUpvote,
     this.onTapShare,
     this.onTapBookmark,
+    this.onTapBackButton,
     this.onTapAuthor,
     this.onTapInfo,
     this.relatedBuilder,
@@ -73,6 +76,37 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     } else {
       getVideoItem();
     }
+  }
+
+  @override
+  void didUpdateWidget(covariant VideoPlayerScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    final newAuthor = widget.author;
+    final newPermlink = widget.permlink;
+
+    if (newAuthor != oldWidget.author || newPermlink != oldWidget.permlink) {
+      _disposeAndReload();
+    }
+  }
+
+  void _disposeAndReload() {
+    videoPlayerController.dispose();
+    chewieController?.dispose();
+    chewieController = null;
+    setupDone = false;
+    item = null;
+
+    if (widget.item != null) {
+      item = widget.item!;
+      setupPlayer();
+      loadHiveInfo();
+      setupUsername();
+    } else {
+      getVideoItem();
+    }
+
+    setState(() {});
   }
 
   void getVideoItem() async {
@@ -238,10 +272,19 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       appBar: AppBar(
         titleSpacing: 0,
         leading: BackButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed:
+              widget.onTapBackButton ??
+              () {
+                if (Navigator.of(context).canPop()) {
+                  Navigator.pop(context);
+                } else if (context.canPop()) {
+                  context.pop();
+                } else {
+                  context.goNamed('home');
+                }
+              },
         ),
+
         title: Text(item?.title ?? "Loading Data"),
       ),
       body: SafeArea(
@@ -335,13 +378,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                                     ? widget.relatedBuilder!(context, item!)
                                     : ThreeSpeakVideoFeed(
                                       feedType: ThreeSpeakVideoFeedType.related,
-                                      onTapVideoItem: (GQLFeedItem tappedItem) {
-                                        if (widget.onTapSuggestedItem != null) {
-                                          widget.onTapSuggestedItem!(
-                                            tappedItem.author?.username ?? '',
-                                            tappedItem.permlink ?? '',
-                                          );
-                                        }
+                                      onTapVideoItem: (tappedItem) {
+                                        widget.onTapSuggestedItem?.call(
+                                          tappedItem.author?.username ?? '',
+                                          tappedItem.permlink ?? '',
+                                        );
                                       },
                                       relatedAuthor: item!.author?.username,
                                       relatedPermlink: item!.permlink,
