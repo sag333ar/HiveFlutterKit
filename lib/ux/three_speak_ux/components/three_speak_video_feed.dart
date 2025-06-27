@@ -390,10 +390,8 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
 
     if (showSearchBar) {
       return Scaffold(appBar: _buildSearchAppBar(), body: content);
-    } else if (widget.feedType == ThreeSpeakVideoFeedType.trendingTags) {
-      return Scaffold(body: content);
     } else {
-      return content;
+      return Scaffold(body: content);
     }
   }
 }
