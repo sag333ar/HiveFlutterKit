@@ -24,9 +24,8 @@ class ThreespeakCommnuityScreen extends StatefulWidget {
     this.onTapRssFeed,
     this.onTapShare,
     this.onTapReport,
-    this.onTapVideoItem,
-    this.onTapVideoReport,
-    this.onTapAuthor,
+    required this.videoFeed,
+    required Null Function(dynamic item) onTapVideoItem,
   });
   final String communityId;
   final String title;
@@ -38,9 +37,7 @@ class ThreespeakCommnuityScreen extends StatefulWidget {
   final void Function(String, String)? onTapRssFeed;
   final void Function(String, String)? onTapShare;
   final void Function(String, String)? onTapReport;
-  final void Function(GQLFeedItem item)? onTapVideoItem;
-  final void Function(String, String)? onTapVideoReport;
-  final void Function(String)? onTapAuthor;
+  final ThreeSpeakVideoFeed Function() videoFeed;
 
   @override
   _ThreespeakCommnuityScreenState createState() =>
@@ -200,23 +197,7 @@ class _ThreespeakCommnuityScreenState extends State<ThreespeakCommnuityScreen>
       body: TabBarView(
         controller: _tabController,
         children: [
-          // 1st tab: Videos list
-          ThreeSpeakVideoFeed(
-            feedType: ThreeSpeakVideoFeedType.commnuityFeed,
-            commnuityId: widget.communityId,
-            onTapAuthor:
-                widget.onTapAuthor != null
-                    ? (item) => widget.onTapAuthor!(item.author?.username ?? '')
-                    : null,
-            onTapVideoItem: widget.onTapVideoItem,
-            onTapReport:
-                widget.onTapVideoReport != null
-                    ? (item) => widget.onTapVideoReport!(
-                      item.author?.username ?? '',
-                      item.permlink ?? '',
-                    )
-                    : null,
-          ),
+          widget.videoFeed(),
           CommunityAboutWidget(communityId: widget.communityId),
           CommunityTeamWidget(communityId: widget.communityId),
           CommunityMembersWidget(communityId: widget.communityId),

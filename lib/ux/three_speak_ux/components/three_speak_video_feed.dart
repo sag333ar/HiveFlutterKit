@@ -17,11 +17,11 @@ class ThreeSpeakVideoFeed extends StatefulWidget {
   final String? lang;
   final bool isSearch;
 
-  final void Function(GQLFeedItem item)? onTapVideoItem;
-  final void Function(GQLFeedItem item)? onTapAuthor;
-  final void Function(GQLFeedItem item)? onTapReport;
-  final void Function(GQLFeedItem item)? onTapUpvote;
-  final void Function(GQLFeedItem item)? onTapComment;
+  final void Function(GQLFeedItem item) onTapVideoItem;
+  final void Function(GQLFeedItem item) onTapAuthor;
+  final void Function(GQLFeedItem item) onTapReport;
+  final void Function(GQLFeedItem item) onTapUpvote;
+  final void Function(GQLFeedItem item) onTapComment;
 
   final String? relatedAuthor;
   final String? relatedPermlink;
@@ -36,16 +36,16 @@ class ThreeSpeakVideoFeed extends StatefulWidget {
     this.isShorts = false,
     this.lang,
     this.isSearch = false,
-    this.onTapVideoItem,
-    this.onTapAuthor,
-    this.onTapReport,
+    required this.onTapVideoItem,
+    required this.onTapAuthor,
+    required this.onTapReport,
     this.relatedAuthor,
     this.relatedPermlink,
     this.username,
     this.searchTerm,
     this.commnuityId,
-    this.onTapUpvote,
-    this.onTapComment,
+    required this.onTapUpvote,
+    required this.onTapComment,
     this.tag,
   });
 
@@ -58,7 +58,6 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
   List<GQLFeedItem> _items = [];
   bool _loading = true;
   String? _error;
-  List<String> _trendingTags = [];
   TrendingTagResponse? _trendingTagResponse;
 
   // For search bar logic
@@ -188,18 +187,6 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
             widget.lang,
           );
         }
-      } else if (widget.feedType == ThreeSpeakVideoFeedType.trendingTags) {
-        final tagResponse = await _gql.getTrendingTags();
-        setState(() {
-          _trendingTagResponse = tagResponse;
-          _trendingTags =
-              tagResponse.data?.trendingTags?.tags
-                  ?.map((e) => e.tag)
-                  .toList() ??
-              [];
-          _loading = false;
-        });
-        return;
       } else if (widget.feedType == ThreeSpeakVideoFeedType.trendingTagFeed) {
         items = await _gql.getTrendingTagFeed(
           widget.tag ?? '',
@@ -276,9 +263,6 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
           case ThreeSpeakVideoFeedType.search:
             // Already handled above
             break;
-          case ThreeSpeakVideoFeedType.trendingTags:
-            // Already handled above
-            break;
           case ThreeSpeakVideoFeedType.trendingTagFeed:
             // Already handled above
             break;
@@ -297,28 +281,11 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
   }
 
   void _handleTapAuthor(BuildContext context, GQLFeedItem item) {
-    if (widget.onTapAuthor != null) {
-      widget.onTapAuthor!(item);
-    } else {
-      final username = item.author?.username;
-      if (username != null && username.isNotEmpty) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => UserChannelScreen(owner: username)),
-        );
-      }
-    }
+    widget.onTapAuthor(item);
   }
 
   void _handleTapVideoItem(BuildContext context, GQLFeedItem item) {
-    if (widget.onTapVideoItem != null) {
-      widget.onTapVideoItem!(item);
-    } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => VideoPlayerScreen(item: item)),
-      );
-    }
+    widget.onTapVideoItem(item);
   }
 
   @override
@@ -330,9 +297,6 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
       content = const Center(child: CircularProgressIndicator());
     } else if (_error != null) {
       content = Center(child: Text('Error: $_error'));
-    } else if (widget.feedType == ThreeSpeakVideoFeedType.trendingTags) {
-      final tags = _trendingTagResponse?.data?.trendingTags?.tags ?? [];
-      content = TrendingTags(tags: tags);
     } else if (_items.isEmpty) {
       content = Center(
         child: Text(
@@ -364,9 +328,9 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
               isVisible: true,
               onTap: () => _handleTapVideoItem(context, item),
               onTapAuthor: () => _handleTapAuthor(context, item),
-              onTapReport: () => widget.onTapReport?.call(item),
-              onTapUpvote: () => widget.onTapUpvote?.call(item),
-              onTapComment: () => widget.onTapComment?.call(item),
+              onTapReport: () => widget.onTapReport.call(item),
+              onTapUpvote: () => widget.onTapUpvote.call(item),
+              onTapComment: () => widget.onTapComment.call(item),
             );
           },
         );
@@ -379,9 +343,9 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
               isVisible: isVisible,
               onTap: () => _handleTapVideoItem(context, item),
               onTapAuthor: () => _handleTapAuthor(context, item),
-              onTapReport: () => widget.onTapReport?.call(item),
-              onTapUpvote: () => widget.onTapUpvote?.call(item),
-              onTapComment: () => widget.onTapComment?.call(item),
+              onTapReport: () => widget.onTapReport.call(item),
+              onTapUpvote: () => widget.onTapUpvote.call(item),
+              onTapComment: () => widget.onTapComment.call(item),
             );
           },
         );

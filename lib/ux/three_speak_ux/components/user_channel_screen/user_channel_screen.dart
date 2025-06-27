@@ -22,9 +22,7 @@ class UserChannelScreen extends StatefulWidget {
     this.onTapRssFeed,
     this.onTapShare,
     this.onTapReport,
-    this.onTapVideoItem,
-    this.onTapVideoReport,
-    this.onTapAuthor,
+    required this.videoFeed,
   });
 
   final String owner;
@@ -36,9 +34,7 @@ class UserChannelScreen extends StatefulWidget {
   final void Function(String, String)? onTapRssFeed;
   final void Function(String, String)? onTapShare;
   final void Function(String, String)? onTapReport;
-  final void Function(GQLFeedItem item)? onTapVideoItem;
-  final void Function(String, String)? onTapVideoReport;
-  final void Function(String)? onTapAuthor;
+  final ThreeSpeakVideoFeed Function() videoFeed;
 
   @override
   _UserChannelScreenState createState() => _UserChannelScreenState();
@@ -190,24 +186,7 @@ class _UserChannelScreenState extends State<UserChannelScreen>
       body: TabBarView(
         controller: _tabController,
         children: [
-          // 1st tab: Videos list
-          ThreeSpeakVideoFeed(
-            feedType: ThreeSpeakVideoFeedType.userFeed,
-            username: widget.owner, 
-            onTapAuthor:
-                widget.onTapAuthor != null
-                    ? (item) => widget.onTapAuthor!(item.author?.username ?? '')
-                    : null,
-            onTapVideoItem: widget.onTapVideoItem,
-            onTapReport:
-                widget.onTapVideoReport != null
-                    ? (item) => widget.onTapVideoReport!(
-                      item.author?.username ?? '',
-                      item.permlink ?? '',
-                    )
-                    : null,
-          ),
-
+          widget.videoFeed(),
           // 2nd tab: Bio, created at, and other info
           UserChannelProfileWidget(owner: widget.owner),
           // 3rd tab: Followers

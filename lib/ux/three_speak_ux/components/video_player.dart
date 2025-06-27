@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:hive_flutter_kit/core/common/enum.dart';
 import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit/core/models/discussion.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/graphql/gql_communicator.dart';
@@ -11,7 +10,6 @@ import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/video_info.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
 import 'package:collection/collection.dart';
-import 'package:go_router/go_router.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
   final GQLFeedItem? item;
@@ -23,10 +21,11 @@ class VideoPlayerScreen extends StatefulWidget {
   final void Function(String, String)? onTapShare;
   final void Function(String, String)? onTapBookmark;
   final void Function(String)? onTapAuthor;
-  final VoidCallback? onTapBackButton;
+  final VoidCallback onTapBackButton;
+  final bool shouldShowBackButton;
   final void Function(String, String)? onTapInfo;
-  final void Function(String, String)? onTapSuggestedItem;
-  final Widget Function(BuildContext context, GQLFeedItem item)? relatedBuilder;
+  final ThreeSpeakVideoFeed Function() videoFeed;
+  // final Widget Function(BuildContext context, GQLFeedItem item)? relatedBuilder;
 
   const VideoPlayerScreen({
     super.key,
@@ -35,13 +34,13 @@ class VideoPlayerScreen extends StatefulWidget {
     this.onTapUpvote,
     this.onTapShare,
     this.onTapBookmark,
-    this.onTapBackButton,
+    required this.onTapBackButton,
     this.onTapAuthor,
     this.onTapInfo,
-    this.relatedBuilder,
-    this.onTapSuggestedItem,
     this.author,
     this.permlink,
+    required this.shouldShowBackButton,
+    required this.videoFeed,
   }) : assert(
          (item != null && author == null && permlink == null) ||
              (item == null && author != null && permlink != null),
@@ -271,20 +270,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
-        leading: BackButton(
-          onPressed:
-              widget.onTapBackButton ??
-              () {
-                if (Navigator.of(context).canPop()) {
-                  Navigator.pop(context);
-                } else if (context.canPop()) {
-                  context.pop();
-                } else {
-                  context.goNamed('home');
-                }
-              },
-        ),
-
+        leading:
+            widget.shouldShowBackButton
+                ? BackButton(onPressed: widget.onTapBackButton)
+                : null,
         title: Text(item?.title ?? "Loading Data"),
       ),
       body: SafeArea(
@@ -338,23 +327,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                               ),
                             ),
                             Divider(height: 1),
-                            widget.relatedBuilder != null
-                                ? widget.relatedBuilder!(context, item!)
-                                : Container(
-                                  constraints: BoxConstraints(
-                                    maxWidth: 1800,
-                                    minWidth: 400,
-                                    maxHeight: 700,
-                                  ),
-                                  margin: const EdgeInsets.symmetric(
-                                    horizontal: 32,
-                                  ),
-                                  child: ThreeSpeakVideoFeed(
-                                    feedType: ThreeSpeakVideoFeedType.related,
-                                    relatedAuthor: item!.author?.username,
-                                    relatedPermlink: item!.permlink,
-                                  ),
-                                ),
+                            Container(
+                              constraints: BoxConstraints(
+                                maxWidth: 1800,
+                                minWidth: 400,
+                                maxHeight: 700,
+                              ),
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 32,
+                              ),
+                              child: widget.videoFeed(),
+                            ),
                           ],
                         ),
                       );
@@ -373,20 +356,20 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                           _videoInfoWidget(),
                           Divider(height: 1),
                           Expanded(
-                            child:
-                                widget.relatedBuilder != null
-                                    ? widget.relatedBuilder!(context, item!)
-                                    : ThreeSpeakVideoFeed(
-                                      feedType: ThreeSpeakVideoFeedType.related,
-                                      onTapVideoItem: (tappedItem) {
-                                        widget.onTapSuggestedItem?.call(
-                                          tappedItem.author?.username ?? '',
-                                          tappedItem.permlink ?? '',
-                                        );
-                                      },
-                                      relatedAuthor: item!.author?.username,
-                                      relatedPermlink: item!.permlink,
-                                    ),
+                            child: widget.videoFeed(),
+                            // widget.relatedBuilder != null
+                            //     ? widget.relatedBuilder!(context, item!)
+                            // : ThreeSpeakVideoFeed(
+                            //   feedType: ThreeSpeakVideoFeedType.related,
+                            //   onTapVideoItem: (tappedItem) {
+                            //     widget.onTapSuggestedItem?.call(
+                            //       tappedItem.author?.username ?? '',
+                            //       tappedItem.permlink ?? '',
+                            //     );
+                            //   },
+                            //   relatedAuthor: item!.author?.username,
+                            //   relatedPermlink: item!.permlink,
+                            // ),
                           ),
                         ],
                       );
