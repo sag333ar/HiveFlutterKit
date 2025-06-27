@@ -23,6 +23,7 @@ class VideoPlayerScreen extends StatefulWidget {
   final void Function(String, String)? onTapBookmark;
   final void Function(String)? onTapAuthor;
   final void Function(String, String)? onTapInfo;
+  final void Function(String, String)? onTapSuggestedItem;
   final Widget Function(BuildContext context, GQLFeedItem item)? relatedBuilder;
 
   const VideoPlayerScreen({
@@ -35,6 +36,7 @@ class VideoPlayerScreen extends StatefulWidget {
     this.onTapAuthor,
     this.onTapInfo,
     this.relatedBuilder,
+    this.onTapSuggestedItem,
     this.author,
     this.permlink,
   }) : assert(
@@ -333,6 +335,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                                     ? widget.relatedBuilder!(context, item!)
                                     : ThreeSpeakVideoFeed(
                                       feedType: ThreeSpeakVideoFeedType.related,
+                                      onTapVideoItem: (GQLFeedItem tappedItem) {
+                                        if (widget.onTapSuggestedItem != null) {
+                                          widget.onTapSuggestedItem!(
+                                            tappedItem.author?.username ?? '',
+                                            tappedItem.permlink ?? '',
+                                          );
+                                        }
+                                      },
                                       relatedAuthor: item!.author?.username,
                                       relatedPermlink: item!.permlink,
                                     ),
