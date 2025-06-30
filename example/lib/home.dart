@@ -2178,6 +2178,26 @@ class _MyHomePageState extends State<MyHomePage> {
                           (context) => ThreeSpeakTrendingTags(
                             onTapTag: (tag) {
                               debugPrint('Tapped tag: $tag');
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) => ThreeSpeakVideoFeed(
+                                        feedType:
+                                            ThreeSpeakVideoFeedType
+                                                .trendingTagFeed,
+                                        onTapVideoItem: (tappedItem) {
+                                          debugPrint(
+                                            'Tapped video item: $tappedItem',
+                                          );
+                                        },
+                                        onTapAuthor: (onTapAuthor) {},
+                                        onTapReport: (onTapReport) {},
+                                        onTapUpvote: (onTapUpvote) {},
+                                        onTapComment: (onTapComment) {},
+                                      ),
+                                ),
+                              );
                             },
                           ),
                     ),

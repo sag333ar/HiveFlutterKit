@@ -56,9 +56,11 @@ class _ThreeSpeakTrendingTagsState extends State<ThreeSpeakTrendingTags> {
     if (_trendingTags.isEmpty) {
       return const Center(child: Text('No trending tags found.'));
     }
-    return TrendingTags(
-      tags: _trendingTagResponse!.data!.trendingTags?.tags ?? [],
-      onTapTag: widget.onTapTag,
+    return Material(
+      child: TrendingTags(
+        tags: _trendingTagResponse!.data!.trendingTags?.tags ?? [],
+        onTapTag: widget.onTapTag,
+      ),
     );
   }
 }
