@@ -16,6 +16,8 @@ class AccountActivities extends StatefulWidget {
   final Color? authorRewardColor;
   final Color? curationRewardColor;
   final Color? benefactorRewardColor;
+  final Color? fontColor;
+  final List<Color>? backgroundColors;
 
   const AccountActivities({
     super.key,
@@ -30,6 +32,8 @@ class AccountActivities extends StatefulWidget {
     this.authorRewardColor,
     this.curationRewardColor,
     this.benefactorRewardColor,
+    this.fontColor,
+    this.backgroundColors,
   });
 
   @override
@@ -259,21 +263,40 @@ class _AccountActivitiesState extends State<AccountActivities> {
     );
   }
 
+  bool get _isDarkMode => Theme.of(context).brightness == Brightness.dark;
+
+  List<Color> get _backgroundColors =>
+      widget.backgroundColors ??
+      (_isDarkMode
+          ? [const Color(0xFF121212), const Color(0xFF23272F)]
+          : [Colors.grey.shade100, Colors.white]);
+
+  Color get _fontColor =>
+      widget.fontColor ?? (_isDarkMode ? Colors.white : Colors.black);
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Account Activities'),
-          backgroundColor: Colors.blue.shade700,
+          backgroundColor:
+              _isDarkMode ? Colors.blueGrey.shade900 : Colors.blue.shade700,
           elevation: 1,
+          foregroundColor: _fontColor,
         ),
         body: LayoutBuilder(
           builder: (context, constraints) {
             final isDesktop = constraints.maxWidth >= 800;
             final showFilter = widget.isFilter ?? true;
             return Container(
-              color: Colors.grey.shade100,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: _backgroundColors,
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
               child:
                   isDesktop
                       ? showFilter
@@ -302,9 +325,10 @@ class _AccountActivitiesState extends State<AccountActivities> {
                                             .where(_matchesRewardFilter)
                                             .toList();
                                     if (history.isEmpty) {
-                                      return const Center(
+                                      return Center(
                                         child: Text(
                                           'No account history found.',
+                                          style: TextStyle(color: _fontColor),
                                         ),
                                       );
                                     }
@@ -319,7 +343,10 @@ class _AccountActivitiesState extends State<AccountActivities> {
                                   vertical: 24,
                                   horizontal: 16,
                                 ),
-                                color: Colors.white,
+                                color:
+                                    _isDarkMode
+                                        ? Colors.grey.shade900
+                                        : Colors.white,
                                 child: SingleChildScrollView(
                                   child: FilterButtons(
                                     isFilter: showFilter,
@@ -357,6 +384,7 @@ class _AccountActivitiesState extends State<AccountActivities> {
                                         widget.curationRewardColor,
                                     benefactorRewardColor:
                                         widget.benefactorRewardColor,
+                                    fontColor: _fontColor,
                                   ),
                                 ),
                               ),
@@ -383,8 +411,11 @@ class _AccountActivitiesState extends State<AccountActivities> {
                                       .where(_matchesRewardFilter)
                                       .toList();
                               if (history.isEmpty) {
-                                return const Center(
-                                  child: Text('No account history found.'),
+                                return Center(
+                                  child: Text(
+                                    'No account history found.',
+                                    style: TextStyle(color: _fontColor),
+                                  ),
                                 );
                               }
                               return _buildActivityList(history);
@@ -425,6 +456,7 @@ class _AccountActivitiesState extends State<AccountActivities> {
                               curationRewardColor: widget.curationRewardColor,
                               benefactorRewardColor:
                                   widget.benefactorRewardColor,
+                              fontColor: _fontColor,
                             ),
                             const Divider(),
                           ],
@@ -449,8 +481,11 @@ class _AccountActivitiesState extends State<AccountActivities> {
                                         .where(_matchesRewardFilter)
                                         .toList();
                                 if (history.isEmpty) {
-                                  return const Center(
-                                    child: Text('No account history found.'),
+                                  return Center(
+                                    child: Text(
+                                      'No account history found.',
+                                      style: TextStyle(color: _fontColor),
+                                    ),
                                   );
                                 }
                                 return _buildActivityList(history);

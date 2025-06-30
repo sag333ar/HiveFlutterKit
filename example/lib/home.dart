@@ -1260,8 +1260,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         hfk: hfk,
                         account: 'sagarkothari88',
                         isFilter: true,
-                        votesColor: Colors.grey,
-                        rewardsColor: Colors.green,
                       ),
                     ),
                   );

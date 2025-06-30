@@ -19,6 +19,7 @@ class FilterButtons extends StatelessWidget {
   final Color? authorRewardColor;
   final Color? curationRewardColor;
   final Color? benefactorRewardColor;
+  final Color? fontColor;
 
   const FilterButtons({
     super.key,
@@ -36,30 +37,53 @@ class FilterButtons extends StatelessWidget {
     this.authorRewardColor,
     this.curationRewardColor,
     this.benefactorRewardColor,
+    this.fontColor,
   });
+
+  bool _isDarkMode(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark;
 
   @override
   Widget build(BuildContext context) {
     if (!isFilter) return const SizedBox.shrink();
 
+    final bool isDark = _isDarkMode(context);
+    final _fontColor = fontColor ?? (isDark ? Colors.white : Colors.black);
+
     // Use provided colors or fallback to defaults
-    final _votesColor = votesColor ?? Colors.blue.shade200;
-    final _commentsColor = commentsColor ?? Colors.green.shade200;
-    final _repliesColor = repliesColor ?? Colors.teal.shade200;
-    final _rewardsColor = rewardsColor ?? Colors.amber.shade200;
-    final _otherColor = otherColor ?? Colors.grey.shade400;
-    final _authorRewardColor = authorRewardColor ?? Colors.amber.shade300;
-    final _curationRewardColor = curationRewardColor ?? Colors.purple.shade200;
+    final _votesColor =
+        votesColor ?? (isDark ? Colors.blue.shade900 : Colors.blue.shade200);
+    final _commentsColor =
+        commentsColor ??
+        (isDark ? Colors.green.shade900 : Colors.green.shade200);
+    final _repliesColor =
+        repliesColor ?? (isDark ? Colors.teal.shade900 : Colors.teal.shade200);
+    final _rewardsColor =
+        rewardsColor ??
+        (isDark ? Colors.amber.shade700 : Colors.amber.shade200);
+    final _otherColor =
+        otherColor ?? (isDark ? Colors.grey.shade800 : Colors.grey.shade400);
+    final _authorRewardColor =
+        authorRewardColor ??
+        (isDark ? Colors.amber.shade800 : Colors.amber.shade300);
+    final _curationRewardColor =
+        curationRewardColor ??
+        (isDark ? Colors.purple.shade800 : Colors.purple.shade200);
     final _benefactorRewardColor =
-        benefactorRewardColor ?? Colors.orange.shade200;
+        benefactorRewardColor ??
+        (isDark ? Colors.orange.shade800 : Colors.orange.shade200);
 
     if (isDesktop) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Filters',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              color: _fontColor,
+            ),
           ),
           const SizedBox(height: 24),
           ListTile(
@@ -67,21 +91,21 @@ class FilterButtons extends StatelessWidget {
               Icons.thumb_up_alt_rounded,
               color: Colors.blue.shade700,
             ),
-            title: const Text('Votes'),
+            title: Text('Votes', style: TextStyle(color: _fontColor)),
             selected: selectedActivity == ActivityFilter.votes,
             selectedTileColor: _votesColor,
             onTap: () => onActivityChanged(ActivityFilter.votes),
           ),
           ListTile(
             leading: Icon(Icons.comment_rounded, color: Colors.green.shade700),
-            title: const Text('Comments'),
+            title: Text('Comments', style: TextStyle(color: _fontColor)),
             selected: selectedActivity == ActivityFilter.comments,
             selectedTileColor: _commentsColor,
             onTap: () => onActivityChanged(ActivityFilter.comments),
           ),
           ListTile(
             leading: Icon(Icons.reply_rounded, color: Colors.teal.shade700),
-            title: const Text('Replies'),
+            title: Text('Replies', style: TextStyle(color: _fontColor)),
             selected: selectedActivity == ActivityFilter.replies,
             selectedTileColor: _repliesColor,
             onTap: () => onActivityChanged(ActivityFilter.replies),
@@ -91,14 +115,17 @@ class FilterButtons extends StatelessWidget {
               Icons.emoji_events_rounded,
               color: Colors.amber.shade700,
             ),
-            title: const Text('Rewards'),
+            title: Text('Rewards', style: TextStyle(color: _fontColor)),
             initiallyExpanded: selectedActivity == ActivityFilter.rewards,
             onExpansionChanged: (expanded) {
               onActivityChanged(expanded ? ActivityFilter.rewards : null);
             },
             children: [
               CheckboxListTile(
-                title: const Text('Author Rewards'),
+                title: Text(
+                  'Author Rewards',
+                  style: TextStyle(color: _fontColor),
+                ),
                 value: selectedRewardFilters.contains(RewardFilter.author),
                 onChanged:
                     selectedActivity == ActivityFilter.rewards
@@ -109,7 +136,10 @@ class FilterButtons extends StatelessWidget {
                 activeColor: _authorRewardColor,
               ),
               CheckboxListTile(
-                title: const Text('Curation Rewards'),
+                title: Text(
+                  'Curation Rewards',
+                  style: TextStyle(color: _fontColor),
+                ),
                 value: selectedRewardFilters.contains(RewardFilter.curation),
                 onChanged:
                     selectedActivity == ActivityFilter.rewards
@@ -120,7 +150,10 @@ class FilterButtons extends StatelessWidget {
                 activeColor: _curationRewardColor,
               ),
               CheckboxListTile(
-                title: const Text('Benefactor Rewards'),
+                title: Text(
+                  'Benefactor Rewards',
+                  style: TextStyle(color: _fontColor),
+                ),
                 value: selectedRewardFilters.contains(RewardFilter.benefactor),
                 onChanged:
                     selectedActivity == ActivityFilter.rewards
@@ -137,7 +170,7 @@ class FilterButtons extends StatelessWidget {
               Icons.info_outline_rounded,
               color: Colors.grey.shade700,
             ),
-            title: const Text('Other'),
+            title: Text('Other', style: TextStyle(color: _fontColor)),
             selected: selectedActivity == ActivityFilter.other,
             selectedTileColor: _otherColor,
             onTap: () => onActivityChanged(ActivityFilter.other),
@@ -148,14 +181,14 @@ class FilterButtons extends StatelessWidget {
       // Mobile: horizontal chips
       final children = [
         FilterChip(
-          label: const Text('Votes'),
+          label: Text('Votes', style: TextStyle(color: _fontColor)),
           selected: selectedActivity == ActivityFilter.votes,
           onSelected: (v) => onActivityChanged(v ? ActivityFilter.votes : null),
           selectedColor: _votesColor,
         ),
         const SizedBox(width: 8, height: 8),
         FilterChip(
-          label: const Text('Comments'),
+          label: Text('Comments', style: TextStyle(color: _fontColor)),
           selected: selectedActivity == ActivityFilter.comments,
           onSelected:
               (v) => onActivityChanged(v ? ActivityFilter.comments : null),
@@ -163,7 +196,7 @@ class FilterButtons extends StatelessWidget {
         ),
         const SizedBox(width: 8, height: 8),
         FilterChip(
-          label: const Text('Replies'),
+          label: Text('Replies', style: TextStyle(color: _fontColor)),
           selected: selectedActivity == ActivityFilter.replies,
           onSelected:
               (v) => onActivityChanged(v ? ActivityFilter.replies : null),
@@ -171,7 +204,7 @@ class FilterButtons extends StatelessWidget {
         ),
         const SizedBox(width: 8, height: 8),
         FilterChip(
-          label: const Text('Rewards'),
+          label: Text('Rewards', style: TextStyle(color: _fontColor)),
           selected: selectedActivity == ActivityFilter.rewards,
           onSelected:
               (v) => onActivityChanged(v ? ActivityFilter.rewards : null),
@@ -179,7 +212,7 @@ class FilterButtons extends StatelessWidget {
         ),
         const SizedBox(width: 8, height: 8),
         FilterChip(
-          label: const Text('Other'),
+          label: Text('Other', style: TextStyle(color: _fontColor)),
           selected: selectedActivity == ActivityFilter.other,
           onSelected: (v) => onActivityChanged(v ? ActivityFilter.other : null),
           selectedColor: _otherColor,
@@ -188,21 +221,24 @@ class FilterButtons extends StatelessWidget {
 
       final rewardChildren = [
         FilterChip(
-          label: const Text('Author Rewards'),
+          label: Text('Author Rewards', style: TextStyle(color: _fontColor)),
           selected: selectedRewardFilters.contains(RewardFilter.author),
           onSelected: (v) => onRewardFilterToggled(RewardFilter.author),
           selectedColor: _authorRewardColor,
         ),
         const SizedBox(width: 8, height: 8),
         FilterChip(
-          label: const Text('Curation Rewards'),
+          label: Text('Curation Rewards', style: TextStyle(color: _fontColor)),
           selected: selectedRewardFilters.contains(RewardFilter.curation),
           onSelected: (v) => onRewardFilterToggled(RewardFilter.curation),
           selectedColor: _curationRewardColor,
         ),
         const SizedBox(width: 8, height: 8),
         FilterChip(
-          label: const Text('Benefactor Rewards'),
+          label: Text(
+            'Benefactor Rewards',
+            style: TextStyle(color: _fontColor),
+          ),
           selected: selectedRewardFilters.contains(RewardFilter.benefactor),
           onSelected: (v) => onRewardFilterToggled(RewardFilter.benefactor),
           selectedColor: _benefactorRewardColor,
