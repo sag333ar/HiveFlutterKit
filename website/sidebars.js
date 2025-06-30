@@ -37,6 +37,7 @@ const sidebars = {
         "threespeak/video-player",
         "threespeak/video-upload",
         "threespeak/current-account",
+        "threespeak/trending-tags"
       ],
     },
     {
