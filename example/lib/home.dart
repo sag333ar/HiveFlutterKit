@@ -6,6 +6,7 @@ import 'package:hive_flutter_kit/core/models/community_model.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 import 'package:hive_flutter_kit/ux/bottom_tool_bar.dart';
+import 'package:hive_flutter_kit/ux/dhive/account_activities/account_activities.dart';
 import 'package:hive_flutter_kit/ux/dhive/comments/hive_post_comments.dart';
 import 'package:hive_flutter_kit/ux/login_screen.dart';
 import 'package:hive_flutter_kit/ux/switch_user.dart';
@@ -1251,7 +1252,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
               ElevatedButton(
                 child: Text('Get Account History'),
-                onPressed: _getAccountHistoryExample,
+                onPressed: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AccountActivities(
+                        hfk: hfk,
+                        account: 'sagarkothari88',
+                        isFilter: true,
+                        votesColor: Colors.grey,
+                        rewardsColor: Colors.green,
+                      ),
+                    ),
+                  );
+                }
               ),
 
               // --- End hfk equivalents ---
