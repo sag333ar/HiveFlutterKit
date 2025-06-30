@@ -4,6 +4,7 @@ import 'package:hive_flutter_kit/core/common/enum.dart';
 import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit/core/models/community_model.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter_kit/core/models/wallet_data.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 import 'package:hive_flutter_kit/ux/bottom_tool_bar.dart';
 import 'package:hive_flutter_kit/ux/dhive/account_activities/account_activities.dart';
@@ -1277,7 +1278,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: _getResourceCreditshfk,
               ),
               ElevatedButton(
-                onPressed: _getWalletDataViaChannel,
+                onPressed: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Wallet(hfk: hfk, username: 'sagarkothari88'),));
+                },
+                //_getWalletDataViaChannel,
                 child: Text('Get Wallet Data (via channel)'),
               ),
 
