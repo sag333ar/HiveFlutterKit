@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_tags_response.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/trending_tags/trending_tag_videos.dart';
 
@@ -61,11 +60,11 @@ class TrendingTags extends StatelessWidget {
             //     builder:
             //         (context) => TrendingTagVideos(
             //           tag: tagItem.tag,
-            //           onTapVideoItem: onTapVideoItem,
-            //           onTapAuthor: onTapAuthor,
-            //           onTapReport: onTapReport,
-            //           onTapUpvote: onTapUpvote,
-            //           onTapComment: onTapComment,
+            //           onTapVideoItem: (onTapVideoItem) => onTapTag(tagItem.tag),
+            //           onTapAuthor:  (onTapAuthor) => onTapTag(tagItem.tag),
+            //           onTapReport:  (onTapReport) => onTapTag(tagItem.tag),
+            //           onTapUpvote:    (onTapUpvote) => onTapTag(tagItem.tag),
+            //           onTapComment:   (onTapComment) => onTapTag(tagItem.tag),
             //         ),
             //   ),
             // );
