@@ -732,6 +732,55 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<void> _getAccountHistoryExample() async {
+    try {
+      String account = 'sagarkothari88';
+      int index = -1; // latest
+      int limit = 100; // fetch last 100 operations
+      String? start = null;
+      String? stop = null;
+
+      final result = await hfk.getAccountHistory(
+        account,
+        index: index,
+        limit: limit,
+        start: start,
+        stop: stop,
+      );
+
+      if (result.isEmpty) {
+        debugPrint('No account history found.');
+      } else {
+        for (var op in result) {
+          debugPrint('--- History Op Start ---');
+          debugPrint('Index: ${op.index}');
+          final detail = op.detail;
+
+          debugPrint('Block: ${detail?.block}');
+          debugPrint('Transaction ID: ${detail?.trxId}');
+          debugPrint('Timestamp: ${detail?.timestamp}');
+          debugPrint('Virtual Op: ${detail?.virtualOp}');
+          if (detail?.op != null && detail!.op!.length == 2) {
+            debugPrint('Operation Type: ${detail.op![0]}');
+            debugPrint('Operation Payload: ${jsonEncode(detail.op![1])}');
+          } else {
+            debugPrint('Operation: null or malformed');
+          }
+          debugPrint('--- History Op End ---\n');
+        }
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Fetched account history (see debug output)')),
+      );
+    } catch (e) {
+      debugPrint('Error in getAccountHistory: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Get Account History Error: $e')));
+    }
+  }
+
   Future<void> _checkThreespeakInAccountAuths() async {
     try {
       final username = _usernameController.text;
@@ -1025,7 +1074,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: BottomToolbarWithSlider(backgroundColor: Colors.blue,),
+      bottomNavigationBar: BottomToolbarWithSlider(
+        backgroundColor: Colors.blue,
+      ),
       body: SingleChildScrollView(
         child: Center(
           child: Column(
@@ -1196,6 +1247,11 @@ class _MyHomePageState extends State<MyHomePage> {
               ElevatedButton(
                 child: Text('Resources Credits Percentage (hfk)'),
                 onPressed: _getResourceCreditshfk,
+              ),
+
+              ElevatedButton(
+                child: Text('Get Account History'),
+                onPressed: _getAccountHistoryExample,
               ),
 
               // --- End hfk equivalents ---
