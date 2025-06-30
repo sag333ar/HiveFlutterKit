@@ -98,4 +98,14 @@ Handles authentication with 3Speak using Hive credentials.
 
 ---
 
+### 7. Trending Tags Display (`ThreeSpeakTrendingTags`)
+
+A widget to fetch and display a list of currently trending tags on the 3Speak platform.
+-   **Features**: Shows tags with their relative trending scores, responsive grid layout, and an `onTapTag` callback for custom actions (e.g., navigating to a video feed for that tag).
+
+<!-- Add screenshot for ThreeSpeakTrendingTags if available -->
+<!-- ![Trending Tags Screen](/img/threespeak/trending_tags_placeholder.png) -->
+
+---
+
 Explore the individual documentation pages for each component to learn more about their specific parameters, usage examples, and advanced features.
