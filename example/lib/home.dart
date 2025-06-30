@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 import 'package:hive_flutter_kit/ux/bottom_tool_bar.dart';
 import 'package:hive_flutter_kit/ux/dhive/comments/hive_post_comments.dart';
+import 'package:hive_flutter_kit/ux/dhive/following_followers/followers.dart';
+import 'package:hive_flutter_kit/ux/dhive/following_followers/followings.dart';
 import 'package:hive_flutter_kit/ux/login_screen.dart';
 import 'package:hive_flutter_kit/ux/switch_user.dart';
 import 'package:hive_flutter_kit/ux/dhive/community_list/community_list.dart';
@@ -1274,11 +1276,29 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: _getResourceCreditshfk,
               ),
               ElevatedButton(
-                onPressed: _getFollowingsData,
+                onPressed: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Followings(
+                        hfk: hfk,
+                        account: 'sagarkothari88',))
+                      );
+                },
+                //_getFollowingsData,
                 child: Text("Get Followings"),
               ),
               ElevatedButton(
-                onPressed: _getFollowersData,
+                onPressed: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Followers(
+                        hfk: hfk,
+                        account: 'sagarkothari88',))
+                      );
+                },
+                //_getFollowersData,
                 child: Text("Get Followers"),
               ),
               ElevatedButton(
