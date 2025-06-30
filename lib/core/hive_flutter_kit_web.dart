@@ -5,7 +5,10 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'package:hive_flutter_kit/core/models/followers.dart';
+import 'package:hive_flutter_kit/core/models/followings.dart';
 import 'package:hive_flutter_kit/core/models/login_model.dart';
+import 'package:hive_flutter_kit/core/models/witnessvote.dart';
 import 'package:js/js.dart' show JS;
 import 'package:js/js_util.dart';
 
@@ -42,6 +45,25 @@ external dynamic getVotingPowerData(String username);
 
 @JS('getResourceCreditsPercentage')
 external dynamic getResourceCreditsPercentage(String username);
+
+@JS('getFollowingsData')
+external dynamic getFollowingsDataJS(
+  String username,
+  String? start,
+  String? type,
+  int? limit,
+);
+
+@JS('getFollowersData')
+external dynamic getFollowersDataJS(
+  String username,
+  String? start,
+  String? type,
+  int? limit,
+);
+
+@JS('getWitnessVotesData')
+external dynamic getWitnessVotesDataJS(String username);
 
 @JS('getAccountPosts')
 external dynamic getAccountPostsJS(
@@ -541,13 +563,68 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
   }
 
   @override
-  Future<List<ActiveVote>> getActiveVotes(String author, String permlink) async {
+  Future<List<ActiveVote>> getActiveVotes(
+    String author,
+    String permlink,
+  ) async {
     var promise = getActiveVotesJS(author, permlink);
     var jsonString = await promiseToFuture(promise);
     final List<dynamic> jsonList = jsonDecode(jsonString);
     return jsonList.map((e) => ActiveVote.fromJson(e)).toList();
   }
 
+  @override
+  Future<FollowingsData> getFollowingsData(
+    String username, {
+    String? start = '',
+    String? type = 'blog',
+    int? limit = 1000,
+  }) async {
+    try {
+      final promise = getFollowingsDataJS(username, start, type, limit);
+      final content = await promiseToFuture(promise);
+      if (content == null) return FollowingsData.empty();
+
+      return FollowingsData.fromJson(jsonDecode(content));
+    } catch (e) {
+      print("Error in getFollowingsData: $e");
+      return FollowingsData.empty();
+    }
+  }
+
+  @override
+  Future<FollowersData> getFollowersData(
+    String username, {
+    String? start = '',
+    String? type = 'blog',
+    int? limit = 1000,
+  }) async {
+    try {
+      final promise = getFollowersDataJS(username, start, type, limit);
+      final content = await promiseToFuture(promise);
+      if (content == null) return FollowersData.empty();
+
+      return FollowersData.fromJson(jsonDecode(content));
+    } catch (e) {
+      print("Error in getFollowersData: $e");
+      return FollowersData.empty();
+    }
+  }
+
+  @override
+  Future<WitnessVotesData> getWitnessVotesData(String username) async {
+    try {
+      final promise = getWitnessVotesDataJS(username);
+      final content = await promiseToFuture(promise);
+      if (content == null) return WitnessVotesData.empty();
+
+      return WitnessVotesData.fromJson(jsonDecode(content));
+    } catch (e) {
+      print("Error in getWitnessVotesData: $e");
+      return WitnessVotesData.empty();
+    }
+  }
+  
   @override
   Future<bool> isHiveKeychainAvailable() async {
     var promise = isHiveKeychainAvailableJS();

@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:hive_flutter_kit/core/models/followers.dart';
+import 'package:hive_flutter_kit/core/models/followings.dart';
 import 'package:hive_flutter_kit/core/models/login_model.dart';
 import 'package:flutter/services.dart';
+import 'package:hive_flutter_kit/core/models/witnessvote.dart';
 
 import 'hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit/core/models/account.dart';
@@ -1187,6 +1190,157 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
       }
     })();
     """;
+
+    await headlessWebView.webViewController?.evaluateJavascript(source: jsCall);
+    return completer.future;
+  }
+
+  @override
+  Future<FollowingsData> getFollowingsData(
+    String username, {
+    int? limit,
+    String? start,
+    String? type,
+  }) async {
+    final completer = Completer<FollowingsData>();
+    final handlerName =
+        'onGetFollowingsResult_${DateTime.now().millisecondsSinceEpoch}';
+
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: handlerName,
+      callback: (args) {
+        if (!completer.isCompleted) {
+          final contentData = args.isNotEmpty ? args[0].toString() : null;
+          if (contentData != null &&
+              contentData != 'null' &&
+              contentData.isNotEmpty) {
+            try {
+              final result = FollowingsData.fromJson(jsonDecode(contentData));
+              completer.complete(result);
+            } catch (e) {
+              completer.completeError('Failed to parse followings: $e');
+            }
+          } else {
+            completer.completeError('No followings data received');
+          }
+        }
+        headlessWebView.webViewController?.removeJavaScriptHandler(
+          handlerName: handlerName,
+        );
+      },
+    );
+
+    // Set fallback defaults if null
+    final jsUsername = jsonEncode(username);
+    final jsStart = jsonEncode(start ?? '');
+    final jsType = jsonEncode(type ?? 'blog');
+    final jsLimit = limit ?? 1000;
+
+    final jsCall = """
+    (async () => {
+      try {
+        const result = await getFollowingsData($jsUsername, $jsStart, $jsType, $jsLimit);
+        window.flutter_inappwebview.callHandler('$handlerName', result || 'null');
+      } catch (e) {
+        window.flutter_inappwebview.callHandler('$handlerName', JSON.stringify({}));
+      }
+    })();
+  """;
+
+    await headlessWebView.webViewController?.evaluateJavascript(source: jsCall);
+    return completer.future;
+  }
+
+  @override
+  Future<FollowersData> getFollowersData(
+    String username, {
+    String? start,
+    String? type,
+    int? limit,
+  }) async {
+    final completer = Completer<FollowersData>();
+    final handlerName =
+        'onGetFollowersResult_${DateTime.now().millisecondsSinceEpoch}';
+
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: handlerName,
+      callback: (args) {
+        if (!completer.isCompleted) {
+          final contentData = args.isNotEmpty ? args[0].toString() : null;
+          if (contentData != null &&
+              contentData != 'null' &&
+              contentData.isNotEmpty) {
+            try {
+              final result = FollowersData.fromJson(jsonDecode(contentData));
+              completer.complete(result);
+            } catch (e) {
+              completer.completeError('Failed to parse followers: $e');
+            }
+          } else {
+            completer.completeError('No followers data received');
+          }
+        }
+        headlessWebView.webViewController?.removeJavaScriptHandler(
+          handlerName: handlerName,
+        );
+      },
+    );
+
+    final jsCall = """
+    (async () => {
+      try {
+        const result = await getFollowersData(${jsonEncode(username)}, ${jsonEncode(start)}, ${jsonEncode(type)}, $limit);
+        window.flutter_inappwebview.callHandler('$handlerName', result || 'null');
+      } catch (e) {
+        window.flutter_inappwebview.callHandler('$handlerName', JSON.stringify({}));
+      }
+    })();
+  """;
+
+    await headlessWebView.webViewController?.evaluateJavascript(source: jsCall);
+    return completer.future;
+  }
+
+  @override
+  Future<WitnessVotesData> getWitnessVotesData(String username) async {
+    final completer = Completer<WitnessVotesData>();
+    final handlerName =
+        'onGetWitnessVotesResult_${DateTime.now().millisecondsSinceEpoch}';
+
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: handlerName,
+      callback: (args) {
+        if (!completer.isCompleted) {
+          final contentData = args.isNotEmpty ? args[0].toString() : null;
+          if (contentData != null &&
+              contentData != 'null' &&
+              contentData.isNotEmpty) {
+            try {
+              final result = WitnessVotesData.fromJson(jsonDecode(contentData));
+              completer.complete(result);
+            } catch (e) {
+              completer.completeError('Failed to parse witness votes: $e');
+            }
+          } else {
+            completer.completeError('No witness votes data received');
+          }
+        }
+        headlessWebView.webViewController?.removeJavaScriptHandler(
+          handlerName: handlerName,
+        );
+      },
+    );
+
+    final jsCall = """
+    (async () => {
+      try {
+        const result = await getWitnessVotesData(${jsonEncode(username)});
+        window.flutter_inappwebview.callHandler('$handlerName', result || 'null');
+      } catch (e) {
+        window.flutter_inappwebview.callHandler('$handlerName', JSON.stringify({}));
+      }
+    })();
+  """;
 
     await headlessWebView.webViewController?.evaluateJavascript(source: jsCall);
     return completer.future;

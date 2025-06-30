@@ -732,6 +732,80 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<void> _getFollowingsData() async {
+    try {
+      var result = await hfk.getFollowingsData(
+        'sagarkothari88', // username
+        start: '', // optional
+        type: 'blog', // optional
+        limit: 100, // optional
+      );
+
+      debugPrint("Followings Count: ${result.count}");
+      for (var user in result.followings ?? []) {
+        debugPrint("Following: ${user['following']}");
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Fetched ${result.count} followings')),
+      );
+    } catch (e) {
+      debugPrint('getFollowingsData error: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to get followings')));
+    }
+  }
+
+  Future<void> _getFollowersData() async {
+    try {
+      var result = await hfk.getFollowersData(
+        'sagarkothari88', // username
+        start: '', // optional
+        type: 'blog', // optional
+        limit: 100, // optional
+      );
+
+      debugPrint("Followers Count: ${result.count}");
+      for (var user in result.followers ?? []) {
+        debugPrint("Follower: ${user['follower']}");
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Fetched ${result.count} followers')),
+      );
+    } catch (e) {
+      debugPrint('getFollowersData error: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to get followers')));
+    }
+  }
+
+  Future<void> _getWitnessVotesData() async {
+    try {
+      var result = await hfk.getWitnessVotesData('sagarkothari88');
+
+      for (var witness in result.witnessVotes ?? []) {
+        debugPrint("Voted for: $witness");
+      }
+      debugPrint("Voted count: ${result.witnessesVotedFor ?? 0}");
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Witnesses voted for: ${result.witnessesVotedFor ?? 0}',
+          ),
+        ),
+      );
+    } catch (e) {
+      debugPrint('getWitnessVotesData error: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to get witness votes')));
+    }
+  }
+
   Future<void> _checkThreespeakInAccountAuths() async {
     try {
       final username = _usernameController.text;
@@ -1025,7 +1099,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: BottomToolbarWithSlider(backgroundColor: Colors.blue,),
+      bottomNavigationBar: BottomToolbarWithSlider(
+        backgroundColor: Colors.blue,
+      ),
       body: SingleChildScrollView(
         child: Center(
           child: Column(
@@ -1196,6 +1272,18 @@ class _MyHomePageState extends State<MyHomePage> {
               ElevatedButton(
                 child: Text('Resources Credits Percentage (hfk)'),
                 onPressed: _getResourceCreditshfk,
+              ),
+              ElevatedButton(
+                onPressed: _getFollowingsData,
+                child: Text("Get Followings"),
+              ),
+              ElevatedButton(
+                onPressed: _getFollowersData,
+                child: Text("Get Followers"),
+              ),
+              ElevatedButton(
+                onPressed: _getWitnessVotesData,
+                child: Text("Get Witness Votes"),
               ),
 
               // --- End hfk equivalents ---

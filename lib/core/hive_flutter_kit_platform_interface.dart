@@ -1,5 +1,8 @@
+import 'package:hive_flutter_kit/core/models/followers.dart';
+import 'package:hive_flutter_kit/core/models/followings.dart';
 import 'package:hive_flutter_kit/core/models/login_model.dart';
 import 'package:hive_flutter_kit/core/models/upload_image.dart';
+import 'package:hive_flutter_kit/core/models/witnessvote.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:hive_flutter_kit/core/models/account.dart';
 import 'package:hive_flutter_kit/core/models/chain_properties.dart';
@@ -343,6 +346,28 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
 
   Future<List<ActiveVote>> getActiveVotes(String author, String permlink) {
     throw UnimplementedError('getActiveVotes has not been implemented.');
+  }
+
+  Future<FollowingsData> getFollowingsData(
+    String username, {
+    String? start = '',
+    String? type = 'blog',
+    int? limit = 1000,
+  }) {
+    throw UnimplementedError('getFollowingsData has not been implemented.');
+  }
+
+  Future<FollowersData> getFollowersData(
+    String username, {
+    String? start = '',
+    String? type = 'blog',
+    int? limit = 1000,
+  }) {
+    throw UnimplementedError('getFollowersData has not been implemented.');
+  }
+
+  Future<WitnessVotesData> getWitnessVotesData(String username){
+    throw UnimplementedError('getWitnessVotesData has not been implemented.');
   }
 
   Future<bool> isHiveKeychainAvailable() {

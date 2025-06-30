@@ -556,7 +556,7 @@ async function transfer(recipient, amount, assetSymbol, memo) {
 
     const numericAmount = parseFloat(amount);
     if (isNaN(numericAmount) || numericAmount <= 0) {
-        return JSON.stringify({ error: "Invalid amount. Amount must be a positive number." });
+      return JSON.stringify({ error: "Invalid amount. Amount must be a positive number." });
     }
 
     let result;
@@ -643,6 +643,95 @@ async function getActiveVotes(author, permlink) {
   }
 }
 window.getActiveVotes = getActiveVotes;
+
+async function getFollowingsData(username, start = "", type = "blog", limit = 1000) {
+  try {
+    let followings = [];
+    let hasMore = true;
+    let lastFollowing = start;
+
+    while (hasMore) {
+      const result = await dhiveClient.call(
+        'condenser_api',
+        'get_following',
+        [username, lastFollowing, type, limit]
+      );
+
+      followings = [...followings, ...result];
+
+      if (result.length < limit) {
+        hasMore = false;
+      } else {
+        lastFollowing = result[result.length - 1].following;
+      }
+    }
+
+    return JSON.stringify({
+      followings,
+      count: followings.length
+    });
+  } catch (error) {
+    console.error('Error fetching followings:', error);
+    return JSON.stringify({ error: error.message });
+  }
+}
+
+window.getFollowingsData = getFollowingsData;
+
+
+async function getFollowersData(username, start = "", type = "blog", limit = 1000) {
+  try {
+    let followers = [];
+    let hasMore = true;
+    let lastFollower = start;
+
+    while (hasMore) {
+      const result = await dhiveClient.call(
+        'condenser_api',
+        'get_followers',
+        [username, lastFollower, type, limit]
+      );
+
+      followers = [...followers, ...result];
+
+      if (result.length < limit) {
+        hasMore = false;
+      } else {
+        lastFollower = result[result.length - 1].follower;
+      }
+    }
+
+    const data = {
+      followers: followers,
+      count: followers.length
+    };
+    return JSON.stringify(data);
+  } catch (error) {
+    console.error('Error fetching followers:', error);
+    return JSON.stringify({ error: error.message });
+  }
+}
+
+window.getFollowersData = getFollowersData;
+
+
+async function getWitnessVotesData(username) {
+  try {
+    const accounts = await dhiveClient.database.getAccounts([username]);
+    if (accounts && accounts.length > 0) {
+      const data = {
+        "witness_votes": accounts[0].witness_votes || [],
+        "witnesses_voted_for": accounts[0].witnesses_voted_for || 0
+      };
+      return JSON.stringify(data);
+    }
+    return JSON.stringify({ "witness_votes": [], "witnesses_voted_for": 0 });
+  } catch (error) {
+    console.error("Error fetching witness votes:", error);
+    return JSON.stringify({ "witness_votes": [], "witnesses_voted_for": 0 });
+  }
+}
+window.getWitnessVotesData = getWitnessVotesData;
 
 async function isHiveKeychainAvailable() {
   try {
