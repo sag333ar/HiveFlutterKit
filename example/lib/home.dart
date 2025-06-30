@@ -8,6 +8,7 @@ import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_resp
 import 'package:hive_flutter_kit/ux/bottom_tool_bar.dart';
 import 'package:hive_flutter_kit/ux/dhive/account_activities/account_activities.dart';
 import 'package:hive_flutter_kit/ux/dhive/comments/hive_post_comments.dart';
+import 'package:hive_flutter_kit/ux/dhive/wallet/wallet.dart';
 import 'package:hive_flutter_kit/ux/login_screen.dart';
 import 'package:hive_flutter_kit/ux/switch_user.dart';
 import 'package:hive_flutter_kit/ux/dhive/community_list/community_list.dart';
@@ -782,6 +783,32 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<void> _getWalletDataViaChannel() async {
+    try {
+      String username = 'sagarkothari88';
+      final wallet = await hfk.getFullWalletData(username);
+
+      debugPrint('--- Wallet Data Debug Start ---');
+      debugPrint('Balance: ${wallet.balance ?? "null"}');
+      debugPrint('HBD Balance: ${wallet.hbdBalance ?? "null"}');
+      debugPrint('Savings Balance: ${wallet.savingsBalance ?? "null"}');
+      debugPrint('Savings HBD Balance: ${wallet.savingsHbdBalance ?? "null"}');
+      debugPrint('Hive Power: ${wallet.hivePower ?? "null"}');
+      debugPrint('Estimated Value (USD): ${wallet.estimatedValue ?? "null"}');
+      debugPrint('Error: ${wallet.error ?? "none"}');
+      debugPrint('--- Wallet Data Debug End ---\n');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Fetched wallet data (see debug output)')),
+      );
+    } catch (e) {
+      debugPrint('getFullWalletData error: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Wallet data fetch error: $e')));
+    }
+  }
+
   Future<void> _checkThreespeakInAccountAuths() async {
     try {
       final username = _usernameController.text;
@@ -1249,21 +1276,41 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Text('Resources Credits Percentage (hfk)'),
                 onPressed: _getResourceCreditshfk,
               ),
+              ElevatedButton(
+                onPressed: _getWalletDataViaChannel,
+                child: Text('Get Wallet Data (via channel)'),
+              ),
 
               ElevatedButton(
                 child: Text('Get Account History'),
-                onPressed: (){
+                onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AccountActivities(
-                        hfk: hfk,
-                        account: 'sagarkothari88',
-                        isFilter: true,
-                      ),
+                      builder:
+                          (context) => AccountActivities(
+                            hfk: hfk,
+                            account: 'sagarkothari88',
+                            isFilter: true,
+                          ),
                     ),
                   );
-                }
+                },
+              ),
+
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) =>
+                              Wallet(hfk: hfk, username: 'sagarkothari88'),
+                    ),
+                  );
+                },
+                //_getWalletDataViaChannel,
+                child: Text('Get Wallet Data (via channel)'),
               ),
 
               // --- End hfk equivalents ---

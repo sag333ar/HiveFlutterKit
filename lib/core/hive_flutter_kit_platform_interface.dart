@@ -1,6 +1,7 @@
 import 'package:hive_flutter_kit/core/models/account_history.dart';
 import 'package:hive_flutter_kit/core/models/login_model.dart';
 import 'package:hive_flutter_kit/core/models/upload_image.dart';
+import 'package:hive_flutter_kit/core/models/wallet_data.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:hive_flutter_kit/core/models/account.dart';
 import 'package:hive_flutter_kit/core/models/chain_properties.dart';
@@ -363,6 +364,10 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
     String? stop,
   }) {
     throw UnimplementedError('getAccountHistory has not been implemented.');
+  }
+
+  Future<WalletData> getFullWalletData(String username) {
+    throw UnimplementedError('getFullWalletData has not been implemented.');
   }
 
   Future<bool> isHiveKeychainAvailable() {

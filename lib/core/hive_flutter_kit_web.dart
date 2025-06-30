@@ -7,6 +7,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:hive_flutter_kit/core/models/account_history.dart';
 import 'package:hive_flutter_kit/core/models/login_model.dart';
+import 'package:hive_flutter_kit/core/models/wallet_data.dart';
 import 'package:js/js.dart' show JS;
 import 'package:js/js_util.dart';
 
@@ -83,6 +84,9 @@ external dynamic getAccountHistoryJS(
   String? start,
   String? stop,
 );
+
+@JS('getFullWalletData')
+external dynamic getFullWalletDataJS(String username);
 
 // -------------------------------------------------------------------------
 
@@ -594,6 +598,26 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
     final jsonString = await promiseToFuture(promise);
     final List<dynamic> jsonList = jsonDecode(jsonString);
     return jsonList.map((e) => AccountHistoryOp.fromJson(e)).toList();
+  }
+
+  Future<WalletData> getFullWalletData(String username) async {
+    try {
+      final promise = getFullWalletDataJS(username);
+      final jsonString = await promiseToFuture(promise);
+
+      if (jsonString == null || jsonString == 'null') {
+        return WalletData.fallback(error: 'No data returned from JS');
+      }
+
+      final parsed = jsonDecode(jsonString);
+      if (parsed is Map<String, dynamic>) {
+        return WalletData.fromJson(parsed);
+      } else {
+        return WalletData.fallback(error: 'Unexpected JSON format');
+      }
+    } catch (e) {
+      return WalletData.fallback(error: 'Exception: $e');
+    }
   }
 
   @override

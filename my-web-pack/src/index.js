@@ -688,3 +688,99 @@ async function subscribeUnsubscribeToCommunity(community, subscribe) {
   }
 }
 window.subscribeUnsubscribeToCommunity = subscribeUnsubscribeToCommunity;
+
+async function getWalletDataDetail(username) {
+  try {
+    const accounts = await dhiveClient.database.getAccounts([username]);
+    if (!accounts || accounts.length === 0) {
+      throw new Error('Account not found');
+    }
+    return JSON.stringify(accounts[0]);
+  } catch (error) {
+    console.error('Error:', error);
+    return JSON.stringify({ error: error.message });
+  }
+}
+window.getWalletDataDetail = getWalletDataDetail;
+
+async function convertVestingSharesToHiveData(vestingShares) {
+  try {
+    const props = await dhiveClient.database.getDynamicGlobalProperties();
+    const vestingSharesFloat = parseFloat(vestingShares.split(' ')[0]);
+    const totalVestingShares = parseFloat(props.total_vesting_shares.split(' ')[0]);
+    const totalVestingFundHive = parseFloat(props.total_vesting_fund_hive.split(' ')[0]);
+    const hiveValue = (vestingSharesFloat * totalVestingFundHive / totalVestingShares).toFixed(3);
+    return hiveValue;
+  } catch (error) {
+    console.error('Error:', error);
+    return '0';
+  }
+}
+window.convertVestingSharesToHiveData = convertVestingSharesToHiveData;
+
+async function convertHivetoUSDData(hiveAmount) {
+  try {
+    const feedHistory = await dhiveClient.database.call('get_feed_history', []);
+    const currentMedian = feedHistory.current_median_history;
+    const baseAmount = parseFloat(currentMedian.base.split(' ')[0]);
+    const hiveAmountFloat = parseFloat(hiveAmount);
+    const usdValue = (baseAmount * hiveAmountFloat).toFixed(2);
+    return usdValue;
+  } catch (error) {
+    console.error('Error:', error);
+    return '0';
+  }
+}
+window.convertHivetoUSDData = convertHivetoUSDData;
+
+async function getFullWalletData(username) {
+  try {
+    const accountJson = await window.getWalletDataDetail(username);
+    const account = JSON.parse(accountJson);
+
+    if (!account || account.error) {
+      throw new Error(account?.error || 'Account not found');
+    }
+
+    const vestingShares = account.vesting_shares || "0.000000 VESTS";
+    const balance = account.balance || "0.000 HIVE";
+    const hbdBalance = account.hbd_balance || "0.000 HBD";
+    const savingsBalance = account.savings_balance || "0.000 HIVE";
+    const savingsHbdBalance = account.savings_hbd_balance || "0.000 HBD";
+
+    // Convert vesting shares to Hive Power
+    const hivePower = await window.convertVestingSharesToHiveData(vestingShares);
+
+    // Parse numbers for liquid and staked hive
+    const liquidHive = parseFloat(balance.split(' ')[0] || "0") || 0;
+    const stakedHive = parseFloat(hivePower) || 0;
+    const totalHive = (liquidHive + stakedHive).toFixed(3);
+
+    // Convert total hive to USD
+    const estimatedHiveUSD = await window.convertHivetoUSDData(totalHive);
+
+    // Construct final object
+    const walletData = {
+      balance: balance,
+      hbd_balance: hbdBalance,
+      savings_balance: savingsBalance,
+      savings_hbd_balance: savingsHbdBalance,
+      hive_power: `${hivePower} HP`,
+      estimated_value: `$${estimatedHiveUSD}`
+    };
+
+    return JSON.stringify(walletData);
+  } catch (error) {
+    console.error('Error in getFullWalletData:', error);
+    return JSON.stringify({
+      balance: "0.000 HIVE",
+      hbd_balance: "0.000 HBD",
+      savings_balance: "0.000 HIVE",
+      savings_hbd_balance: "0.000 HBD",
+      hive_power: "0 HP",
+      estimated_value: "$0.00",
+      error: error.message
+    });
+  }
+}
+window.getFullWalletData = getFullWalletData;
