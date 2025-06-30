@@ -5,6 +5,7 @@ import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit/core/models/community_model.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
+import 'package:hive_flutter_kit/ux/bottom_tool_bar.dart';
 import 'package:hive_flutter_kit/ux/dhive/comments/hive_post_comments.dart';
 import 'package:hive_flutter_kit/ux/login_screen.dart';
 import 'package:hive_flutter_kit/ux/switch_user.dart';
@@ -1024,6 +1025,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: BottomToolbarWithSlider(backgroundColor: Colors.blue,),
       body: SingleChildScrollView(
         child: Center(
           child: Column(
