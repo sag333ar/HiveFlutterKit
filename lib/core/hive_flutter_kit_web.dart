@@ -168,6 +168,12 @@ external dynamic signAndBroadcastTxJS(
   String keyType,
 );
 
+@JS('subscribeUnsubscribeToCommunity')
+external dynamic subscribeUnsubscribeToCommunity(
+  String communityId,
+  bool subscribe,
+);
+
 @JS('transfer')
 external dynamic transferJS(
   String recipient,
@@ -524,6 +530,21 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
   }
 
   @override
+  Future<String> subscribeUnsubscribeToCommunity(
+    String communityId,
+    bool subscribe,
+  ) async {
+    var promise = subscribeUnsubscribeToCommunity(communityId, subscribe);
+    var result = await promiseToFuture(promise);
+    var jsonResult = jsonDecode(result);
+    if (jsonResult['success'] == true) {
+      return jsonResult['result'] ?? 'some-id-goes-here';
+    } else {
+      throw Exception(jsonResult['message'] ?? 'something went wrong');
+    }
+  }
+
+  @override
   Future<String> transfer(
     String recipient,
     double amount,
@@ -551,13 +572,16 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
   }
 
   @override
-  Future<List<ActiveVote>> getActiveVotes(String author, String permlink) async {
+  Future<List<ActiveVote>> getActiveVotes(
+    String author,
+    String permlink,
+  ) async {
     var promise = getActiveVotesJS(author, permlink);
     var jsonString = await promiseToFuture(promise);
     final List<dynamic> jsonList = jsonDecode(jsonString);
     return jsonList.map((e) => ActiveVote.fromJson(e)).toList();
   }
-  
+
   @override
   Future<List<AccountHistoryOp>> getAccountHistory(
     String account, {
@@ -571,7 +595,6 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
     final List<dynamic> jsonList = jsonDecode(jsonString);
     return jsonList.map((e) => AccountHistoryOp.fromJson(e)).toList();
   }
-
 
   @override
   Future<bool> isHiveKeychainAvailable() async {

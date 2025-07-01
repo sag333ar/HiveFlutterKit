@@ -1027,6 +1027,52 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
   }
 
   @override
+  Future<String> subscribeUnsubscribeToCommunity(
+    String communityId,
+    bool subscribe,
+  ) async {
+    final completer = Completer<String>();
+
+    // Remove previous handler if exists
+    headlessWebView.webViewController?.removeJavaScriptHandler(
+      handlerName: 'subscribeUnsubscribeToCommunityResult',
+    );
+
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: 'subscribeUnsubscribeToCommunityResult',
+      callback: (args) {
+        if (!completer.isCompleted) {
+          final resultString =
+              (args.isNotEmpty && args[0] is String) ? args[0] as String : null;
+          var jsonResult = jsonDecode(resultString ?? '{}');
+          if (jsonResult['success'] == true) {
+            completer.complete(jsonResult['result'] ?? 'some-id-goes-here');
+            return;
+          } else {
+            completer.completeError(
+              jsonResult['message'] ?? 'something went wrong',
+            );
+          }
+        }
+      },
+    );
+
+    final jsCode = """
+    (async () => {
+      try {
+        const res = await subscribeUnsubscribeToCommunity("$communityId", $subscribe);
+        window.flutter_inappwebview.callHandler('subscribeUnsubscribeToCommunityResult', res);
+      } catch (e) {
+        window.flutter_inappwebview.callHandler('subscribeUnsubscribeToCommunityResult', JSON.stringify({ error: e.toString(), success: false }));
+      }
+    })();
+  """;
+
+    await headlessWebView.webViewController?.evaluateJavascript(source: jsCode);
+    return completer.future;
+  }
+
+  @override
   Future<String> transfer(
     String recipient,
     double amount,
