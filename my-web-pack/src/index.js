@@ -13,6 +13,9 @@ const aioha = initAioha({
 aioha.on("hiveauth_challenge_request", (payload, evt, cancel) => {
   qrString = payload;
 });
+aioha.on("hiveauth_sign_request", (payload, evt, cancel) => {
+  qrString = payload;
+});
 
 let qrString = "";
 
