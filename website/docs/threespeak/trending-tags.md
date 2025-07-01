@@ -101,6 +101,6 @@ Currently, the `ThreeSpeakTrendingTags` widget does not expose direct parameters
 
 ## See Also
 
--   [ThreeSpeakVideoFeed](/video-feed) - Can be used in conjunction with `ThreeSpeakTrendingTags` to display videos for a selected tag using `feedType: ThreeSpeakVideoFeedType.trendingTagFeed`.
+-   [ThreeSpeakVideoFeed](/docs/video-feed) - Can be used in conjunction with `ThreeSpeakTrendingTags` to display videos for a selected tag using `feedType: ThreeSpeakVideoFeedType.trendingTagFeed`.
 -   `GQLCommunicator` (internal) - Used for API communication.
 -   `TrendingTagResponseDataTrendingTag` (internal model) - The data structure for individual tag items.
