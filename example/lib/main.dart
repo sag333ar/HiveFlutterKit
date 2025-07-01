@@ -1,6 +1,6 @@
+import 'package:hive_flutter_kit_example/account_auth.dart';
 import 'package:hive_flutter_kit_example/home.dart';
 import 'package:flutter/material.dart';
-
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +21,7 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(title: const Text('Plugin example app')),
-        body: MyHomePage(),
+        body: AccountAuth(),
       ),
     );
   }
