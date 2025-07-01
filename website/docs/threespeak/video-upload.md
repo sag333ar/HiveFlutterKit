@@ -132,9 +132,9 @@ Navigator.push(
 
 ## See Also
 
--   [ThreeSpeakLoginScreen](/login) - For obtaining the `token` required by `VideoUploadScreen`.
--   [ThreeSpeakVideoFeed](/video-feed) - For displaying video feeds.
--   [VideoPlayerScreen](/video-player) - For playing uploaded videos.
+-   [ThreeSpeakLoginScreen](/docs/login) - For obtaining the `token` required by `VideoUploadScreen`.
+-   [ThreeSpeakVideoFeed](/docs/video-feed) - For displaying video feeds.
+-   [VideoPlayerScreen](/docs/video-player) - For playing uploaded videos.
 -   `another_tus_client` package (for TUS protocol).
 -   `file_picker` package (for picking video files).
 -   `image_picker` package (used in `ThumbnailUploadScreen`).
