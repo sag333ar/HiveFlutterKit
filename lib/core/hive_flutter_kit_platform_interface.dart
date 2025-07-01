@@ -1,3 +1,4 @@
+import 'package:hive_flutter_kit/core/models/account_history.dart';
 import 'package:hive_flutter_kit/core/models/login_model.dart';
 import 'package:hive_flutter_kit/core/models/upload_image.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
@@ -343,6 +344,16 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
 
   Future<List<ActiveVote>> getActiveVotes(String author, String permlink) {
     throw UnimplementedError('getActiveVotes has not been implemented.');
+  }
+
+  Future<List<AccountHistoryOp>> getAccountHistory(
+    String account, {
+    int index = -1,
+    int limit = 1000,
+    String? start,
+    String? stop,
+  }) {
+    throw UnimplementedError('getAccountHistory has not been implemented.');
   }
 
   Future<bool> isHiveKeychainAvailable() {

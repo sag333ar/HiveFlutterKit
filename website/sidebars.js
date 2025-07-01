@@ -64,6 +64,7 @@ const sidebars = {
       items: [
         "dhive/hive-post-comments",
         "dhive/trending-feed-screen",
+        "dhive/account-activities-screen",
       ],
     },
     {

@@ -556,7 +556,7 @@ async function transfer(recipient, amount, assetSymbol, memo) {
 
     const numericAmount = parseFloat(amount);
     if (isNaN(numericAmount) || numericAmount <= 0) {
-        return JSON.stringify({ error: "Invalid amount. Amount must be a positive number." });
+      return JSON.stringify({ error: "Invalid amount. Amount must be a positive number." });
     }
 
     let result;
@@ -652,3 +652,24 @@ async function isHiveKeychainAvailable() {
   }
 }
 window.isHiveKeychainAvailable = isHiveKeychainAvailable;
+
+async function getAccountHistory(account, index = -1, limit = 1000, start = null, stop = null) {
+  const params = [account, index, limit];
+
+  if (start !== null && stop !== null) {
+    params.push(start, stop);
+  }
+
+  try {
+    const result = await dhiveClient.call(
+      "condenser_api",
+      "get_account_history",
+      params
+    );
+    return JSON.stringify(result);
+  } catch (error) {
+    console.error("Error calling get_account_history:", error);
+    return JSON.stringify([]);
+  }
+}
+window.getAccountHistory = getAccountHistory;

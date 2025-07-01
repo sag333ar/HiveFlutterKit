@@ -5,6 +5,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'package:hive_flutter_kit/core/models/account_history.dart';
 import 'package:hive_flutter_kit/core/models/login_model.dart';
 import 'package:js/js.dart' show JS;
 import 'package:js/js_util.dart';
@@ -73,6 +74,15 @@ external dynamic getCommunitySubscribersJS(
 
 @JS('getActiveVotes')
 external dynamic getActiveVotesJS(String author, String permlink);
+
+@JS('getAccountHistory')
+external dynamic getAccountHistoryJS(
+  String account,
+  int index,
+  int limit,
+  String? start,
+  String? stop,
+);
 
 // -------------------------------------------------------------------------
 
@@ -547,6 +557,21 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
     final List<dynamic> jsonList = jsonDecode(jsonString);
     return jsonList.map((e) => ActiveVote.fromJson(e)).toList();
   }
+  
+  @override
+  Future<List<AccountHistoryOp>> getAccountHistory(
+    String account, {
+    int index = -1,
+    int limit = 1000,
+    String? start,
+    String? stop,
+  }) async {
+    final promise = getAccountHistoryJS(account, index, limit, start, stop);
+    final jsonString = await promiseToFuture(promise);
+    final List<dynamic> jsonList = jsonDecode(jsonString);
+    return jsonList.map((e) => AccountHistoryOp.fromJson(e)).toList();
+  }
+
 
   @override
   Future<bool> isHiveKeychainAvailable() async {
