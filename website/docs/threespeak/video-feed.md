@@ -230,6 +230,6 @@ onTapVideoItem: (tappedItem) {
 
 ---
 ## See Also
-- [VideoPlayerScreen](/threespeak/video-player) - For playing individual videos from the feed.
-- [ThreeSpeakTrendingTags](/threespeak/trending-tags) - For displaying a list of trending tags, which can then be used to filter this video feed (using `feedType: ThreeSpeakVideoFeedType.trendingTagFeed`).
+- [VideoPlayerScreen](/docs/threespeak/video-player) - For playing individual videos from the feed.
+- [ThreeSpeakTrendingTags](/docs/threespeak/trending-tags) - For displaying a list of trending tags, which can then be used to filter this video feed (using `feedType: ThreeSpeakVideoFeedType.trendingTagFeed`).
 - `VideoCard` widget (internal component) - The UI element used to display each video in the feed.

@@ -188,7 +188,7 @@ Navigator.push(
 ---
 
 ## See Also
-- [ThreeSpeakVideoFeed](/threespeak/video-feed) - Often used for the `videoFeed` parameter or to navigate to this screen.
+- [ThreeSpeakVideoFeed](/docs/threespeak/video-feed) - Often used for the `videoFeed` parameter or to navigate to this screen.
 - `GQLFeedItem` (model from `hive_flutter_kit`) - The data structure for video items.
 - `Discussion` (model from `hive_flutter_kit`) - The data structure for Hive post details.
 - `chewie` and `video_player` Flutter packages.
