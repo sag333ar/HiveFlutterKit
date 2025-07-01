@@ -112,6 +112,6 @@ Navigator.push(
 
 ## See Also
 
-- [VideoUploadScreen](/threespeak/video-upload.md)
-- [VideoPlayerScreen](/threespeak/video-player.md)
-- [ThreeSpeakVideoFeed](/threespeak/video-feed.md)
+- [VideoUploadScreen](/video-upload)
+- [VideoPlayerScreen](/video-player)
+- [ThreeSpeakVideoFeed](/video-feed)
