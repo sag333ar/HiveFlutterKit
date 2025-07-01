@@ -323,6 +323,15 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
     throw UnimplementedError('signAndBroadcastTx has not been implemented.');
   }
 
+  Future<String> subscribeUnsubscribeToCommunity(
+    String communityId,
+    bool subscribe,
+  ) {
+    throw UnimplementedError(
+      'subscribeUnsubscribeToCommunity has not been implemented.',
+    );
+  }
+
   Future<String> transfer(
     String recipient,
     double amount,

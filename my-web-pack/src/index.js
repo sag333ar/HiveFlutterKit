@@ -676,3 +676,15 @@ async function getAccountHistory(account, index = -1, limit = 1000, start = null
   }
 }
 window.getAccountHistory = getAccountHistory;
+
+async function subscribeUnsubscribeToCommunity(community, subscribe) {
+  try {
+    const result = await aioha.customJSON(KeyTypes.Posting, 'community', [subscribe ? 'subscribe': 'unsubscribe', {community: community}], 'Display Title')
+    var dataToReturn = JSON.stringify(result);
+    return dataToReturn;
+  } catch (error) {
+    console.error("Error calling get_active_votes:", error);
+    throw error;
+  }
+}
+window.subscribeUnsubscribeToCommunity = subscribeUnsubscribeToCommunity;

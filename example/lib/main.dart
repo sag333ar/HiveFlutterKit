@@ -1,6 +1,6 @@
 import 'package:hive_flutter_kit_example/home.dart';
 import 'package:flutter/material.dart';
-
+import 'package:hive_flutter_kit_example/subscribe.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,10 +19,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Plugin example app')),
-        body: MyHomePage(),
-      ),
+      home: SubscribeToCommunity(), // SubscribeToCommunity(), // MyHomePage(),
     );
   }
 }
