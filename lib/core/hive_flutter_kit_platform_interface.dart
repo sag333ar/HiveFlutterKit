@@ -1,5 +1,6 @@
 import 'package:hive_flutter_kit/core/models/account_history.dart';
 import 'package:hive_flutter_kit/core/models/login_model.dart';
+import 'package:hive_flutter_kit/core/models/pending_reward.dart';
 import 'package:hive_flutter_kit/core/models/upload_image.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:hive_flutter_kit/core/models/account.dart';
@@ -363,6 +364,20 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
     String? stop,
   }) {
     throw UnimplementedError('getAccountHistory has not been implemented.');
+  }
+
+  Future<PendingCurationRewardData> getPendingCurationRewardData(
+    String username,
+  ) {
+    throw UnimplementedError(
+      'getPendingCurationRewardData has not been implemented.',
+    );
+  }
+
+  Future<PendingAuthorRewardData> getPendingAuthorRewardData(String username) {
+    throw UnimplementedError(
+      'getPendingAuthorRewardData has not been implemented.',
+    );
   }
 
   Future<bool> isHiveKeychainAvailable() {

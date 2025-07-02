@@ -7,6 +7,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:hive_flutter_kit/core/models/account_history.dart';
 import 'package:hive_flutter_kit/core/models/login_model.dart';
+import 'package:hive_flutter_kit/core/models/pending_reward.dart';
 import 'package:js/js.dart' show JS;
 import 'package:js/js_util.dart';
 
@@ -83,6 +84,12 @@ external dynamic getAccountHistoryJS(
   String? start,
   String? stop,
 );
+
+@JS('getPendingAuthorRewardData')
+external dynamic getPendingAuthorRewardDataJS(String username);
+
+@JS('getPendingCurationRewardData')
+external dynamic getPendingCurationRewardDataJS(String username);
 
 // -------------------------------------------------------------------------
 
@@ -594,6 +601,26 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
     final jsonString = await promiseToFuture(promise);
     final List<dynamic> jsonList = jsonDecode(jsonString);
     return jsonList.map((e) => AccountHistoryOp.fromJson(e)).toList();
+  }
+
+  @override
+  Future<PendingAuthorRewardData> getPendingAuthorRewardData(
+    String username,
+  ) async {
+    final promise = getPendingAuthorRewardDataJS(username);
+    final jsonString = await promiseToFuture(promise);
+    final jsonMap = jsonDecode(jsonString);
+    return PendingAuthorRewardData.fromJson(jsonMap);
+  }
+
+  @override
+  Future<PendingCurationRewardData> getPendingCurationRewardData(
+    String username,
+  ) async {
+    final promise = getPendingCurationRewardDataJS(username);
+    final jsonString = await promiseToFuture(promise);
+    final jsonMap = jsonDecode(jsonString);
+    return PendingCurationRewardData.fromJson(jsonMap);
   }
 
   @override

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:hive_flutter_kit/core/models/account_history.dart';
 import 'package:hive_flutter_kit/core/models/login_model.dart';
 import 'package:flutter/services.dart';
+import 'package:hive_flutter_kit/core/models/pending_reward.dart';
 
 import 'hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit/core/models/account.dart';
@@ -1294,6 +1295,108 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
       window.flutter_inappwebview.callHandler('$handlerName', JSON.stringify([]));
     }
   })();
+  """;
+
+    await headlessWebView.webViewController?.evaluateJavascript(source: jsCall);
+    return completer.future;
+  }
+
+  @override
+  Future<PendingAuthorRewardData> getPendingAuthorRewardData(
+    String username,
+  ) async {
+    final completer = Completer<PendingAuthorRewardData>();
+    final handlerName =
+        'onPendingAuthorReward_${DateTime.now().millisecondsSinceEpoch}';
+
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: handlerName,
+      callback: (args) {
+        if (!completer.isCompleted) {
+          try {
+            final contentData = args.isNotEmpty ? args[0].toString() : null;
+            if (contentData != null &&
+                contentData != 'null' &&
+                contentData.isNotEmpty) {
+              final jsonMap = jsonDecode(contentData);
+              final rewardData = PendingAuthorRewardData.fromJson(jsonMap);
+              completer.complete(rewardData);
+            } else {
+              completer.completeError('Empty or null author reward response');
+            }
+          } catch (e) {
+            completer.completeError('Failed to parse author reward data: $e');
+          }
+        }
+
+        headlessWebView.webViewController?.removeJavaScriptHandler(
+          handlerName: handlerName,
+        );
+      },
+    );
+
+    final jsUsername = jsonEncode(username);
+
+    final jsCall = """
+    (async () => {
+      try {
+        const result = await getPendingAuthorRewardData($jsUsername);
+        window.flutter_inappwebview.callHandler('$handlerName', result || 'null');
+      } catch (e) {
+        window.flutter_inappwebview.callHandler('$handlerName', JSON.stringify(null));
+      }
+    })();
+  """;
+
+    await headlessWebView.webViewController?.evaluateJavascript(source: jsCall);
+    return completer.future;
+  }
+
+  @override
+  Future<PendingCurationRewardData> getPendingCurationRewardData(
+    String username,
+  ) async {
+    final completer = Completer<PendingCurationRewardData>();
+    final handlerName =
+        'onPendingCurationReward_${DateTime.now().millisecondsSinceEpoch}';
+
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: handlerName,
+      callback: (args) {
+        if (!completer.isCompleted) {
+          try {
+            final contentData = args.isNotEmpty ? args[0].toString() : null;
+            if (contentData != null &&
+                contentData != 'null' &&
+                contentData.isNotEmpty) {
+              final jsonMap = jsonDecode(contentData);
+              final rewardData = PendingCurationRewardData.fromJson(jsonMap);
+              completer.complete(rewardData);
+            } else {
+              completer.completeError('Empty or null curation reward response');
+            }
+          } catch (e) {
+            completer.completeError('Failed to parse curation reward data: $e');
+          }
+        }
+
+        headlessWebView.webViewController?.removeJavaScriptHandler(
+          handlerName: handlerName,
+        );
+      },
+    );
+
+    final jsUsername = jsonEncode(username);
+
+    final jsCall = """
+    (async () => {
+      try {
+        const result = await getPendingCurationRewardData($jsUsername);
+        window.flutter_inappwebview.callHandler('$handlerName', result || 'null');
+      } catch (e) {
+        window.flutter_inappwebview.callHandler('$handlerName', JSON.stringify(null));
+      }
+    })();
   """;
 
     await headlessWebView.webViewController?.evaluateJavascript(source: jsCall);

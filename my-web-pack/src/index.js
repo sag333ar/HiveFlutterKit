@@ -679,7 +679,7 @@ window.getAccountHistory = getAccountHistory;
 
 async function subscribeUnsubscribeToCommunity(community, subscribe) {
   try {
-    const result = await aioha.customJSON(KeyTypes.Posting, 'community', [subscribe ? 'subscribe': 'unsubscribe', {community: community}], 'Display Title')
+    const result = await aioha.customJSON(KeyTypes.Posting, 'community', [subscribe ? 'subscribe' : 'unsubscribe', { community: community }], 'Display Title')
     var dataToReturn = JSON.stringify(result);
     return dataToReturn;
   } catch (error) {
@@ -688,3 +688,151 @@ async function subscribeUnsubscribeToCommunity(community, subscribe) {
   }
 }
 window.subscribeUnsubscribeToCommunity = subscribeUnsubscribeToCommunity;
+
+async function getPendingAuthorRewardData(username) {
+  async function fetchAllPosts(account, sort) {
+    let allEntries = [];
+    let lastPermlink = null;
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    while (true) {
+      let params = { account, sort };
+      if (lastPermlink) {
+        params.start_author = account;
+        params.start_permlink = lastPermlink;
+      }
+      const result = await dhiveClient.hivemind.getAccountPosts(params);
+      if (!result.length) break;
+      allEntries = allEntries.concat(result);
+      lastPermlink = result[result.length - 1].permlink;
+      const lastPostDate = new Date(result[result.length - 1].created);
+      if (lastPostDate < sevenDaysAgo) break;
+    }
+    return allEntries;
+  }
+
+  async function getPendingRewardsForUser(author) {
+    try {
+      let totalAuthorRewards = 0;
+      let pendingComments = [];
+      let pendingPosts = [];
+      const posts = await fetchAllPosts(author, "posts");
+      const comments = await fetchAllPosts(author, "comments");
+      for (const entry of posts) {
+        if (!entry || entry.id === 0) continue;
+        const pendingAuthorReward = parseFloat(
+          entry.pending_payout_value.split(" ")[0]
+        );
+        pendingPosts.push({
+          link: "@" + entry.author + "/" + entry.permlink,
+          payDate: entry.payout_at,
+          created: entry.created,
+          amount: entry.pending_payout_value,
+        });
+        totalAuthorRewards += pendingAuthorReward;
+      }
+      for (const entry of comments) {
+        if (!entry || entry.id === 0) continue;
+        const pendingAuthorReward = parseFloat(
+          entry.pending_payout_value.split(" ")[0]
+        );
+        pendingComments.push({
+          link: "@" + entry.author + "/" + entry.permlink,
+          payDate: entry.payout_at,
+          created: entry.created,
+          amount: entry.pending_payout_value,
+        });
+        totalAuthorRewards += pendingAuthorReward;
+      }
+      return JSON.stringify({
+        posts: pendingPosts,
+        comments: pendingComments,
+        total: totalAuthorRewards,
+      });
+    } catch (error) {
+      console.error("Error fetching rewards:", error);
+      return JSON.stringify({ posts: [], comments: [], total: 0 });
+    }
+  }
+  return await getPendingRewardsForUser(username);
+}
+
+window.getPendingAuthorRewardData = getPendingAuthorRewardData;
+
+async function getPendingCurationRewardData(username) {
+  function wait(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  async function getPostNetSharesAndPendingPayout(author, permlink) {
+    try {
+      const post = await dhiveClient.database.call("get_content", [
+        author,
+        permlink,
+      ]);
+      return {
+        payout: post.pending_payout_value,
+        netShare: post.net_rshares,
+        payDate: post.cashout_time,
+        created: post.created,
+      };
+    } catch (error) {
+      console.error("Error fetching post:", error);
+    }
+  }
+
+  async function getPendingCurationRewards(accountName, start, limit) {
+    try {
+      const op = dhive.utils.operationOrders;
+      const oBM = dhive.utils.makeBitMaskFilter([
+        op.effective_comment_vote,
+      ]);
+      let voteHistory = await dhiveClient.database.getAccountHistory(
+        accountName,
+        start,
+        limit,
+        oBM
+      );
+      let totalCurationRewards = 0;
+      let pendingCuration = [];
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      voteHistory = voteHistory.filter(
+        (e) => new Date(e[1].timestamp) > sevenDaysAgo
+      );
+      for (const vote of voteHistory) {
+        const voteData = vote[1].op[1];
+        if (voteData.author !== accountName) {
+          const payoutDetails = await getPostNetSharesAndPendingPayout(
+            voteData.author,
+            voteData.permlink
+          );
+          const date = new Date(payoutDetails.created);
+          if (date < sevenDaysAgo) continue;
+          const pendingCurationReward =
+            (voteData.rshares *
+              parseFloat(payoutDetails.payout.split(" ")[0])) /
+            payoutDetails.netShare;
+          totalCurationRewards += pendingCurationReward;
+          pendingCuration.push({
+            link: "@" + voteData.author + "/" + voteData.permlink,
+            payDate: payoutDetails.payDate,
+            created: payoutDetails.created,
+            amount: pendingCurationReward.toFixed(3) + " HBD",
+          });
+          await wait(100);
+        }
+      }
+      return JSON.stringify({
+        curation: pendingCuration,
+        total: totalCurationRewards,
+      });
+    } catch (error) {
+      console.error("Error fetching rewards:", error);
+      return JSON.stringify({ curation: [], total: 0 });
+    }
+  }
+
+  return await getPendingCurationRewards(username, -1, 50);
+}
+window.getPendingCurationRewardData = getPendingCurationRewardData;

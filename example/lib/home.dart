@@ -8,6 +8,7 @@ import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_resp
 import 'package:hive_flutter_kit/ux/bottom_tool_bar.dart';
 import 'package:hive_flutter_kit/ux/dhive/account_activities/account_activities.dart';
 import 'package:hive_flutter_kit/ux/dhive/comments/hive_post_comments.dart';
+import 'package:hive_flutter_kit/ux/dhive/pending_reward/potential_ui_reward.dart';
 import 'package:hive_flutter_kit/ux/login_screen.dart';
 import 'package:hive_flutter_kit/ux/switch_user.dart';
 import 'package:hive_flutter_kit/ux/dhive/community_list/community_list.dart';
@@ -782,6 +783,70 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<void> _getPendingAuthorRewardData() async {
+    try {
+      const account = 'sagarkothari88';
+
+      final result = await hfk.getPendingAuthorRewardData(account);
+
+      debugPrint('===== Pending Author Rewards =====');
+      debugPrint('Total Pending: ${result.total} HBD');
+
+      for (var post in result.posts!) {
+        debugPrint('-- Post --');
+        debugPrint('Link: ${post.link}');
+        debugPrint('Created: ${post.created}');
+        debugPrint('Pay Date: ${post.payDate}');
+        debugPrint('Amount: ${post.amount}');
+      }
+
+      for (var comment in result.comments!) {
+        debugPrint('-- Comment --');
+        debugPrint('Link: ${comment.link}');
+        debugPrint('Created: ${comment.created}');
+        debugPrint('Pay Date: ${comment.payDate}');
+        debugPrint('Amount: ${comment.amount}');
+      }
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Fetched pending author rewards')));
+    } catch (e) {
+      debugPrint('Error in getPendingAuthorRewardData: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error fetching author rewards: $e')),
+      );
+    }
+  }
+
+  Future<void> _getPendingCurationRewardData() async {
+    try {
+      const account = 'sagarkothari88';
+
+      final result = await hfk.getPendingCurationRewardData(account);
+
+      debugPrint('===== Pending Curation Rewards =====');
+      debugPrint('Total Pending: ${result.total} HBD');
+
+      for (var vote in result.curation!) {
+        debugPrint('-- Vote --');
+        debugPrint('Link: ${vote.link}');
+        debugPrint('Created: ${vote.created}');
+        debugPrint('Pay Date: ${vote.payDate}');
+        debugPrint('Amount: ${vote.amount}');
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Fetched pending curation rewards')),
+      );
+    } catch (e) {
+      debugPrint('Error in getPendingCurationRewardData: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error fetching curation rewards: $e')),
+      );
+    }
+  }
+
   Future<void> _checkThreespeakInAccountAuths() async {
     try {
       final username = _usernameController.text;
@@ -1252,18 +1317,47 @@ class _MyHomePageState extends State<MyHomePage> {
 
               ElevatedButton(
                 child: Text('Get Account History'),
-                onPressed: (){
+                onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AccountActivities(
-                        hfk: hfk,
-                        account: 'sagarkothari88',
-                        isFilter: true,
-                      ),
+                      builder:
+                          (context) => AccountActivities(
+                            hfk: hfk,
+                            account: 'sagarkothari88',
+                            isFilter: true,
+                          ),
                     ),
                   );
-                }
+                },
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) => PotentialRewardsWidget(
+                                hfk: hfk,
+                                username: 'sagarkothari88',
+                                type: 'curation',
+                              ),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.article_outlined),
+                    label: const Text('Fetch Pending Rewards'),
+                  ),
+                  const SizedBox(height: 12),
+                  ElevatedButton.icon(
+                    onPressed: _getPendingCurationRewardData,
+                    icon: const Icon(Icons.how_to_vote_outlined),
+                    label: const Text('Fetch Pending Curation Rewards'),
+                  ),
+                ],
               ),
 
               // --- End hfk equivalents ---
