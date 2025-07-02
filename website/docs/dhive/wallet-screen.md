@@ -1,6 +1,6 @@
 ---
 title: DHive - User's Wallet
-sidebar_label: Wallet Screen
+sidebar_label: Wallet
 slug: /wallet-screen
 ---
 
