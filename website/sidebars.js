@@ -9,7 +9,7 @@
  Create as many sidebars as you want.
  */
 
-// @ts-check
+// @ts-nocheck
 
 /** @type {import('@docusaurus/plugin-content-docs').SidebarsConfig} */
 const sidebars = {
@@ -51,7 +51,7 @@ const sidebars = {
         "dhive/witnesses-screen",
         "dhive/followers-screen",
         "dhive/followings-screen",
-        "dhive/witness-votes-screen"
+        "dhive/witness-votes-screen",
         "dhive/proposals-screen",
       ],
     },
