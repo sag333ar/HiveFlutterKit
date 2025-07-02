@@ -8,212 +8,228 @@ slug: /video-feed
 
 ![Videos Feed Component Preview](/img/threespeak/firstuploads.png)
 
-The `ThreeSpeakVideoFeed` widget displays a grid/list of videos from the ThreeSpeak platform. It supports multiple feed types, including a built-in search experience.
+The `ThreeSpeakVideoFeed` widget is a versatile component for displaying various lists of videos from the ThreeSpeak platform. It supports multiple feed types, infinite scrolling (implicitly through fetching all items initially), a built-in search experience, and customizable callbacks for user interactions.
 
-**Feed Types:**
+## Core Functionality
 
-- `trending` - Trending videos from the 3Speak platform
-- `newUploads` - Newly uploaded videos on the 3Speak platform
-- `hot` - Hot videos based on engagement metrics
-- `firstUploads` - First uploads from creators on the 3Speak platform
-- `related` - Shows videos related to a specific video (requires `author` & `permlink` parameter)
-- `userFeed` - Shows videos from a specific user (requires `username` parameter)
-- `commnuityFeed` - Shows videos from a specific community (requires `commnuityId` parameter)
-- `search` - Shows videos based on a search query (supports built-in search bar with `isSearch: true`)
+This widget fetches video data from the 3Speak GQL API based on the specified `feedType` and other relevant parameters. It then displays these videos in a responsive layout:
+- **Wide screens (>= 600dp):** A grid view with an adaptive number of columns.
+- **Narrow screens (< 600dp):** A list view with `VideoCard` widgets. It uses `VisibilityDetectorListView` for optimizing rendering of visible items.
 
-## Usage
+## Feed Types (`ThreeSpeakVideoFeedType`)
 
-### Trending, New Uploads, Hot, and First Uploads Feed
+The `feedType` parameter determines the source and nature of the videos displayed:
+
+-   **`trending`**: Shows currently trending videos on the 3Speak platform.
+-   **`newUploads`**: Displays the most recently uploaded videos.
+-   **`hot`**: (Note: Currently, the implementation for `hot` feed is commented out in the source, so it might behave like an empty list or default to another feed if not explicitly handled by GQL.)
+-   **`firstUploads`**: Features videos that are the first uploads from their creators.
+-   **`related`**: Lists videos related to a specific video. Requires `relatedAuthor` and `relatedPermlink` parameters.
+-   **`userFeed`**: Shows videos uploaded by a particular user. Requires the `username` parameter.
+-   **`commnuityFeed`**: Displays videos from a specific 3Speak community. Requires the `commnuityId` parameter.
+-   **`myFeed`**: Shows videos from users that the current user (specified by `username`) is following. Requires the `username` parameter.
+-   **`search`**: Enables searching for videos.
+    -   If `isSearch` is `true`, it provides a built-in AppBar with a search input field.
+    -   If `isSearch` is `false` (default), it expects a `searchTerm` to be provided externally.
+-   **`trendingTagFeed`**: Shows videos trending under a specific tag. Requires the `tag` parameter.
+
+---
+
+## Usage Examples
+
+### Basic Feed (Trending, New Uploads, etc.)
 
 ```dart
 ThreeSpeakVideoFeed(
-  feedType: ThreeSpeakVideoFeedType.firstUploads,
-  onTapVideoItem: (item) {
-    debugPrint('User tapped on video item: ${item.author}/${item.permlink}');
-    navigateToVideoPlayerScreen(item);
+  feedType: ThreeSpeakVideoFeedType.trending, // Or .newUploads, .firstUploads
+  onTapVideoItem: (tappedItem) {
+    debugPrint('Tapped video: ${tappedItem.title}');
+    // Navigate to VideoPlayerScreen or handle as needed
   },
+  onTapAuthor: (item) => debugPrint('Author: ${item.author}'),
+  onTapReport: (item) => debugPrint('Report: ${item.permlink}'),
+  onTapUpvote: (item) => debugPrint('Upvote: ${item.permlink}'),
+  onTapComment: (item) => debugPrint('Comment: ${item.permlink}'),
 )
 ```
 
-### Related Feed
+### Related Videos Feed
+
+To show videos related to `mainAuthor/mainPermlink`:
 
 ```dart
 ThreeSpeakVideoFeed(
   feedType: ThreeSpeakVideoFeedType.related,
-  relatedAuthor: relatedAuthor,
-  relatedPermlink: relatedPermlink,
-  onTapVideoItem: (item) {
-    debugPrint('User tapped on video item: ${item.author}/${item.permlink}');
-    navigateToVideoPlayerScreen(item);
-  },
+  relatedAuthor: 'mainAuthor',
+  relatedPermlink: 'mainPermlink',
+  // Add other required callbacks (onTapVideoItem, etc.)
+  // ...
 )
 ```
 
-### User Feed
+### User's Videos Feed
 
-Shows all videos uploaded by a specific user. Pass the username via the `username` parameter.
+To show videos by 'someuser':
 
 ```dart
 ThreeSpeakVideoFeed(
   feedType: ThreeSpeakVideoFeedType.userFeed,
-  username: 'someuser', // required: username whose videos you want to show
-  onTapVideoItem: (item) {
-    debugPrint('User tapped on video item: ${item.author}/${item.permlink}');
-    navigateToVideoPlayerScreen(item);
-  },
+  username: 'someuser',
+  // Add other required callbacks
+  // ...
 )
 ```
 
-- **Parameter:** `username` (String, required) — the Hive/3Speak username whose videos you want to display.
+### My Feed (Followed Users)
+
+To show the feed for 'currentUser':
+
+```dart
+ThreeSpeakVideoFeed(
+  feedType: ThreeSpeakVideoFeedType.myFeed,
+  username: 'currentUser', // Username of the logged-in user
+  // Add other required callbacks
+  // ...
+)
+```
 
 ### Community Feed
 
-Shows all videos from a specific community. Pass the community id via the `commnuityId` parameter.
+To show videos from community 'hive-12345':
 
 ```dart
 ThreeSpeakVideoFeed(
   feedType: ThreeSpeakVideoFeedType.commnuityFeed,
-  commnuityId: 'hive-163772', // required: community id
-  onTapVideoItem: (item) {
-    debugPrint('User tapped on video item: ${item.author}/${item.permlink}');
-    navigateToVideoPlayerScreen(item);
-  },
+  commnuityId: 'hive-12345',
+  // Add other required callbacks
+  // ...
 )
 ```
 
-- **Parameter:** `commnuityId` (String, required) — the Hive/3Speak community id whose videos you want to display.
+### Trending Tag Feed
 
-### Search Feed (with built-in search bar)
+To show videos trending under the tag 'gaming':
+
+```dart
+ThreeSpeakVideoFeed(
+  feedType: ThreeSpeakVideoFeedType.trendingTagFeed,
+  tag: 'gaming',
+  // Add other required callbacks
+  // ...
+)
+```
+
+### Search Feed (Built-in UI)
+
+This will render an `AppBar` with a search field.
 
 ```dart
 ThreeSpeakVideoFeed(
   feedType: ThreeSpeakVideoFeedType.search,
-  isSearch: true, // Enables built-in search bar and handles search state
-  onTapVideoItem: (item) {
-    debugPrint('User tapped on video item: ${item.author}/${item.permlink}');
-    navigateToVideoPlayerScreen(item);
-  },
+  isSearch: true, // Enables the built-in search AppBar
+  // Add other required callbacks
+  // ...
 )
 ```
+**Note:** When `isSearch: true`, the widget handles the search text input, debouncing, and fetching internally. The `searchTerm` parameter is ignored in this mode. Search is triggered when the user types at least 4 characters.
 
-> **Note:** When `isSearch: true` and `feedType: ThreeSpeakVideoFeedType.search`, the widget displays a search bar in the app bar, handles debounce, and manages search state internally. You do **not** need to provide a `searchTerm` parameter in this mode.
+### Search Feed (External Control)
 
-### Search Feed (controlled externally)
-
-If you want to control the search query from outside, you can use:
+Provide `searchTerm` externally.
 
 ```dart
+String _currentSearchQuery = "flutter development";
+
 ThreeSpeakVideoFeed(
   feedType: ThreeSpeakVideoFeedType.search,
-  searchTerm: 'hive', // must be at least 4 characters
-  onTapVideoItem: (item) {
-    debugPrint('User tapped on video item: ${item.author}/${item.permlink}');
-    navigateToVideoPlayerScreen(item);
-  },
+  searchTerm: _currentSearchQuery.length >= 4 ? _currentSearchQuery : null,
+  // isSearch: false (or omitted)
+  // Add other required callbacks
+  // ...
 )
 ```
 
-### Example: Custom Search UI (external control)
+---
+
+## Widget Parameters
+
+| Parameter         | Type                                  | Required | Description                                                                                                                               |
+|-------------------|---------------------------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| `feedType`        | `ThreeSpeakVideoFeedType`             | ✅        | Determines the type of video feed to fetch and display.                                                                                   |
+| `onTapVideoItem`  | `void Function(GQLFeedItem item)`     | ✅        | Callback when a video item (card) is tapped. Receives the `GQLFeedItem` object.                                                             |
+| `onTapAuthor`     | `void Function(GQLFeedItem item)`     | ✅        | Callback when the author's avatar or name on a video card is tapped.                                                                        |
+| `onTapReport`     | `void Function(GQLFeedItem item)`     | ✅        | Callback when the report/more_options icon on a video card is tapped.                                                                       |
+| `onTapUpvote`     | `void Function(GQLFeedItem item)`     | ✅        | Callback when the upvote icon on a video card is tapped.                                                                                    |
+| `onTapComment`    | `void Function(GQLFeedItem item)`     | ✅        | Callback when the comment icon on a video card is tapped.                                                                                   |
+| `isShorts`        | `bool`                                | ❌        | (Default: `false`) If `true`, fetches short-form video content (experimental or specific to API).                                         |
+| `lang`            | `String?`                             | ❌        | Language code (e.g., "en", "es") to filter content by language, if supported by the API for the given `feedType`.                         |
+| `isSearch`        | `bool`                                | ❌        | (Default: `false`) If `true` and `feedType` is `search`, enables the built-in search UI (AppBar with TextField).                            |
+| `relatedAuthor`   | `String?`                             | Cond.    | Required if `feedType` is `related`. The author of the video for which related content is sought.                                         |
+| `relatedPermlink` | `String?`                             | Cond.    | Required if `feedType` is `related`. The permlink of the video for which related content is sought.                                       |
+| `username`        | `String?`                             | Cond.    | Required if `feedType` is `userFeed` or `myFeed`. The Hive username.                                                                      |
+| `searchTerm`      | `String?`                             | Cond.    | Used if `feedType` is `search` and `isSearch` is `false`. The search query. Must be at least 4 characters.                                 |
+| `commnuityId`     | `String?`                             | Cond.    | Required if `feedType` is `commnuityFeed`. The ID of the 3Speak community.                                                                |
+| `tag`             | `String?`                             | Cond.    | Required if `feedType` is `trendingTagFeed`. The tag to fetch trending videos for.                                                        |
+
+*Cond.* = Conditionally Required.
+
+---
+## Key Features
+
+-   🧠 **Multiple Feed Sources**: Supports a wide range of content discovery methods through `ThreeSpeakVideoFeedType`.
+-   📱 **Responsive Layout**: Adapts between list and grid views based on screen width.
+-   🔍 **Integrated Search**: Offers a ready-to-use search interface when `feedType` is `search` and `isSearch` is `true`. Includes debouncing for search input.
+-   🎨 **Customizable Actions**: Provides callbacks for common interactions like tapping a video, author, or action buttons (report, upvote, comment).
+-   🖼️ **Video Cards**: Uses `VideoCard` widgets to display video thumbnails, titles, author information, and engagement actions.
+-   🔄 **Loading & Error States**: Shows a loading indicator while fetching data and displays error messages or "No videos found" appropriately.
+-   🌐 **Language Filtering**: Optional `lang` parameter for internationalization.
+
+---
+
+### Optional Navigation Function (Example)
 
 ```dart
-class SearchFeedWidget extends StatefulWidget {
-  @override
-  State<SearchFeedWidget> createState() => _SearchFeedWidgetState();
-}
-
-class _SearchFeedWidgetState extends State<SearchFeedWidget> {
-  String searchQuery = '';
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        TextField(
-          decoration: InputDecoration(
-            hintText: 'Search videos...',
-          ),
-          onChanged: (value) {
-            setState(() {
-              searchQuery = value.trim();
-            });
-          },
-        ),
-        Expanded(
-          child: ThreeSpeakVideoFeed(
-            feedType: ThreeSpeakVideoFeedType.search,
-            searchTerm: searchQuery.length >= 4 ? searchQuery : null,
-          ),
-        ),
-      ],
-    );
-  }
-}
-```
-
-### Optional Navigation Function
-
-```dart
-void navigateToVideoPlayerScreen(GQLFeedItem item) {
+void navigateToVideoPlayerScreen(BuildContext context, GQLFeedItem item) {
   Navigator.push(
     context,
     MaterialPageRoute(
-      builder: (context) => VideoPlayerScreen(
+      builder: (context) => VideoPlayerScreen( // Assuming you have a VideoPlayerScreen
         item: item,
-        // ✅ Optional Callbacks
-        onTapComment: (author, permlink) {
-          debugPrint('User tapped on comment button below video for $author/$permlink');
-        },
-        onTapUpvote: (author, permlink) {
-          debugPrint('User tapped on upvote button below video for $author/$permlink');
-        },
-        onTapShare: (author, permlink) {
-          debugPrint('User tapped on share button below video for $author/$permlink');
-        },
-        onTapBookmark: (author, permlink) {
-          debugPrint('User tapped on bookmark button below video for $author/$permlink');
-        },
-        onTapAuthor: (author) {
-          debugPrint('User tapped on author $author');
-        },
-        onTapInfo: (author, permlink) {
-          debugPrint('User tapped on info button for post $author/$permlink');
-        },
+        // Other necessary parameters for VideoPlayerScreen
+        onTapBackButton: () => Navigator.of(context).pop(),
+        videoFeed: () => ThreeSpeakVideoFeed( // Example: Related feed in player
+            feedType: ThreeSpeakVideoFeedType.related,
+            relatedAuthor: item.author,
+            relatedPermlink: item.permlink,
+            // ... other callbacks ...
+        ),
+        // ... other callbacks for VideoPlayerScreen ...
       ),
     ),
   );
 }
 ```
+Call this in `onTapVideoItem`:
+```dart
+onTapVideoItem: (tappedItem) {
+  navigateToVideoPlayerScreen(context, tappedItem);
+},
+```
 
-## Features
+---
 
-- 🚀 **Smart Layout** - Automatically switches between grid and list view based on screen width
-- ♻️ **Pull-to-Refresh** - Built-in refresh functionality
-- 🖼️ **Optimized Thumbnails** - Efficient image loading with placeholder
-- 📊 **Engagement Metrics** - Displays view counts, upvotes, and timestamps
-- 🔍 **Visibility Detection** - Only renders visible items for performance
-- 🔍 **Integrated Search** - Use `feedType: ThreeSpeakVideoFeedType.search` and `isSearch: true` for a built-in search experience
-- 👤 **User Feed** - Use `feedType: ThreeSpeakVideoFeedType.userFeed` and `username` to show a user's videos
-- 🏘️ **Community Feed** - Use `feedType: ThreeSpeakVideoFeedType.commnuityFeed` and `commnuityId` to show a community's videos
+### Screenshots for various feed types
 
-### Screenshots for other feed types
+*(Screenshots for Trending, Related, New Uploads, First Uploads, Search, User Feed, and Community Feed can be retained or updated as needed.)*
 
-#### Trending Feed
-![Trending Feed](/img/threespeak/trending.png)
+#### My Feed
+*(Add a screenshot for My Feed if available/distinct)*
 
-#### Related Feed
-![Related Feed](/img/threespeak/related.png)
+#### Trending Tag Feed
+*(Add a screenshot for Trending Tag Feed if available/distinct)*
 
-#### New Uploads Feed
-![New Uploads Feed](/img/threespeak/newuploads.png)
-
-#### First Uploads Feed
-![First Uploads Feed](/img/threespeak/firstuploads.png)
-
-### Search screen
-![Search Screen](/img/threespeak/searchscreen.png)
-
-### User Feed
-![User Feed](/img/threespeak/userfeed.png)
-
-### Community Feed
-<!-- ![Community Feed](/img/threespeak/communityfeed.png) -->
+---
+## See Also
+- [VideoPlayerScreen](/docs/video-player) - For playing individual videos from the feed.
+- [ThreeSpeakTrendingTags](/docs/trending-tags) - For displaying a list of trending tags, which can then be used to filter this video feed (using `feedType: ThreeSpeakVideoFeedType.trendingTagFeed`).
+- `VideoCard` widget (internal component) - The UI element used to display each video in the feed.

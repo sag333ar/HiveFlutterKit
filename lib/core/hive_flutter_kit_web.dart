@@ -7,6 +7,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:hive_flutter_kit/core/models/followers.dart';
 import 'package:hive_flutter_kit/core/models/followings.dart';
+import 'package:hive_flutter_kit/core/models/account_history.dart';
 import 'package:hive_flutter_kit/core/models/login_model.dart';
 import 'package:hive_flutter_kit/core/models/witnessvote.dart';
 import 'package:js/js.dart' show JS;
@@ -96,6 +97,15 @@ external dynamic getCommunitySubscribersJS(
 @JS('getActiveVotes')
 external dynamic getActiveVotesJS(String author, String permlink);
 
+@JS('getAccountHistory')
+external dynamic getAccountHistoryJS(
+  String account,
+  int index,
+  int limit,
+  String? start,
+  String? stop,
+);
+
 // -------------------------------------------------------------------------
 
 @JS('loginWithKeychain')
@@ -178,6 +188,12 @@ external dynamic removeAccountAuthorityJS(String account, String keyType);
 external dynamic signAndBroadcastTxJS(
   dynamic operations, // pass as List<dynamic>
   String keyType,
+);
+
+@JS('subscribeUnsubscribeToCommunity')
+external dynamic subscribeUnsubscribeToCommunity(
+  String communityId,
+  bool subscribe,
 );
 
 @JS('transfer')
@@ -536,6 +552,21 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
   }
 
   @override
+  Future<String> subscribeUnsubscribeToCommunity(
+    String communityId,
+    bool subscribe,
+  ) async {
+    var promise = subscribeUnsubscribeToCommunity(communityId, subscribe);
+    var result = await promiseToFuture(promise);
+    var jsonResult = jsonDecode(result);
+    if (jsonResult['success'] == true) {
+      return jsonResult['result'] ?? 'some-id-goes-here';
+    } else {
+      throw Exception(jsonResult['message'] ?? 'something went wrong');
+    }
+  }
+
+  @override
   Future<String> transfer(
     String recipient,
     double amount,
@@ -625,6 +656,20 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
     }
   }
   
+  @override
+  Future<List<AccountHistoryOp>> getAccountHistory(
+    String account, {
+    int index = -1,
+    int limit = 1000,
+    String? start,
+    String? stop,
+  }) async {
+    final promise = getAccountHistoryJS(account, index, limit, start, stop);
+    final jsonString = await promiseToFuture(promise);
+    final List<dynamic> jsonList = jsonDecode(jsonString);
+    return jsonList.map((e) => AccountHistoryOp.fromJson(e)).toList();
+  }
+
   @override
   Future<bool> isHiveKeychainAvailable() async {
     var promise = isHiveKeychainAvailableJS();

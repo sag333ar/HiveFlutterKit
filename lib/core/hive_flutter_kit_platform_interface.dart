@@ -1,5 +1,6 @@
 import 'package:hive_flutter_kit/core/models/followers.dart';
 import 'package:hive_flutter_kit/core/models/followings.dart';
+import 'package:hive_flutter_kit/core/models/account_history.dart';
 import 'package:hive_flutter_kit/core/models/login_model.dart';
 import 'package:hive_flutter_kit/core/models/upload_image.dart';
 import 'package:hive_flutter_kit/core/models/witnessvote.dart';
@@ -325,6 +326,15 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
     throw UnimplementedError('signAndBroadcastTx has not been implemented.');
   }
 
+  Future<String> subscribeUnsubscribeToCommunity(
+    String communityId,
+    bool subscribe,
+  ) {
+    throw UnimplementedError(
+      'subscribeUnsubscribeToCommunity has not been implemented.',
+    );
+  }
+
   Future<String> transfer(
     String recipient,
     double amount,
@@ -368,6 +378,16 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
 
   Future<WitnessVotesData> getWitnessVotesData(String username){
     throw UnimplementedError('getWitnessVotesData has not been implemented.');
+  }
+  
+  Future<List<AccountHistoryOp>> getAccountHistory(
+    String account, {
+    int index = -1,
+    int limit = 1000,
+    String? start,
+    String? stop,
+  }) {
+    throw UnimplementedError('getAccountHistory has not been implemented.');
   }
 
   Future<bool> isHiveKeychainAvailable() {

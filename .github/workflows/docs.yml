@@ -3,7 +3,7 @@ name: Deploy Docusaurus Docs
 on:
   push:
     branches:
-      - main # Or your default branch
+      - production # Or your default branch
 
 permissions:
   contents: read

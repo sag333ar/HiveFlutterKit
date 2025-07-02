@@ -13,6 +13,9 @@ const aioha = initAioha({
 aioha.on("hiveauth_challenge_request", (payload, evt, cancel) => {
   qrString = payload;
 });
+aioha.on("hiveauth_sign_request", (payload, evt, cancel) => {
+  qrString = payload;
+});
 
 let qrString = "";
 
@@ -741,3 +744,36 @@ async function isHiveKeychainAvailable() {
   }
 }
 window.isHiveKeychainAvailable = isHiveKeychainAvailable;
+
+async function getAccountHistory(account, index = -1, limit = 1000, start = null, stop = null) {
+  const params = [account, index, limit];
+
+  if (start !== null && stop !== null) {
+    params.push(start, stop);
+  }
+
+  try {
+    const result = await dhiveClient.call(
+      "condenser_api",
+      "get_account_history",
+      params
+    );
+    return JSON.stringify(result);
+  } catch (error) {
+    console.error("Error calling get_account_history:", error);
+    return JSON.stringify([]);
+  }
+}
+window.getAccountHistory = getAccountHistory;
+
+async function subscribeUnsubscribeToCommunity(community, subscribe) {
+  try {
+    const result = await aioha.customJSON(KeyTypes.Posting, 'community', [subscribe ? 'subscribe': 'unsubscribe', {community: community}], 'Display Title')
+    var dataToReturn = JSON.stringify(result);
+    return dataToReturn;
+  } catch (error) {
+    console.error("Error calling get_active_votes:", error);
+    throw error;
+  }
+}
+window.subscribeUnsubscribeToCommunity = subscribeUnsubscribeToCommunity;

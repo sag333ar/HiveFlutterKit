@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:hive_flutter_kit/core/models/followers.dart';
 import 'package:hive_flutter_kit/core/models/followings.dart';
+import 'package:hive_flutter_kit/core/models/account_history.dart';
 import 'package:hive_flutter_kit/core/models/login_model.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter_kit/core/models/witnessvote.dart';
@@ -1029,6 +1030,52 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
   }
 
   @override
+  Future<String> subscribeUnsubscribeToCommunity(
+    String communityId,
+    bool subscribe,
+  ) async {
+    final completer = Completer<String>();
+
+    // Remove previous handler if exists
+    headlessWebView.webViewController?.removeJavaScriptHandler(
+      handlerName: 'subscribeUnsubscribeToCommunityResult',
+    );
+
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: 'subscribeUnsubscribeToCommunityResult',
+      callback: (args) {
+        if (!completer.isCompleted) {
+          final resultString =
+              (args.isNotEmpty && args[0] is String) ? args[0] as String : null;
+          var jsonResult = jsonDecode(resultString ?? '{}');
+          if (jsonResult['success'] == true) {
+            completer.complete(jsonResult['result'] ?? 'some-id-goes-here');
+            return;
+          } else {
+            completer.completeError(
+              jsonResult['message'] ?? 'something went wrong',
+            );
+          }
+        }
+      },
+    );
+
+    final jsCode = """
+    (async () => {
+      try {
+        const res = await subscribeUnsubscribeToCommunity("$communityId", $subscribe);
+        window.flutter_inappwebview.callHandler('subscribeUnsubscribeToCommunityResult', res);
+      } catch (e) {
+        window.flutter_inappwebview.callHandler('subscribeUnsubscribeToCommunityResult', JSON.stringify({ error: e.toString(), success: false }));
+      }
+    })();
+  """;
+
+    await headlessWebView.webViewController?.evaluateJavascript(source: jsCode);
+    return completer.future;
+  }
+
+  @override
   Future<String> transfer(
     String recipient,
     double amount,
@@ -1190,6 +1237,67 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
       }
     })();
     """;
+
+    await headlessWebView.webViewController?.evaluateJavascript(source: jsCall);
+    return completer.future;
+  }
+
+  @override
+  Future<List<AccountHistoryOp>> getAccountHistory(
+    String account, {
+    int index = -1,
+    int limit = 1000,
+    String? start,
+    String? stop,
+  }) async {
+    final completer = Completer<List<AccountHistoryOp>>();
+    final handlerName =
+        'onGetAccountHistoryResult_${DateTime.now().millisecondsSinceEpoch}';
+
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: handlerName,
+      callback: (args) {
+        if (!completer.isCompleted) {
+          final contentData = args.isNotEmpty ? args[0].toString() : null;
+          if (contentData != null &&
+              contentData != 'null' &&
+              contentData.isNotEmpty) {
+            try {
+              final List<dynamic> jsonList = jsonDecode(contentData);
+              final history =
+                  jsonList.map((e) => AccountHistoryOp.fromJson(e)).toList();
+              completer.complete(history);
+            } catch (e) {
+              completer.completeError('Failed to parse account history: $e');
+            }
+          } else {
+            completer.completeError(
+              'Failed to get account history or empty response',
+            );
+          }
+        }
+        headlessWebView.webViewController?.removeJavaScriptHandler(
+          handlerName: handlerName,
+        );
+      },
+    );
+
+    final jsAccount = jsonEncode(account);
+    final jsIndex = index;
+    final jsLimit = limit;
+    final jsStart = start == null ? 'null' : jsonEncode(start);
+    final jsStop = stop == null ? 'null' : jsonEncode(stop);
+
+    final jsCall = """
+  (async () => {
+    try {
+      const result = await getAccountHistory($jsAccount, $jsIndex, $jsLimit, $jsStart, $jsStop);
+      window.flutter_inappwebview.callHandler('$handlerName', result || 'null');
+    } catch (e) {
+      window.flutter_inappwebview.callHandler('$handlerName', JSON.stringify([]));
+    }
+  })();
+  """;
 
     await headlessWebView.webViewController?.evaluateJavascript(source: jsCall);
     return completer.future;

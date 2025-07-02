@@ -6,6 +6,7 @@ import 'package:hive_flutter_kit/core/models/community_model.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 import 'package:hive_flutter_kit/ux/bottom_tool_bar.dart';
+import 'package:hive_flutter_kit/ux/dhive/account_activities/account_activities.dart';
 import 'package:hive_flutter_kit/ux/dhive/comments/hive_post_comments.dart';
 import 'package:hive_flutter_kit/ux/dhive/following_followers/followers.dart';
 import 'package:hive_flutter_kit/ux/dhive/following_followers/followings.dart';
@@ -807,6 +808,55 @@ class _MyHomePageState extends State<MyHomePage> {
       ).showSnackBar(SnackBar(content: Text('Failed to get witness votes')));
     }
   }
+  
+  Future<void> _getAccountHistoryExample() async {
+    try {
+      String account = 'sagarkothari88';
+      int index = -1; // latest
+      int limit = 100; // fetch last 100 operations
+      String? start = null;
+      String? stop = null;
+
+      final result = await hfk.getAccountHistory(
+        account,
+        index: index,
+        limit: limit,
+        start: start,
+        stop: stop,
+      );
+
+      if (result.isEmpty) {
+        debugPrint('No account history found.');
+      } else {
+        for (var op in result) {
+          debugPrint('--- History Op Start ---');
+          debugPrint('Index: ${op.index}');
+          final detail = op.detail;
+
+          debugPrint('Block: ${detail?.block}');
+          debugPrint('Transaction ID: ${detail?.trxId}');
+          debugPrint('Timestamp: ${detail?.timestamp}');
+          debugPrint('Virtual Op: ${detail?.virtualOp}');
+          if (detail?.op != null && detail!.op!.length == 2) {
+            debugPrint('Operation Type: ${detail.op![0]}');
+            debugPrint('Operation Payload: ${jsonEncode(detail.op![1])}');
+          } else {
+            debugPrint('Operation: null or malformed');
+          }
+          debugPrint('--- History Op End ---\n');
+        }
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Fetched account history (see debug output)')),
+      );
+    } catch (e) {
+      debugPrint('Error in getAccountHistory: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Get Account History Error: $e')));
+    }
+  }
 
   Future<void> _checkThreespeakInAccountAuths() async {
     try {
@@ -1304,6 +1354,22 @@ class _MyHomePageState extends State<MyHomePage> {
               ElevatedButton(
                 onPressed: _getWitnessVotesData,
                 child: Text("Get Witness Votes"),
+              ),
+
+              ElevatedButton(
+                child: Text('Get Account History'),
+                onPressed: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AccountActivities(
+                        hfk: hfk,
+                        account: 'sagarkothari88',
+                        isFilter: true,
+                      ),
+                    ),
+                  );
+                }
               ),
 
               // --- End hfk equivalents ---

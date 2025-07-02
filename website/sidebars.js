@@ -37,6 +37,7 @@ const sidebars = {
         "threespeak/video-player",
         "threespeak/video-upload",
         "threespeak/current-account",
+        "threespeak/trending-tags"
       ],
     },
     {
@@ -63,6 +64,7 @@ const sidebars = {
       items: [
         "dhive/hive-post-comments",
         "dhive/trending-feed-screen",
+        "dhive/account-activities-screen",
       ],
     },
     {
