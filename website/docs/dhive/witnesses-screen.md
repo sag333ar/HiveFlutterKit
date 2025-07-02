@@ -46,4 +46,15 @@ Witnesses(
   onTapCheckmark: (account) => print("Checkmark tapped for ${account.name}",
   ),
 ),
+```
+## Constructor
+
+```dart
+Witnesses({
+  Key? key,
+  required HiveFlutterKitPlatform hfk,
+  void Function(Account account)? onTapWitness,
+  void Function(Account account)? onTapLink,
+  void Function(Account account)? onTapCheckmark,
+})
 
