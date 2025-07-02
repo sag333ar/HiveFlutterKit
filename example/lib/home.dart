@@ -1294,8 +1294,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: _getResourceCreditshfk,
               ),
               ElevatedButton(
-                onPressed: _getProposalsExample,
-                child: Text('Get Proposals'),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const ProposalListWidget(),
+                    ),
+                  );
+                },
+                child: const Text("Get Proposals"),
               ),
 
               ElevatedButton(
