@@ -48,6 +48,7 @@ const sidebars = {
         "dhive/blog-screen",
         "dhive/comments-screen",
         "dhive/replies-screen",
+        "dhive/proposals-screen",
       ],
     },
     {
