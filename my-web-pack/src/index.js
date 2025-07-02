@@ -688,3 +688,32 @@ async function subscribeUnsubscribeToCommunity(community, subscribe) {
   }
 }
 window.subscribeUnsubscribeToCommunity = subscribeUnsubscribeToCommunity;
+
+async function listProposals(
+  start = [-1],
+  limit = 500,
+  order = "by_total_votes",
+  order_direction = "descending",
+  status = "votable"
+) {
+  const params = {
+    start,
+    limit,
+    order,
+    order_direction,
+    status,
+  };
+
+  try {
+    const result = await dhiveClient.call(
+      "database_api",
+      "list_proposals",
+      params
+    );
+    return JSON.stringify(result);
+  } catch (error) {
+    console.error("Error calling list_proposals:", error);
+    return JSON.stringify([]);
+  }
+}
+window.listProposals = listProposals;

@@ -9,6 +9,7 @@ import 'package:hive_flutter_kit/core/models/resource_credits.dart';
 import 'package:hive_flutter_kit/core/models/voting_power.dart';
 import 'package:hive_flutter_kit/core/models/community_model.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/communities_models/community_subscriber.dart';
+import 'package:hive_flutter_kit/core/models/proposal.dart';
 
 import 'dart:typed_data';
 import 'package:image_picker/image_picker.dart';
@@ -363,6 +364,16 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
     String? stop,
   }) {
     throw UnimplementedError('getAccountHistory has not been implemented.');
+  }
+
+    Future<List<Proposal>> getProposals({
+    List<dynamic> start = const [-1],
+    int limit = 500,
+    String order = 'by_total_votes',
+    String orderDirection = 'descending',
+    String status = 'votable',
+  }){
+    throw UnimplementedError('getProposals has not been implemented.');
   }
 
   Future<bool> isHiveKeychainAvailable() {

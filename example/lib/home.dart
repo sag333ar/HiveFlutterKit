@@ -782,6 +782,50 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<void> _getProposalsExample() async {
+    try {
+      final result = await hfk.getProposals(
+        start: [-1],
+        limit: 100,
+        order: 'by_total_votes',
+        orderDirection: 'descending',
+        status: 'votable',
+      );
+      // Example: Print the number of proposals fetched
+      debugPrint('Fetched ${result.length} proposals');
+      if (result.isEmpty) {
+        debugPrint('No proposals found.');
+      } else {
+        for (var proposal in result) {
+          debugPrint('--- Proposal Start ---');
+          debugPrint('ID: ${proposal.id}');
+          debugPrint('Proposal ID: ${proposal.proposalId}');
+          debugPrint('Creator: ${proposal.creator}');
+          debugPrint('Receiver: ${proposal.receiver}');
+          debugPrint('Subject: ${proposal.subject}');
+          debugPrint('Permlink: ${proposal.permlink}');
+          debugPrint(
+            'Daily Pay: ${proposal.dailyPay.amount} ${proposal.dailyPay.nai}',
+          );
+          debugPrint('Start Date: ${proposal.startDate}');
+          debugPrint('End Date: ${proposal.endDate}');
+          debugPrint('Total Votes: ${proposal.totalVotes}');
+          debugPrint('Status: ${proposal.status}');
+          debugPrint('--- Proposal End ---\n');
+        }
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Fetched proposals (see debug output)')),
+      );
+    } catch (e) {
+      debugPrint('Error in getProposals: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Get Proposals Error: $e')));
+    }
+  }
+
   Future<void> _checkThreespeakInAccountAuths() async {
     try {
       final username = _usernameController.text;
@@ -1249,21 +1293,26 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Text('Resources Credits Percentage (hfk)'),
                 onPressed: _getResourceCreditshfk,
               ),
+              ElevatedButton(
+                onPressed: _getProposalsExample,
+                child: Text('Get Proposals'),
+              ),
 
               ElevatedButton(
                 child: Text('Get Account History'),
-                onPressed: (){
+                onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AccountActivities(
-                        hfk: hfk,
-                        account: 'sagarkothari88',
-                        isFilter: true,
-                      ),
+                      builder:
+                          (context) => AccountActivities(
+                            hfk: hfk,
+                            account: 'sagarkothari88',
+                            isFilter: true,
+                          ),
                     ),
                   );
-                }
+                },
               ),
 
               // --- End hfk equivalents ---
