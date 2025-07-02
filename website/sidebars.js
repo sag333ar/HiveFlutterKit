@@ -52,6 +52,7 @@ const sidebars = {
         "dhive/followers-screen",
         "dhive/followings-screen",
         "dhive/witness-votes-screen"
+        "dhive/proposals-screen",
       ],
     },
     {
