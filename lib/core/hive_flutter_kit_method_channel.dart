@@ -15,6 +15,7 @@ import 'package:hive_flutter_kit/core/models/resource_credits.dart';
 import 'package:hive_flutter_kit/core/models/voting_power.dart';
 import 'package:hive_flutter_kit/core/models/community_model.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/communities_models/community_subscriber.dart';
+import 'package:hive_flutter_kit/core/models/proposal.dart';
 
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
