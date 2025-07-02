@@ -7,7 +7,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:hive_flutter_kit/core/models/account_history.dart';
 import 'package:hive_flutter_kit/core/models/login_model.dart';
-import 'package:js/js.dart' show JS;
+import 'package:js/js.dart';
 import 'package:js/js_util.dart';
 
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
@@ -184,6 +184,9 @@ external dynamic transferJS(
 
 @JS('isHiveKeychainAvailable')
 external dynamic isHiveKeychainAvailableJS();
+
+@JS('getWitnessesByVote')
+external dynamic getWitnessesByVoteJS(int limit);
 
 /// A web implementation of the HiveFlutterKitPlatform of the HiveFlutterKit plugin.
 class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
@@ -601,5 +604,13 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
     var promise = isHiveKeychainAvailableJS();
     var result = await promiseToFuture(promise);
     return result == true;
+  }
+
+  @override
+  Future<List<Account>> getWitnessesByVote({int limit = 60}) async {
+    var promise = getWitnessesByVoteJS(limit);
+    var contentData = await promiseToFuture(promise);
+    // The JS returns a JSON string array of witness accounts
+    return Account.listFromJsonString(contentData);
   }
 }
