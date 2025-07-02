@@ -109,7 +109,7 @@ external dynamic getAccountHistoryJS(
 );
 
 @JS('listProposals')
-external dynamic getProposals(
+external dynamic getProposalsJS(
   List<dynamic> start,
   int limit,
   String order,
@@ -692,7 +692,7 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
     String orderDirection = 'descending',
     String status = 'votable',
   }) async {
-    final promise = listProposalsJS(
+    final promise = getProposalsJS(
       start,
       limit,
       order,
