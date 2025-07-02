@@ -2301,6 +2301,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     MaterialPageRoute(
                       builder:
                           (context) => Witnesses(
+                            hfk: hfk,
                             onTapWitness:
                                 (account) => print("Tapped on ${account.name}"),
                             onTapLink:

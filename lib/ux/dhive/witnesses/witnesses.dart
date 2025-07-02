@@ -4,12 +4,14 @@ import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit/core/models/account.dart';
 
 class Witnesses extends StatefulWidget {
+  final HiveFlutterKitPlatform hfk;
   final void Function(Account account)? onTapWitness;
   final void Function(Account account)? onTapLink;
   final void Function(Account account)? onTapCheckmark;
 
   const Witnesses({
     super.key,
+    required this.hfk,
     this.onTapWitness,
     this.onTapLink,
     this.onTapCheckmark,
@@ -20,7 +22,6 @@ class Witnesses extends StatefulWidget {
 }
 
 class _WitnessesState extends State<Witnesses> {
-  late HiveFlutterKitPlatform hfk;
   List<Account> witnesses = [];
   bool isLoading = true;
   Set<String> approvedWitnesses = {};
@@ -28,23 +29,22 @@ class _WitnessesState extends State<Witnesses> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    hfk = HiveFlutterKitPlatform.instance;
     _loadWitnessData();
   }
 
   Future<void> _loadWitnessData() async {
     try {
-      String username = await hfk.getCurrentUser();
+      String username = await widget.hfk.getCurrentUser();
       username = username.replaceAll('"', '');
 
       if (username.isEmpty) throw Exception("User not logged in");
 
-      final accounts = await hfk.getAccounts([username]);
+      final accounts = await widget.hfk.getAccounts([username]);
       if (accounts.isEmpty) throw Exception("No account info found");
 
       final account = accounts.first;
       approvedWitnesses = Set<String>.from(account.witnessVotes ?? []);
-      final result = await hfk.getWitnessesByVote(limit: 60);
+      final result = await widget.hfk.getWitnessesByVote(limit: 60);
 
       setState(() {
         witnesses = result;
