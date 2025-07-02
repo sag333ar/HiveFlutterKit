@@ -23,6 +23,7 @@ import 'package:hive_flutter_kit/core/models/resource_credits.dart';
 import 'package:hive_flutter_kit/core/models/voting_power.dart';
 import 'package:hive_flutter_kit/core/models/community_model.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/communities_models/community_subscriber.dart';
+import 'package:hive_flutter_kit/core/models/proposal.dart';
 
 import 'hive_flutter_kit_platform_interface.dart';
 
@@ -105,6 +106,15 @@ external dynamic getAccountHistoryJS(
   int limit,
   String? start,
   String? stop,
+);
+
+@JS('listProposals')
+external dynamic getProposals(
+  List<dynamic> start,
+  int limit,
+  String order,
+  String order_direction,
+  String status,
 );
 
 // -------------------------------------------------------------------------
@@ -672,6 +682,27 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
     final jsonString = await promiseToFuture(promise);
     final List<dynamic> jsonList = jsonDecode(jsonString);
     return jsonList.map((e) => AccountHistoryOp.fromJson(e)).toList();
+  }
+
+  @override
+  Future<List<Proposal>> getProposals({
+    List<dynamic> start = const [-1],
+    int limit = 500,
+    String order = 'by_total_votes',
+    String orderDirection = 'descending',
+    String status = 'votable',
+  }) async {
+    final promise = listProposalsJS(
+      start,
+      limit,
+      order,
+      orderDirection,
+      status,
+    );
+    final jsonString = await promiseToFuture(promise);
+    final Map<String, dynamic> parsed = jsonDecode(jsonString);
+    final List<dynamic> proposals = parsed['proposals'] ?? [];
+    return proposals.map((e) => Proposal.fromJson(e)).toList();
   }
 
   @override
