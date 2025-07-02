@@ -19,7 +19,8 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SubscribeToCommunity(), // SubscribeToCommunity(), // MyHomePage(),
+      home: MyHomePage(),
+      //SubscribeToCommunity(), // SubscribeToCommunity(), // MyHomePage(),
     );
   }
 }
