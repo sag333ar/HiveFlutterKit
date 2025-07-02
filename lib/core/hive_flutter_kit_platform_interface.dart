@@ -366,7 +366,7 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
     throw UnimplementedError('getAccountHistory has not been implemented.');
   }
 
-  Future<WalletData> getFullWalletData(String username) {
+  Future<WalletData> getFullWalletData(String username){
     throw UnimplementedError('getFullWalletData has not been implemented.');
   }
 

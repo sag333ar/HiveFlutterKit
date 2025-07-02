@@ -1287,7 +1287,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 //_getWalletDataViaChannel,
                 child: Text('Get Wallet Data (via channel)'),
               ),
-
               ElevatedButton(
                 child: Text('Get Account History'),
                 onPressed: () {
@@ -1304,22 +1303,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   );
                 },
               ),
-
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) =>
-                              Wallet(hfk: hfk, username: 'sagarkothari88'),
-                    ),
-                  );
-                },
-                //_getWalletDataViaChannel,
-                child: Text('Get Wallet Data (via channel)'),
-              ),
-
               // --- End hfk equivalents ---
               ElevatedButton(
                 onPressed: _checkThreespeakInAccountAuths,

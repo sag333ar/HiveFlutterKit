@@ -1312,6 +1312,7 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
       callback: (args) {
         if (!completer.isCompleted) {
           final contentData = args.isNotEmpty ? args[0].toString() : null;
+
           if (contentData != null &&
               contentData != 'null' &&
               contentData.isNotEmpty) {
