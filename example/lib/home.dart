@@ -10,6 +10,7 @@ import 'package:hive_flutter_kit/ux/dhive/account_activities/account_activities.
 import 'package:hive_flutter_kit/ux/dhive/comments/hive_post_comments.dart';
 import 'package:hive_flutter_kit/ux/dhive/following_followers/followers.dart';
 import 'package:hive_flutter_kit/ux/dhive/following_followers/followings.dart';
+import 'package:hive_flutter_kit/ux/dhive/following_followers/witness_votes.dart';
 import 'package:hive_flutter_kit/ux/login_screen.dart';
 import 'package:hive_flutter_kit/ux/switch_user.dart';
 import 'package:hive_flutter_kit/ux/dhive/community_list/community_list.dart';
@@ -1352,7 +1353,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Text("Get Followers"),
               ),
               ElevatedButton(
-                onPressed: _getWitnessVotesData,
+                onPressed: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => WitnessVotes(
+                        hfk: hfk,
+                        account: 'sagarkothari88',))
+                      );
+                },
+                //_getWitnessVotesData,
                 child: Text("Get Witness Votes"),
               ),
 

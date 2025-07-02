@@ -49,7 +49,8 @@ const sidebars = {
         "dhive/comments-screen",
         "dhive/replies-screen",
         "dhive/followers-screen",
-        "dhive/followings-screen"
+        "dhive/followings-screen",
+        "dhive/witness-votes-screen"
       ],
     },
     {

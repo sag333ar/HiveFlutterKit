@@ -4,7 +4,7 @@ sidebar_label: Followers
 slug: /dhive/followers-screen
 ---
 
-# Followers Screen
+# Followers
 
 The **Followers** widget in `HiveFlutterKit` displays a list of users following a specific Hive account. It uses a clean, grid-based layout and supports fetching followers using the Hive blockchain's follower API.
 
