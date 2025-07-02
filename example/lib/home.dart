@@ -1074,11 +1074,9 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Future<void> _getWitnessesByVote () async {
+  Future<void> _getWitnessesByVote() async {
     try {
-      final result = await hfk.getWitnessesByVote(
-        limit: 10,
-      );
+      final result = await hfk.getWitnessesByVote(limit: 10);
       //debugPrint('Witnesses by vote: ${result.map((w) => w.owner).join(', ')}');
       debugPrint('Witnesses by vote: ${result.map((w) => w.name).join(', ')}');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -1272,18 +1270,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
               ElevatedButton(
                 child: Text('Get Account History'),
-                onPressed: (){
+                onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AccountActivities(
+                      builder:
+                          (context) => AccountActivities(
                             hfk: hfk,
                             account: 'sagarkothari88',
                             isFilter: true,
                           ),
                     ),
                   );
-                }
+                },
               ),
 
               // --- End hfk equivalents ---
@@ -2296,12 +2295,23 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: const Text('trending tags'),
               ),
               ElevatedButton(
-                onPressed: (){
+                onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder:
-                          (context) => Witnesses())
+                          (context) => Witnesses(
+                            onTapWitness:
+                                (account) => print("Tapped on ${account.name}"),
+                            onTapLink:
+                                (account) =>
+                                    print("Link clicked for ${account.name}"),
+                            onTapCheckmark:
+                                (account) => print(
+                                  "Checkmark tapped for ${account.name}",
+                                ),
+                          ),
+                    ),
                   );
                 },
                 //_getWitnessesByVote,
