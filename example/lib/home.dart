@@ -8,6 +8,7 @@ import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_resp
 import 'package:hive_flutter_kit/ux/bottom_tool_bar.dart';
 import 'package:hive_flutter_kit/ux/dhive/account_activities/account_activities.dart';
 import 'package:hive_flutter_kit/ux/dhive/comments/hive_post_comments.dart';
+import 'package:hive_flutter_kit/ux/dhive/proposals/proposals.dart';
 import 'package:hive_flutter_kit/ux/login_screen.dart';
 import 'package:hive_flutter_kit/ux/switch_user.dart';
 import 'package:hive_flutter_kit/ux/dhive/community_list/community_list.dart';
@@ -1297,7 +1298,41 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => const ProposalListWidget(),
+                      builder:
+                          (_) => ProposalsScreen(
+                            hfk: hfk,
+                            // Callback implementations
+                            onTapUserAvatar: (creator) {
+                              print('User avatar tapped: $creator');
+                              // Navigate to user profile or show user details
+                            },
+                            onTapUsername: (creator) {
+                              print('Username tapped: $creator');
+                              // Navigate to user profile or show user details
+                            },
+                            onTapTitle: (subject, proposalId) {
+                              print('Title tapped: $subject #$proposalId');
+                              // Navigate to proposal details page
+                            },
+                            onTapStats: (proposalId) {
+                              print('Stats tapped for proposal: $proposalId');
+                              // Show proposal statistics
+                            },
+                            onTapUpvote: (proposalId) {
+                              print('Upvote tapped for proposal: $proposalId');
+                              // Handle upvote action
+                            },
+                            onTapVoteValue: (proposalId, voteValue) {
+                              print(
+                                'Vote value tapped for proposal: $proposalId, value: $voteValue',
+                              );
+                              // Show vote details or voting interface
+                            },
+                            onTapSupport: (proposalId) {
+                              print('Support tapped for proposal: $proposalId');
+                              // Handle support action
+                            },
+                          ),
                     ),
                   );
                 },
