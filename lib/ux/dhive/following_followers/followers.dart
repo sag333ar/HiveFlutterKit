@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
+import 'package:hive_flutter_kit/ux/dhive/following_followers/account_gridview.dart';
 
 class Followers extends StatefulWidget {
   final HiveFlutterKitPlatform hfk;
   final String account;
+
   const Followers({super.key, required this.hfk, required this.account});
 
   @override
@@ -58,47 +60,10 @@ class _FollowersState extends State<Followers> {
       return const Center(child: Text('No followers found.'));
     }
     return Scaffold(
-      appBar: AppBar(title: Text('${widget.account} Followers')),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          int crossAxisCount = 3;
-          if (constraints.maxWidth >= 900) {
-            crossAxisCount = 6;
-          }
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: GridView.builder(
-              itemCount: _followers.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: crossAxisCount,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                childAspectRatio: 0.75,
-              ),
-              itemBuilder: (context, index) {
-                final follower = _followers[index];
-                final username = follower['follower'] ?? '';
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CircleAvatar(
-                      radius: 36,
-                      backgroundImage: NetworkImage(
-                        'https://images.hive.blog/u/$username/avatar',
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      username,
-                      style: const TextStyle(fontSize: 14),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                );
-              },
-            ),
-          );
-        },
+      appBar: AppBar(title: Text('Followers')),
+      body: AccountGridView(
+        accounts: _followers,
+        getUsername: (item) => item['follower'] ?? '',
       ),
     );
   }

@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
+import 'package:hive_flutter_kit/ux/dhive/following_followers/account_gridview.dart';
 
 class Followings extends StatefulWidget {
   final HiveFlutterKitPlatform hfk;
   final String account;
+
   const Followings({super.key, required this.hfk, required this.account});
 
   @override
@@ -58,47 +60,10 @@ class _FollowingsState extends State<Followings> {
       return const Center(child: Text('No followings found.'));
     }
     return Scaffold(
-      appBar: AppBar(title: Text('${widget.account}\'s Followings')),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          int crossAxisCount = 3;
-          if (constraints.maxWidth >= 900) {
-            crossAxisCount = 6;
-          }
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: GridView.builder(
-              itemCount: _followings.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: crossAxisCount,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                childAspectRatio: 0.75,
-              ),
-              itemBuilder: (context, index) {
-                final following = _followings[index];
-                final username = following['following'] ?? '';
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CircleAvatar(
-                      radius: 36,
-                      backgroundImage: NetworkImage(
-                        'https://images.hive.blog/u/$username/avatar',
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      username,
-                      style: const TextStyle(fontSize: 14),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                );
-              },
-            ),
-          );
-        },
+      appBar: AppBar(title: Text('Followings')),
+      body: AccountGridView(
+        accounts: _followings,
+        getUsername: (item) => item['following'] ?? '',
       ),
     );
   }
