@@ -186,7 +186,7 @@ external dynamic transferJS(
 external dynamic isHiveKeychainAvailableJS();
 
 @JS('getWitnessesByVote')
-external dynamic getWitnessesByVoteJS(int limit);
+external dynamic getWitnessesByVoteJS(String startAt, int limit);
 
 /// A web implementation of the HiveFlutterKitPlatform of the HiveFlutterKit plugin.
 class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
@@ -607,8 +607,8 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
   }
 
   @override
-  Future<List<Account>> getWitnessesByVote({int limit = 60}) async {
-    var promise = getWitnessesByVoteJS(limit);
+  Future<List<Account>> getWitnessesByVote({String startAt = "",int limit = 60}) async {
+    var promise = getWitnessesByVoteJS(startAt,limit);
     var contentData = await promiseToFuture(promise);
     // The JS returns a JSON string array of witness accounts
     return Account.listFromJsonString(contentData);

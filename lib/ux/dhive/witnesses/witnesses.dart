@@ -23,39 +23,93 @@ class Witnesses extends StatefulWidget {
 
 class _WitnessesState extends State<Witnesses> {
   List<Account> witnesses = [];
-  bool isLoading = true;
   Set<String> approvedWitnesses = {};
+  final ScrollController _scrollController = ScrollController();
+
+  bool isLoading = true;
+  bool _isLoadingMore = false;
+  bool _hasMore = true;
+  String? _lastWitnessName;
+  final int _pageSize = 30;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _loadWitnessData();
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+    _loadWitnessData(initial: true);
   }
 
-  Future<void> _loadWitnessData() async {
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 200 &&
+        !_isLoadingMore &&
+        _hasMore &&
+        !isLoading) {
+      _loadWitnessData();
+    }
+  }
+
+  Future<void> _loadWitnessData({bool initial = false}) async {
+    if (!initial && (_isLoadingMore || !_hasMore)) return;
+
+    setState(() {
+      if (initial) {
+        isLoading = true;
+        witnesses = [];
+        _hasMore = true;
+        _lastWitnessName = null;
+      } else {
+        _isLoadingMore = true;
+      }
+    });
+
     try {
       String username = await widget.hfk.getCurrentUser();
       username = username.replaceAll('"', '');
 
       if (username.isEmpty) throw Exception("User not logged in");
 
-      final accounts = await widget.hfk.getAccounts([username]);
-      if (accounts.isEmpty) throw Exception("No account info found");
+      if (initial) {
+        final accounts = await widget.hfk.getAccounts([username]);
+        if (accounts.isNotEmpty) {
+          approvedWitnesses = Set<String>.from(accounts.first.witnessVotes ?? []);
+        }
+      }
 
-      final account = accounts.first;
-      approvedWitnesses = Set<String>.from(account.witnessVotes ?? []);
-      final result = await widget.hfk.getWitnessesByVote(limit: 60);
+      final result = await widget.hfk.getWitnessesByVote(
+        limit: _pageSize,
+        startAt: initial ? "" : _lastWitnessName ?? "",
+      );
 
       setState(() {
-        witnesses = result;
-        isLoading = false;
+        if (initial) {
+          witnesses = result;
+        } else {
+          witnesses.addAll(result);
+        }
+
+        if (result.isEmpty || result.length < _pageSize) {
+          _hasMore = false;
+        } else {
+          _lastWitnessName = result.last.name;
+        }
       });
     } catch (e) {
       debugPrint('Error loading witness data: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: $e')),
       );
-      setState(() => isLoading = false);
+    } finally {
+      setState(() {
+        isLoading = false;
+        _isLoadingMore = false;
+      });
     }
   }
 
@@ -66,9 +120,16 @@ class _WitnessesState extends State<Witnesses> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : ListView.separated(
-              itemCount: witnesses.length,
+              controller: _scrollController,
+              itemCount: witnesses.length + (_isLoadingMore ? 1 : 0),
               separatorBuilder: (_, __) => const Divider(height: 1),
               itemBuilder: (context, index) {
+                if (index == witnesses.length) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
                 final witness = witnesses[index];
                 return _buildWitnessTile(witness, index + 1);
               },

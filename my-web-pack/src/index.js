@@ -689,12 +689,12 @@ async function subscribeUnsubscribeToCommunity(community, subscribe) {
 }
 window.subscribeUnsubscribeToCommunity = subscribeUnsubscribeToCommunity;
 
-async function getWitnessesByVote(limit = 60) {
+async function getWitnessesByVote(startAt = "", limit = 60) {
   try {
     const witnesses = await dhiveClient.call(
       "condenser_api",
       "get_witnesses_by_vote",
-      ["", limit]
+      [startAt, limit]
     );
 
     const usernames = witnesses.map(w => w.owner);
@@ -711,6 +711,4 @@ async function getWitnessesByVote(limit = 60) {
     return JSON.stringify([]);
   }
 }
-
-
 window.getWitnessesByVote = getWitnessesByVote;

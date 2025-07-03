@@ -371,7 +371,7 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
     );
   }
 
-  Future<List<Account>> getWitnessesByVote({int limit = 60}) {
+  Future<List<Account>> getWitnessesByVote({String startAt = "",int limit = 60}) {
     throw UnimplementedError('getWitnessesByVote has not been implemented.');
   }
 }

@@ -1307,7 +1307,7 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
   }
 
   @override
-  Future<List<Account>> getWitnessesByVote({int limit = 60}) async {
+  Future<List<Account>> getWitnessesByVote({String startAt = "", int limit = 60}) async {
     await _webViewInitFuture;
 
     final completer = Completer<List<Account>>();
