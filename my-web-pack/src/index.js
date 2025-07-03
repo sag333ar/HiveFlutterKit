@@ -777,3 +777,24 @@ async function subscribeUnsubscribeToCommunity(community, subscribe) {
   }
 }
 window.subscribeUnsubscribeToCommunity = subscribeUnsubscribeToCommunity;
+
+async function getPostDetail(accountName, permlink) {
+  try {
+    const result = await dhiveClient.call(
+      "condenser_api",
+      "get_content",
+      [accountName, permlink]
+    );
+    return JSON.stringify({
+      status: "success",
+      data: result
+    });
+  } catch (error) {
+    console.error("Error calling get_content:", error);
+    return JSON.stringify({
+      status: "failed",
+      errorMessage: error.toString()
+    });
+  }
+}
+window.getPostDetail = getPostDetail;

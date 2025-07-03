@@ -1,6 +1,7 @@
 import 'package:hive_flutter_kit/core/models/followers.dart';
 import 'package:hive_flutter_kit/core/models/followings.dart';
 import 'package:hive_flutter_kit/core/models/account_history.dart';
+import 'package:hive_flutter_kit/core/models/hive_mobile/post_detail_model.dart';
 import 'package:hive_flutter_kit/core/models/login_model.dart';
 import 'package:hive_flutter_kit/core/models/upload_image.dart';
 import 'package:hive_flutter_kit/core/models/witnessvote.dart';
@@ -376,10 +377,10 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
     throw UnimplementedError('getFollowersData has not been implemented.');
   }
 
-  Future<WitnessVotesData> getWitnessVotesData(String username){
+  Future<WitnessVotesData> getWitnessVotesData(String username) {
     throw UnimplementedError('getWitnessVotesData has not been implemented.');
   }
-  
+
   Future<List<AccountHistoryOp>> getAccountHistory(
     String account, {
     int index = -1,
@@ -388,6 +389,10 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
     String? stop,
   }) {
     throw UnimplementedError('getAccountHistory has not been implemented.');
+  }
+
+  Future<PostDetailModel> getPostDetail(String accountName, String permlink) {
+    throw UnimplementedError('getPostDetail has not been implemented.');
   }
 
   Future<bool> isHiveKeychainAvailable() {

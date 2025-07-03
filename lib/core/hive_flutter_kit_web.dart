@@ -8,6 +8,7 @@ import 'dart:convert';
 import 'package:hive_flutter_kit/core/models/followers.dart';
 import 'package:hive_flutter_kit/core/models/followings.dart';
 import 'package:hive_flutter_kit/core/models/account_history.dart';
+import 'package:hive_flutter_kit/core/models/hive_mobile/post_detail_model.dart';
 import 'package:hive_flutter_kit/core/models/login_model.dart';
 import 'package:hive_flutter_kit/core/models/witnessvote.dart';
 import 'package:js/js.dart' show JS;
@@ -105,6 +106,9 @@ external dynamic getAccountHistoryJS(
   String? start,
   String? stop,
 );
+
+@JS('getPostDetail')
+external dynamic getPostDetailJS(String accountName, String permlink);
 
 // -------------------------------------------------------------------------
 
@@ -655,7 +659,7 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
       return WitnessVotesData.empty();
     }
   }
-  
+
   @override
   Future<List<AccountHistoryOp>> getAccountHistory(
     String account, {
@@ -668,6 +672,26 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
     final jsonString = await promiseToFuture(promise);
     final List<dynamic> jsonList = jsonDecode(jsonString);
     return jsonList.map((e) => AccountHistoryOp.fromJson(e)).toList();
+  }
+
+  @override
+  Future<PostDetailModel> getPostDetail(
+    String accountName,
+    String permlink,
+  ) async {
+    try {
+      final promise = getPostDetailJS(accountName, permlink);
+      final jsonString = await promiseToFuture(promise);
+      final Map<String, dynamic> jsonMap = jsonDecode(jsonString);
+
+      if (jsonMap.containsKey('status') && jsonMap['status'] == 'success') {
+        return PostDetailModel.fromJson(jsonMap['data']);
+      } else {
+        throw Exception(jsonMap['errorMessage'] ?? 'Unknown error occurred');
+      }
+    } catch (e) {
+      throw Exception("Failed to fetch post detail: $e");
+    }
   }
 
   @override

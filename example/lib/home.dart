@@ -809,7 +809,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ).showSnackBar(SnackBar(content: Text('Failed to get witness votes')));
     }
   }
-  
+
   Future<void> _getAccountHistoryExample() async {
     try {
       String account = 'sagarkothari88';
@@ -856,6 +856,28 @@ class _MyHomePageState extends State<MyHomePage> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Get Account History Error: $e')));
+    }
+  }
+
+  Future<void> _getPostDetailhfk() async {
+    try {
+      const author = 'papilloncharity';
+      const permlink = 'wonderful-views-before-a-storm'; // Replace with a valid permlink
+
+      final post = await hfk.getPostDetail(author, permlink);
+
+      debugPrint('Post Title: ${post.title}');
+      debugPrint('Post Author: ${post.author}');
+      debugPrint('Post Body (preview): ${post.body.substring(0, 100)}...');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Post detail fetched! See debug log.')),
+      );
+    } catch (e) {
+      debugPrint('Error fetching post detail: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
   }
 
@@ -1327,40 +1349,43 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: _getResourceCreditshfk,
               ),
               ElevatedButton(
-                onPressed: (){
+                onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Followings(
-                        hfk: hfk,
-                        account: 'sagarkothari88',))
-                      );
+                      builder:
+                          (context) =>
+                              Followings(hfk: hfk, account: 'sagarkothari88'),
+                    ),
+                  );
                 },
                 //_getFollowingsData,
                 child: Text("Get Followings"),
               ),
               ElevatedButton(
-                onPressed: (){
+                onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Followers(
-                        hfk: hfk,
-                        account: 'sagarkothari88',))
-                      );
+                      builder:
+                          (context) =>
+                              Followers(hfk: hfk, account: 'sagarkothari88'),
+                    ),
+                  );
                 },
                 //_getFollowersData,
                 child: Text("Get Followers"),
               ),
               ElevatedButton(
-                onPressed: (){
+                onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => WitnessVotes(
-                        hfk: hfk,
-                        account: 'sagarkothari88',))
-                      );
+                      builder:
+                          (context) =>
+                              WitnessVotes(hfk: hfk, account: 'sagarkothari88'),
+                    ),
+                  );
                 },
                 //_getWitnessVotesData,
                 child: Text("Get Witness Votes"),
@@ -1368,18 +1393,24 @@ class _MyHomePageState extends State<MyHomePage> {
 
               ElevatedButton(
                 child: Text('Get Account History'),
-                onPressed: (){
+                onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AccountActivities(
-                        hfk: hfk,
-                        account: 'sagarkothari88',
-                        isFilter: true,
-                      ),
+                      builder:
+                          (context) => AccountActivities(
+                            hfk: hfk,
+                            account: 'sagarkothari88',
+                            isFilter: true,
+                          ),
                     ),
                   );
-                }
+                },
+              ),
+
+              ElevatedButton(
+                child: const Text('Get Post Detail (hfk)'),
+                onPressed: _getPostDetailhfk,
               ),
 
               // --- End hfk equivalents ---

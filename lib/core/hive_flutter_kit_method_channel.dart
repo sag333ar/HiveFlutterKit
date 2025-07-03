@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:hive_flutter_kit/core/models/followers.dart';
 import 'package:hive_flutter_kit/core/models/followings.dart';
 import 'package:hive_flutter_kit/core/models/account_history.dart';
+import 'package:hive_flutter_kit/core/models/hive_mobile/post_detail_model.dart';
 import 'package:hive_flutter_kit/core/models/login_model.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter_kit/core/models/witnessvote.dart';
@@ -1448,6 +1449,61 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
         window.flutter_inappwebview.callHandler('$handlerName', JSON.stringify({}));
       }
     })();
+  """;
+
+    await headlessWebView.webViewController?.evaluateJavascript(source: jsCall);
+    return completer.future;
+  }
+
+  @override
+  Future<PostDetailModel> getPostDetail(
+    String accountName,
+    String permlink,
+  ) async {
+    final completer = Completer<PostDetailModel>();
+    final handlerName =
+        'onGetPostDetail_${DateTime.now().millisecondsSinceEpoch}';
+
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: handlerName,
+      callback: (args) {
+        if (!completer.isCompleted) {
+          final contentData = args.isNotEmpty ? args[0].toString() : null;
+          if (contentData != null &&
+              contentData != 'null' &&
+              contentData.isNotEmpty) {
+            try {
+              final Map<String, dynamic> jsonMap = jsonDecode(contentData);
+              if (jsonMap['status'] == 'success') {
+                final post = PostDetailModel.fromJson(jsonMap['data']);
+                completer.complete(post);
+              } else {
+                completer.completeError(
+                  jsonMap['errorMessage'] ?? 'Unknown error',
+                );
+              }
+            } catch (e) {
+              completer.completeError('Failed to parse post detail: $e');
+            }
+          } else {
+            completer.completeError('No post data received');
+          }
+        }
+        headlessWebView.webViewController?.removeJavaScriptHandler(
+          handlerName: handlerName,
+        );
+      },
+    );
+
+    final jsCall = """
+  (async () => {
+    try {
+      const result = await getPostDetail(${jsonEncode(accountName)}, ${jsonEncode(permlink)});
+      window.flutter_inappwebview.callHandler('$handlerName', result || 'null');
+    } catch (e) {
+      window.flutter_inappwebview.callHandler('$handlerName', JSON.stringify({status: 'failed', errorMessage: e.toString()}));
+    }
+  })();
   """;
 
     await headlessWebView.webViewController?.evaluateJavascript(source: jsCall);
