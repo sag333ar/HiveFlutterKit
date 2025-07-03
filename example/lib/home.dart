@@ -8,10 +8,10 @@ import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_resp
 import 'package:hive_flutter_kit/ux/bottom_tool_bar.dart';
 import 'package:hive_flutter_kit/ux/dhive/account_activities/account_activities.dart';
 import 'package:hive_flutter_kit/ux/dhive/comments/hive_post_comments.dart';
+import 'package:hive_flutter_kit/ux/dhive/detail_post.dart/post_detail_post_web_view.dart';
 import 'package:hive_flutter_kit/ux/dhive/following_followers/followers.dart';
 import 'package:hive_flutter_kit/ux/dhive/following_followers/followings.dart';
 import 'package:hive_flutter_kit/ux/dhive/following_followers/witness_votes.dart';
-import 'package:hive_flutter_kit/ux/hive_mobile_app/hot_feed.dart';
 import 'package:hive_flutter_kit/ux/login_screen.dart';
 import 'package:hive_flutter_kit/ux/switch_user.dart';
 import 'package:hive_flutter_kit/ux/dhive/community_list/community_list.dart';
@@ -867,12 +867,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
       final post = await hfk.getPostDetail(author, permlink);
 
-      debugPrint('Post Title: ${post.title}');
-      debugPrint('Post Author: ${post.author}');
-      debugPrint('Post Body (preview): ${post.body.substring(0, 100)}...');
+      if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Post detail fetched! See debug log.')),
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder:
+              (_) => PostDetailPostWebView(
+                body: post.body,
+                width: MediaQuery.of(context).size.width,
+              ),
+        ),
       );
     } catch (e) {
       debugPrint('Error fetching post detail: $e');
@@ -1332,12 +1337,6 @@ class _MyHomePageState extends State<MyHomePage> {
               ElevatedButton(
                 child: Text('Get Discussions (hfk)'),
                 onPressed: _getDiscussionshfk,
-              ),
-              ElevatedButton(
-                child: Text('Get hot feed discussions'),
-                onPressed: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => HotFeed(hfk: hfk)));
-                },
               ),
               ElevatedButton(
                 child: Text('Get Accounts (hfk)'),

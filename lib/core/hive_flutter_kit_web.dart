@@ -110,6 +110,9 @@ external dynamic getAccountHistoryJS(
 @JS('getPostDetail')
 external dynamic getPostDetailJS(String accountName, String permlink);
 
+@JS('getHtml')
+external dynamic getHtml(String inputString, int width);
+
 // -------------------------------------------------------------------------
 
 @JS('loginWithKeychain')
@@ -692,6 +695,12 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
     } catch (e) {
       throw Exception("Failed to fetch post detail: $e");
     }
+  }
+
+  Future<String> getHtmlFromPlatform(String inputString, int width) async {
+    var promise = getHtml(base64.encode(utf8.encode(inputString)), width);
+    var contentData = await promiseToFuture(promise);
+    return contentData;
   }
 
   @override

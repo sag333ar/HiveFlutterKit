@@ -395,6 +395,10 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
     throw UnimplementedError('getPostDetail has not been implemented.');
   }
 
+  Future<String> getHtmlFromPlatform(String inputString, int width) {
+    throw UnimplementedError('getHtmlFromPlatform has not been implemented.');
+  }
+
   Future<bool> isHiveKeychainAvailable() {
     throw UnimplementedError(
       'isHiveKeychainAvailable has not been implemented.',

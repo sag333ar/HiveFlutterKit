@@ -768,7 +768,7 @@ window.getAccountHistory = getAccountHistory;
 
 async function subscribeUnsubscribeToCommunity(community, subscribe) {
   try {
-    const result = await aioha.customJSON(KeyTypes.Posting, 'community', [subscribe ? 'subscribe': 'unsubscribe', {community: community}], 'Display Title')
+    const result = await aioha.customJSON(KeyTypes.Posting, 'community', [subscribe ? 'subscribe' : 'unsubscribe', { community: community }], 'Display Title')
     var dataToReturn = JSON.stringify(result);
     return dataToReturn;
   } catch (error) {
@@ -798,3 +798,37 @@ async function getPostDetail(accountName, permlink) {
   }
 }
 window.getPostDetail = getPostDetail;
+
+async function getHtml(iString, width) {
+  const inputString = atob(iString);
+  return new Promise(function (resolve, reject) {
+    const renderer = new HiveContentRenderer.DefaultRenderer({
+      baseUrl: `https://app.blurt.blog/`,
+      breaks: true,
+      skipSanitization: false,
+      allowInsecureScriptTags: false,
+      addExternalCssClassToMatchingLinks: false,
+      addNofollowToLinks: true,
+      doNotShowImages: false,
+      ipfsPrefix: "",
+      assetsWidth: width,
+      assetsHeight: 600,
+      imageProxyFn: (Y) =>
+        /^http(s)?:\/\/img\.blurt\.world/i.test(Y) ||
+          /^http(s)?:\/\/imgp\.blurt\.world/i.test(Y) ||
+          /^http(s)?:\/\/images\.ecency\.com/i.test(Y) ||
+          /^http(s)?:\/\/images\.hive\.blog/i.test(Y) ||
+          /^http(s)?:\/\/i\.imgur\.com/i.test(Y) ||
+          /\.gif$/i.test(Y)
+          ? Y
+          : `https://imgp.blurt.world/1920x0/` + Y,
+      usertagUrlFn: (Y) => "/@" + Y,
+      hashtagUrlFn: (Y) => "/trending/" + Y,
+      isLinkSafeFn: (Y) => true,
+    });
+    const output = renderer.render(inputString);
+    resolve(output);
+  });
+}
+
+window.getHtml = getHtml;

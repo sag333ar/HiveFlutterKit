@@ -1511,6 +1511,41 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
   }
 
   @override
+  Future<String> getHtmlFromPlatform(String markdown, int width) async {
+    final completer = Completer<String>();
+    final handlerName = 'onRenderHtml_${DateTime.now().millisecondsSinceEpoch}';
+
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: handlerName,
+      callback: (args) {
+        if (!completer.isCompleted) {
+          final htmlOutput = args.isNotEmpty ? args[0].toString() : '';
+          completer.complete(htmlOutput);
+        }
+        headlessWebView.webViewController?.removeJavaScriptHandler(
+          handlerName: handlerName,
+        );
+      },
+    );
+
+    final encodedMarkdown = base64Encode(utf8.encode(markdown));
+
+    final jsCall = """
+    (async () => {
+      try {
+        const result = await getHtml('$encodedMarkdown', $width);
+        window.flutter_inappwebview.callHandler('$handlerName', result);
+      } catch (e) {
+        window.flutter_inappwebview.callHandler('$handlerName', '<p>Error rendering HTML</p>');
+      }
+    })();
+  """;
+
+    await headlessWebView.webViewController?.evaluateJavascript(source: jsCall);
+    return completer.future;
+  }
+
+  @override
   Future<bool> isHiveKeychainAvailable() async {
     // Not available on non-web platforms by default
     return false;
