@@ -9,6 +9,9 @@ import 'package:hive_flutter_kit/ux/bottom_tool_bar.dart';
 import 'package:hive_flutter_kit/ux/dhive/account_activities/account_activities.dart';
 import 'package:hive_flutter_kit/ux/dhive/comments/hive_post_comments.dart';
 import 'package:hive_flutter_kit/ux/dhive/witnesses/witnesses.dart';
+import 'package:hive_flutter_kit/ux/dhive/following_followers/followers.dart';
+import 'package:hive_flutter_kit/ux/dhive/following_followers/followings.dart';
+import 'package:hive_flutter_kit/ux/dhive/following_followers/witness_votes.dart';
 import 'package:hive_flutter_kit/ux/login_screen.dart';
 import 'package:hive_flutter_kit/ux/switch_user.dart';
 import 'package:hive_flutter_kit/ux/dhive/community_list/community_list.dart';
@@ -735,6 +738,80 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<void> _getFollowingsData() async {
+    try {
+      var result = await hfk.getFollowingsData(
+        'sagarkothari88', // username
+        start: '', // optional
+        type: 'blog', // optional
+        limit: 100, // optional
+      );
+
+      debugPrint("Followings Count: ${result.count}");
+      for (var user in result.followings ?? []) {
+        debugPrint("Following: ${user['following']}");
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Fetched ${result.count} followings')),
+      );
+    } catch (e) {
+      debugPrint('getFollowingsData error: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to get followings')));
+    }
+  }
+
+  Future<void> _getFollowersData() async {
+    try {
+      var result = await hfk.getFollowersData(
+        'sagarkothari88', // username
+        start: '', // optional
+        type: 'blog', // optional
+        limit: 100, // optional
+      );
+
+      debugPrint("Followers Count: ${result.count}");
+      for (var user in result.followers ?? []) {
+        debugPrint("Follower: ${user['follower']}");
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Fetched ${result.count} followers')),
+      );
+    } catch (e) {
+      debugPrint('getFollowersData error: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to get followers')));
+    }
+  }
+
+  Future<void> _getWitnessVotesData() async {
+    try {
+      var result = await hfk.getWitnessVotesData('sagarkothari88');
+
+      for (var witness in result.witnessVotes ?? []) {
+        debugPrint("Voted for: $witness");
+      }
+      debugPrint("Voted count: ${result.witnessesVotedFor ?? 0}");
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Witnesses voted for: ${result.witnessesVotedFor ?? 0}',
+          ),
+        ),
+      );
+    } catch (e) {
+      debugPrint('getWitnessVotesData error: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to get witness votes')));
+    }
+  }
+  
   Future<void> _getAccountHistoryExample() async {
     try {
       String account = 'sagarkothari88';
@@ -1266,6 +1343,45 @@ class _MyHomePageState extends State<MyHomePage> {
               ElevatedButton(
                 child: Text('Resources Credits Percentage (hfk)'),
                 onPressed: _getResourceCreditshfk,
+              ),
+              ElevatedButton(
+                onPressed: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Followings(
+                        hfk: hfk,
+                        account: 'sagarkothari88',))
+                      );
+                },
+                //_getFollowingsData,
+                child: Text("Get Followings"),
+              ),
+              ElevatedButton(
+                onPressed: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Followers(
+                        hfk: hfk,
+                        account: 'sagarkothari88',))
+                      );
+                },
+                //_getFollowersData,
+                child: Text("Get Followers"),
+              ),
+              ElevatedButton(
+                onPressed: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => WitnessVotes(
+                        hfk: hfk,
+                        account: 'sagarkothari88',))
+                      );
+                },
+                //_getWitnessVotesData,
+                child: Text("Get Witness Votes"),
               ),
 
               ElevatedButton(
