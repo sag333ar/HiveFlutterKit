@@ -12,6 +12,7 @@ import 'package:hive_flutter_kit/ux/dhive/witnesses/witnesses.dart';
 import 'package:hive_flutter_kit/ux/dhive/following_followers/followers.dart';
 import 'package:hive_flutter_kit/ux/dhive/following_followers/followings.dart';
 import 'package:hive_flutter_kit/ux/dhive/following_followers/witness_votes.dart';
+import 'package:hive_flutter_kit/ux/hive_mobile_app/hot_feed.dart';
 import 'package:hive_flutter_kit/ux/login_screen.dart';
 import 'package:hive_flutter_kit/ux/switch_user.dart';
 import 'package:hive_flutter_kit/ux/dhive/community_list/community_list.dart';
@@ -1349,6 +1350,12 @@ class _MyHomePageState extends State<MyHomePage> {
               ElevatedButton(
                 child: Text('Get Discussions (hfk)'),
                 onPressed: _getDiscussionshfk,
+              ),
+              ElevatedButton(
+                child: Text('Get hot feed discussions'),
+                onPressed: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => HotFeed(hfk: hfk)));
+                },
               ),
               ElevatedButton(
                 child: Text('Get Accounts (hfk)'),
