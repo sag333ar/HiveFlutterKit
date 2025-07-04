@@ -777,3 +777,27 @@ async function subscribeUnsubscribeToCommunity(community, subscribe) {
   }
 }
 window.subscribeUnsubscribeToCommunity = subscribeUnsubscribeToCommunity;
+
+async function getWitnessesByVote(startAt = "", limit = 60) {
+  try {
+    const witnesses = await dhiveClient.call(
+      "condenser_api",
+      "get_witnesses_by_vote",
+      [startAt, limit]
+    );
+
+    const usernames = witnesses.map(w => w.owner);
+
+    const accounts = await dhiveClient.call(
+      "condenser_api",
+      "get_accounts",
+      [usernames]
+    );
+
+    return JSON.stringify(accounts);
+  } catch (error) {
+    console.error("Error calling getWitnessesByVote:", error);
+    return JSON.stringify([]);
+  }
+}
+window.getWitnessesByVote = getWitnessesByVote;

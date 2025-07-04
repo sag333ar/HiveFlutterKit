@@ -395,4 +395,8 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
       'isHiveKeychainAvailable has not been implemented.',
     );
   }
+
+  Future<List<Account>> getWitnessesByVote({String startAt = "",int limit = 60}) {
+    throw UnimplementedError('getWitnessesByVote has not been implemented.');
+  }
 }

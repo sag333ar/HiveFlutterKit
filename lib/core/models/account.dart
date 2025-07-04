@@ -201,7 +201,7 @@ class Account {
 
   factory Account.fromJson(Map<String, dynamic> json) {
     return Account(
-      id: json['id'],
+      id: _parseInt(json['id']),
       name: json['name'],
       owner: json['owner'] != null ? Authority.fromJson(json['owner']) : null,
       active: json['active'] != null ? Authority.fromJson(json['active']) : null,
@@ -221,11 +221,11 @@ class Account {
       recoveryAccount: json['recovery_account'],
       resetAccount: json['reset_account'],
       lastAccountRecovery: json['last_account_recovery'],
-      commentCount: json['comment_count'],
-      lifetimeVoteCount: json['lifetime_vote_count'],
-      postCount: json['post_count'],
+      commentCount: _parseInt(json['comment_count']),
+      lifetimeVoteCount: _parseInt(json['lifetime_vote_count']),
+      postCount: _parseInt(json['post_count']),
       canVote: json['can_vote'],
-      votingPower: json['voting_power'],
+      votingPower: _parseInt(json['voting_power']),
       lastVoteTime: json['last_vote_time'],
       votingManabar: json['voting_manabar'] != null ? Manabar.fromJson(json['voting_manabar']) : null,
       balance: json['balance'] != null ? AccountAsset.fromJson(json['balance']) : null,
@@ -238,23 +238,27 @@ class Account {
       savingsHbdSeconds: json['savings_hbd_seconds'],
       savingsHbdSecondsLastUpdate: json['savings_hbd_seconds_last_update'],
       savingsHbdLastInterestPayment: json['savings_hbd_last_interest_payment'],
-      savingsWithdrawRequests: json['savings_withdraw_requests'],
+      savingsWithdrawRequests: _parseInt(json['savings_withdraw_requests']),
       rewardHbdBalance: json['reward_hbd_balance'] != null ? AccountAsset.fromJson(json['reward_hbd_balance']) : null,
       rewardHiveBalance: json['reward_hive_balance'] != null ? AccountAsset.fromJson(json['reward_hive_balance']) : null,
       rewardVestingBalance: json['reward_vesting_balance'] != null ? AccountAsset.fromJson(json['reward_vesting_balance']) : null,
       rewardVestingHive: json['reward_vesting_hive'] != null ? AccountAsset.fromJson(json['reward_vesting_hive']) : null,
-      curationRewards: json['curation_rewards'],
-      postingRewards: json['posting_rewards'],
+      curationRewards: _parseInt(json['curation_rewards']),
+      postingRewards: _parseInt(json['posting_rewards']),
       vestingShares: json['vesting_shares'] != null ? AccountAsset.fromJson(json['vesting_shares']) : null,
       delegatedVestingShares: json['delegated_vesting_shares'] != null ? AccountAsset.fromJson(json['delegated_vesting_shares']) : null,
       receivedVestingShares: json['received_vesting_shares'] != null ? AccountAsset.fromJson(json['received_vesting_shares']) : null,
       vestingWithdrawRate: json['vesting_withdraw_rate'] != null ? AccountAsset.fromJson(json['vesting_withdraw_rate']) : null,
       nextVestingWithdrawal: json['next_vesting_withdrawal'],
-      withdrawn: json['withdrawn'],
-      toWithdraw: json['to_withdraw'],
-      withdrawRoutes: json['withdraw_routes'],
-      proxiedVsfVotes: json['proxied_vsf_votes'] != null ? List<int>.from(json['proxied_vsf_votes']) : null,
-      witnessesVotedFor: json['witnesses_voted_for'],
+      withdrawn: _parseInt(json['withdrawn']),
+      toWithdraw: _parseInt(json['to_withdraw']),
+      withdrawRoutes: _parseInt(json['withdraw_routes']),
+      proxiedVsfVotes: json['proxied_vsf_votes'] != null
+    ? (json['proxied_vsf_votes'] as List)
+        .map((e) => _parseInt(e) ?? 0)
+        .toList()
+    : null,
+      witnessesVotedFor: _parseInt(json['witnesses_voted_for']),
       averageBandwidth: json['average_bandwidth'],
       lifetimeBandwidth: json['lifetime_bandwidth'],
       lastBandwidthUpdate: json['last_bandwidth_update'],
@@ -264,7 +268,7 @@ class Account {
       lastPost: json['last_post'],
       lastRootPost: json['last_root_post'],
       vestingBalance: json['vesting_balance'] != null ? AccountAsset.fromJson(json['vesting_balance']) : null,
-      reputation: json['reputation'],
+      reputation: _parseInt(json['reputation']),
       transferHistory: json['transfer_history'],
       marketHistory: json['market_history'],
       postHistory: json['post_history'],
@@ -301,3 +305,11 @@ class Manabar {
     );
   }
 }
+
+int? _parseInt(dynamic value) {
+  if (value == null) return null;
+  if (value is int) return value;
+  if (value is String) return int.tryParse(value);
+  return null;
+}
+

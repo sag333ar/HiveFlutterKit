@@ -8,6 +8,7 @@ import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_resp
 import 'package:hive_flutter_kit/ux/bottom_tool_bar.dart';
 import 'package:hive_flutter_kit/ux/dhive/account_activities/account_activities.dart';
 import 'package:hive_flutter_kit/ux/dhive/comments/hive_post_comments.dart';
+import 'package:hive_flutter_kit/ux/dhive/witnesses/witnesses.dart';
 import 'package:hive_flutter_kit/ux/dhive/following_followers/followers.dart';
 import 'package:hive_flutter_kit/ux/dhive/following_followers/followings.dart';
 import 'package:hive_flutter_kit/ux/dhive/following_followers/witness_votes.dart';
@@ -29,6 +30,7 @@ import 'package:hive_flutter_kit/ux/dhive/feed_screen/trending_feed_screen.dart'
 import 'package:hive_flutter_kit/ux/dhive/user_profile/user_profile_picture.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+//import 'package:hive_flutter_ux/ux/dhive/witnesses/witnesses.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -1149,6 +1151,22 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  Future<void> _getWitnessesByVote() async {
+    try {
+      final result = await hfk.getWitnessesByVote(limit: 10);
+      //debugPrint('Witnesses by vote: ${result.map((w) => w.owner).join(', ')}');
+      debugPrint('Witnesses by vote: ${result.map((w) => w.name).join(', ')}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Fetched ${result.length} witnesses')),
+      );
+    } catch (e) {
+      debugPrint('Error fetching witnesses by vote: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1368,18 +1386,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
               ElevatedButton(
                 child: Text('Get Account History'),
-                onPressed: (){
+                onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AccountActivities(
-                        hfk: hfk,
-                        account: 'sagarkothari88',
-                        isFilter: true,
-                      ),
+                      builder:
+                          (context) => AccountActivities(
+                            hfk: hfk,
+                            account: 'sagarkothari88',
+                            isFilter: true,
+                          ),
                     ),
                   );
-                }
+                },
               ),
 
               // --- End hfk equivalents ---
@@ -2390,6 +2409,30 @@ class _MyHomePageState extends State<MyHomePage> {
                   );
                 },
                 child: const Text('trending tags'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => Witnesses(
+                            hfk: hfk,
+                            onTapWitness:
+                                (account) => print("Tapped on ${account.name}"),
+                            onTapLink:
+                                (account) =>
+                                    print("Link clicked for ${account.name}"),
+                            onTapCheckmark:
+                                (account) => print(
+                                  "Checkmark tapped for ${account.name}",
+                                ),
+                          ),
+                    ),
+                  );
+                },
+                //_getWitnessesByVote,
+                child: const Text('Get Witnesses By Vote'),
               ),
             ],
           ),

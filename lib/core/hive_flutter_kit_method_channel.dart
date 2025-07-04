@@ -1459,4 +1459,54 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
     // Not available on non-web platforms by default
     return false;
   }
+
+  @override
+  Future<List<Account>> getWitnessesByVote({String startAt = "", int limit = 60}) async {
+    await _webViewInitFuture;
+
+    final completer = Completer<List<Account>>();
+    final handlerName =
+        'onGetWitnessesByVoteResult_${DateTime.now().millisecondsSinceEpoch}';
+
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: handlerName,
+      callback: (args) {
+        if (!completer.isCompleted) {
+          final contentData = args.isNotEmpty ? args[0].toString() : null;
+          if (contentData != null &&
+              contentData != 'null' &&
+              contentData.isNotEmpty) {
+            try {
+              final accounts = Account.listFromJsonString(contentData);
+              completer.complete(accounts);
+            } catch (e) {
+              completer.completeError('Failed to parse witnesses: $e');
+            }
+          } else {
+            completer.completeError(
+              'Failed to get witnesses or empty response',
+            );
+          }
+        }
+        headlessWebView.webViewController?.removeJavaScriptHandler(
+          handlerName: handlerName,
+        );
+      },
+    );
+
+    final jsLimit = limit;
+    final jsCall = """
+    (async () => {
+      try {
+        const result = await getWitnessesByVote($jsLimit);
+        window.flutter_inappwebview.callHandler('$handlerName', result || 'null');
+      } catch (e) {
+        window.flutter_inappwebview.callHandler('$handlerName', JSON.stringify([]));
+      }
+    })();
+    """;
+
+    await headlessWebView.webViewController?.evaluateJavascript(source: jsCall);
+    return completer.future;
+  }
 }
