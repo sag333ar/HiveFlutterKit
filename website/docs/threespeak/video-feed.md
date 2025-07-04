@@ -50,6 +50,7 @@ ThreeSpeakVideoFeed(
   onTapReport: (item) => debugPrint('Report: ${item.permlink}'),
   onTapUpvote: (item) => debugPrint('Upvote: ${item.permlink}'),
   onTapComment: (item) => debugPrint('Comment: ${item.permlink}'),
+  isPayoutValueVisible: true
 )
 ```
 
@@ -170,6 +171,7 @@ ThreeSpeakVideoFeed(
 | `searchTerm`      | `String?`                             | Cond.    | Used if `feedType` is `search` and `isSearch` is `false`. The search query. Must be at least 4 characters.                                 |
 | `commnuityId`     | `String?`                             | Cond.    | Required if `feedType` is `commnuityFeed`. The ID of the 3Speak community.                                                                |
 | `tag`             | `String?`                             | Cond.    | Required if `feedType` is `trendingTagFeed`. The tag to fetch trending videos for.                                                        |
+| `isPayoutValueVisible`             | `bool?`                             | ❌    |  Used if user want to show the payout value or not.                                                      |
 
 *Cond.* = Conditionally Required.
 
