@@ -778,7 +778,6 @@ async function subscribeUnsubscribeToCommunity(community, subscribe) {
 }
 window.subscribeUnsubscribeToCommunity = subscribeUnsubscribeToCommunity;
 
-<<<<<<< HEAD
 async function getWalletDataDetail(username) {
   try {
     const accounts = await dhiveClient.database.getAccounts([username]);
@@ -874,7 +873,6 @@ async function getFullWalletData(username) {
   }
 }
 window.getFullWalletData = getFullWalletData;
-=======
 async function getWitnessesByVote(startAt = "", limit = 60) {
   try {
     const witnesses = await dhiveClient.call(
@@ -926,4 +924,3 @@ async function listProposals(
   }
 }
 window.listProposals = listProposals;
->>>>>>> c4c8a1fc58d2c998222db8cea329be7dbd7b4509
