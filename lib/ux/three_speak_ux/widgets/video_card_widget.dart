@@ -8,7 +8,6 @@ import 'package:timeago/timeago.dart' as timeago;
 class VideoCard extends StatelessWidget {
   final GQLFeedItem item;
   final bool isVisible;
-  final bool isMobile;
   final void Function() onTap;
   final void Function() onTapAuthor;
   final void Function() onTapReport;
@@ -19,7 +18,6 @@ class VideoCard extends StatelessWidget {
     super.key,
     required this.item,
     required this.isVisible,
-    required this.isMobile,
     required this.onTap,
     required this.onTapAuthor,
     required this.onTapReport,
@@ -29,189 +27,142 @@ class VideoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Card(
-        clipBehavior: Clip.hardEdge,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        child: isMobile ? _buildMobileLayout() : _buildStackedLayout(),
-      ),
-    );
-  }
-
-  Widget _buildMobileLayout() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Stack(
-          children: [
-            AspectRatio(
-              aspectRatio: 16 / 9,
-              child: VideoThumbnail(item: item, isVisible: isVisible),
-            ),
-            _topGradient(),
-            _authorInfo(top: 8, left: 8),
-          ],
-        ),
-        _bottomOverlay(),
-      ],
-    );
-  }
-
-  Widget _buildStackedLayout() {
-    return Stack(
-      children: [
-        AspectRatio(
-          aspectRatio: 16 / 9,
-          child: VideoThumbnail(item: item, isVisible: isVisible),
-        ),
-        _topGradient(),
-        _authorInfo(top: 8, left: 8),
-        Positioned(left: 0, right: 0, bottom: 0, child: _bottomOverlay()),
-      ],
-    );
-  }
-
-  Widget _topGradient() {
-    return Positioned(
-      left: 0,
-      right: 0,
-      top: 0,
-      height: 60,
-      child: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.black87, Colors.transparent],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _authorInfo({double top = 0, double left = 0}) {
     final username = item.author?.username ?? 'unknown';
-    return Positioned(
-      top: top,
-      left: left,
-      child: GestureDetector(
-        onTap: onTapAuthor,
-        child: Row(
-          children: [
-            ClipOval(
-              child: CachedNetworkImage(
-                imageUrl: server.userOwnerThumb(username),
-                width: 32,
-                height: 32,
-                placeholder:
-                    (context, url) => const SizedBox(
-                      width: 25,
-                      height: 25,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                errorWidget:
-                    (context, url, error) => const Icon(Icons.error, size: 24),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              username,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                shadows: [Shadow(color: Colors.black, blurRadius: 4)],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _bottomOverlay() {
     final title = item.title ?? 'Untitled';
     final createdAt =
         item.createdAt != null ? timeago.format(item.createdAt!) : 'Unknown';
     final votes = item.stats?.numVotes?.toString() ?? '0';
     final comments = item.stats?.numComments?.toString() ?? '0';
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(8),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.bottomCenter,
-          end: Alignment.topCenter,
-          colors: [Colors.black87, Colors.transparent],
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    shadows: [Shadow(color: Colors.black, blurRadius: 4)],
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              PopupMenuButton<String>(
-                onSelected: (value) {
-                  if (value == 'Report') {
-                    onTapReport.call();
-                  }
-                },
-                itemBuilder:
-                    (context) => const [
-                      PopupMenuItem(
-                        value: 'Report',
+    return GestureDetector(
+      onTap: onTap,
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        margin: const EdgeInsets.all(8),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Author Row
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: onTapAuthor,
+                        child: ClipOval(
+                          child: CachedNetworkImage(
+                            imageUrl: server.userOwnerThumb(username),
+                            width: 32,
+                            height: 32,
+                            placeholder:
+                                (context, url) => const SizedBox(
+                                  width: 25,
+                                  height: 25,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                ),
+                            errorWidget:
+                                (context, url, error) =>
+                                    const Icon(Icons.error, size: 24),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      GestureDetector(
+                        onTap: onTapAuthor,
                         child: Text(
-                          'Report',
-                          style: TextStyle(color: Colors.red),
+                          username,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
                         ),
                       ),
                     ],
-                icon: const Icon(Icons.more_vert, color: Colors.white),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Text(
-                    createdAt,
-                    style: TextStyle(fontSize: 12, color: Colors.grey[300]),
                   ),
-                ],
-              ),
-              Row(
-                children: [
-                  GestureDetector(
-                    onTap: onTapUpvote,
-                    child: _iconStat(Icons.favorite, votes),
+                ),
+
+                // Thumbnail (make it expandable to avoid overflow)
+                AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: VideoThumbnail(item: item, isVisible: isVisible),
+                ),
+
+                // Title + Report
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 6,
                   ),
-                  const SizedBox(width: 12),
-                  GestureDetector(
-                    onTap: onTapComment,
-                    child: _iconStat(Icons.comment, comments),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          title,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      PopupMenuButton<String>(
+                        onSelected: (value) {
+                          if (value == 'Report') {
+                            onTapReport.call();
+                          }
+                        },
+                        itemBuilder:
+                            (context) => const [
+                              PopupMenuItem(
+                                value: 'Report',
+                                child: Text(
+                                  'Report',
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                              ),
+                            ],
+                        icon: const Icon(Icons.more_vert),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ],
-          ),
-        ],
+                ),
+
+                // Time, Votes, Comments
+                Padding(
+                  padding: const EdgeInsets.only(left: 8, right: 8, bottom: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        createdAt,
+                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                      ),
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTap: onTapUpvote,
+                            child: _iconStat(Icons.favorite_border, votes),
+                          ),
+                          const SizedBox(width: 12),
+                          GestureDetector(
+                            onTap: onTapComment,
+                            child: _iconStat(Icons.comment_outlined, comments),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -219,9 +170,9 @@ class VideoCard extends StatelessWidget {
   Widget _iconStat(IconData icon, String text) {
     return Row(
       children: [
-        Icon(icon, size: 14, color: Colors.white),
+        Icon(icon, size: 14, color: Colors.black87),
         const SizedBox(width: 4),
-        Text(text, style: const TextStyle(fontSize: 12, color: Colors.white)),
+        Text(text, style: const TextStyle(fontSize: 12)),
       ],
     );
   }

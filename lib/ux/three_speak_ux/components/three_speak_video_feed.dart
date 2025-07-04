@@ -306,25 +306,16 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
       );
     } else {
       final screenWidth = MediaQuery.of(context).size.width;
-
-      bool isMobile = screenWidth < 600;
-      bool isDesktop = screenWidth >= 1024;
-
-      Widget content;
-
-      if (!isMobile) {
-        final crossAxisCount =
-            isDesktop ? screenWidth ~/ 300 : screenWidth ~/ 350;
-
-        final childAspectRatio = isDesktop ? 4 / 3.2 : 4 / 3;
-
+      final isWide = screenWidth >= 600;
+      if (isWide) {
+        final crossAxisCount = screenWidth ~/ 350;
         content = GridView.builder(
           padding: const EdgeInsets.all(8),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: crossAxisCount,
             crossAxisSpacing: 8,
             mainAxisSpacing: 8,
-            childAspectRatio: childAspectRatio,
+            childAspectRatio: 0.99,
           ),
           itemCount: _items.length,
           itemBuilder: (context, index) {
@@ -332,7 +323,6 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
             return VideoCard(
               item: item,
               isVisible: true,
-              isMobile: false,
               onTap: () => _handleTapVideoItem(context, item),
               onTapAuthor: () => _handleTapAuthor(context, item),
               onTapReport: () => widget.onTapReport.call(item),
@@ -348,7 +338,6 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
             return VideoCard(
               item: item,
               isVisible: isVisible,
-              isMobile: true,
               onTap: () => _handleTapVideoItem(context, item),
               onTapAuthor: () => _handleTapAuthor(context, item),
               onTapReport: () => widget.onTapReport.call(item),
@@ -358,8 +347,6 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
           },
         );
       }
-
-      return content;
     }
 
     if (showSearchBar) {
