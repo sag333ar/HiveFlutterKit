@@ -2218,6 +2218,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               onTapComment: (GQLFeedItem item) {
                                 debugPrint('Tapped comment: ${item.permlink}');
                               },
+                              isPayoutValueVisible: true,
                             ),
                           ),
                     ),
