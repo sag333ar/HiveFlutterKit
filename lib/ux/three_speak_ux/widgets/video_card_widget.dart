@@ -13,6 +13,8 @@ class VideoCard extends StatelessWidget {
   final void Function() onTapReport;
   final void Function() onTapUpvote;
   final void Function() onTapComment;
+  final bool? isInGrid;
+  final bool? isPayoutValueVisible;
 
   const VideoCard({
     super.key,
@@ -23,6 +25,8 @@ class VideoCard extends StatelessWidget {
     required this.onTapReport,
     required this.onTapUpvote,
     required this.onTapComment,
+    this.isInGrid,
+    this.isPayoutValueVisible,
   });
 
   @override
@@ -33,6 +37,7 @@ class VideoCard extends StatelessWidget {
         item.createdAt != null ? timeago.format(item.createdAt!) : 'Unknown';
     final votes = item.stats?.numVotes?.toString() ?? '0';
     final comments = item.stats?.numComments?.toString() ?? '0';
+    final rewards = item.stats?.totalHiveReward?.toString() ?? '0';
 
     return GestureDetector(
       onTap: onTap,
@@ -42,6 +47,7 @@ class VideoCard extends StatelessWidget {
         child: LayoutBuilder(
           builder: (context, constraints) {
             return Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Author Row
@@ -81,15 +87,25 @@ class VideoCard extends StatelessWidget {
                           ),
                         ),
                       ),
+                      Spacer(),
+                      Text(
+                        createdAt,
+                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                      ),
                     ],
                   ),
                 ),
 
-                // Thumbnail (make it expandable to avoid overflow)
-                AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: VideoThumbnail(item: item, isVisible: isVisible),
-                ),
+                if (isInGrid!)
+                  Expanded(
+                    flex: 1,
+                    child: VideoThumbnail(item: item, isVisible: isVisible),
+                  )
+                else
+                  AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: VideoThumbnail(item: item, isVisible: isVisible),
+                  ),
 
                 // Title + Report
                 Padding(
@@ -139,10 +155,14 @@ class VideoCard extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        createdAt,
-                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                      ),
+                      if (isPayoutValueVisible == true)
+                        Text(
+                          '\$$rewards',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                          ),
+                        ),
                       Row(
                         children: [
                           GestureDetector(

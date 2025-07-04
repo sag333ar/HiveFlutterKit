@@ -26,6 +26,7 @@ class ThreeSpeakVideoFeed extends StatefulWidget {
   final String? searchTerm;
   final String? commnuityId;
   final String? tag;
+  final bool? isPayoutValueVisible;
 
   const ThreeSpeakVideoFeed({
     super.key,
@@ -44,6 +45,7 @@ class ThreeSpeakVideoFeed extends StatefulWidget {
     required this.onTapUpvote,
     required this.onTapComment,
     this.tag,
+    this.isPayoutValueVisible,
   });
 
   @override
@@ -323,6 +325,8 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
             return VideoCard(
               item: item,
               isVisible: true,
+              isInGrid: true,
+              isPayoutValueVisible: widget.isPayoutValueVisible,
               onTap: () => _handleTapVideoItem(context, item),
               onTapAuthor: () => _handleTapAuthor(context, item),
               onTapReport: () => widget.onTapReport.call(item),
@@ -338,6 +342,8 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
             return VideoCard(
               item: item,
               isVisible: isVisible,
+              isInGrid: false,
+              isPayoutValueVisible: true,
               onTap: () => _handleTapVideoItem(context, item),
               onTapAuthor: () => _handleTapAuthor(context, item),
               onTapReport: () => widget.onTapReport.call(item),
