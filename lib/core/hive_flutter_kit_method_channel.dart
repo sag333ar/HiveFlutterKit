@@ -5,6 +5,7 @@ import 'package:hive_flutter_kit/core/models/followings.dart';
 import 'package:hive_flutter_kit/core/models/account_history.dart';
 import 'package:hive_flutter_kit/core/models/login_model.dart';
 import 'package:flutter/services.dart';
+import 'package:hive_flutter_kit/core/models/wallet_data.dart';
 import 'package:hive_flutter_kit/core/models/witnessvote.dart';
 
 import 'hive_flutter_kit_platform_interface.dart';
@@ -1449,6 +1450,67 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
         window.flutter_inappwebview.callHandler('$handlerName', JSON.stringify({}));
       }
     })();
+  """;
+
+    await headlessWebView.webViewController?.evaluateJavascript(source: jsCall);
+    return completer.future;
+  }
+
+  @override
+  Future<WalletData> getFullWalletData(String username) async {
+    final completer = Completer<WalletData>();
+    final handlerName =
+        'onGetFullWalletData_${DateTime.now().millisecondsSinceEpoch}';
+
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: handlerName,
+      callback: (args) {
+        if (!completer.isCompleted) {
+          final contentData = args.isNotEmpty ? args[0].toString() : null;
+          if (contentData != null &&
+              contentData != 'null' &&
+              contentData.isNotEmpty) {
+            try {
+              final Map<String, dynamic> json = jsonDecode(contentData);
+              final data = WalletData.fromJson(json);
+              completer.complete(data);
+            } catch (e) {
+              completer.complete(
+                WalletData.fallback(error: 'Parsing error: $e'),
+              );
+            }
+          } else {
+            completer.complete(
+              WalletData.fallback(error: 'Empty or null response from JS'),
+            );
+          }
+        }
+
+        headlessWebView.webViewController?.removeJavaScriptHandler(
+          handlerName: handlerName,
+        );
+      },
+    );
+
+    final jsUsername = jsonEncode(username);
+
+    final jsCall = """
+  (async () => {
+    try {
+      const result = await getFullWalletData($jsUsername);
+      window.flutter_inappwebview.callHandler('$handlerName', result || 'null');
+    } catch (e) {
+      window.flutter_inappwebview.callHandler('$handlerName', JSON.stringify({
+        balance: "0.000 HIVE",
+        hbd_balance: "0.000 HBD",
+        savings_balance: "0.000 HIVE",
+        savings_hbd_balance: "0.000 HBD",
+        hive_power: "0 HP",
+        estimated_value: "\$0.00",
+        error: e.message || "Unknown error"
+      }));
+    }
+  })();
   """;
 
     await headlessWebView.webViewController?.evaluateJavascript(source: jsCall);

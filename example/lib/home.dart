@@ -812,7 +812,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ).showSnackBar(SnackBar(content: Text('Failed to get witness votes')));
     }
   }
-  
+
   Future<void> _getAccountHistoryExample() async {
     try {
       String account = 'sagarkothari88';
@@ -1389,42 +1389,45 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Text('Resources Credits Percentage (hfk)'),
                 onPressed: _getResourceCreditshfk,
               ),
-              
+
               ElevatedButton(
-                onPressed: (){
+                onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Followings(
-                        hfk: hfk,
-                        account: 'sagarkothari88',))
-                      );
+                      builder:
+                          (context) =>
+                              Followings(hfk: hfk, account: 'sagarkothari88'),
+                    ),
+                  );
                 },
                 //_getFollowingsData,
                 child: Text("Get Followings"),
               ),
               ElevatedButton(
-                onPressed: (){
+                onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Followers(
-                        hfk: hfk,
-                        account: 'sagarkothari88',))
-                      );
+                      builder:
+                          (context) =>
+                              Followers(hfk: hfk, account: 'sagarkothari88'),
+                    ),
+                  );
                 },
                 //_getFollowersData,
                 child: Text("Get Followers"),
               ),
               ElevatedButton(
-                onPressed: (){
+                onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => WitnessVotes(
-                        hfk: hfk,
-                        account: 'sagarkothari88',))
-                      );
+                      builder:
+                          (context) =>
+                              WitnessVotes(hfk: hfk, account: 'sagarkothari88'),
+                    ),
+                  );
                 },
                 //_getWitnessVotesData,
                 child: Text("Get Witness Votes"),

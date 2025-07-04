@@ -9,6 +9,7 @@ import 'package:hive_flutter_kit/core/models/followers.dart';
 import 'package:hive_flutter_kit/core/models/followings.dart';
 import 'package:hive_flutter_kit/core/models/account_history.dart';
 import 'package:hive_flutter_kit/core/models/login_model.dart';
+import 'package:hive_flutter_kit/core/models/wallet_data.dart';
 import 'package:js/js.dart';
 import 'package:hive_flutter_kit/core/models/witnessvote.dart';
 import 'package:js/js.dart' show JS;
@@ -108,6 +109,8 @@ external dynamic getAccountHistoryJS(
   String? stop,
 );
 
+@JS('getFullWalletData')
+external dynamic getFullWalletDataJS(String username);
 @JS('listProposals')
 external dynamic getProposalsJS(
   List<dynamic> start,
@@ -669,7 +672,7 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
       return WitnessVotesData.empty();
     }
   }
-  
+
   @override
   Future<List<AccountHistoryOp>> getAccountHistory(
     String account, {
@@ -684,6 +687,26 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
     return jsonList.map((e) => AccountHistoryOp.fromJson(e)).toList();
   }
 
+  Future<WalletData> getFullWalletData(String username) async {
+    try {
+      final promise = getFullWalletDataJS(username);
+      final jsonString = await promiseToFuture(promise);
+
+      if (jsonString == null || jsonString == 'null') {
+        return WalletData.fallback(error: 'No data returned from JS');
+      }
+
+      final parsed = jsonDecode(jsonString);
+      if (parsed is Map<String, dynamic>) {
+        return WalletData.fromJson(parsed);
+      } else {
+        return WalletData.fallback(error: 'Unexpected JSON format');
+      }
+    } catch (e) {
+      return WalletData.fallback(error: 'Exception: $e');
+    }
+  }
+
   @override
   Future<List<Proposal>> getProposals({
     List<dynamic> start = const [-1],
@@ -692,13 +715,7 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
     String orderDirection = 'descending',
     String status = 'votable',
   }) async {
-    final promise = getProposalsJS(
-      start,
-      limit,
-      order,
-      orderDirection,
-      status,
-    );
+    final promise = getProposalsJS(start, limit, order, orderDirection, status);
     final jsonString = await promiseToFuture(promise);
     final Map<String, dynamic> parsed = jsonDecode(jsonString);
     final List<dynamic> proposals = parsed['proposals'] ?? [];
@@ -713,8 +730,11 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
   }
 
   @override
-  Future<List<Account>> getWitnessesByVote({String startAt = "",int limit = 60}) async {
-    var promise = getWitnessesByVoteJS(startAt,limit);
+  Future<List<Account>> getWitnessesByVote({
+    String startAt = "",
+    int limit = 60,
+  }) async {
+    var promise = getWitnessesByVoteJS(startAt, limit);
     var contentData = await promiseToFuture(promise);
     // The JS returns a JSON string array of witness accounts
     return Account.listFromJsonString(contentData);
