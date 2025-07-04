@@ -1,4 +1,4 @@
-group = "com.example.hive_flutter_kit"
+group = "one.sagarkothari88.hive_flutter_kit"
 version = "1.0-SNAPSHOT"
 
 buildscript {
@@ -25,7 +25,7 @@ apply plugin: "com.android.library"
 apply plugin: "kotlin-android"
 
 android {
-    namespace = "com.example.hive_flutter_kit"
+    namespace = "one.sagarkothari88.hive_flutter_kit"
 
     compileSdk = 35
 
