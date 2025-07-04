@@ -12,6 +12,7 @@ import 'package:hive_flutter_kit/ux/dhive/witnesses/witnesses.dart';
 import 'package:hive_flutter_kit/ux/dhive/following_followers/followers.dart';
 import 'package:hive_flutter_kit/ux/dhive/following_followers/followings.dart';
 import 'package:hive_flutter_kit/ux/dhive/following_followers/witness_votes.dart';
+import 'package:hive_flutter_kit/ux/dhive/proposals/proposals.dart';
 import 'package:hive_flutter_kit/ux/login_screen.dart';
 import 'package:hive_flutter_kit/ux/switch_user.dart';
 import 'package:hive_flutter_kit/ux/dhive/community_list/community_list.dart';
@@ -861,6 +862,50 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<void> _getProposalsExample() async {
+    try {
+      final result = await hfk.getProposals(
+        start: [-1],
+        limit: 100,
+        order: 'by_total_votes',
+        orderDirection: 'descending',
+        status: 'votable',
+      );
+      // Example: Print the number of proposals fetched
+      debugPrint('Fetched ${result.length} proposals');
+      if (result.isEmpty) {
+        debugPrint('No proposals found.');
+      } else {
+        for (var proposal in result) {
+          debugPrint('--- Proposal Start ---');
+          debugPrint('ID: ${proposal.id}');
+          debugPrint('Proposal ID: ${proposal.proposalId}');
+          debugPrint('Creator: ${proposal.creator}');
+          debugPrint('Receiver: ${proposal.receiver}');
+          debugPrint('Subject: ${proposal.subject}');
+          debugPrint('Permlink: ${proposal.permlink}');
+          debugPrint(
+            'Daily Pay: ${proposal.dailyPay.amount} ${proposal.dailyPay.nai}',
+          );
+          debugPrint('Start Date: ${proposal.startDate}');
+          debugPrint('End Date: ${proposal.endDate}');
+          debugPrint('Total Votes: ${proposal.totalVotes}');
+          debugPrint('Status: ${proposal.status}');
+          debugPrint('--- Proposal End ---\n');
+        }
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Fetched proposals (see debug output)')),
+      );
+    } catch (e) {
+      debugPrint('Error in getProposals: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Get Proposals Error: $e')));
+    }
+  }
+
   Future<void> _checkThreespeakInAccountAuths() async {
     try {
       final username = _usernameController.text;
@@ -1344,6 +1389,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Text('Resources Credits Percentage (hfk)'),
                 onPressed: _getResourceCreditshfk,
               ),
+              
               ElevatedButton(
                 onPressed: (){
                   Navigator.push(
@@ -1382,6 +1428,51 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
                 //_getWitnessVotesData,
                 child: Text("Get Witness Votes"),
+              ),
+
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder:
+                          (_) => ProposalsScreen(
+                            hfk: hfk,
+                            // Callback implementations
+                            onTapUserAvatar: (creator) {
+                              print('User avatar tapped: $creator');
+                              // Navigate to user profile or show user details
+                            },
+                            onTapUsername: (creator) {
+                              print('Username tapped: $creator');
+                              // Navigate to user profile or show user details
+                            },
+                            onTapTitle: (subject, proposalId) {
+                              print('Title tapped: $subject #$proposalId');
+                              // Navigate to proposal details page
+                            },
+                            onTapStats: (proposalId) {
+                              print('Stats tapped for proposal: $proposalId');
+                              // Show proposal statistics
+                            },
+                            onTapUpvote: (proposalId) {
+                              print('Upvote tapped for proposal: $proposalId');
+                              // Handle upvote action
+                            },
+                            onTapVoteValue: (proposalId, voteValue) {
+                              print(
+                                'Vote value tapped for proposal: $proposalId, value: $voteValue',
+                              );
+                              // Show vote details or voting interface
+                            },
+                            onTapSupport: (proposalId) {
+                              print('Support tapped for proposal: $proposalId');
+                              // Handle support action
+                            },
+                          ),
+                    ),
+                  );
+                },
+                child: const Text("Get Proposals"),
               ),
 
               ElevatedButton(
