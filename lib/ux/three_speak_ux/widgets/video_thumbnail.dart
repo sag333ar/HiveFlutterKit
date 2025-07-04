@@ -22,7 +22,7 @@ class VideoThumbnail extends StatelessWidget {
       children: [
         CachedNetworkImage(
           imageUrl: thumbnailUrl ?? '',
-          height: 200,
+          height: 300,
           width: double.infinity,
           fit: BoxFit.cover,
           placeholder: (context, url) => Container(

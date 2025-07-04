@@ -4,12 +4,9 @@ import 'package:hive_flutter_kit/core/common/enum.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/graphql/gql_communicator.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_tags_response.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/components/user_channel_screen/user_channel_screen.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/components/video_player.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/user_profile_image.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/video_card_widget.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/visibility_detector.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/components/trending_tags/trending_tags.dart';
 
 class ThreeSpeakVideoFeed extends StatefulWidget {
   final ThreeSpeakVideoFeedType feedType;
@@ -29,6 +26,7 @@ class ThreeSpeakVideoFeed extends StatefulWidget {
   final String? searchTerm;
   final String? commnuityId;
   final String? tag;
+  final bool? isPayoutValueVisible;
 
   const ThreeSpeakVideoFeed({
     super.key,
@@ -47,6 +45,7 @@ class ThreeSpeakVideoFeed extends StatefulWidget {
     required this.onTapUpvote,
     required this.onTapComment,
     this.tag,
+    this.isPayoutValueVisible,
   });
 
   @override
@@ -318,7 +317,7 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
             crossAxisCount: crossAxisCount,
             crossAxisSpacing: 8,
             mainAxisSpacing: 8,
-            childAspectRatio: 4 / 3.2,
+            childAspectRatio: 0.99,
           ),
           itemCount: _items.length,
           itemBuilder: (context, index) {
@@ -326,6 +325,8 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
             return VideoCard(
               item: item,
               isVisible: true,
+              isInGrid: true,
+              isPayoutValueVisible: widget.isPayoutValueVisible,
               onTap: () => _handleTapVideoItem(context, item),
               onTapAuthor: () => _handleTapAuthor(context, item),
               onTapReport: () => widget.onTapReport.call(item),
@@ -341,6 +342,8 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
             return VideoCard(
               item: item,
               isVisible: isVisible,
+              isInGrid: false,
+              isPayoutValueVisible: true,
               onTap: () => _handleTapVideoItem(context, item),
               onTapAuthor: () => _handleTapAuthor(context, item),
               onTapReport: () => widget.onTapReport.call(item),
