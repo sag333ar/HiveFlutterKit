@@ -74,7 +74,7 @@ flutter:
       ios:
         pluginClass: HiveFlutterKitPlugin
       web:
-        pluginClass: HiveFlutterKitPlugin
+        pluginClass: HiveFlutterKitWeb
         fileName: core/hive_flutter_kit_web.dart
 
   # To add assets to your plugin package, add an assets section, like this:
