@@ -1513,4 +1513,68 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
     await headlessWebView.webViewController?.evaluateJavascript(source: jsCall);
     return completer.future;
   }
+
+  @override
+  Future<List<Proposal>> getProposals({
+    List<dynamic> start = const [-1],
+    int limit = 500,
+    String order = 'by_total_votes',
+    String orderDirection = 'descending',
+    String status = 'votable',
+  }) async {
+    final completer = Completer<List<Proposal>>();
+    final handlerName =
+        'onGetProposalsResult_${DateTime.now().millisecondsSinceEpoch}';
+
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: handlerName,
+      callback: (args) {
+        if (!completer.isCompleted) {
+          final contentData = args.isNotEmpty ? args[0].toString() : null;
+          if (contentData != null &&
+              contentData != 'null' &&
+              contentData.isNotEmpty) {
+            try {
+              final Map<String, dynamic> parsed = jsonDecode(contentData);
+              final List<dynamic> jsonList = parsed['proposals'] ?? [];
+              final proposals =
+                  jsonList.map((e) => Proposal.fromJson(e)).toList();
+              completer.complete(proposals);
+            } catch (e) {
+              completer.completeError('Failed to parse proposals: $e');
+            }
+          } else {
+            completer.completeError(
+              'Failed to get proposals or empty response',
+            );
+          }
+        }
+        headlessWebView.webViewController?.removeJavaScriptHandler(
+          handlerName: handlerName,
+        );
+      },
+    );
+
+    // Encode JS arguments
+    final jsStart = jsonEncode(start);
+    final jsLimit = limit;
+    final jsOrder = jsonEncode(order);
+    final jsOrderDirection = jsonEncode(orderDirection);
+    final jsStatus = jsonEncode(status);
+
+    // JS wrapper to call the JS-side listProposals method and return via channel
+    final jsCall = """
+    (async () => {
+      try {
+        const result = await listProposals($jsStart, $jsLimit, $jsOrder, $jsOrderDirection, $jsStatus);
+        window.flutter_inappwebview.callHandler('$handlerName', result || 'null');
+      } catch (e) {
+        window.flutter_inappwebview.callHandler('$handlerName', JSON.stringify({proposals: []}));
+      }
+    })();
+  """;
+
+    await headlessWebView.webViewController?.evaluateJavascript(source: jsCall);
+    return completer.future;
+  }
 }
