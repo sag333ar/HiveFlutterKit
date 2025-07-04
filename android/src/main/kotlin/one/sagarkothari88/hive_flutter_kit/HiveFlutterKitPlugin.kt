@@ -1,4 +1,4 @@
-package com.example.hive_flutter_kit
+package one.sagarkothari88.hive_flutter_kit
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall

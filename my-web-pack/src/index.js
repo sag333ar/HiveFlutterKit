@@ -5,8 +5,8 @@ const dhive = require('@hiveio/dhive');
 let dhiveClient = new dhive.Client(["https://api.hive.blog"]);
 const aioha = initAioha({
   hiveauth: {
-    name: "AiohaExperiments",
-    description: "Testing aioha login - keychain & hiveauth methods",
+    name: "Hive Flutter Kit",
+    description: "Hive Flutter Kit based flutter-apps",
   },
 });
 
@@ -647,6 +647,95 @@ async function getActiveVotes(author, permlink) {
 }
 window.getActiveVotes = getActiveVotes;
 
+async function getFollowingsData(username, start = "", type = "blog", limit = 1000) {
+  try {
+    let followings = [];
+    let hasMore = true;
+    let lastFollowing = start;
+
+    while (hasMore) {
+      const result = await dhiveClient.call(
+        'condenser_api',
+        'get_following',
+        [username, lastFollowing, type, limit]
+      );
+
+      followings = [...followings, ...result];
+
+      if (result.length < limit) {
+        hasMore = false;
+      } else {
+        lastFollowing = result[result.length - 1].following;
+      }
+    }
+
+    return JSON.stringify({
+      followings,
+      count: followings.length
+    });
+  } catch (error) {
+    console.error('Error fetching followings:', error);
+    return JSON.stringify({ error: error.message });
+  }
+}
+
+window.getFollowingsData = getFollowingsData;
+
+
+async function getFollowersData(username, start = "", type = "blog", limit = 1000) {
+  try {
+    let followers = [];
+    let hasMore = true;
+    let lastFollower = start;
+
+    while (hasMore) {
+      const result = await dhiveClient.call(
+        'condenser_api',
+        'get_followers',
+        [username, lastFollower, type, limit]
+      );
+
+      followers = [...followers, ...result];
+
+      if (result.length < limit) {
+        hasMore = false;
+      } else {
+        lastFollower = result[result.length - 1].follower;
+      }
+    }
+
+    const data = {
+      followers: followers,
+      count: followers.length
+    };
+    return JSON.stringify(data);
+  } catch (error) {
+    console.error('Error fetching followers:', error);
+    return JSON.stringify({ error: error.message });
+  }
+}
+
+window.getFollowersData = getFollowersData;
+
+
+async function getWitnessVotesData(username) {
+  try {
+    const accounts = await dhiveClient.database.getAccounts([username]);
+    if (accounts && accounts.length > 0) {
+      const data = {
+        "witness_votes": accounts[0].witness_votes || [],
+        "witnesses_voted_for": accounts[0].witnesses_voted_for || 0
+      };
+      return JSON.stringify(data);
+    }
+    return JSON.stringify({ "witness_votes": [], "witnesses_voted_for": 0 });
+  } catch (error) {
+    console.error("Error fetching witness votes:", error);
+    return JSON.stringify({ "witness_votes": [], "witnesses_voted_for": 0 });
+  }
+}
+window.getWitnessVotesData = getWitnessVotesData;
+
 async function isHiveKeychainAvailable() {
   try {
     return aioha.isProviderEnabled(Providers.Keychain);
@@ -689,6 +778,7 @@ async function subscribeUnsubscribeToCommunity(community, subscribe) {
 }
 window.subscribeUnsubscribeToCommunity = subscribeUnsubscribeToCommunity;
 
+<<<<<<< HEAD
 async function getWalletDataDetail(username) {
   try {
     const accounts = await dhiveClient.database.getAccounts([username]);
@@ -784,3 +874,56 @@ async function getFullWalletData(username) {
   }
 }
 window.getFullWalletData = getFullWalletData;
+=======
+async function getWitnessesByVote(startAt = "", limit = 60) {
+  try {
+    const witnesses = await dhiveClient.call(
+      "condenser_api",
+      "get_witnesses_by_vote",
+      [startAt, limit]
+    );
+
+    const usernames = witnesses.map(w => w.owner);
+
+    const accounts = await dhiveClient.call(
+      "condenser_api",
+      "get_accounts",
+      [usernames]
+    );
+
+    return JSON.stringify(accounts);
+  } catch (error) {
+    console.error("Error calling getWitnessesByVote:", error);
+    return JSON.stringify([]);
+  }
+}
+window.getWitnessesByVote = getWitnessesByVote;
+async function listProposals(
+  start = [-1],
+  limit = 500,
+  order = "by_total_votes",
+  order_direction = "descending",
+  status = "votable"
+) {
+  const params = {
+    start,
+    limit,
+    order,
+    order_direction,
+    status,
+  };
+
+  try {
+    const result = await dhiveClient.call(
+      "database_api",
+      "list_proposals",
+      params
+    );
+    return JSON.stringify(result);
+  } catch (error) {
+    console.error("Error calling list_proposals:", error);
+    return JSON.stringify([]);
+  }
+}
+window.listProposals = listProposals;
+>>>>>>> c4c8a1fc58d2c998222db8cea329be7dbd7b4509

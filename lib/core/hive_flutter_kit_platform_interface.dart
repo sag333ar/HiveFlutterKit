@@ -1,7 +1,10 @@
+import 'package:hive_flutter_kit/core/models/followers.dart';
+import 'package:hive_flutter_kit/core/models/followings.dart';
 import 'package:hive_flutter_kit/core/models/account_history.dart';
 import 'package:hive_flutter_kit/core/models/login_model.dart';
 import 'package:hive_flutter_kit/core/models/upload_image.dart';
 import 'package:hive_flutter_kit/core/models/wallet_data.dart';
+import 'package:hive_flutter_kit/core/models/witnessvote.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:hive_flutter_kit/core/models/account.dart';
 import 'package:hive_flutter_kit/core/models/chain_properties.dart';
@@ -10,6 +13,7 @@ import 'package:hive_flutter_kit/core/models/resource_credits.dart';
 import 'package:hive_flutter_kit/core/models/voting_power.dart';
 import 'package:hive_flutter_kit/core/models/community_model.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/communities_models/community_subscriber.dart';
+import 'package:hive_flutter_kit/core/models/proposal.dart';
 
 import 'dart:typed_data';
 import 'package:image_picker/image_picker.dart';
@@ -356,6 +360,28 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
     throw UnimplementedError('getActiveVotes has not been implemented.');
   }
 
+  Future<FollowingsData> getFollowingsData(
+    String username, {
+    String? start = '',
+    String? type = 'blog',
+    int? limit = 1000,
+  }) {
+    throw UnimplementedError('getFollowingsData has not been implemented.');
+  }
+
+  Future<FollowersData> getFollowersData(
+    String username, {
+    String? start = '',
+    String? type = 'blog',
+    int? limit = 1000,
+  }) {
+    throw UnimplementedError('getFollowersData has not been implemented.');
+  }
+
+  Future<WitnessVotesData> getWitnessVotesData(String username) {
+    throw UnimplementedError('getWitnessVotesData has not been implemented.');
+  }
+
   Future<List<AccountHistoryOp>> getAccountHistory(
     String account, {
     int index = -1,
@@ -366,13 +392,30 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
     throw UnimplementedError('getAccountHistory has not been implemented.');
   }
 
-  Future<WalletData> getFullWalletData(String username){
+  Future<WalletData> getFullWalletData(String username) {
     throw UnimplementedError('getFullWalletData has not been implemented.');
+  }
+
+  Future<List<Proposal>> getProposals({
+    List<dynamic> start = const [-1],
+    int limit = 500,
+    String order = 'by_total_votes',
+    String orderDirection = 'descending',
+    String status = 'votable',
+  }) {
+    throw UnimplementedError('getProposals has not been implemented.');
   }
 
   Future<bool> isHiveKeychainAvailable() {
     throw UnimplementedError(
       'isHiveKeychainAvailable has not been implemented.',
     );
+  }
+
+  Future<List<Account>> getWitnessesByVote({
+    String startAt = "",
+    int limit = 60,
+  }) {
+    throw UnimplementedError('getWitnessesByVote has not been implemented.');
   }
 }

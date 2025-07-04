@@ -5,9 +5,13 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'package:hive_flutter_kit/core/models/followers.dart';
+import 'package:hive_flutter_kit/core/models/followings.dart';
 import 'package:hive_flutter_kit/core/models/account_history.dart';
 import 'package:hive_flutter_kit/core/models/login_model.dart';
 import 'package:hive_flutter_kit/core/models/wallet_data.dart';
+import 'package:js/js.dart';
+import 'package:hive_flutter_kit/core/models/witnessvote.dart';
 import 'package:js/js.dart' show JS;
 import 'package:js/js_util.dart';
 
@@ -20,6 +24,7 @@ import 'package:hive_flutter_kit/core/models/resource_credits.dart';
 import 'package:hive_flutter_kit/core/models/voting_power.dart';
 import 'package:hive_flutter_kit/core/models/community_model.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/communities_models/community_subscriber.dart';
+import 'package:hive_flutter_kit/core/models/proposal.dart';
 
 import 'hive_flutter_kit_platform_interface.dart';
 
@@ -44,6 +49,25 @@ external dynamic getVotingPowerData(String username);
 
 @JS('getResourceCreditsPercentage')
 external dynamic getResourceCreditsPercentage(String username);
+
+@JS('getFollowingsData')
+external dynamic getFollowingsDataJS(
+  String username,
+  String? start,
+  String? type,
+  int? limit,
+);
+
+@JS('getFollowersData')
+external dynamic getFollowersDataJS(
+  String username,
+  String? start,
+  String? type,
+  int? limit,
+);
+
+@JS('getWitnessVotesData')
+external dynamic getWitnessVotesDataJS(String username);
 
 @JS('getAccountPosts')
 external dynamic getAccountPostsJS(
@@ -87,6 +111,14 @@ external dynamic getAccountHistoryJS(
 
 @JS('getFullWalletData')
 external dynamic getFullWalletDataJS(String username);
+@JS('listProposals')
+external dynamic getProposalsJS(
+  List<dynamic> start,
+  int limit,
+  String order,
+  String order_direction,
+  String status,
+);
 
 // -------------------------------------------------------------------------
 
@@ -188,6 +220,9 @@ external dynamic transferJS(
 
 @JS('isHiveKeychainAvailable')
 external dynamic isHiveKeychainAvailableJS();
+
+@JS('getWitnessesByVote')
+external dynamic getWitnessesByVoteJS(String startAt, int limit);
 
 /// A web implementation of the HiveFlutterKitPlatform of the HiveFlutterKit plugin.
 class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
@@ -587,6 +622,58 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
   }
 
   @override
+  Future<FollowingsData> getFollowingsData(
+    String username, {
+    String? start = '',
+    String? type = 'blog',
+    int? limit = 1000,
+  }) async {
+    try {
+      final promise = getFollowingsDataJS(username, start, type, limit);
+      final content = await promiseToFuture(promise);
+      if (content == null) return FollowingsData.empty();
+
+      return FollowingsData.fromJson(jsonDecode(content));
+    } catch (e) {
+      print("Error in getFollowingsData: $e");
+      return FollowingsData.empty();
+    }
+  }
+
+  @override
+  Future<FollowersData> getFollowersData(
+    String username, {
+    String? start = '',
+    String? type = 'blog',
+    int? limit = 1000,
+  }) async {
+    try {
+      final promise = getFollowersDataJS(username, start, type, limit);
+      final content = await promiseToFuture(promise);
+      if (content == null) return FollowersData.empty();
+
+      return FollowersData.fromJson(jsonDecode(content));
+    } catch (e) {
+      print("Error in getFollowersData: $e");
+      return FollowersData.empty();
+    }
+  }
+
+  @override
+  Future<WitnessVotesData> getWitnessVotesData(String username) async {
+    try {
+      final promise = getWitnessVotesDataJS(username);
+      final content = await promiseToFuture(promise);
+      if (content == null) return WitnessVotesData.empty();
+
+      return WitnessVotesData.fromJson(jsonDecode(content));
+    } catch (e) {
+      print("Error in getWitnessVotesData: $e");
+      return WitnessVotesData.empty();
+    }
+  }
+
+  @override
   Future<List<AccountHistoryOp>> getAccountHistory(
     String account, {
     int index = -1,
@@ -621,9 +708,35 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
   }
 
   @override
+  Future<List<Proposal>> getProposals({
+    List<dynamic> start = const [-1],
+    int limit = 500,
+    String order = 'by_total_votes',
+    String orderDirection = 'descending',
+    String status = 'votable',
+  }) async {
+    final promise = getProposalsJS(start, limit, order, orderDirection, status);
+    final jsonString = await promiseToFuture(promise);
+    final Map<String, dynamic> parsed = jsonDecode(jsonString);
+    final List<dynamic> proposals = parsed['proposals'] ?? [];
+    return proposals.map((e) => Proposal.fromJson(e)).toList();
+  }
+
+  @override
   Future<bool> isHiveKeychainAvailable() async {
     var promise = isHiveKeychainAvailableJS();
     var result = await promiseToFuture(promise);
     return result == true;
+  }
+
+  @override
+  Future<List<Account>> getWitnessesByVote({
+    String startAt = "",
+    int limit = 60,
+  }) async {
+    var promise = getWitnessesByVoteJS(startAt, limit);
+    var contentData = await promiseToFuture(promise);
+    // The JS returns a JSON string array of witness accounts
+    return Account.listFromJsonString(contentData);
   }
 }

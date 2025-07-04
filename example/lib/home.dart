@@ -4,12 +4,15 @@ import 'package:hive_flutter_kit/core/common/enum.dart';
 import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit/core/models/community_model.dart';
 import 'package:flutter/material.dart';
-import 'package:hive_flutter_kit/core/models/wallet_data.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 import 'package:hive_flutter_kit/ux/bottom_tool_bar.dart';
 import 'package:hive_flutter_kit/ux/dhive/account_activities/account_activities.dart';
 import 'package:hive_flutter_kit/ux/dhive/comments/hive_post_comments.dart';
-import 'package:hive_flutter_kit/ux/dhive/wallet/wallet.dart';
+import 'package:hive_flutter_kit/ux/dhive/witnesses/witnesses.dart';
+import 'package:hive_flutter_kit/ux/dhive/following_followers/followers.dart';
+import 'package:hive_flutter_kit/ux/dhive/following_followers/followings.dart';
+import 'package:hive_flutter_kit/ux/dhive/following_followers/witness_votes.dart';
+import 'package:hive_flutter_kit/ux/dhive/proposals/proposals.dart';
 import 'package:hive_flutter_kit/ux/login_screen.dart';
 import 'package:hive_flutter_kit/ux/switch_user.dart';
 import 'package:hive_flutter_kit/ux/dhive/community_list/community_list.dart';
@@ -28,6 +31,7 @@ import 'package:hive_flutter_kit/ux/dhive/feed_screen/trending_feed_screen.dart'
 import 'package:hive_flutter_kit/ux/dhive/user_profile/user_profile_picture.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+//import 'package:hive_flutter_ux/ux/dhive/witnesses/witnesses.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -735,6 +739,80 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<void> _getFollowingsData() async {
+    try {
+      var result = await hfk.getFollowingsData(
+        'sagarkothari88', // username
+        start: '', // optional
+        type: 'blog', // optional
+        limit: 100, // optional
+      );
+
+      debugPrint("Followings Count: ${result.count}");
+      for (var user in result.followings ?? []) {
+        debugPrint("Following: ${user['following']}");
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Fetched ${result.count} followings')),
+      );
+    } catch (e) {
+      debugPrint('getFollowingsData error: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to get followings')));
+    }
+  }
+
+  Future<void> _getFollowersData() async {
+    try {
+      var result = await hfk.getFollowersData(
+        'sagarkothari88', // username
+        start: '', // optional
+        type: 'blog', // optional
+        limit: 100, // optional
+      );
+
+      debugPrint("Followers Count: ${result.count}");
+      for (var user in result.followers ?? []) {
+        debugPrint("Follower: ${user['follower']}");
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Fetched ${result.count} followers')),
+      );
+    } catch (e) {
+      debugPrint('getFollowersData error: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to get followers')));
+    }
+  }
+
+  Future<void> _getWitnessVotesData() async {
+    try {
+      var result = await hfk.getWitnessVotesData('sagarkothari88');
+
+      for (var witness in result.witnessVotes ?? []) {
+        debugPrint("Voted for: $witness");
+      }
+      debugPrint("Voted count: ${result.witnessesVotedFor ?? 0}");
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Witnesses voted for: ${result.witnessesVotedFor ?? 0}',
+          ),
+        ),
+      );
+    } catch (e) {
+      debugPrint('getWitnessVotesData error: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to get witness votes')));
+    }
+  }
+
   Future<void> _getAccountHistoryExample() async {
     try {
       String account = 'sagarkothari88';
@@ -784,29 +862,47 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Future<void> _getWalletDataViaChannel() async {
+  Future<void> _getProposalsExample() async {
     try {
-      String username = 'sagarkothari88';
-      final wallet = await hfk.getFullWalletData(username);
-
-      debugPrint('--- Wallet Data Debug Start ---');
-      debugPrint('Balance: ${wallet.balance ?? "null"}');
-      debugPrint('HBD Balance: ${wallet.hbdBalance ?? "null"}');
-      debugPrint('Savings Balance: ${wallet.savingsBalance ?? "null"}');
-      debugPrint('Savings HBD Balance: ${wallet.savingsHbdBalance ?? "null"}');
-      debugPrint('Hive Power: ${wallet.hivePower ?? "null"}');
-      debugPrint('Estimated Value (USD): ${wallet.estimatedValue ?? "null"}');
-      debugPrint('Error: ${wallet.error ?? "none"}');
-      debugPrint('--- Wallet Data Debug End ---\n');
+      final result = await hfk.getProposals(
+        start: [-1],
+        limit: 100,
+        order: 'by_total_votes',
+        orderDirection: 'descending',
+        status: 'votable',
+      );
+      // Example: Print the number of proposals fetched
+      debugPrint('Fetched ${result.length} proposals');
+      if (result.isEmpty) {
+        debugPrint('No proposals found.');
+      } else {
+        for (var proposal in result) {
+          debugPrint('--- Proposal Start ---');
+          debugPrint('ID: ${proposal.id}');
+          debugPrint('Proposal ID: ${proposal.proposalId}');
+          debugPrint('Creator: ${proposal.creator}');
+          debugPrint('Receiver: ${proposal.receiver}');
+          debugPrint('Subject: ${proposal.subject}');
+          debugPrint('Permlink: ${proposal.permlink}');
+          debugPrint(
+            'Daily Pay: ${proposal.dailyPay.amount} ${proposal.dailyPay.nai}',
+          );
+          debugPrint('Start Date: ${proposal.startDate}');
+          debugPrint('End Date: ${proposal.endDate}');
+          debugPrint('Total Votes: ${proposal.totalVotes}');
+          debugPrint('Status: ${proposal.status}');
+          debugPrint('--- Proposal End ---\n');
+        }
+      }
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Fetched wallet data (see debug output)')),
+        SnackBar(content: Text('Fetched proposals (see debug output)')),
       );
     } catch (e) {
-      debugPrint('getFullWalletData error: $e');
+      debugPrint('Error in getProposals: $e');
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Wallet data fetch error: $e')));
+      ).showSnackBar(SnackBar(content: Text('Get Proposals Error: $e')));
     }
   }
 
@@ -1100,6 +1196,22 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  Future<void> _getWitnessesByVote() async {
+    try {
+      final result = await hfk.getWitnessesByVote(limit: 10);
+      //debugPrint('Witnesses by vote: ${result.map((w) => w.owner).join(', ')}');
+      debugPrint('Witnesses by vote: ${result.map((w) => w.name).join(', ')}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Fetched ${result.length} witnesses')),
+      );
+    } catch (e) {
+      debugPrint('Error fetching witnesses by vote: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1277,16 +1389,95 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Text('Resources Credits Percentage (hfk)'),
                 onPressed: _getResourceCreditshfk,
               ),
+
               ElevatedButton(
-                onPressed: (){
+                onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Wallet(hfk: hfk, username: 'sagarkothari88'),));
+                      builder:
+                          (context) =>
+                              Followings(hfk: hfk, account: 'sagarkothari88'),
+                    ),
+                  );
                 },
-                //_getWalletDataViaChannel,
-                child: Text('Get Wallet Data (via channel)'),
+                //_getFollowingsData,
+                child: Text("Get Followings"),
               ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) =>
+                              Followers(hfk: hfk, account: 'sagarkothari88'),
+                    ),
+                  );
+                },
+                //_getFollowersData,
+                child: Text("Get Followers"),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) =>
+                              WitnessVotes(hfk: hfk, account: 'sagarkothari88'),
+                    ),
+                  );
+                },
+                //_getWitnessVotesData,
+                child: Text("Get Witness Votes"),
+              ),
+
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder:
+                          (_) => ProposalsScreen(
+                            hfk: hfk,
+                            // Callback implementations
+                            onTapUserAvatar: (creator) {
+                              print('User avatar tapped: $creator');
+                              // Navigate to user profile or show user details
+                            },
+                            onTapUsername: (creator) {
+                              print('Username tapped: $creator');
+                              // Navigate to user profile or show user details
+                            },
+                            onTapTitle: (subject, proposalId) {
+                              print('Title tapped: $subject #$proposalId');
+                              // Navigate to proposal details page
+                            },
+                            onTapStats: (proposalId) {
+                              print('Stats tapped for proposal: $proposalId');
+                              // Show proposal statistics
+                            },
+                            onTapUpvote: (proposalId) {
+                              print('Upvote tapped for proposal: $proposalId');
+                              // Handle upvote action
+                            },
+                            onTapVoteValue: (proposalId, voteValue) {
+                              print(
+                                'Vote value tapped for proposal: $proposalId, value: $voteValue',
+                              );
+                              // Show vote details or voting interface
+                            },
+                            onTapSupport: (proposalId) {
+                              print('Support tapped for proposal: $proposalId');
+                              // Handle support action
+                            },
+                          ),
+                    ),
+                  );
+                },
+                child: const Text("Get Proposals"),
+              ),
+
               ElevatedButton(
                 child: Text('Get Account History'),
                 onPressed: () {
@@ -1303,6 +1494,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   );
                 },
               ),
+
               // --- End hfk equivalents ---
               ElevatedButton(
                 onPressed: _checkThreespeakInAccountAuths,
@@ -2311,6 +2503,30 @@ class _MyHomePageState extends State<MyHomePage> {
                   );
                 },
                 child: const Text('trending tags'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => Witnesses(
+                            hfk: hfk,
+                            onTapWitness:
+                                (account) => print("Tapped on ${account.name}"),
+                            onTapLink:
+                                (account) =>
+                                    print("Link clicked for ${account.name}"),
+                            onTapCheckmark:
+                                (account) => print(
+                                  "Checkmark tapped for ${account.name}",
+                                ),
+                          ),
+                    ),
+                  );
+                },
+                //_getWitnessesByVote,
+                child: const Text('Get Witnesses By Vote'),
               ),
             ],
           ),

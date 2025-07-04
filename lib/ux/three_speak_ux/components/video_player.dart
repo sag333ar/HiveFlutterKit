@@ -233,7 +233,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         return 'https://ipfs-3speak.b-cdn.net/ipfs/$hash/manifest.m3u8';
       } else if (Platform.isAndroid) {
         debugPrint("Running on Android");
-        return 'https://ipfs-3speak.b-cdn.net/ipfs/$hash/480p/index.m3u8';
+        // var url = 'https://ipfs-3speak.b-cdn.net/ipfs/$hash/480p/index.m3u8';
+        var url = 'https://ipfs-3speak.b-cdn.net/ipfs/$hash/manifest.m3u8';
+        debugPrint("Running on Android - $url");
+        return url;
       } else {
         debugPrint("Running on another platform");
         return 'https://ipfs-3speak.b-cdn.net/ipfs/$hash/manifest.m3u8';
@@ -355,22 +358,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                           ),
                           _videoInfoWidget(),
                           Divider(height: 1),
-                          Expanded(
-                            child: widget.videoFeed(),
-                            // widget.relatedBuilder != null
-                            //     ? widget.relatedBuilder!(context, item!)
-                            // : ThreeSpeakVideoFeed(
-                            //   feedType: ThreeSpeakVideoFeedType.related,
-                            //   onTapVideoItem: (tappedItem) {
-                            //     widget.onTapSuggestedItem?.call(
-                            //       tappedItem.author?.username ?? '',
-                            //       tappedItem.permlink ?? '',
-                            //     );
-                            //   },
-                            //   relatedAuthor: item!.author?.username,
-                            //   relatedPermlink: item!.permlink,
-                            // ),
-                          ),
+                          Expanded(child: widget.videoFeed()),
                         ],
                       );
                     }
