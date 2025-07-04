@@ -5,8 +5,8 @@ const dhive = require('@hiveio/dhive');
 let dhiveClient = new dhive.Client(["https://api.hive.blog"]);
 const aioha = initAioha({
   hiveauth: {
-    name: "AiohaExperiments",
-    description: "Testing aioha login - keychain & hiveauth methods",
+    name: "Hive Flutter Kit",
+    description: "Hive Flutter Kit based flutter-apps",
   },
 });
 

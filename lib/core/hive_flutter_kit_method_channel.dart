@@ -60,15 +60,15 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
   }
 
   Future<String> _loadHTMLFromAssets() async {
-    String aiohajs = await rootBundle.loadString(
+    String hfkjs = await rootBundle.loadString(
       "packages/hive_flutter_kit/web/hiveflutterkit.js",
     );
     String longHtml = """
 <html>
-<head><title>AIOHA HTML</title></head>
+<head><title>Hive Flutter Kit</title></head>
 <body>
   <script>
-  $aiohajs
+  $hfkjs
   </script>
   </body>
   </html>
@@ -1461,7 +1461,10 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
   }
 
   @override
-  Future<List<Account>> getWitnessesByVote({String startAt = "", int limit = 60}) async {
+  Future<List<Account>> getWitnessesByVote({
+    String startAt = "",
+    int limit = 60,
+  }) async {
     await _webViewInitFuture;
 
     final completer = Completer<List<Account>>();
