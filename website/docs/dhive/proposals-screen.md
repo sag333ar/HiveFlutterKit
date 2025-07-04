@@ -8,11 +8,11 @@ slug: /proposals-screen
 
 The `ProposalsScreen` widget displays a list of governance proposals fetched from the Hive blockchain using the Hive Flutter Kit SDK. It supports filtering, sorting, and various user interactions including vote, stats, and support actions.
 
-> 📘 This is part of the [DHive Governance Module](/dhive-governance).
+> 📘 This is part of the `DHive Governance Module`.
 
 ---
 
-## Screenshot
+## UI Preview
 
 ![Proposals List Example](/img/dhive/proposalscreen.png)
 
