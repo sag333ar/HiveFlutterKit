@@ -4,12 +4,9 @@ import 'package:hive_flutter_kit/core/common/enum.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/graphql/gql_communicator.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_tags_response.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/components/user_channel_screen/user_channel_screen.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/components/video_player.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/user_profile_image.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/video_card_widget.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/visibility_detector.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/components/trending_tags/trending_tags.dart';
 
 class ThreeSpeakVideoFeed extends StatefulWidget {
   final ThreeSpeakVideoFeedType feedType;
@@ -309,16 +306,25 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
       );
     } else {
       final screenWidth = MediaQuery.of(context).size.width;
-      final isWide = screenWidth >= 600;
-      if (isWide) {
-        final crossAxisCount = screenWidth ~/ 350;
+
+      bool isMobile = screenWidth < 600;
+      bool isDesktop = screenWidth >= 1024;
+
+      Widget content;
+
+      if (!isMobile) {
+        final crossAxisCount =
+            isDesktop ? screenWidth ~/ 300 : screenWidth ~/ 350;
+
+        final childAspectRatio = isDesktop ? 4 / 3.2 : 4 / 3;
+
         content = GridView.builder(
           padding: const EdgeInsets.all(8),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: crossAxisCount,
             crossAxisSpacing: 8,
             mainAxisSpacing: 8,
-            childAspectRatio: 4 / 3.2,
+            childAspectRatio: childAspectRatio,
           ),
           itemCount: _items.length,
           itemBuilder: (context, index) {
@@ -326,6 +332,7 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
             return VideoCard(
               item: item,
               isVisible: true,
+              isMobile: false,
               onTap: () => _handleTapVideoItem(context, item),
               onTapAuthor: () => _handleTapAuthor(context, item),
               onTapReport: () => widget.onTapReport.call(item),
@@ -341,6 +348,7 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
             return VideoCard(
               item: item,
               isVisible: isVisible,
+              isMobile: true,
               onTap: () => _handleTapVideoItem(context, item),
               onTapAuthor: () => _handleTapAuthor(context, item),
               onTapReport: () => widget.onTapReport.call(item),
@@ -350,6 +358,8 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
           },
         );
       }
+
+      return content;
     }
 
     if (showSearchBar) {
