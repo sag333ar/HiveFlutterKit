@@ -191,7 +191,7 @@ Pull-to-refresh is implemented using `RefreshIndicator`. Swiping down reloads th
 
 ## Related Screens
 
-- [CommunityScreen](/dhive/community-screen.md)
-- [BlogScreen](/dhive/blog-screen.md)
-- [AccountPostsScreen](/dhive/account-posts-screen.md)
-- [ThreeSpeakVideoFeed](/3speak-feed)
+- [CommunityScreen](/docs/dhive/community-screen.md)
+- [BlogScreen](/docs/dhive/blog-screen.md)
+- [AccountPostsScreen](/docs/dhive/account-posts-screen.md)
+- [ThreeSpeakVideoFeed](/docs/3speak-feed)

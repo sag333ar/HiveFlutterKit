@@ -134,6 +134,7 @@ const sidebars = {
       ],
     },
     "extra-utilities",
+    "our-contributions"
     // Example for a future "Guides" section
     // {
     //   type: 'category',
