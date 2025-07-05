@@ -343,7 +343,7 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
               item: item,
               isVisible: isVisible,
               isInGrid: false,
-              isPayoutValueVisible: true,
+              isPayoutValueVisible: widget.isPayoutValueVisible,
               onTap: () => _handleTapVideoItem(context, item),
               onTapAuthor: () => _handleTapAuthor(context, item),
               onTapReport: () => widget.onTapReport.call(item),
