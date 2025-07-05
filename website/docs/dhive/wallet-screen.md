@@ -8,8 +8,6 @@ slug: /wallet-screen
 
 The `Wallet` widget displays a Hive account’s wallet data including token balances, savings, and Hive Power. This screen fetches wallet data using the Hive Flutter Kit SDK and renders a fully customizable UI with light/dark mode awareness.
 
-> 📘 This is part of the [DHive User Wallet Module](/dhive-wallet).
-
 ---
 
 ## Screenshot
