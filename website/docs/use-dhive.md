@@ -1,12 +1,10 @@
 ---
-title: Use DHive
-sidebar_label: Use DHive
+title: ♦️ Use DHive
+sidebar_label: ♦️ Use DHive
 slug: /use-dhive
 ---
 
-## Use DHive
-
-### Database API
+### ♦️ 🗄️ Database API
 
 ---
 
@@ -44,7 +42,7 @@ slug: /use-dhive
 
 ---
 
-### Helpers & Utilities
+### ♦️ ⚙️ Helpers & Utilities
 
 ---
 
@@ -78,7 +76,7 @@ slug: /use-dhive
 
 ---
 
-### HiveMind
+### ♦️ 🧠 HiveMind
 
 ---
 
@@ -110,7 +108,7 @@ slug: /use-dhive
 
 ---
 
-### Bridge
+### ♦️ 🌉 Bridge
 
 ---
 

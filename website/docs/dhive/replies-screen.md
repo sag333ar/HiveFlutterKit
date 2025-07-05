@@ -1,10 +1,10 @@
 ---
-title: DHive - User's Replies
-sidebar_label: Replies
+title: 👤 ↗️ DHive - User's Replies
+sidebar_label: 👤 ↗️ Replies
 slug: /dhive/replies-screen
 ---
 
-# 💬 DHive - User's Replies
+# 👤 ↗️ DHive - User's Replies
 
 The `RepliesScreen` widget is used to display a scrollable list of replies that a specific Hive account has received on their posts or comments. It fetches discussions using the "replies" filter specific to that account. The widget handles pagination (infinite scrolling) and provides standard interaction callbacks.
 

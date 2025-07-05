@@ -1,10 +1,10 @@
 ---
-title: Witnesses Screen
-sidebar_label: Witnesses
+title: 🗳️ 🙋🏼‍♂️ Witnesses Screen
+sidebar_label: 🗳️ 🙋🏼‍♂️ Witnesses
 slug: /dhive/witnesses-screen
 ---
 
-# ✅ Witnesses
+# 🗳️ 🙋🏼‍♂️ Witnesses
 
 The **WitnessesScreen** widget in `HiveFlutterKit` displays a ranked list of Hive blockchain witnesses. This screen is ideal for users who want to explore, learn about, or interact with top Hive witnesses based on vote count.
 

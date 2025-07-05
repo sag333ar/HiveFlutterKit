@@ -1,10 +1,10 @@
 ---
-title: Current User Account
-sidebar_label: Current User Account
+title: 🎬 👤 Current User Account
+sidebar_label: 🎬 👤 Current User
 slug: /current-account
 ---
 
-# Current User Account
+# 🎬 👤 3Speak's Current User's Account
 
 ### Pusblish Videos
 ![List View](/img/threespeak/image-3.png)

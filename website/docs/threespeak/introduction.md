@@ -1,10 +1,10 @@
 ---
-title: Intoduction to 3Speak
-sidebar_label: Introduction
+title: 🎬 🏁 Intoduction to 3Speak
+sidebar_label: 🎬 🏁 Introduction
 slug: /introduction
 ---
 
-# 3Speak Integration with HiveFlutterKit
+# 🎬 🏁 3Speak Integration with HiveFlutterKit
 
 Welcome to the 3Speak integration documentation for HiveFlutterKit! 3Speak is a decentralized video hosting and sharing platform built on the Hive blockchain. HiveFlutterKit provides a suite of Flutter widgets that make it easy to incorporate 3Speak functionalities into your applications.
 

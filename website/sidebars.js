@@ -21,7 +21,7 @@ const sidebars = {
     "intro", // Points to docs/intro
     {
       type: "category",
-      label: "Getting Started",
+      label: "🏁 Getting Started",
       items: [
         "getting-started/setup", // Points to docs/getting-started/setup
         "getting-started/basic-usage", // Points to docs/getting-started/basic-usage
@@ -29,7 +29,46 @@ const sidebars = {
     },
     {
       type: "category",
-      label: "3Speak",
+      label: "👤 DHive UX - User",
+      items: [
+        "dhive/account-posts-screen",
+        "dhive/blog-screen",
+        "dhive/comments-screen",
+        "dhive/replies-screen",
+        "dhive/wallet-screen",
+        "dhive/followers-screen",
+        "dhive/followings-screen",
+        "dhive/account-activities-screen",
+        "dhive/witness-votes-screen",
+      ],
+    },
+    {
+      type: "category",
+      label: "🗳️ DHive UX - Governance",
+      items: [
+        "dhive/witnesses-screen",
+        "dhive/proposals-screen",
+      ],
+    },
+    {
+      type: "category",
+      label: "👥 DHive UX - Community",
+      items: [
+        "dhive/communities-list",
+        "dhive/community-screen",
+      ],
+    },
+    {
+      type: "category",
+      label: "📝 DHive UX - Hive Post",
+      items: [
+        "dhive/hive-post-comments",
+        "dhive/trending-feed-screen",
+      ],
+    },
+        {
+      type: "category",
+      label: "🎬 3Speak",
       items: [
         "threespeak/introduction",
         "threespeak/login",
@@ -42,40 +81,7 @@ const sidebars = {
     },
     {
       type: "category",
-      label: "DHive UX - User",
-      items: [
-        "dhive/account-posts-screen",
-        "dhive/blog-screen",
-        "dhive/comments-screen",
-        "dhive/replies-screen",
-        "dhive/wallet-screen",
-        "dhive/witnesses-screen",
-        "dhive/followers-screen",
-        "dhive/followings-screen",
-        "dhive/witness-votes-screen",
-        "dhive/proposals-screen",
-      ],
-    },
-    {
-      type: "category",
-      label: "DHive UX - Community",
-      items: [
-        "dhive/communities-list",
-        "dhive/community-screen",
-      ],
-    },
-    {
-      type: "category",
-      label: "DHive UX - Hive Post",
-      items: [
-        "dhive/hive-post-comments",
-        "dhive/trending-feed-screen",
-        "dhive/account-activities-screen",
-      ],
-    },
-    {
-      type: "category",
-      label: "Use AIOHA",
+      label: "🔐 Use AIOHA",
       link: {
         type: "doc",
         id: "use-aioha",
@@ -83,29 +89,29 @@ const sidebars = {
       items: [
         {
           type: "link",
-          label: "Authentication",
-          href: "/docs/use-aioha#authentication",
+          label: "🔐 Authentication",
+          href: "/docs/use-aioha#-authentication",
         },
         {
           type: "link",
-          label: "User management",
-          href: "/docs/use-aioha#user-management",
+          label: "🔐 👤 User management",
+          href: "/docs/use-aioha#--user-management",
         },
         {
           type: "link",
-          label: "Onchain Operations",
-          href: "/docs/use-aioha#onchain-operations",
+          label: "🔐 ⛓️ Onchain Operations",
+          href: "/docs/use-aioha#-%EF%B8%8F-onchain-operations",
         },
         {
           type: "link",
-          label: "Helpers",
-          href: "/docs/use-aioha#helpers",
+          label: "🔐 ⚙️ Helpers",
+          href: "/docs/use-aioha#-%EF%B8%8F-helpers",
         },
       ],
     },
     {
       type: "category",
-      label: "Use DHive",
+      label: "♦️ Use DHive",
       link: {
         type: "doc",
         id: "use-dhive",
@@ -113,23 +119,23 @@ const sidebars = {
       items: [
         {
           type: "link",
-          label: "Database API",
-          href: "/docs/use-dhive#database-api",
+          label: "♦️ 🗄️ Database API",
+          href: "/docs/use-dhive#%EF%B8%8F-%EF%B8%8F-database-api",
         },
         {
           type: "link",
-          label: "Helpers & Utilities",
-          href: "/docs/use-dhive#helpers--utilities",
+          label: "♦️ ⚙️ Helpers & Utilities",
+          href: "/docs/use-dhive#%EF%B8%8F-%EF%B8%8F-helpers--utilities",
         },
         {
           type: "link",
-          label: "HiveMind",
-          href: "/docs/use-dhive#hivemind",
+          label: "♦️ 🧠 HiveMind",
+          href: "/docs/use-dhive#%EF%B8%8F--hivemind",
         },
         {
           type: "link",
-          label: "Bridge",
-          href: "/docs/use-dhive#bridge",
+          label: "♦️ 🌉 Bridge",
+          href: "/docs/use-dhive#%EF%B8%8F--bridge",
         },
       ],
     },

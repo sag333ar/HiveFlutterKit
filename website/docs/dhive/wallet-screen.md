@@ -1,10 +1,10 @@
 ---
-title: DHive - User's Wallet
-sidebar_label: Wallet
+title: 👤 🪪 DHive - User's Wallet
+sidebar_label: 👤 🪪 Wallet
 slug: /wallet-screen
 ---
 
-# DHive - User's Wallet
+# 👤 🪪 DHive - User's Wallet
 
 The `Wallet` widget displays a Hive account’s wallet data including token balances, savings, and Hive Power. This screen fetches wallet data using the Hive Flutter Kit SDK and renders a fully customizable UI with light/dark mode awareness.
 
@@ -151,10 +151,3 @@ If `wallet.error` is set:
 - Flutter Material UI widgets
 
 ---
-
-## Related Components
-
-<!-- - [ProposalsScreen](dhive/proposals-screen) -->
-- [AccountPostsScreen](/dhive/account-posts-screen.md)
-- [CommunityScreen](/dhive/community-screen.md)
-

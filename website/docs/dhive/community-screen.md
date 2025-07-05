@@ -1,10 +1,10 @@
 ---
-title: DHive's - Community
-sidebar_label: Community
+title: 👥 🏠 DHive's - Community
+sidebar_label: 👥 🏠 Community
 slug: /dhive/community-screen
 ---
 
-# 🏠 DHive's - Community
+# 👥 🏠 DHive's - Community Detail Page
 
 The `CommunityScreen` widget provides a way to display a feed of posts ("discussions") based on a specific tag, often used to show content from a particular Hive community or posts related to a certain topic. It allows sorting these posts by various criteria (e.g., trending, created, hot). The widget includes features like infinite scrolling for loading more posts and provides callbacks for common user interactions.
 

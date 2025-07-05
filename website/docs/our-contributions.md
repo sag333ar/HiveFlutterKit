@@ -1,10 +1,10 @@
 ---
-title: Our Contributions
-sidebar_label: Our Contributions
+title: 🫂 Our Contributions to Hive ♦️
+sidebar_label: 🫂 Our Contributions
 slug: /our-contributions
 ---
 
-# Our Contributions to the Hive Ecosystem
+# 🫂 Our Contributions to Hive ♦️ Ecosystem
 
 We are actively involved in developing and supporting a variety of projects and initiatives within the Hive ecosystem. Here's a list of our key contributions:
 

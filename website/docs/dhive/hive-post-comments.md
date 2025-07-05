@@ -1,10 +1,10 @@
 ---
-title: Hive Post Comments
-sidebar_label: Hive Post Comments
+title: 📝 💬 Hive Post Comments
+sidebar_label: 📝 💬 Hive Post Comments
 slug: /dhive/hive-post-comments
 ---
 
-# 💬 Hive Post Comments
+# 📝 💬 Hive Post Comments
 
 The `HivePostComments` widget provides a full-featured comment thread and reply interface for any Hive post or video. It supports viewing, searching, replying, and upvoting comments, and is designed for seamless integration into video players, post detail screens, or as a standalone comment section.
 

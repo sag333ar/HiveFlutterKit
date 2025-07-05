@@ -1,10 +1,10 @@
 ---
-title: DHive - User's Posts
-sidebar_label: Posts
+title: 👤 📝 DHive - User's Posts
+sidebar_label: 👤 📝 Posts
 slug: /dhive/account-posts-screen
 ---
 
-# 🧑‍💻 DHive - User's Posts
+# 👤 📝 DHive - User's Posts
 
 The `AccountPostsScreen` is a Flutter widget provided by the `hive_flutter_kit` package, designed to display a scrollable list of user posts for a specific Hive blockchain user.
 

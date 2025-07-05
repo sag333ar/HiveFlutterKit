@@ -1,10 +1,10 @@
 ---
-title: Followings Screen
-sidebar_label: Followings
+title: 👤 → Followings Screen
+sidebar_label: 👤 → Followings
 slug: /dhive/followings-screen
 ---
 
-# Followings
+# 👤 → Followings
 
 The **Followings** widget in `HiveFlutterKit` displays a list of accounts followed by a specific Hive user. It uses a grid-based layout to show profile avatars and usernames, making it ideal for account exploration, profile views, and social graph features.
 

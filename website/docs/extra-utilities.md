@@ -1,10 +1,10 @@
 ---
-title: Extra Utilities
-sidebar_label: Extra Utilities
+title: ⚙️ Extra Utilities
+sidebar_label: ⚙️ Extra Utilities
 slug: /extra-utilities
 ---
 
-## Extra utilities
+## ⚙️ Extra utilities that Hive Flutter Kit has to offer
 
 ---
 

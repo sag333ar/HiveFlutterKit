@@ -1,10 +1,10 @@
 ---
 sidebar_position: 2
-title: Basic Usage
-sidebar_label: Basic Usage
+title: 🏁 🧑‍💻 Basic Usage
+sidebar_label: 🏁 🧑‍💻 Basic Usage
 ---
 
-# Basic Usage Guide
+# 🏁 🧑‍💻 Basic Usage Guide
 
 Here's a simple example of how to use HiveFlutterKit in your Flutter widget. This example demonstrates how to access the hfk instance and call a login method.
 

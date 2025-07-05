@@ -1,10 +1,10 @@
 ---
-title: Witness Votes Screen
-sidebar_label: Witness Votes
+title: 👤 🗳️ Witness Votes
+sidebar_label: 👤 🗳️ Witness Votes
 slug: /dhive/witness-votes-screen
 ---
 
-# Witness Votes
+# 👤 🗳️ Witness Votes
 
 The **WitnessVotes** widget in `HiveFlutterKit` displays a grid of all Hive witnesses a specific user has voted for. It offers a simple, minimal UI with loading, error, and empty states, and leverages the `AccountGridView` widget to visually list usernames.
 

@@ -1,10 +1,10 @@
 ---
-title: Trending Tags
-sidebar_label: Trending Tags
+title: 🎬 🔥 Trending Tags
+sidebar_label: 🎬 🔥 Trending Tags
 slug: /trending-tags
 ---
 
-# 3Speak Trending Tags
+# 🎬 🔥 3Speak Trending Tags
 
 ![Trending Tags Preview Placeholder](/img/threespeak/trending_tags_placeholder.png)
 <!-- TODO: Replace with actual screenshot of ThreeSpeakTrendingTags -->

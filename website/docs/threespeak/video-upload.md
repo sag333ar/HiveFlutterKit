@@ -1,10 +1,10 @@
 ---
-title: Video Upload
-sidebar_label: Video Upload
+title: 🎬 🔼 Video Upload
+sidebar_label: 🎬 🔼 Video Upload
 slug: /video-upload
 ---
 
-# 3Speak Video Upload Workflow
+# 🎬 🔼 3Speak Video Upload Workflow
 
 The video upload process for 3Speak within HiveFlutterKit is a multi-step workflow facilitated by three main screen widgets:
 1.  `VideoUploadScreen`: For picking and uploading the video file.

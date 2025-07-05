@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
-title: Introduction to HiveFlutterKit
-sidebar_label: Introduction
+title: 🏁 Introduction to HiveFlutterKit
+sidebar_label: 🏁 Introduction
 ---
 
 # Welcome to HiveFlutterKit!

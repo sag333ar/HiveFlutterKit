@@ -1,10 +1,10 @@
 ---
-title: Account Activities
-sidebar_label: Activities 
+title: 👤 👣 Account Activities
+sidebar_label: 👤 👣 Activities 
 slug: /dhive/account-activities-screen
 ---
 
-## AccountActivities
+## 👤 👣 Account Activities
 
 The `AccountActivities` widget displays a list of account activities for a given Hive account. It allows users to view various types of activities such as votes, comments, replies, and rewards. The widget also provides filtering capabilities to narrow down the displayed activities.
 

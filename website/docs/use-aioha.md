@@ -1,12 +1,10 @@
 ---
-title: Use AIOHA
-sidebar_label: Use AIOHA
+title: 🔐 Use AIOHA
+sidebar_label: 🔐Use AIOHA
 slug: /use-aioha
 ---
 
-## Use AIOHA
-
-### Authentication
+### 🔐 Authentication
 
 ---
 
@@ -44,7 +42,7 @@ slug: /use-aioha
 
 ---
 
-### User management
+### 🔐 👤 User management
 
 ---
 
@@ -95,7 +93,7 @@ slug: /use-aioha
 
 ---
 
-### Onchain Operations
+### 🔐 ⛓️ Onchain Operations
 
 ---
 
@@ -184,7 +182,7 @@ slug: /use-aioha
 
 ---
 
-### Helpers
+### 🔐 ⚙️ Helpers
 
 ---
 

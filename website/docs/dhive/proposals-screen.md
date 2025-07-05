@@ -1,10 +1,10 @@
 ---
-title: Proposals
-sidebar_label: Proposals
+title: 🗳️ 💰 Proposals
+sidebar_label: 🗳️ 💰 Proposals
 slug: /proposals-screen
 ---
 
-# Hive Proposal Feed
+# 🗳️ 💰 Hive Proposal Feed
 
 The `ProposalsScreen` widget displays a list of governance proposals fetched from the Hive blockchain using the Hive Flutter Kit SDK. It supports filtering, sorting, and various user interactions including vote, stats, and support actions.
 

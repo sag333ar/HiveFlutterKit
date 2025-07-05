@@ -1,10 +1,10 @@
 ---
-title: Video Feed
-sidebar_label: Video Feed
+title: 🎬 👀 Video Feed
+sidebar_label: 🎬 👀 Video Feed
 slug: /video-feed
 ---
 
-# 3Speak Video Feed
+# 🎬 👀 3Speak Video Feed
 
 ![Videos Feed Component Preview](/img/threespeak/firstuploads.png)
 

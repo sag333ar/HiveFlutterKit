@@ -1,10 +1,10 @@
 ---
-title: Hive Trending Feed
-sidebar_label: Trending Feed
+title: 📝 🔥 Hive Trending Feed
+sidebar_label: 📝 🔥 Trending Feed
 slug: /dhive/trending-feed-screen
 ---
 
-# 🔥 Hive Trending Feed
+# 📝 🔥 Hive Trending Feed
 
 The `TrendingFeedScreen` widget displays a feed of trending posts from the Hive blockchain. It is ideal for showing the most popular or upvoted content, and supports infinite scrolling, sorting, and user interaction callbacks.
 

@@ -1,10 +1,10 @@
 ---
-title: Video Player
-sidebar_label: Video Player
+title: 🎬 ▶️ Video Player
+sidebar_label: 🎬 ▶️ Video Player
 slug: /video-player
 ---
 
-# Video Player Screen Component
+# 🎬 ▶️ Video Player Screen Component
 
 ![Video Player Preview](/img/threespeak/videoplayer.png)
 

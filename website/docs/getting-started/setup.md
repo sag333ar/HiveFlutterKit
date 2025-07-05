@@ -1,10 +1,10 @@
 ---
 sidebar_position: 1
-title: Setup
-sidebar_label: Setup
+title: 🏁 ⚙️ Setup
+sidebar_label: 🏁 ⚙️ Setup
 ---
 
-# Setup for Android, iOS, and Web
+# 🏁 ⚙️ Setup for Android, iOS, and Web
 
 First, add the necessary dependency to your `pubspec.yaml`:
 

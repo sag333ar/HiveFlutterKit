@@ -1,10 +1,10 @@
 ---
-title: ThreeSpeak Login
-sidebar_label: ThreeSpeak Login
+title: 🎬 🔐 ThreeSpeak Login
+sidebar_label: 🎬 🔐 ThreeSpeak Login
 slug: /login
 ---
 
-# ThreeSpeak Login
+# 🎬 🔐 ThreeSpeak Login
 
 ![ThreeSpeak Login Preview](/img/threespeak/login.png)
 
