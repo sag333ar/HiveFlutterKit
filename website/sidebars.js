@@ -40,6 +40,7 @@ const sidebars = {
         "dhive/followings-screen",
         "dhive/account-activities-screen",
         "dhive/witness-votes-screen",
+        "dhive/login-screen",
       ],
     },
     {
