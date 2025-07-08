@@ -1,15 +1,14 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 
-class VoteDialog extends StatefulWidget {
+class ThreeSpeakVoteDialog extends StatefulWidget {
   final HiveFlutterKitPlatform hfk;
   final String author;
   final String permlink;
+  
   final VoidCallback? onVoted;
 
-  const VoteDialog({
+  const ThreeSpeakVoteDialog({
     super.key,
     required this.hfk,
     required this.author,
@@ -18,10 +17,10 @@ class VoteDialog extends StatefulWidget {
   });
 
   @override
-  State<VoteDialog> createState() => _VoteDialogState();
+  State<ThreeSpeakVoteDialog> createState() => _ThreeSpeakVoteDialogState();
 }
 
-class _VoteDialogState extends State<VoteDialog> {
+class _ThreeSpeakVoteDialogState extends State<ThreeSpeakVoteDialog> {
   double _sliderValue = 50;
   bool _loading = false;
 
@@ -29,26 +28,17 @@ class _VoteDialogState extends State<VoteDialog> {
     setState(() => _loading = true);
     try {
       final weight = (_sliderValue.round()) * 100;
-      final result = await widget.hfk.singleVote(
-        widget.author,
-        widget.permlink,
-        weight,
-      );
+      // final result = await widget.hfk.singleVote(
+      //   widget.author,
+      //   widget.permlink,
+      //   weight,
+      // );
       if (!mounted) return;
       Navigator.of(context).pop();
-      final decodedResult = jsonDecode(result);
-      if (decodedResult['success'] == true && widget.onVoted != null) {
-        widget.onVoted!();
-        Navigator.of(context).pop();
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Vote Success: $result')));
-      } else {
-        Navigator.of(context).pop();
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Vote Failed: ${decodedResult['error']}')));
-      }
+      if (widget.onVoted != null) widget.onVoted!();
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Vote Success: ')));
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(

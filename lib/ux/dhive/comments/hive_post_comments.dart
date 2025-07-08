@@ -18,8 +18,8 @@ class HivePostComments extends StatefulWidget {
   final String author;
   final String permlink;
   final void Function(String body)? onComment;
-  final void Function(Discussion comment)? onUpvoteComment;
-  final void Function(Discussion comment)? onReplyComment;
+  final void Function(String author, String permlink)? onUpvoteComment;
+  final void Function(String author, String permlink)? onReplyComment;
 
   @override
   State<HivePostComments> createState() => _HivePostCommentsState();
@@ -313,15 +313,20 @@ class _HivePostCommentsState extends State<HivePostComments> {
           searchKey: searchController.text.trim(),
           onReply:
               widget.onReplyComment != null
-                  ? () => widget.onReplyComment!(item)
-                  : () => _showCommentInput(
-                    parentAuthor: item.author ?? '',
-                    parentPermlink: item.permlink ?? '',
-                    depth: item.depth,
-                  ),
+                  ? (author, permlink) {
+                    widget.onReplyComment!(author, permlink);
+                  }
+                  : null,
+          // : (author, permlink) => _showCommentInput(
+          //       parentAuthor: author,
+          //       parentPermlink: permlink,
+          //       depth: item.depth,
+          //     ),
           onUpvote:
               widget.onUpvoteComment != null
-                  ? () => widget.onUpvoteComment!(item)
+                  ? (author, permlink) {
+                    widget.onUpvoteComment!(author, permlink);
+                  }
                   : null,
           allComments: items,
         );

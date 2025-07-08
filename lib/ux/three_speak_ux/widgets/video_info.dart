@@ -4,6 +4,7 @@ import 'package:hive_flutter_kit/core/models/discussion.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/provider/content_favourite_provider.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/server_proxy.dart';
+import 'package:hive_flutter_kit/ux/dhive/comments/reply_bottomsheet.dart';
 import 'package:hive_flutter_kit/ux/upvote_bottomsheet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:hive_flutter_kit/ux/dhive/comments/hive_post_comments.dart';
@@ -157,8 +158,30 @@ class _VideoInfoState extends State<VideoInfo> {
                                             author: widget.author,
                                             permlink: widget.permlink,
                                             onComment: null,
-                                            onUpvoteComment: null,
-                                            onReplyComment: null,
+                                            // onUpvoteComment: (author, permlink) => {
+                                            //   debugPrint("$author, $permlink"),
+                                            // },
+                                            onReplyComment: (
+                                              author,
+                                              permlink,
+                                            ) async {
+                                              final result =
+                                                  await showModalBottomSheet(
+                                                    context: context,
+                                                    isScrollControlled: true,
+                                                    builder:
+                                                        (context) =>
+                                                            ReplyBottomsheet(
+                                                              parentAuthor:
+                                                                  author,
+                                                              parentPermlink:
+                                                                  permlink,
+                                                            ),
+                                                  );
+                                              if (result == true) {
+                                                setState(() {});
+                                              }
+                                            },
                                           ),
                                         );
                                       },
