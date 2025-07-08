@@ -2461,7 +2461,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                   );
                                 },
                               );
-                            },
+                            }, onTapBackButton: () {
+                              debugPrint('Tapped Back Button');
+                             }, 
+                            shouldShowBackButton: false,
                             // Optionally add onTapAuthor, onTapVideosTab, etc.
                           ),
                     ),
