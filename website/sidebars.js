@@ -64,6 +64,7 @@ const sidebars = {
       label: "📝 DHive UX - Hive Post",
       items: [
         "dhive/hive-post-comments",
+        "dhive/upvote-bottom-sheet",
         "dhive/trending-feed-screen",
       ],
     },

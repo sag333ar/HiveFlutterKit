@@ -10,6 +10,7 @@ class UpvoteBottomSheet extends StatelessWidget {
   final String permlink;
   final bool isContentVoted;
   final String currentUser;
+  final VoidCallback? onClickUpvote;
 
   final VoidCallback? onVoted;
 
@@ -21,6 +22,7 @@ class UpvoteBottomSheet extends StatelessWidget {
     required this.isContentVoted,
     required this.currentUser,
     this.onVoted,
+    this.onClickUpvote,
   });
 
   @override
@@ -104,6 +106,10 @@ class UpvoteBottomSheet extends StatelessWidget {
                         return;
                       }
 
+                      if (onClickUpvote != null) {
+                        onClickUpvote!();
+                        return;
+                      }
                       showDialog(
                         context: context,
                         builder:
