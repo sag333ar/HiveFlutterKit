@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter_kit/core/common/enum.dart';
-import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/server_proxy.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_community_screen/community_about.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/three_speak_video_feed.dart';
@@ -26,6 +24,8 @@ class ThreespeakCommnuityScreen extends StatefulWidget {
     this.onTapReport,
     required this.videoFeed,
     required Null Function(dynamic item) onTapVideoItem,
+    required this.onTapBackButton,
+    required this.shouldShowBackButton,
   });
   final String communityId;
   final String title;
@@ -38,6 +38,8 @@ class ThreespeakCommnuityScreen extends StatefulWidget {
   final void Function(String, String)? onTapShare;
   final void Function(String, String)? onTapReport;
   final ThreeSpeakVideoFeed Function() videoFeed;
+  final VoidCallback onTapBackButton;
+  final bool shouldShowBackButton;
 
   @override
   _ThreespeakCommnuityScreenState createState() =>
@@ -96,6 +98,10 @@ class _ThreespeakCommnuityScreenState extends State<ThreespeakCommnuityScreen>
     return Scaffold(
       appBar: AppBar(
         leadingWidth: 30,
+        leading:
+            widget.shouldShowBackButton
+                ? BackButton(onPressed: widget.onTapBackButton)
+                : null,
         title: Row(
           children: [
             CustomCircleAvatar(
