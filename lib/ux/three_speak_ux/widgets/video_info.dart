@@ -161,27 +161,27 @@ class _VideoInfoState extends State<VideoInfo> {
                                             // onUpvoteComment: (author, permlink) => {
                                             //   debugPrint("$author, $permlink"),
                                             // },
-                                            onReplyComment: (
-                                              author,
-                                              permlink,
-                                            ) async {
-                                              final result =
-                                                  await showModalBottomSheet(
-                                                    context: context,
-                                                    isScrollControlled: true,
-                                                    builder:
-                                                        (context) =>
-                                                            ReplyBottomsheet(
-                                                              parentAuthor:
-                                                                  author,
-                                                              parentPermlink:
-                                                                  permlink,
-                                                            ),
-                                                  );
-                                              if (result == true) {
-                                                setState(() {});
-                                              }
-                                            },
+                                            // onReplyComment: (
+                                            //   author,
+                                            //   permlink,
+                                            // ) async {
+                                            //   final result =
+                                            //       await showModalBottomSheet(
+                                            //         context: context,
+                                            //         isScrollControlled: true,
+                                            //         builder:
+                                            //             (context) =>
+                                            //                 ReplyBottomsheet(
+                                            //                   parentAuthor:
+                                            //                       author,
+                                            //                   parentPermlink:
+                                            //                       permlink,
+                                            //                 ),
+                                            //       );
+                                            //   if (result == true) {
+                                            //     setState(() {});
+                                            //   }
+                                            // },
                                           ),
                                         );
                                       },

@@ -232,7 +232,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _logout() async {
     try {
-      final userStatus = await hfk.getCurrentUser();
+      var userStatus = await hfk.getCurrentUser();
+      userStatus = userStatus.replaceAll('"', '');
 
       if (userStatus == null ||
           userStatus == '' ||

@@ -40,20 +40,38 @@ class _VoteDialogState extends State<VoteDialog> {
       if (decodedResult['success'] == true && widget.onVoted != null) {
         widget.onVoted!();
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Vote Success: $result')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Vote Success: $result'),
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.only(top: 24, left: 16, right: 16),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 3),
+          ),
+        );
       } else {
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Vote Failed: ${decodedResult['error']}')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Vote Failed: ${decodedResult['error']}'),
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.only(top: 24, left: 16, right: 16),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 3),
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Vote Error: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Vote Error: $e'),
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.only(top: 24, left: 16, right: 16),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 3),
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _loading = false);

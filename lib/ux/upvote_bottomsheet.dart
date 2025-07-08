@@ -77,8 +77,8 @@ class UpvoteBottomSheet extends StatelessWidget {
                       // Handle both "" and error json for currentUser
                       bool isNotLoggedIn =
                           currentUser.isEmpty ||
-                          currentUser.trim() ==
-                              '{"error":"No user is currently logged in"}';
+                          currentUser.contains(
+                              'No user is currently logged in');
                       if (isNotLoggedIn) {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(

@@ -128,6 +128,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   void setupUsername() async {
     try {
       var user = await hfk.getCurrentUser();
+      user = user.replaceAll('"', '');
       setState(() {
         currentUserName = user;
       });

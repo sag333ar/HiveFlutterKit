@@ -66,10 +66,11 @@ class _CommentTileState extends State<CommentTile>
   }
 
   Future<void> _loadCurrentUser() async {
-    final username = await hfk.getCurrentUser();
+    var username = await hfk.getCurrentUser();
+    username = username.replaceAll('"', '');
     if (mounted) {
       setState(() {
-        _currentUser = username ?? "";
+        _currentUser = username;
       });
     }
   }
@@ -377,17 +378,24 @@ class _CommentTileState extends State<CommentTile>
                     children: [
                       InkWell(
                         onTap: () async {
-                          if (widget.onUpvote != null) {
-                            widget.onUpvote!(widget.comment.author!,widget.comment.permlink!);
-                            return;
-                          }
-                          if (_currentUser.isEmpty) {
+                          if (_currentUser == null ||
+                              _currentUser == '' ||
+                              _currentUser.contains(
+                                'No user is currently logged in',
+                              )) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text('Please login to reply'),
+                                content: Text('Please login to upvote'),
                                 behavior: SnackBarBehavior.floating,
                                 backgroundColor: Colors.blue,
                               ),
+                            );
+                            return;
+                          }
+                          if (widget.onUpvote != null) {
+                            widget.onUpvote!(
+                              widget.comment.author!,
+                              widget.comment.permlink!,
                             );
                             return;
                           }
@@ -441,17 +449,24 @@ class _CommentTileState extends State<CommentTile>
                       SizedBox(width: 16),
                       InkWell(
                         onTap: () async {
-                          if (widget.onReply != null) {
-                            widget.onReply!(widget.comment.author!, widget.comment.permlink!);
-                            return;
-                          }
-                          if (_currentUser.isEmpty) {
+                          if (_currentUser == null ||
+                              _currentUser == '' ||
+                              _currentUser.contains(
+                                'No user is currently logged in',
+                              )) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text('Please login to reply'),
                                 behavior: SnackBarBehavior.floating,
                                 backgroundColor: Colors.blue,
                               ),
+                            );
+                            return;
+                          }
+                          if (widget.onReply != null) {
+                            widget.onReply!(
+                              widget.comment.author!,
+                              widget.comment.permlink!,
                             );
                             return;
                           }
@@ -463,6 +478,7 @@ class _CommentTileState extends State<CommentTile>
                                 (context) => ReplyBottomsheet(
                                   parentAuthor: widget.comment.author!,
                                   parentPermlink: widget.comment.permlink!,
+                                  currentUser: widget.currentUser,
                                 ),
                           );
                           if (result == true) {
