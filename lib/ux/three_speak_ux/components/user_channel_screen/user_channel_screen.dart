@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter_kit/core/common/enum.dart';
-import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/provider/user_favourite_provider.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/server_proxy.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/user_channel_screen/user_channel_following.dart';
@@ -23,6 +21,8 @@ class UserChannelScreen extends StatefulWidget {
     this.onTapShare,
     this.onTapReport,
     required this.videoFeed,
+    required this.onTapBackButton,
+    required this.shouldShowBackButton,
   });
 
   final String owner;
@@ -35,6 +35,8 @@ class UserChannelScreen extends StatefulWidget {
   final void Function(String, String)? onTapShare;
   final void Function(String, String)? onTapReport;
   final ThreeSpeakVideoFeed Function() videoFeed;
+  final VoidCallback onTapBackButton;
+  final bool shouldShowBackButton;
 
   @override
   _UserChannelScreenState createState() => _UserChannelScreenState();
@@ -92,6 +94,10 @@ class _UserChannelScreenState extends State<UserChannelScreen>
     return Scaffold(
       appBar: AppBar(
         leadingWidth: 30,
+        leading:
+            widget.shouldShowBackButton
+                ? BackButton(onPressed: widget.onTapBackButton)
+                : null,
         title: Row(
           children: [
             CustomCircleAvatar(
