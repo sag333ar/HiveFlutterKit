@@ -132,17 +132,6 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
           border: InputBorder.none,
           isDense: true,
           contentPadding: const EdgeInsets.symmetric(vertical: 14),
-          prefixIcon:
-              (_controller!.text.trim().length >= 4)
-                  ? Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: UserProfileImage(
-                      url: _controller!.text.trim(),
-                      radius: 16,
-                      verticalPadding: 0,
-                    ),
-                  )
-                  : null,
           prefixIconConstraints: const BoxConstraints(
             minWidth: 40,
             minHeight: 40,
