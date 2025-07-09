@@ -3,6 +3,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit/core/models/discussion.dart';
+import 'package:hive_flutter_kit/ux/dhive/comments/reply_bottomsheet.dart';
 import 'package:hive_flutter_kit/ux/upvote.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'dart:math' as math;
@@ -27,8 +28,8 @@ class CommentTile extends StatefulWidget {
   final String searchKey;
   final ItemScrollController itemScrollController;
   final bool isPadded;
-  final void Function()? onReply;
-  final void Function()? onUpvote;
+  final void Function(String author, String permlink)? onReply;
+  final void Function(String author, String permlink)? onUpvote;
   final List<Discussion>? allComments; // <-- Add this
 
   @override
@@ -65,10 +66,11 @@ class _CommentTileState extends State<CommentTile>
   }
 
   Future<void> _loadCurrentUser() async {
-    final username = await hfk.getCurrentUser();
+    var username = await hfk.getCurrentUser();
+    username = username.replaceAll('"', '');
     if (mounted) {
       setState(() {
-        _currentUser = username ?? "";
+        _currentUser = username;
       });
     }
   }
@@ -147,6 +149,7 @@ class _CommentTileState extends State<CommentTile>
                 itemScrollController: widget.itemScrollController,
                 isPadded: true,
                 onReply: widget.onReply,
+                onUpvote: widget.onUpvote,
                 allComments: widget.allComments,
               ),
             );
@@ -195,7 +198,9 @@ class _CommentTileState extends State<CommentTile>
                       Text(
                         _getTimeAgo(
                           widget.comment.created != null
-                              ? DateTime.tryParse(widget.comment.created!) ??
+                              ? DateTime.tryParse(
+                                    '${widget.comment.created!}Z',
+                                  ) ??
                                   DateTime.now()
                               : DateTime.now(),
                         ),
@@ -375,17 +380,24 @@ class _CommentTileState extends State<CommentTile>
                     children: [
                       InkWell(
                         onTap: () async {
-                          if (widget.onUpvote != null) {
-                            widget.onUpvote!();
-                            return;
-                          }
-                          if (_currentUser.isEmpty) {
+                          if (_currentUser == null ||
+                              _currentUser == '' ||
+                              _currentUser.contains(
+                                'No user is currently logged in',
+                              )) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text('Please login to reply'),
+                                content: Text('Please login to upvote'),
                                 behavior: SnackBarBehavior.floating,
                                 backgroundColor: Colors.blue,
                               ),
+                            );
+                            return;
+                          }
+                          if (widget.onUpvote != null) {
+                            widget.onUpvote!(
+                              widget.comment.author!,
+                              widget.comment.permlink!,
                             );
                             return;
                           }
@@ -394,19 +406,26 @@ class _CommentTileState extends State<CommentTile>
                           }
                           // Show upvote dialog with slider and thumb icon
                           final hfk = HiveFlutterKitPlatform.instance;
-                          final result = await showDialog(
+                          showModalBottomSheet(
                             context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
                             builder:
-                                (context) => VoteDialog(
-                                  hfk: hfk,
-                                  author: widget.comment.author!,
-                                  permlink: widget.comment.permlink!,
+                                (context) => FractionallySizedBox(
+                                  heightFactor: 0.5,
+                                  child: Material(
+                                    borderRadius: const BorderRadius.vertical(
+                                      top: Radius.circular(20),
+                                    ),
+                                    color: Colors.white,
+                                    child: VoteBottomSheet(
+                                      hfk: hfk,
+                                      author: widget.comment.author!,
+                                      permlink: widget.comment.permlink!,
+                                    ),
+                                  ),
                                 ),
                           );
-                          // If upvote was successful, reload this comment tile
-                          if (result == true) {
-                            setState(() {});
-                          }
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -438,12 +457,12 @@ class _CommentTileState extends State<CommentTile>
                       ),
                       SizedBox(width: 16),
                       InkWell(
-                        onTap: () {
-                          if (widget.onReply != null) {
-                            widget.onReply!();
-                            return;
-                          }
-                          if (_currentUser.isEmpty) {
+                        onTap: () async {
+                          if (_currentUser == null ||
+                              _currentUser == '' ||
+                              _currentUser.contains(
+                                'No user is currently logged in',
+                              )) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text('Please login to reply'),
@@ -453,7 +472,27 @@ class _CommentTileState extends State<CommentTile>
                             );
                             return;
                           }
-                          // ...existing code...
+                          if (widget.onReply != null) {
+                            widget.onReply!(
+                              widget.comment.author!,
+                              widget.comment.permlink!,
+                            );
+                            return;
+                          }
+
+                          final result = await showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            builder:
+                                (context) => ReplyBottomsheet(
+                                  parentAuthor: widget.comment.author!,
+                                  parentPermlink: widget.comment.permlink!,
+                                  currentUser: widget.currentUser,
+                                ),
+                          );
+                          if (result == true) {
+                            setState(() {});
+                          }
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),

@@ -55,7 +55,8 @@ class _SwitchUserState extends State<SwitchUser> {
 
   Future<void> _fetchUsers() async {
     try {
-      final username = await widget.hfk.getCurrentUser();
+      var username = await widget.hfk.getCurrentUser();
+      username = username.replaceAll('"', '');
       final logins = await widget.hfk.getOtherLogins();
 
       setState(() {

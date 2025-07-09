@@ -4,6 +4,7 @@ import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit/core/models/discussion.dart';
 import 'package:hive_flutter_kit/ux/dhive/comments/comment_search_bar.dart';
 import 'package:hive_flutter_kit/ux/dhive/comments/comment_tile.dart';
+import 'package:hive_flutter_kit/ux/dhive/comments/reply_bottomsheet.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class HivePostComments extends StatefulWidget {
@@ -11,15 +12,15 @@ class HivePostComments extends StatefulWidget {
     super.key,
     required this.author,
     required this.permlink,
-    this.onComment,
     this.onUpvoteComment,
     this.onReplyComment,
+    this.currentUser,
   });
   final String author;
   final String permlink;
-  final void Function(String body)? onComment;
-  final void Function(Discussion comment)? onUpvoteComment;
-  final void Function(Discussion comment)? onReplyComment;
+  final void Function(String author, String permlink)? onUpvoteComment;
+  final void Function(String author, String permlink)? onReplyComment;
+  final String? currentUser;
 
   @override
   State<HivePostComments> createState() => _HivePostCommentsState();
@@ -35,7 +36,6 @@ class _HivePostCommentsState extends State<HivePostComments> {
       ItemPositionsListener.create();
   final ScrollOffsetListener scrollOffsetListener =
       ScrollOffsetListener.create();
-  String _currentUser = "";
   final HiveFlutterKitPlatform hfk = HiveFlutterKitPlatform.instance;
 
   List<Discussion> _comments = [];
@@ -45,6 +45,7 @@ class _HivePostCommentsState extends State<HivePostComments> {
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
 
+  String _currentUser = '';
   @override
   void initState() {
     super.initState();
@@ -53,7 +54,8 @@ class _HivePostCommentsState extends State<HivePostComments> {
   }
 
   Future<void> _loadCurrentUser() async {
-    final username = await hfk.getCurrentUser();
+    var username = await hfk.getCurrentUser();
+    username = username.replaceAll('"', '');
     if (mounted) {
       setState(() {
         _currentUser = username;
@@ -82,159 +84,6 @@ class _HivePostCommentsState extends State<HivePostComments> {
         _loading = false;
       });
     }
-  }
-
-  Future<void> _addComment({
-    required String body,
-    String? parentAuthor,
-    String? parentPermlink,
-    int? depth,
-  }) async {
-    if (!mounted || _isAddingComment) return;
-
-    if (_currentUser.isEmpty) {
-      _showSnackBar(
-        'You are not logged in. Please log in to comment.',
-        Colors.blue,
-      );
-      return;
-    }
-
-    setState(() {
-      _isAddingComment = true;
-    });
-
-    try {
-      final permlink = DateTime.now().millisecondsSinceEpoch.toString();
-      final res = await hfk.comment(
-        parentAuthor ?? widget.author,
-        parentPermlink ?? widget.permlink,
-        permlink,
-        "",
-        body,
-        {},
-      );
-
-      final decoded = jsonDecode(res);
-      final isSuccess = decoded['success'] == true;
-
-      if (mounted) {
-        if (isSuccess) {
-          await _fetchComments();
-          _showSnackBar('Comment published successfully', Colors.green);
-        } else {
-          _showSnackBar('Failed to publish comment.', Colors.red);
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        _showSnackBar('Failed to add comment: $e', Colors.red);
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isAddingComment = false;
-        });
-      }
-    }
-  }
-
-  void _showSnackBar(String message, Color backgroundColor) {
-    if (!mounted) return;
-
-    // Use the specific ScaffoldMessenger for this modal
-    _scaffoldMessengerKey.currentState?.clearSnackBars();
-    _scaffoldMessengerKey.currentState?.showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: backgroundColor,
-        duration: Duration(seconds: 3),
-        behavior: SnackBarBehavior.floating,
-        margin: EdgeInsets.all(16),
-      ),
-    );
-  }
-
-  void _showCommentInput({
-    String? parentAuthor,
-    String? parentPermlink,
-    int? depth,
-  }) {
-    final TextEditingController _controller = TextEditingController();
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      isDismissible: !_isAddingComment,
-      enableDrag: !_isAddingComment,
-      builder:
-          (context) => Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-              left: 16,
-              right: 16,
-              top: 24,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: _controller,
-                  minLines: 3,
-                  maxLines: 6,
-                  enabled: !_isAddingComment,
-                  decoration: InputDecoration(
-                    labelText: parentAuthor == null ? 'Add a comment' : 'Reply',
-                    hintText: 'Enter your comment here...',
-                  ),
-                ),
-                SizedBox(height: 12),
-                Row(
-                  children: [
-                    Spacer(),
-                    TextButton(
-                      onPressed:
-                          _isAddingComment
-                              ? null
-                              : () => Navigator.pop(context),
-                      child: Text('Cancel'),
-                    ),
-                    SizedBox(width: 8),
-                    ElevatedButton(
-                      onPressed:
-                          _isAddingComment
-                              ? null
-                              : () async {
-                                final text = _controller.text.trim();
-                                if (text.isNotEmpty) {
-                                  Navigator.pop(context);
-
-                                  await _addComment(
-                                    body: text,
-                                    parentAuthor: parentAuthor,
-                                    parentPermlink: parentPermlink,
-                                    depth: depth,
-                                  );
-                                }
-                              },
-                      child:
-                          _isAddingComment
-                              ? SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                              : Text('Post'),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 8),
-              ],
-            ),
-          ),
-    );
   }
 
   Widget commentsListView() {
@@ -294,6 +143,21 @@ class _HivePostCommentsState extends State<HivePostComments> {
           return !replyKeys.contains(key);
         }).toList();
 
+    void _showGlobalSnackBar(
+      String message, {
+      Color backgroundColor = Colors.green,
+    }) {
+      _scaffoldMessengerKey.currentState?.showSnackBar(
+        SnackBar(
+          content: Text(message),
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.only(top: 24, left: 16, right: 16),
+          backgroundColor: backgroundColor,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+
     return ScrollablePositionedList.separated(
       itemScrollController: itemScrollController,
       scrollOffsetController: scrollOffsetController,
@@ -313,15 +177,20 @@ class _HivePostCommentsState extends State<HivePostComments> {
           searchKey: searchController.text.trim(),
           onReply:
               widget.onReplyComment != null
-                  ? () => widget.onReplyComment!(item)
-                  : () => _showCommentInput(
-                    parentAuthor: item.author ?? '',
-                    parentPermlink: item.permlink ?? '',
-                    depth: item.depth,
-                  ),
+                  ? (author, permlink) {
+                    widget.onReplyComment!(author, permlink);
+                  }
+                  : null,
+          // : (author, permlink) => _showCommentInput(
+          //       parentAuthor: author,
+          //       parentPermlink: permlink,
+          //       depth: item.depth,
+          //     ),
           onUpvote:
               widget.onUpvoteComment != null
-                  ? () => widget.onUpvoteComment!(item)
+                  ? (author, permlink) {
+                    widget.onUpvoteComment!(author, permlink);
+                  }
                   : null,
           allComments: items,
         );
@@ -334,7 +203,10 @@ class _HivePostCommentsState extends State<HivePostComments> {
   }
 
   Widget _addCommentButton() {
-    if (_currentUser.isEmpty) return SizedBox.shrink();
+    if (_currentUser == null ||
+        _currentUser == '' ||
+        _currentUser.contains('No user is currently logged in'))
+      return SizedBox.shrink();
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.only(left: 16.0, right: 16, bottom: 16),
@@ -352,10 +224,18 @@ class _HivePostCommentsState extends State<HivePostComments> {
                 _isAddingComment
                     ? null
                     : () {
-                      if (widget.onComment != null) {
-                        widget.onComment!("");
+                      if (widget.onReplyComment != null) {
+                        widget.onReplyComment!(widget.author, widget.permlink);
                       } else {
-                        _showCommentInput();
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          builder:
+                              (context) => ReplyBottomsheet(
+                                parentAuthor: widget.author,
+                                parentPermlink: widget.permlink,
+                              ),
+                        );
                       }
                     },
             icon:

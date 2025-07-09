@@ -12,7 +12,7 @@ class UpvoteBottomSheet extends StatelessWidget {
   final String currentUser;
   final VoidCallback? onClickUpvote;
 
-  final VoidCallback? onVoted;
+  final Function(bool status, String? result)? onVoted;
 
   const UpvoteBottomSheet({
     super.key,
@@ -77,8 +77,9 @@ class UpvoteBottomSheet extends StatelessWidget {
                       // Handle both "" and error json for currentUser
                       bool isNotLoggedIn =
                           currentUser.isEmpty ||
-                          currentUser.trim() ==
-                              '{"error":"No user is currently logged in"}';
+                          currentUser.contains(
+                            'No user is currently logged in',
+                          );
                       if (isNotLoggedIn) {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -110,16 +111,28 @@ class UpvoteBottomSheet extends StatelessWidget {
                         onClickUpvote!();
                         return;
                       }
-                      showDialog(
+                      showModalBottomSheet(
                         context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
                         builder:
-                            (context) => VoteDialog(
-                              hfk: hfk,
-                              author: author,
-                              permlink: permlink,
-                              onVoted: () {
-                                if (onVoted != null) onVoted!();
-                              },
+                            (context) => FractionallySizedBox(
+                              heightFactor: 0.5,
+                              child: Material(
+                                borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(20),
+                                ),
+                                color: Colors.white,
+                                child: VoteBottomSheet(
+                                  hfk: hfk,
+                                  author: author,
+                                  permlink: permlink,
+                                  onVoted: (status, result) {
+                                    if (onVoted != null)
+                                      onVoted!(status, result);
+                                  },
+                                ),
+                              ),
                             ),
                       );
                     },

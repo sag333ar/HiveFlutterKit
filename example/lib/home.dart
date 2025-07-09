@@ -232,7 +232,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _logout() async {
     try {
-      final userStatus = await hfk.getCurrentUser();
+      var userStatus = await hfk.getCurrentUser();
+      userStatus = userStatus.replaceAll('"', '');
 
       if (userStatus == null ||
           userStatus == '' ||
@@ -2408,6 +2409,15 @@ class _MyHomePageState extends State<MyHomePage> {
                             isSearch: true,
                             onTapVideoItem: (tappedItem) {
                               debugPrint('Tapped video item: $tappedItem');
+                              var screen = getVideoPlayer(
+                                null,
+                                null,
+                                tappedItem,
+                              );
+                              var route = MaterialPageRoute(
+                                builder: (context) => screen,
+                              );
+                              Navigator.push(context, route);
                             },
                             onTapAuthor: (GQLFeedItem item) {
                               debugPrint('Tapped author: ${item.author}');
@@ -2461,9 +2471,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                   );
                                 },
                               );
-                            }, onTapBackButton: () {
+                            },
+                            onTapBackButton: () {
                               debugPrint('Tapped Back Button');
-                             }, 
+                            },
                             shouldShowBackButton: false,
                             // Optionally add onTapAuthor, onTapVideosTab, etc.
                           ),
