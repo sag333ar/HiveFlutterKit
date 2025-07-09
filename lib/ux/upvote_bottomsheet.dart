@@ -8,7 +8,6 @@ class UpvoteBottomSheet extends StatelessWidget {
   final HiveFlutterKitPlatform hfk;
   final String author;
   final String permlink;
-  final bool isContentVoted;
   final String currentUser;
   final VoidCallback? onClickUpvote;
 
@@ -19,7 +18,6 @@ class UpvoteBottomSheet extends StatelessWidget {
     required this.hfk,
     required this.author,
     required this.permlink,
-    required this.isContentVoted,
     required this.currentUser,
     this.onVoted,
     this.onClickUpvote,
@@ -71,7 +69,7 @@ class UpvoteBottomSheet extends StatelessWidget {
                 onPressed: () => Navigator.pop(context),
               ),
               actions: [
-                if (!isContentVoted)
+                if (currentUserPresentInVoters)
                   IconButton(
                     onPressed: () {
                       // Handle both "" and error json for currentUser

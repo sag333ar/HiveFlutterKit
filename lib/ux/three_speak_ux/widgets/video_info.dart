@@ -24,7 +24,7 @@ class VideoInfo extends StatefulWidget {
   final String? currentUser;
   final bool isContentVoted;
   final void Function(String, String)? onTapComment;
-  final void Function(String, String)? onTapUpvote;
+  final void Function(String, String, bool?)? onTapUpvote;
   final void Function(String, String)? onTapShare;
   final void Function(String, String)? onTapBookmark;
   final void Function(String)? onTapAuthor;
@@ -291,6 +291,7 @@ class _VideoInfoState extends State<VideoInfo> {
                                     widget.onTapUpvote!(
                                       widget.author,
                                       widget.permlink,
+                                      widget.isContentVoted,
                                     );
                                     return;
                                   }
