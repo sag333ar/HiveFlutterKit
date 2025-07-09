@@ -131,31 +131,21 @@ class _VideoUploadScreenState extends State<VideoUploadScreen> {
             '',
           );
 
-          // Navigator.pushReplacement(
-          //   context,
-          //   MaterialPageRoute(
-          //     builder: (context) => ThumbnailUploadScreen(
-          //       uploadUrl: videoUrl,
-          //       filename: videoFilename,
-          //       oFilename: _originalFileName ?? '',
-          //       size: _fileSize ?? 0,
-          //       duration: _videoDuration ?? 0.0,
-          //       owner: widget.owner,
-          //       token: widget.token,
-          //       onUploadSuccess: widget.onUploadSuccess,
-          //     ),
-          //   ),
-          // );
-
-          if (widget.onUploadSuccess != null) {
-            widget.onUploadSuccess!({
-              'uploadUrl': videoUrl,
-              'filename': videoFilename,
-              'oFilename': _originalFileName ?? '',
-              'size': _fileSize ?? 0,
-              'duration': _videoDuration ?? 0.0,
-            });
-          }
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ThumbnailUploadScreen(
+                uploadUrl: videoUrl,
+                filename: videoFilename,
+                oFilename: _originalFileName ?? '',
+                size: _fileSize ?? 0,
+                duration: _videoDuration ?? 0.0,
+                owner: widget.owner,
+                token: widget.token,
+                onUploadSuccess: widget.onUploadSuccess,
+              ),
+            ),
+          );
         },
       );
     } catch (e) {
