@@ -4,12 +4,9 @@ import 'package:hive_flutter_kit/core/models/discussion.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/provider/content_favourite_provider.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/server_proxy.dart';
-import 'package:hive_flutter_kit/ux/dhive/comments/reply_bottomsheet.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_comment_screen/threespeak_comment_screen.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_upvote_screen/threespeak_upvote_screen.dart';
-import 'package:hive_flutter_kit/ux/upvote_bottomsheet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:hive_flutter_kit/ux/dhive/comments/hive_post_comments.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/favourite.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -24,7 +21,7 @@ class VideoInfo extends StatefulWidget {
   final String? currentUser;
   final bool isContentVoted;
   final void Function(String, String)? onTapComment;
-  final void Function(String, String, bool?)? onTapUpvote;
+  final void Function(String, String)? onTapUpvote;
   final void Function(String, String)? onTapShare;
   final void Function(String, String)? onTapBookmark;
   final void Function(String)? onTapAuthor;
@@ -290,7 +287,6 @@ class _VideoInfoState extends State<VideoInfo> {
                                     widget.onTapUpvote!(
                                       widget.author,
                                       widget.permlink,
-                                      widget.isContentVoted,
                                     );
                                     return;
                                   }
