@@ -198,7 +198,9 @@ class _CommentTileState extends State<CommentTile>
                       Text(
                         _getTimeAgo(
                           widget.comment.created != null
-                              ? DateTime.tryParse(widget.comment.created!) ??
+                              ? DateTime.tryParse(
+                                    '${widget.comment.created!}Z',
+                                  ) ??
                                   DateTime.now()
                               : DateTime.now(),
                         ),
@@ -404,19 +406,26 @@ class _CommentTileState extends State<CommentTile>
                           }
                           // Show upvote dialog with slider and thumb icon
                           final hfk = HiveFlutterKitPlatform.instance;
-                          final result = await showDialog(
+                          showModalBottomSheet(
                             context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
                             builder:
-                                (context) => VoteDialog(
-                                  hfk: hfk,
-                                  author: widget.comment.author!,
-                                  permlink: widget.comment.permlink!,
+                                (context) => FractionallySizedBox(
+                                  heightFactor: 0.5,
+                                  child: Material(
+                                    borderRadius: const BorderRadius.vertical(
+                                      top: Radius.circular(20),
+                                    ),
+                                    color: Colors.white,
+                                    child: VoteBottomSheet(
+                                      hfk: hfk,
+                                      author: widget.comment.author!,
+                                      permlink: widget.comment.permlink!,
+                                    ),
+                                  ),
                                 ),
                           );
-                          // If upvote was successful, reload this comment tile
-                          if (result == true) {
-                            setState(() {});
-                          }
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),

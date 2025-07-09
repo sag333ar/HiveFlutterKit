@@ -12,14 +12,12 @@ class HivePostComments extends StatefulWidget {
     super.key,
     required this.author,
     required this.permlink,
-    this.onComment,
     this.onUpvoteComment,
     this.onReplyComment,
     this.currentUser,
   });
   final String author;
   final String permlink;
-  final void Function(String body)? onComment;
   final void Function(String author, String permlink)? onUpvoteComment;
   final void Function(String author, String permlink)? onReplyComment;
   final String? currentUser;
@@ -226,8 +224,8 @@ class _HivePostCommentsState extends State<HivePostComments> {
                 _isAddingComment
                     ? null
                     : () {
-                      if (widget.onComment != null) {
-                        widget.onComment!("");
+                      if (widget.onReplyComment != null) {
+                        widget.onReplyComment!(widget.author, widget.permlink);
                       } else {
                         showModalBottomSheet(
                           context: context,

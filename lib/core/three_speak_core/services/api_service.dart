@@ -22,4 +22,50 @@ class ApiService {
       throw Exception('Login API error: ${response.body}');
     }
   }
+
+  Future<Map<String, dynamic>> handleUpvote({
+    required String author,
+    required String permlink,
+    required int weight,
+    required String authToken,
+  }) async {
+    final url = Uri.parse('${server.domain}/mobile/vote');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json', 'authorization': authToken},
+      body: jsonEncode({
+        "author": author,
+        "permlink": permlink,
+        "weight": weight,
+      }),
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as Map<String, dynamic>;
+    } else {
+      throw Exception(jsonDecode(response.body)['error'] ?? 'Unknown API error');
+    }
+  }
+
+  Future<Map<String, dynamic>> handleComment({
+    required String author,
+    required String permlink,
+    required String body,
+    required String authToken,
+  }) async {
+    final url = Uri.parse('${server.domain}/mobile/comment');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json', 'authorization': authToken},
+      body: jsonEncode({
+        "author": author,
+        "permlink": permlink,
+        "comment": body,
+      }),
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as Map<String, dynamic>;
+    } else {
+      throw Exception(jsonDecode(response.body)['error'] ?? 'Unknown API error');
+    }
+  }
 }

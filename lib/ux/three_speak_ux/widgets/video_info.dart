@@ -5,6 +5,8 @@ import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_resp
 import 'package:hive_flutter_kit/core/three_speak_core/provider/content_favourite_provider.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/server_proxy.dart';
 import 'package:hive_flutter_kit/ux/dhive/comments/reply_bottomsheet.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_comment_screen/threespeak_comment_screen.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_upvote_screen/threespeak_upvote_screen.dart';
 import 'package:hive_flutter_kit/ux/upvote_bottomsheet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:hive_flutter_kit/ux/dhive/comments/hive_post_comments.dart';
@@ -146,7 +148,7 @@ class _VideoInfoState extends State<VideoInfo> {
                                       widget.permlink,
                                     );
                                   } else {
-                                    // Default logic
+                                    // Default fallback to show comment screen
                                     showModalBottomSheet(
                                       context: context,
                                       isScrollControlled: true,
@@ -154,34 +156,57 @@ class _VideoInfoState extends State<VideoInfo> {
                                       builder: (context) {
                                         return FractionallySizedBox(
                                           heightFactor: 0.95,
-                                          child: HivePostComments(
+                                          child: ThreespeakCommentScreen(
                                             author: widget.author,
                                             permlink: widget.permlink,
-                                            onComment: null,
-                                            // onUpvoteComment: (author, permlink) => {
-                                            //   debugPrint("$author, $permlink"),
-                                            // },
-                                            // onReplyComment: (
-                                            //   author,
-                                            //   permlink,
-                                            // ) async {
-                                            //   final result =
-                                            //       await showModalBottomSheet(
-                                            //         context: context,
-                                            //         isScrollControlled: true,
-                                            //         builder:
-                                            //             (context) =>
-                                            //                 ReplyBottomsheet(
-                                            //                   parentAuthor:
-                                            //                       author,
-                                            //                   parentPermlink:
-                                            //                       permlink,
-                                            //                 ),
-                                            //       );
-                                            //   if (result == true) {
-                                            //     setState(() {});
-                                            //   }
-                                            // },
+                                            currentUser: widget.currentUser!,
+                                            authToken:
+                                                "",
+                                            hfk: hfk,
+                                            onSubmitVote: (status, result) {
+                                              if (status) {
+                                                ScaffoldMessenger.of(
+                                                  context,
+                                                ).showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(result!),
+                                                    backgroundColor:
+                                                        Colors.green,
+                                                  ),
+                                                );
+                                              } else {
+                                                ScaffoldMessenger.of(
+                                                  context,
+                                                ).showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(result!),
+                                                    backgroundColor: Colors.red,
+                                                  ),
+                                                );
+                                              }
+                                            },
+                                            onSubmitComment: (status, result) {
+                                              if (status) {
+                                                ScaffoldMessenger.of(
+                                                  context,
+                                                ).showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(result!),
+                                                    backgroundColor:
+                                                        Colors.green,
+                                                  ),
+                                                );
+                                              } else {
+                                                ScaffoldMessenger.of(
+                                                  context,
+                                                ).showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(result!),
+                                                    backgroundColor: Colors.red,
+                                                  ),
+                                                );
+                                              }
+                                            },
                                           ),
                                         );
                                       },
@@ -194,6 +219,62 @@ class _VideoInfoState extends State<VideoInfo> {
                                   color: Colors.grey,
                                 ),
                               ),
+
+                              // InkWell(
+                              //   onTap: () {
+                              //     if (widget.onTapComment != null) {
+                              //       widget.onTapComment!(
+                              //         widget.author,
+                              //         widget.permlink,
+                              //       );
+                              //     } else {
+                              //       // Default logic
+                              //       showModalBottomSheet(
+                              //         context: context,
+                              //         isScrollControlled: true,
+                              //         backgroundColor: Colors.transparent,
+                              //         builder: (context) {
+                              //           return FractionallySizedBox(
+                              //             heightFactor: 0.95,
+                              //             child: HivePostComments(
+                              //               author: widget.author,
+                              //               permlink: widget.permlink,
+                              //               // onUpvoteComment: (author, permlink) => {
+                              //               //   debugPrint("$author, $permlink"),
+                              //               // },
+                              //               // onReplyComment: (
+                              //               //   author,
+                              //               //   permlink,
+                              //               // ) async {
+                              //               //   final result =
+                              //               //       await showModalBottomSheet(
+                              //               //         context: context,
+                              //               //         isScrollControlled: true,
+                              //               //         builder:
+                              //               //             (context) =>
+                              //               //                 ReplyBottomsheet(
+                              //               //                   parentAuthor:
+                              //               //                       author,
+                              //               //                   parentPermlink:
+                              //               //                       permlink,
+                              //               //                 ),
+                              //               //       );
+                              //               //   if (result == true) {
+                              //               //     setState(() {});
+                              //               //   }
+                              //               // },
+                              //             ),
+                              //           );
+                              //         },
+                              //       );
+                              //     }
+                              //   },
+                              //   child: Icon(
+                              //     Icons.comment,
+                              //     size: 16,
+                              //     color: Colors.grey,
+                              //   ),
+                              // ),
                               SizedBox(width: 8),
                               Text(
                                 '${video.stats?.numComments ?? 0}',
@@ -260,14 +341,34 @@ class _VideoInfoState extends State<VideoInfo> {
                                         ),
                                       ),
                                       builder: (context) {
-                                        return UpvoteBottomSheet(
+                                        return ThreespeakUpvoteScreen(
                                           hfk: hfk,
                                           author: widget.author,
                                           permlink: widget.permlink,
                                           isContentVoted: widget.isContentVoted,
                                           currentUser: widget.currentUser ?? "",
-                                          onVoted: () {
-                                            Navigator.pop(context);
+                                          authToken:
+                                              "",
+                                          onVoted: (status, result) {
+                                            if (status) {
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                SnackBar(
+                                                  content: Text(result!),
+                                                  backgroundColor: Colors.green,
+                                                ),
+                                              );
+                                            } else {
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                SnackBar(
+                                                  content: Text(result!),
+                                                  backgroundColor: Colors.red,
+                                                ),
+                                              );
+                                            }
                                           },
                                         );
                                       },
