@@ -8,7 +8,7 @@ import 'package:hive_flutter_kit/core/three_speak_core/server_proxy.dart';
 enum VideoListType { publishNow, myVideos, encoding }
 
 class ThreeSpeakCurrentUserAccount extends StatefulWidget {
-  final String token;
+  final String? token;
   final String username;
   final void Function(int)? onTabChanged;
   final VoidCallback? onLogout;
@@ -19,7 +19,7 @@ class ThreeSpeakCurrentUserAccount extends StatefulWidget {
   final VoidCallback? onTapBackButton;  
   const ThreeSpeakCurrentUserAccount({
     super.key,
-    required this.token,
+    this.token,
     required this.username,
     this.onTabChanged,
     this.onLogout,
@@ -59,7 +59,7 @@ class _ThreeSpeakCurrentUserAccountState
     final uri = Uri.parse(server.myVideosApiUrl);
     final headers = {
       'Content-Type': 'application/json',
-      'Authorization': widget.token,
+      'Authorization': widget.token!,
     };
     try {
       final response = await http.get(uri, headers: headers);
