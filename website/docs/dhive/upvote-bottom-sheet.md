@@ -32,7 +32,6 @@ UpvoteBottomSheet({
   required HiveFlutterKitPlatform hfk,
   required String author,
   required String permlink,
-  required bool isContentVoted,
   required String currentUser,
   VoidCallback? onVoted,
   VoidCallback? onClickUpvote,
@@ -46,7 +45,6 @@ UpvoteBottomSheet({
 | `hfk`             | `HiveFlutterKitPlatform` | ✅       | Hive blockchain service instance                                 |
 | `author`          | `String`                 | ✅       | Author of the post or comment                                    |
 | `permlink`        | `String`                 | ✅       | Permlink of the post or comment                                  |
-| `isContentVoted`  | `bool`                   | ✅       | Whether the current user has already voted                       |
 | `currentUser`     | `String`                 | ✅       | Username of the current user                                     |
 | `onVoted`         | `VoidCallback?`          | ❌       | Callback after a successful vote                                 |
 | `onClickUpvote`   | `VoidCallback?`          | ❌       | Custom callback for upvote button; if not set, shows VoteDialog  |
@@ -63,7 +61,6 @@ showModalBottomSheet(
     hfk: hiveFlutterKit,
     author: post.author,
     permlink: post.permlink,
-    isContentVoted: isVoted,
     currentUser: currentUser,
     onVoted: () {
       // Refresh UI or fetch new vote data

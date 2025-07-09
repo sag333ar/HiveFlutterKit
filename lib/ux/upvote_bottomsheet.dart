@@ -8,7 +8,6 @@ class UpvoteBottomSheet extends StatelessWidget {
   final HiveFlutterKitPlatform hfk;
   final String author;
   final String permlink;
-  final bool isContentVoted;
   final String currentUser;
   final VoidCallback? onClickUpvote;
 
@@ -19,7 +18,6 @@ class UpvoteBottomSheet extends StatelessWidget {
     required this.hfk,
     required this.author,
     required this.permlink,
-    required this.isContentVoted,
     required this.currentUser,
     this.onVoted,
     this.onClickUpvote,
@@ -71,7 +69,7 @@ class UpvoteBottomSheet extends StatelessWidget {
                 onPressed: () => Navigator.pop(context),
               ),
               actions: [
-                if (!isContentVoted)
+                if (!currentUserPresentInVoters)
                   IconButton(
                     onPressed: () {
                       // Handle both "" and error json for currentUser
@@ -89,19 +87,6 @@ class UpvoteBottomSheet extends StatelessWidget {
                             ),
                             behavior: SnackBarBehavior.floating,
                             backgroundColor: Colors.blue,
-                          ),
-                        );
-                        return;
-                      }
-
-                      if (votes.any((e) => e.voter == currentUser)) {
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'You have already voted for this video',
-                            ),
-                            backgroundColor: Colors.red,
                           ),
                         );
                         return;
@@ -136,11 +121,7 @@ class UpvoteBottomSheet extends StatelessWidget {
                             ),
                       );
                     },
-                    icon: Icon(
-                      Icons.thumb_up,
-                      color: isContentVoted ? Colors.blue : Colors.grey,
-                      size: 20,
-                    ),
+                    icon: Icon(Icons.thumb_up, color: Colors.blue, size: 20),
                   ),
               ],
             ),
