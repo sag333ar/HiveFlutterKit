@@ -27,6 +27,8 @@ class ThreeSpeakVideoFeed extends StatefulWidget {
   final String? commnuityId;
   final String? tag;
   final bool? isPayoutValueVisible;
+  final bool? shouldShowBackButton;
+  final VoidCallback? onTapBackButton;
 
   const ThreeSpeakVideoFeed({
     super.key,
@@ -46,6 +48,8 @@ class ThreeSpeakVideoFeed extends StatefulWidget {
     required this.onTapComment,
     this.tag,
     this.isPayoutValueVisible,
+    this.shouldShowBackButton,
+    this.onTapBackButton
   });
 
   @override
@@ -121,6 +125,10 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
       return null;
     }
     return AppBar(
+      leading:
+            widget.shouldShowBackButton!
+                ? BackButton(onPressed: widget.onTapBackButton)
+                : null,
       title: TextField(
         controller: _controller,
         cursorColor: Colors.black,
@@ -132,17 +140,6 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
           border: InputBorder.none,
           isDense: true,
           contentPadding: const EdgeInsets.symmetric(vertical: 14),
-          prefixIcon:
-              (_controller!.text.trim().length >= 4)
-                  ? Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: UserProfileImage(
-                      url: _controller!.text.trim(),
-                      radius: 16,
-                      verticalPadding: 0,
-                    ),
-                  )
-                  : null,
           prefixIconConstraints: const BoxConstraints(
             minWidth: 40,
             minHeight: 40,
