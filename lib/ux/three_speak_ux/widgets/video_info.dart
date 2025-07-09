@@ -160,8 +160,7 @@ class _VideoInfoState extends State<VideoInfo> {
                                             author: widget.author,
                                             permlink: widget.permlink,
                                             currentUser: widget.currentUser!,
-                                            authToken:
-                                                "",
+                                            authToken: "",
                                             hfk: hfk,
                                             onSubmitVote: (status, result) {
                                               if (status) {
@@ -346,10 +345,8 @@ class _VideoInfoState extends State<VideoInfo> {
                                           hfk: hfk,
                                           author: widget.author,
                                           permlink: widget.permlink,
-                                          isContentVoted: widget.isContentVoted,
                                           currentUser: widget.currentUser ?? "",
-                                          authToken:
-                                              "",
+                                          authToken: "",
                                           onVoted: (status, result) {
                                             if (status) {
                                               ScaffoldMessenger.of(
