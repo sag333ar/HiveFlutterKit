@@ -16,7 +16,8 @@ class ThreeSpeakCurrentUserAccount extends StatefulWidget {
   final void Function(String username, String permlink)? onViewMyVideo;
   final void Function(String username, String permlink)? onViewDetails;
   final void Function(String videoId)? onMoreOptions;
-  final VoidCallback? onTapBackButton;  
+  final VoidCallback? onTapBackButton;
+  final bool? shouldShowBackButton; 
   const ThreeSpeakCurrentUserAccount({
     super.key,
     this.token,
@@ -28,6 +29,7 @@ class ThreeSpeakCurrentUserAccount extends StatefulWidget {
     this.onViewDetails,
     this.onMoreOptions,
     this.onTapBackButton,
+    this.shouldShowBackButton
   });
 
   @override
@@ -197,16 +199,10 @@ class _ThreeSpeakCurrentUserAccountState
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            if (widget.onTapBackButton != null) {
-              widget.onTapBackButton!();
-            } else {
-              Navigator.of(context).pop();
-            }
-          },
-        ),
+        leading:
+            widget.shouldShowBackButton!
+                ? BackButton(onPressed: widget.onTapBackButton)
+                : null,
         title: Row(
           children: [
             UserProfileImage(userName: widget.username, radius: 40),
