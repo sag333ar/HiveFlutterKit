@@ -27,16 +27,36 @@ class _VoteBottomSheetState extends State<VoteBottomSheet> {
   double _sliderValue = 50;
   bool _loading = false;
 
+  @override
+  void dispose() {
+    // Ensure loading state is reset when widget is disposed
+    _loading = false;
+    super.dispose();
+  }
+
+  void _setLoading(bool loading) {
+    if (mounted) {
+      setState(() {
+        _loading = loading;
+      });
+    }
+  }
+
   Future<void> _vote() async {
-    setState(() => _loading = true);
+    if (_loading) return; 
+    
+    _setLoading(true);
+
     try {
       final weight = (_sliderValue.round()) * 100;
+      
       if (widget.onClickUpvoteTap != null) {
-        widget.onClickUpvoteTap!(
+        await widget.onClickUpvoteTap!(
           widget.author,
           widget.permlink,
           weight,
         );
+        _setLoading(false);
         return;
       }
 
@@ -47,25 +67,33 @@ class _VoteBottomSheetState extends State<VoteBottomSheet> {
       );
 
       if (!mounted) return;
-      Navigator.of(context).pop(); // Close bottom sheet
+      
+      _setLoading(false);
+      
+      // Close bottom sheet first
+      Navigator.of(context).pop();
 
       final decodedResult = jsonDecode(result);
       final success = decodedResult['success'] == true;
 
       widget.onVoted?.call(success, decodedResult[success ? 'result' : 'error']);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(success
-              ? 'Vote Success: ${decodedResult['result']}'
-              : 'Vote Failed: ${decodedResult['error']}'),
-          backgroundColor: success ? Colors.green : Colors.red,
-          duration: const Duration(seconds: 3),
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(16),
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(success
+                ? 'Vote Success: ${decodedResult['result']}'
+                : 'Vote Failed: ${decodedResult['error']}'),
+            backgroundColor: success ? Colors.green : Colors.red,
+            duration: const Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(16),
+          ),
+        );
+      }
     } catch (e) {
+      _setLoading(false);
+      
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -77,8 +105,6 @@ class _VoteBottomSheetState extends State<VoteBottomSheet> {
           ),
         );
       }
-    } finally {
-      if (mounted) setState(() => _loading = false);
     }
   }
 
@@ -104,10 +130,10 @@ class _VoteBottomSheetState extends State<VoteBottomSheet> {
             min: 0,
             max: 100,
             divisions: 20,
-            activeColor: Colors.blueAccent,
+            activeColor: _loading ? Colors.grey : Colors.blueAccent,
             inactiveColor: Colors.grey.shade300,
             label: '${_sliderValue.round()}%',
-            onChanged: (value) {
+            onChanged: _loading ? null : (value) {
               setState(() {
                 _sliderValue = (value / 5).round() * 5.0;
               });
@@ -115,39 +141,68 @@ class _VoteBottomSheetState extends State<VoteBottomSheet> {
           ),
           Text(
             '${_sliderValue.round()}%',
-            style: const TextStyle(fontSize: 16),
+            style: TextStyle(
+              fontSize: 16,
+              color: _loading ? Colors.grey : Colors.black,
+            ),
           ),
           const SizedBox(height: 20),
           SizedBox(
             width: double.infinity,
+            height: 50,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                backgroundColor: Colors.blueAccent,
+                backgroundColor: _loading ? Colors.grey.shade400 : Colors.blueAccent,
+                foregroundColor: _loading ? Colors.grey.shade600 : Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
+                elevation: _loading ? 0 : 2,
               ),
               onPressed: _loading ? null : _vote,
               child: _loading
-                  ? const SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
+                  ? const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        ),
+                        SizedBox(width: 12),
+                        Text(
+                          'Voting...',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     )
                   : const Text(
                       'Vote',
-                      style: TextStyle(fontSize: 16, color: Colors.white),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
             ),
           ),
           const SizedBox(height: 10),
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            onPressed: _loading ? null : () => Navigator.of(context).pop(),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: _loading ? Colors.grey : Colors.blueAccent,
+              ),
+            ),
           ),
         ],
       ),
