@@ -2442,7 +2442,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           context,
                           MaterialPageRoute(
                             builder:
-                                (context) => ThreeSpeakCurrentUserAccountScreen(
+                                (context) => ThreeSpeakCurrentUserAccount(
                                   username: 'shaktimaaan',
                                   token: "No token",
                                   shouldShowBackButton: true,
@@ -2666,9 +2666,6 @@ class _MyHomePageState extends State<MyHomePage> {
                           (context) => ThreespeakCommnuityScreen(
                             communityId: 'hive-163772',
                             title: 'Worldmappin',
-                            onTapVideoItem: (item) {
-                              debugPrint('Tapped video item: ${item.title}');
-                            },
                             videoFeed: () {
                               return ThreeSpeakVideoFeed(
                                 feedType: ThreeSpeakVideoFeedType.commnuityFeed,
