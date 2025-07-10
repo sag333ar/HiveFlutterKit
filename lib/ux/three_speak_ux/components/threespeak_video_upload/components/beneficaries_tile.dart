@@ -11,11 +11,13 @@ class BeneficiariesTile extends StatefulWidget {
     required this.userName,
     required this.beneficiaries,
     required this.onChanged,
+    this.isEnabled = true,
   }) : super(key: key);
 
   final String userName;
   final List<BeneficiariesJson> beneficiaries;
-  final Function(List<BeneficiariesJson> beneficaries) onChanged;
+  final Function(List<BeneficiariesJson> beneficiaries) onChanged;
+  final bool isEnabled;
 
   @override
   State<BeneficiariesTile> createState() => _BeneficiariesTileState();
@@ -34,53 +36,65 @@ class _BeneficiariesTileState extends State<BeneficiariesTile> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return InkWell(
-      onTap: () {
-        if (beneficiaries
-                .where((element) => !element.isDefault)
-                .toList()
-                .length >
-            0) {
-          beneficiariesBottomSheet(context);
-        } else {
-          showAlertForAddBene(beneficiaries);
-        }
-      },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Text(
-                  'Video Participants:',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Spacer(),
-                Icon(Icons.arrow_drop_down),
-              ],
+      onTap:
+          widget.isEnabled
+              ? () {
+                if (beneficiaries
+                        .where((element) => !element.isDefault)
+                        .toList()
+                        .length >
+                    0) {
+                  beneficiariesBottomSheet(context);
+                } else {
+                  showAlertForAddBene(beneficiaries);
+                }
+              }
+              : null,
+      child: Opacity(
+        opacity: widget.isEnabled ? 1.0 : 0.6,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Text(
+                    'Video Participants:',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: widget.isEnabled ? Colors.black : Colors.grey,
+                    ),
+                  ),
+                  Spacer(),
+                  Icon(
+                    Icons.arrow_drop_down,
+                    color: widget.isEnabled ? Colors.black : Colors.grey,
+                  ),
+                ],
+              ),
             ),
-          ),
-          Visibility(
-            visible: beneficiaries.isNotEmpty,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 12.0),
-              child: Wrap(
-                spacing: 0,
-                runSpacing: 0,
-                children: List.generate(
-                  beneficiaries.length,
-                  (index) => _beneficarieNameTile(theme, index, context),
+            Visibility(
+              visible: beneficiaries.isNotEmpty,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 12.0),
+                child: Wrap(
+                  spacing: 0,
+                  runSpacing: 0,
+                  children: List.generate(
+                    beneficiaries.length,
+                    (index) => _beneficiaryNameTile(theme, index, context),
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Visibility _beneficarieNameTile(
+  Visibility _beneficiaryNameTile(
     ThemeData theme,
     int index,
     BuildContext context,
@@ -91,7 +105,7 @@ class _BeneficiariesTileState extends State<BeneficiariesTile> {
         margin: EdgeInsets.only(right: 6, bottom: 8),
         padding: EdgeInsets.only(top: 2, bottom: 2, right: 8, left: 3),
         decoration: BoxDecoration(
-          color: theme.cardColor,
+          color: widget.isEnabled ? theme.cardColor : Colors.grey[200],
           borderRadius: BorderRadius.all(Radius.circular(20)),
         ),
         child: Row(
@@ -104,7 +118,9 @@ class _BeneficiariesTileState extends State<BeneficiariesTile> {
             const SizedBox(width: 5),
             Text(
               beneficiaries[index].account,
-              style: TextStyle(color: Colors.black),
+              style: TextStyle(
+                color: widget.isEnabled ? Colors.black : Colors.grey,
+              ),
             ),
           ],
         ),
@@ -113,6 +129,8 @@ class _BeneficiariesTileState extends State<BeneficiariesTile> {
   }
 
   void beneficiariesBottomSheet(BuildContext context) {
+    if (!widget.isEnabled) return;
+
     var filteredBenes = beneficiaries;
     showModalBottomSheet(
       context: context,
@@ -143,9 +161,7 @@ class _BeneficiariesTileState extends State<BeneficiariesTile> {
                       url: server.userOwnerThumb(filteredBenes[i].account),
                     ),
                     title: Text(filteredBenes[i].account),
-                    subtitle: Text(
-                      '(${filteredBenes[i].weight} %)',
-                    ),
+                    subtitle: Text('(${filteredBenes[i].weight} %)'),
                     trailing: IconButton(
                       onPressed: () {
                         setState(() {
@@ -154,6 +170,7 @@ class _BeneficiariesTileState extends State<BeneficiariesTile> {
                                 element.account == filteredBenes[i].account,
                           );
                         });
+                        widget.onChanged(beneficiaries);
                         Navigator.of(context).pop();
                       },
                       icon: Icon(Icons.delete, color: Colors.red),
@@ -171,6 +188,8 @@ class _BeneficiariesTileState extends State<BeneficiariesTile> {
   }
 
   void showAlertForAddBene(List<BeneficiariesJson> benes) {
+    if (!widget.isEnabled) return;
+
     if (beneficiaries.length == 7 || maxLimitReached()) {
       showError('Maximum limit reached');
     } else {

@@ -5,20 +5,22 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/server_proxy.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/thumbnail_upload_screen.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/upload_info_screen.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/models/threespeak_video_upload_model.dart';
 import 'package:video_player/video_player.dart';
+
+typedef OnVideoUploadCallback = void Function(ThreeSpeakVideoUploadModel model);
 
 class VideoUploadScreen extends StatefulWidget {
   const VideoUploadScreen({
     super.key,
     required this.owner,
     required this.token,
-    this.onUploadSuccess,
+    required this.onVideoUpload,
   });
+
   final String owner;
   final String token;
-  final UploadSuccessCallback? onUploadSuccess;
+  final OnVideoUploadCallback onVideoUpload;
 
   @override
   State<VideoUploadScreen> createState() => _VideoUploadScreenState();
@@ -38,6 +40,12 @@ class _VideoUploadScreenState extends State<VideoUploadScreen> {
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _videoController?.dispose();
+    super.dispose();
   }
 
   Future<void> _pickFile() async {
@@ -131,21 +139,17 @@ class _VideoUploadScreenState extends State<VideoUploadScreen> {
             '',
           );
 
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ThumbnailUploadScreen(
-                uploadUrl: videoUrl,
-                filename: videoFilename,
-                oFilename: _originalFileName ?? '',
-                size: _fileSize ?? 0,
-                duration: _videoDuration ?? 0.0,
-                owner: widget.owner,
-                token: widget.token,
-                onUploadSuccess: widget.onUploadSuccess,
-              ),
-            ),
+          final model = ThreeSpeakVideoUploadModel(
+            uploadUrl: videoUrl,
+            filename: videoFilename,
+            originalFilename: _originalFileName ?? '',
+            fileSize: _fileSize ?? 0,
+            videoDuration: _videoDuration ?? 0.0,
+            owner: widget.owner,
+            token: widget.token,
           );
+
+          widget.onVideoUpload(model);
         },
       );
     } catch (e) {
@@ -238,7 +242,7 @@ class _VideoUploadScreenState extends State<VideoUploadScreen> {
               ),
             ),
             onPressed: _isUploading ? null : _uploadFile,
-            child: const Text("Next", style: TextStyle(color: Colors.black)),
+            child: const Text("Next", style: TextStyle(color: Colors.white)),
           ),
         ),
       ),

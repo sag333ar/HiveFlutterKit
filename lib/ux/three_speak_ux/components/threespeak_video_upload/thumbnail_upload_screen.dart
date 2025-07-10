@@ -7,30 +7,22 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/server_proxy.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/upload_info_screen.dart';
 import 'package:another_tus_client/another_tus_client.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/models/threespeak_video_upload_model.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/upload_info_screen.dart';
 import 'package:http/http.dart' as http;
 
+typedef OnThumbnailUploadCallback =
+    void Function(ThreeSpeakVideoUploadModel model);
+
 class ThumbnailUploadScreen extends StatefulWidget {
-  final String uploadUrl;
-  final String oFilename;
-  final String filename;
-  final int size;
-  final double duration;
-  final String owner;
-  final String token;
-  final UploadSuccessCallback? onUploadSuccess;
+  final ThreeSpeakVideoUploadModel uploadModel;
+  final OnThumbnailUploadCallback onThumbnailUpload;
 
   const ThumbnailUploadScreen({
     super.key,
-    required this.uploadUrl,
-    required this.oFilename,
-    required this.size,
-    required this.duration,
-    required this.owner,
-    required this.filename,
-    required this.token,
-    this.onUploadSuccess,
+    required this.uploadModel,
+    required this.onThumbnailUpload,
   });
 
   @override
@@ -49,6 +41,46 @@ class _ThumbnailUploadScreenState extends State<ThumbnailUploadScreen> {
 
   final double thumbnailHeight = 180.0;
   final double thumbnailAspectRatio = 16 / 9;
+
+  @override
+  void initState() {
+    super.initState();
+    _generateDefaultThumbnail();
+  }
+
+  Future<void> _generateDefaultThumbnail() async {
+    // if (_thumbnailFile == null) {
+    //   // Create a default thumbnail if none selected
+    //   await _createDefaultThumbnail();
+    // }
+
+    setState(() {
+      _status = 'Tap to pick a thumbnail';
+    });
+  }
+
+  // Future<void> _createDefaultThumbnail() async {
+  //   // Create a simple default thumbnail
+  //   // In a real implementation, you might extract a frame from the video
+  //   try {
+  //     // For now, create a simple placeholder
+  //     final bytes = Uint8List(
+  //       0,
+  //     ); // Placeholder - implement actual thumbnail generation
+  //     final XFile defaultThumbnail = XFile.fromData(
+  //       bytes,
+  //       name: 'default_thumbnail.jpg',
+  //       mimeType: 'image/jpeg',
+  //     );
+
+  //     setState(() {
+  //       _thumbnailFile = defaultThumbnail;
+  //       _thumbnailBytes = bytes;
+  //     });
+  //   } catch (e) {
+  //     setState(() => _status = 'Error creating default thumbnail: $e');
+  //   }
+  // }
 
   Future<void> _pickThumbnail() async {
     try {
@@ -115,34 +147,29 @@ class _ThumbnailUploadScreenState extends State<ThumbnailUploadScreen> {
         Uri.parse('$kThreeSpeakApiUrl/upload_info'),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${widget.token}',
+          'Authorization': 'Bearer ${widget.uploadModel.token}',
         },
         body: jsonEncode({
-          'filename': widget.filename,
-          'oFilename': widget.oFilename,
-          'size': widget.size,
-          'duration': widget.duration,
+          'filename': widget.uploadModel.filename,
+          'oFilename': widget.uploadModel.originalFilename,
+          'size': widget.uploadModel.fileSize,
+          'duration': widget.uploadModel.videoDuration,
           'thumbnail': thumbnailFilename,
-          'owner': widget.owner,
+          'owner': widget.uploadModel.owner,
         }),
       );
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> resp = jsonDecode(response.body);
 
+        final updatedModel = widget.uploadModel.copyWith(
+          thumbnailUrl: thumbnailUrl,
+          thumbnailFilename: thumbnailFilename,
+          videoId: resp['_id'],
+        );
+
         if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => UploadInfoScreen(
-                videoId: resp['_id'],
-                thumbnail: thumbnailFilename,
-                token: widget.token,
-                owner: widget.owner,
-                onUploadSuccess: widget.onUploadSuccess,
-              ),
-            ),
-          );
+          widget.onThumbnailUpload(updatedModel);
         }
       } else {
         throw 'Server error: ${response.statusCode}';
@@ -280,6 +307,9 @@ class _ThumbnailUploadScreenState extends State<ThumbnailUploadScreen> {
                 ),
                 const SizedBox(height: 12),
               ],
+
+              const SizedBox(height: 20),
+              Text(_status),
             ],
           ),
         ),
