@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/server_proxy.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/components/user_profile_image.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/models/threespeak_video_upload_model.dart';
 import 'package:video_player/video_player.dart';
 
@@ -165,11 +166,32 @@ class _VideoUploadScreenState extends State<VideoUploadScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("Pick your video"),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0.5,
+        title: const Text(
+          "Pick your video",
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
+        actions: [
+          Row(
+            children: [
+              UserProfileImage(userName: widget.owner, radius: 30),
+              const SizedBox(width: 8),
+              Text(
+                widget.owner,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: 12),
+            ],
+          ),
+        ],
       ),
+
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
         child: SingleChildScrollView(
