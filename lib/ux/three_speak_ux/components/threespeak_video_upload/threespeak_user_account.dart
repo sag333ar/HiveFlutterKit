@@ -24,6 +24,7 @@ class ThreeSpeakCurrentUserAccount extends StatefulWidget {
   final OnMoreOptionsCallback? onMoreOptions;
   final VoidCallback? onTapBackButton;
   final bool shouldShowBackButton;
+  final bool shouldShowPublishButton;
 
   const ThreeSpeakCurrentUserAccount({
     super.key,
@@ -37,6 +38,7 @@ class ThreeSpeakCurrentUserAccount extends StatefulWidget {
     this.onMoreOptions,
     this.onTapBackButton,
     this.shouldShowBackButton = true,
+    this.shouldShowPublishButton = false,
   });
 
   @override
@@ -268,7 +270,7 @@ class _ThreeSpeakCurrentUserAccountState
                   const SizedBox(width: 8),
                   Column(
                     children: [
-                      if (listType == VideoListType.publishNow)
+                      if (listType == VideoListType.publishNow && widget.shouldShowPublishButton)
                         ElevatedButton(
                           onPressed: () {
                             if (widget.onPublish != null) {
@@ -366,8 +368,9 @@ class _ThreeSpeakCurrentUserAccountState
                 : null,
         title: Row(
           children: [
+            if (!widget.shouldShowBackButton) const SizedBox(width: 12),
             UserProfileImage(userName: widget.username, radius: 40),
-            const SizedBox(width: 8),
+            const SizedBox(width: 12),
             Expanded(
               child: Text(
                 widget.username,
@@ -387,6 +390,7 @@ class _ThreeSpeakCurrentUserAccountState
               }
             },
           ),
+          const SizedBox(width: 8),
         ],
         bottom: TabBar(
           controller: _tabController,
