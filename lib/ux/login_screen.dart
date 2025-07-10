@@ -171,11 +171,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final postingKey = _postingKeyController.text;
 
       if (username.isEmpty || postingKey.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Username and Posting Key are required'),
-          ),
-        );
+        _showMessage('Username and Posting Key are required');
         return;
       }
 
@@ -184,20 +180,12 @@ class _LoginScreenState extends State<LoginScreen> {
         postingKey,
         widget.proof,
       );
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Success: ${result.success} Proof: ${result.proof}, Username: ${result.username}, Challenge: ${result.challenge}, PublicKey: ${result.publicKey}',
-          ),
-        ),
-      );
+      _showMessage('Login Successful');
       if (widget.uponLogin != null) {
         widget.uponLogin!(context, result);
       }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      _showMessage('Error: $e');
     }
   }
 
@@ -457,7 +445,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                       elevation: 4,
                                     ),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         // const Icon(Icons.key),
                                         Image.asset(
@@ -578,7 +567,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                           'Login with Private Posting Key',
                                           style: TextStyle(
                                             color:
-                                              widget.privatePostingKeyTextColor,
+                                                widget
+                                                    .privatePostingKeyTextColor,
                                             fontSize: 18,
                                             fontWeight: FontWeight.w600,
                                           ),
