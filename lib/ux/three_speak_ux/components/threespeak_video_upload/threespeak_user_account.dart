@@ -366,6 +366,7 @@ class _ThreeSpeakCurrentUserAccountState
                 : null,
         title: Row(
           children: [
+            if (!widget.shouldShowBackButton) const SizedBox(width: 8),
             UserProfileImage(userName: widget.username, radius: 40),
             const SizedBox(width: 8),
             Expanded(
@@ -387,6 +388,7 @@ class _ThreeSpeakCurrentUserAccountState
               }
             },
           ),
+          const SizedBox(width: 8),
         ],
         bottom: TabBar(
           controller: _tabController,
