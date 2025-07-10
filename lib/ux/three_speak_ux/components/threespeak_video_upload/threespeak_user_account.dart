@@ -366,9 +366,9 @@ class _ThreeSpeakCurrentUserAccountState
                 : null,
         title: Row(
           children: [
-            if (!widget.shouldShowBackButton) const SizedBox(width: 8),
+            if (!widget.shouldShowBackButton) const SizedBox(width: 12),
             UserProfileImage(userName: widget.username, radius: 40),
-            const SizedBox(width: 8),
+            const SizedBox(width: 12),
             Expanded(
               child: Text(
                 widget.username,
