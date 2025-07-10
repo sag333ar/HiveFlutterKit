@@ -24,6 +24,7 @@ class ThreeSpeakCurrentUserAccount extends StatefulWidget {
   final OnMoreOptionsCallback? onMoreOptions;
   final VoidCallback? onTapBackButton;
   final bool shouldShowBackButton;
+  final bool shouldShowPublishButton;
 
   const ThreeSpeakCurrentUserAccount({
     super.key,
@@ -37,6 +38,7 @@ class ThreeSpeakCurrentUserAccount extends StatefulWidget {
     this.onMoreOptions,
     this.onTapBackButton,
     this.shouldShowBackButton = true,
+    this.shouldShowPublishButton = false,
   });
 
   @override
@@ -268,23 +270,23 @@ class _ThreeSpeakCurrentUserAccountState
                   const SizedBox(width: 8),
                   Column(
                     children: [
-                      // if (listType == VideoListType.publishNow)
-                      //   ElevatedButton(
-                      //     onPressed: () {
-                      //       if (widget.onPublish != null) {
-                      //         widget.onPublish!(username, permlink);
-                      //       }
-                      //     },
-                      //     style: ElevatedButton.styleFrom(
-                      //       backgroundColor: Colors.green,
-                      //       foregroundColor: Colors.white,
-                      //       padding: const EdgeInsets.symmetric(
-                      //         horizontal: 12,
-                      //         vertical: 8,
-                      //       ),
-                      //     ),
-                      //     child: const Text("Publish"),
-                      //   ),
+                      if (listType == VideoListType.publishNow && widget.shouldShowPublishButton)
+                        ElevatedButton(
+                          onPressed: () {
+                            if (widget.onPublish != null) {
+                              widget.onPublish!(username, permlink);
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                          ),
+                          child: const Text("Publish"),
+                        ),
                       if (listType == VideoListType.myVideos)
                         ElevatedButton(
                           onPressed: () {
