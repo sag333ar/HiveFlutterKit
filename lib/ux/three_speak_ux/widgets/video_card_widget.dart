@@ -42,7 +42,11 @@ class VideoCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+          side: BorderSide(color: Colors.grey.shade400, width: 1),
+        ),
         margin: const EdgeInsets.all(8),
         child: LayoutBuilder(
           builder: (context, constraints) {

@@ -23,7 +23,6 @@ class ThreespeakCommnuityScreen extends StatefulWidget {
     this.onTapShare,
     this.onTapReport,
     required this.videoFeed,
-    required Null Function(dynamic item) onTapVideoItem,
     required this.onTapBackButton,
     required this.shouldShowBackButton,
   });
