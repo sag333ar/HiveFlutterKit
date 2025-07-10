@@ -115,9 +115,9 @@ class _UploadInfoScreenState extends State<UploadInfoScreen> {
     final isNsfwContent = isNSFW;
 
     if (title.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a title')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please enter a title')));
       return;
     }
 
@@ -146,6 +146,7 @@ class _UploadInfoScreenState extends State<UploadInfoScreen> {
       if (scheduledDate != null)
         'scheduledPublishTime': scheduledDate.toUtc().toIso8601String(),
       if (isPowerEnabled) 'rewardPowerup': true,
+      'fromMobile': true,
     };
 
     try {
@@ -256,9 +257,12 @@ class _UploadInfoScreenState extends State<UploadInfoScreen> {
               children: [
                 Checkbox(
                   value: isNSFW,
-                  onChanged: _isUploading ? null : (value) {
-                    setState(() => isNSFW = value!);
-                  },
+                  onChanged:
+                      _isUploading
+                          ? null
+                          : (value) {
+                            setState(() => isNSFW = value!);
+                          },
                 ),
                 Expanded(
                   child: Text.rich(
@@ -287,11 +291,14 @@ class _UploadInfoScreenState extends State<UploadInfoScreen> {
                 Text(isPowerEnabled ? '100% power' : '50% power'),
                 Switch(
                   value: isPowerEnabled,
-                  onChanged: _isUploading ? null : (value) {
-                    setState(() {
-                      isPowerEnabled = value;
-                    });
-                  },
+                  onChanged:
+                      _isUploading
+                          ? null
+                          : (value) {
+                            setState(() {
+                              isPowerEnabled = value;
+                            });
+                          },
                 ),
               ],
             ),
@@ -324,59 +331,60 @@ class _UploadInfoScreenState extends State<UploadInfoScreen> {
         ),
       ),
 
-      floatingActionButton: _isUploading 
-        ? FloatingActionButton(
-            backgroundColor: Colors.grey,
-            onPressed: null,
-            child: const CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-            ),
-          )
-        : Stack(
-            alignment: Alignment.bottomRight,
-            children: [
-              if (showMenu)
-                Positioned(
-                  bottom: 80,
-                  right: 0,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      _buildMenuOption(
-                        label: 'Publish Now',
-                        icon: Icons.publish,
-                        onTap: () {
-                          setState(() => showMenu = false);
-                          _uploadVideoInfo();
-                        },
-                      ),
-                      const SizedBox(height: 8),
-                      _buildMenuOption(
-                        label: 'Schedule Publish',
-                        icon: Icons.schedule,
-                        onTap: () {
-                          setState(() => showMenu = false);
-                          _pickScheduleDateTime();
-                        },
-                      ),
-                      const SizedBox(height: 8),
-                      FloatingActionButton(
-                        mini: true,
-                        backgroundColor: Colors.deepPurple,
-                        onPressed: () => setState(() => showMenu = false),
-                        child: const Icon(Icons.close),
-                      ),
-                    ],
-                  ),
+      floatingActionButton:
+          _isUploading
+              ? FloatingActionButton(
+                backgroundColor: Colors.grey,
+                onPressed: null,
+                child: const CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                 ),
-              if (!showMenu)
-                FloatingActionButton(
-                  backgroundColor: Colors.deepPurple,
-                  onPressed: () => setState(() => showMenu = true),
-                  child: const Icon(Icons.upload),
-                ),
-            ],
-          ),
+              )
+              : Stack(
+                alignment: Alignment.bottomRight,
+                children: [
+                  if (showMenu)
+                    Positioned(
+                      bottom: 80,
+                      right: 0,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          _buildMenuOption(
+                            label: 'Publish Now',
+                            icon: Icons.publish,
+                            onTap: () {
+                              setState(() => showMenu = false);
+                              _uploadVideoInfo();
+                            },
+                          ),
+                          const SizedBox(height: 8),
+                          _buildMenuOption(
+                            label: 'Schedule Publish',
+                            icon: Icons.schedule,
+                            onTap: () {
+                              setState(() => showMenu = false);
+                              _pickScheduleDateTime();
+                            },
+                          ),
+                          const SizedBox(height: 8),
+                          FloatingActionButton(
+                            mini: true,
+                            backgroundColor: Colors.deepPurple,
+                            onPressed: () => setState(() => showMenu = false),
+                            child: const Icon(Icons.close),
+                          ),
+                        ],
+                      ),
+                    ),
+                  if (!showMenu)
+                    FloatingActionButton(
+                      backgroundColor: Colors.deepPurple,
+                      onPressed: () => setState(() => showMenu = true),
+                      child: const Icon(Icons.upload),
+                    ),
+                ],
+              ),
     );
   }
 
