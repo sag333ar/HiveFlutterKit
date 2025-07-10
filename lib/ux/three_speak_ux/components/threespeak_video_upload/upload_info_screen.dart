@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:hive_flutter_kit/core/three_speak_core/video_ops.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/components/beneficaries_tile.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/components/user_profile_image.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/models/threespeak_video_upload_model.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -187,10 +188,30 @@ class _UploadInfoScreenState extends State<UploadInfoScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Upload your video'),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0.5,
+        title: const Text(
+          "Upload your video",
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
+        actions: [
+          Row(
+            children: [
+              UserProfileImage(userName: widget.uploadModel.owner, radius: 30),
+              const SizedBox(width: 8),
+              Text(
+                widget.uploadModel.owner,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: 12),
+            ],
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

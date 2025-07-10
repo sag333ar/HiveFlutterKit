@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/server_proxy.dart';
 import 'package:another_tus_client/another_tus_client.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/components/user_profile_image.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/models/threespeak_video_upload_model.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/upload_info_screen.dart';
 import 'package:http/http.dart' as http;
@@ -189,10 +190,30 @@ class _ThumbnailUploadScreenState extends State<ThumbnailUploadScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("Pick your thumbnail"),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0.5,
+        title: const Text(
+          "Pick your thumbnail",
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
+        actions: [
+          Row(
+            children: [
+              UserProfileImage(userName: widget.uploadModel.owner, radius: 30),
+              const SizedBox(width: 8),
+              Text(
+                widget.uploadModel.owner,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: 12),
+            ],
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
