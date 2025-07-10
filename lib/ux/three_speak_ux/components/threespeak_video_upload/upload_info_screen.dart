@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:hive_flutter_kit/core/three_speak_core/video_ops.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/components/beneficaries_tile.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/models/threespeak_video_upload_model.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -8,22 +9,16 @@ import 'package:flutter/material.dart';
 // Global endpoints
 const String kThreeSpeakApiUrl = 'https://studio.3speak.tv/mobile/api';
 
-typedef UploadSuccessCallback = void Function(Map<String, dynamic> response);
+typedef OnUploadCompleteCallback = void Function(Map<String, dynamic> response);
 
 class UploadInfoScreen extends StatefulWidget {
-  final String videoId;
-  final String thumbnail;
-  final String token;
-  final String owner;
-  final UploadSuccessCallback? onUploadSuccess;
+  final ThreeSpeakVideoUploadModel uploadModel;
+  final OnUploadCompleteCallback onUploadComplete;
 
   const UploadInfoScreen({
     super.key,
-    required this.videoId,
-    required this.thumbnail,
-    required this.token,
-    required this.owner,
-    this.onUploadSuccess,
+    required this.uploadModel,
+    required this.onUploadComplete,
   });
 
   @override
@@ -35,6 +30,7 @@ class _UploadInfoScreenState extends State<UploadInfoScreen> {
   bool isPowerEnabled = false;
   double powerLevel = 0.5;
   bool showMenu = false;
+  bool _isUploading = false;
 
   final TextEditingController titleController = TextEditingController();
   final TextEditingController tagsController = TextEditingController();
@@ -111,10 +107,24 @@ class _UploadInfoScreenState extends State<UploadInfoScreen> {
   }
 
   Future<void> _uploadVideoInfo({DateTime? scheduledDate}) async {
+    if (_isUploading) return;
+
     final title = titleController.text.trim();
     final description = descriptionController.text.trim();
     final tags = tagsController.text.trim();
     final isNsfwContent = isNSFW;
+
+    if (title.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a title')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isUploading = true;
+    });
+
     var bene =
         selectedBeneficiaries
             .map((e) => e.copyWith(account: e.account.toLowerCase()))
@@ -125,13 +135,13 @@ class _UploadInfoScreenState extends State<UploadInfoScreen> {
           );
 
     final body = {
-      'videoId': widget.videoId,
+      'videoId': widget.uploadModel.videoId,
       'title': title,
       'description':
           '$description\n\n<br/><sub>Uploaded using 3Speak Mobile App</sub>',
       'isNsfwContent': isNsfwContent,
       'tags': tags,
-      'thumbnail': widget.thumbnail,
+      'thumbnail': widget.uploadModel.thumbnailFilename,
       'beneficiaries': json.encode(bene.map((e) => e.toJson()).toList()),
       if (scheduledDate != null)
         'scheduledPublishTime': scheduledDate.toUtc().toIso8601String(),
@@ -143,7 +153,7 @@ class _UploadInfoScreenState extends State<UploadInfoScreen> {
         Uri.parse('$kThreeSpeakApiUrl/update_info'),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': '${widget.token}',
+          'Authorization': widget.uploadModel.token,
         },
         body: jsonEncode(body),
       );
@@ -153,11 +163,7 @@ class _UploadInfoScreenState extends State<UploadInfoScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Video info updated successfully!')),
         );
-        if (widget.onUploadSuccess != null) {
-          widget.onUploadSuccess!(respObj);
-        }
-        // Optionally pop this screen if needed:
-        Navigator.of(context).maybePop();
+        widget.onUploadComplete(respObj);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -169,6 +175,10 @@ class _UploadInfoScreenState extends State<UploadInfoScreen> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Error: $e')));
+    } finally {
+      setState(() {
+        _isUploading = false;
+      });
     }
   }
 
@@ -246,7 +256,7 @@ class _UploadInfoScreenState extends State<UploadInfoScreen> {
               children: [
                 Checkbox(
                   value: isNSFW,
-                  onChanged: (value) {
+                  onChanged: _isUploading ? null : (value) {
                     setState(() => isNSFW = value!);
                   },
                 ),
@@ -277,7 +287,7 @@ class _UploadInfoScreenState extends State<UploadInfoScreen> {
                 Text(isPowerEnabled ? '100% power' : '50% power'),
                 Switch(
                   value: isPowerEnabled,
-                  onChanged: (value) {
+                  onChanged: _isUploading ? null : (value) {
                     setState(() {
                       isPowerEnabled = value;
                     });
@@ -288,13 +298,15 @@ class _UploadInfoScreenState extends State<UploadInfoScreen> {
             const SizedBox(height: 16),
 
             BeneficiariesTile(
-              userName: widget.owner ?? '',
+              userName: widget.uploadModel.owner,
               beneficiaries: selectedBeneficiaries,
               onChanged: (newList) {
+                if (_isUploading) return;
                 setState(() {
                   selectedBeneficiaries = newList;
                 });
               },
+              isEnabled: !_isUploading,
             ),
             const SizedBox(height: 16),
 
@@ -312,51 +324,59 @@ class _UploadInfoScreenState extends State<UploadInfoScreen> {
         ),
       ),
 
-      floatingActionButton: Stack(
-        alignment: Alignment.bottomRight,
-        children: [
-          if (showMenu)
-            Positioned(
-              bottom: 80,
-              right: 0,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  _buildMenuOption(
-                    label: 'Publish Now',
-                    icon: Icons.publish,
-                    onTap: () {
-                      setState(() => showMenu = false);
-                      _uploadVideoInfo();
-                    },
-                  ),
-                  const SizedBox(height: 8),
-                  _buildMenuOption(
-                    label: 'Schedule Publish',
-                    icon: Icons.schedule,
-                    onTap: () {
-                      setState(() => showMenu = false);
-                      _pickScheduleDateTime();
-                    },
-                  ),
-                  const SizedBox(height: 8),
-                  FloatingActionButton(
-                    mini: true,
-                    backgroundColor: Colors.deepPurple,
-                    onPressed: () => setState(() => showMenu = false),
-                    child: const Icon(Icons.close),
-                  ),
-                ],
-              ),
+      floatingActionButton: _isUploading 
+        ? FloatingActionButton(
+            backgroundColor: Colors.grey,
+            onPressed: null,
+            child: const CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
             ),
-          if (!showMenu)
-            FloatingActionButton(
-              backgroundColor: Colors.deepPurple,
-              onPressed: () => setState(() => showMenu = true),
-              child: const Icon(Icons.upload),
-            ),
-        ],
-      ),
+          )
+        : Stack(
+            alignment: Alignment.bottomRight,
+            children: [
+              if (showMenu)
+                Positioned(
+                  bottom: 80,
+                  right: 0,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      _buildMenuOption(
+                        label: 'Publish Now',
+                        icon: Icons.publish,
+                        onTap: () {
+                          setState(() => showMenu = false);
+                          _uploadVideoInfo();
+                        },
+                      ),
+                      const SizedBox(height: 8),
+                      _buildMenuOption(
+                        label: 'Schedule Publish',
+                        icon: Icons.schedule,
+                        onTap: () {
+                          setState(() => showMenu = false);
+                          _pickScheduleDateTime();
+                        },
+                      ),
+                      const SizedBox(height: 8),
+                      FloatingActionButton(
+                        mini: true,
+                        backgroundColor: Colors.deepPurple,
+                        onPressed: () => setState(() => showMenu = false),
+                        child: const Icon(Icons.close),
+                      ),
+                    ],
+                  ),
+                ),
+              if (!showMenu)
+                FloatingActionButton(
+                  backgroundColor: Colors.deepPurple,
+                  onPressed: () => setState(() => showMenu = true),
+                  child: const Icon(Icons.upload),
+                ),
+            ],
+          ),
     );
   }
 

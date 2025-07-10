@@ -20,6 +20,9 @@ import 'package:hive_flutter_kit/ux/three_speak_ux/components/three_speak_trendi
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/three_speak_video_feed.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_community_screen/threespeak_commnuity_screen.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_login_screen.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/threespeak_user_account.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/thumbnail_upload_screen.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/upload_info_screen.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/video_upload_screen.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/video_player.dart';
 import 'package:hive_flutter_kit/ux/dhive/account_post/account_posts_screen.dart';
@@ -1213,6 +1216,90 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void _showVideoOptionsBottomSheet(BuildContext context, String videoId) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: Icon(Icons.edit),
+                title: Text('Edit Video'),
+                onTap: () {
+                  Navigator.pop(context);
+                  print('Edit video: $videoId');
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.share),
+                title: Text('Share Video'),
+                onTap: () {
+                  Navigator.pop(context);
+                  print('Share video: $videoId');
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.delete, color: Colors.red),
+                title: Text(
+                  'Delete Video',
+                  style: TextStyle(color: Colors.red),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showDeleteConfirmation(context, videoId);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.cancel),
+                title: Text('Cancel'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showDeleteConfirmation(BuildContext context, String videoId) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Delete Video'),
+          content: Text(
+            'Are you sure you want to delete this video? This action cannot be undone.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                print('Deleting video: $videoId');
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Video deleted successfully'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              },
+              child: Text('Delete', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -2258,26 +2345,159 @@ class _MyHomePageState extends State<MyHomePage> {
                 'ThreeSpeak Video Feeds',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) => VideoUploadScreen(
-                            owner: 'shaktimaaan',
-                            token: "REMOVED",
-                            onUploadSuccess: (response) {
-                              // Handle the response object here
-                              print('Upload success: $response');
-                              // You can update state, show a dialog, etc.
-                            },
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Video Upload Button
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) => VideoUploadScreen(
+                                  owner: 'shaktimaaan',
+                                  token: "No token",
+                                  onVideoUpload: (model) {
+                                    // Handle video upload completion
+                                    print('Video uploaded: ${model.filename}');
+
+                                    // Navigate to thumbnail upload screen
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (context) => ThumbnailUploadScreen(
+                                              uploadModel: model,
+                                              onThumbnailUpload: (
+                                                updatedModel,
+                                              ) {
+                                                // Handle thumbnail upload completion
+                                                print(
+                                                  'Thumbnail uploaded: ${updatedModel.thumbnailFilename}',
+                                                );
+
+                                                // Navigate to upload info screen
+                                                Navigator.pushReplacement(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder:
+                                                        (
+                                                          context,
+                                                        ) => UploadInfoScreen(
+                                                          uploadModel:
+                                                              updatedModel,
+                                                          onUploadComplete: (
+                                                            response,
+                                                          ) {
+                                                            // Handle final upload completion
+                                                            print(
+                                                              'Upload complete: $response',
+                                                            );
+
+                                                            // Show success message and navigate back
+                                                            ScaffoldMessenger.of(
+                                                              context,
+                                                            ).showSnackBar(
+                                                              SnackBar(
+                                                                content: Text(
+                                                                  'Video uploaded successfully!',
+                                                                ),
+                                                                backgroundColor:
+                                                                    Colors
+                                                                        .green,
+                                                              ),
+                                                            );
+
+                                                            // Navigate back to main screen or show success screen
+                                                            Navigator.of(
+                                                              context,
+                                                            ).popUntil(
+                                                              (route) =>
+                                                                  route.isFirst,
+                                                            );
+                                                          },
+                                                        ),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                      ),
+                                    );
+                                  },
+                                ),
                           ),
+                        );
+                      },
+                      child: const Text('Upload Video'),
                     ),
-                  );
-                },
-                child: const Text('Upload Video'),
+
+                    const SizedBox(height: 20),
+
+                    // User Account Screen Button
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) => ThreeSpeakCurrentUserAccountScreen(
+                                  username: 'shaktimaaan',
+                                  token: "No token",
+                                  shouldShowBackButton: true,
+                                  onTapBackButton: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  onTabChanged: (tabIndex) {
+                                    print('Tab changed to: $tabIndex');
+                                  },
+                                  onLogout: () {
+                                    // Handle logout
+                                    print('User logged out');
+                                    Navigator.of(context).pop();
+                                  },
+                                  onPublish: (username, permlink) {
+                                    // Handle publish video
+                                    print(
+                                      'Publishing video: $username/$permlink',
+                                    );
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Publishing video...'),
+                                      ),
+                                    );
+                                  },
+                                  onViewMyVideo: (username, permlink) {
+                                    // Handle view my video
+                                    print('Viewing video: $username/$permlink');
+                                    // Navigate to video player or details screen
+                                  },
+                                  onViewDetails: (username, permlink) {
+                                    // Handle view details
+                                    print(
+                                      'Viewing details: $username/$permlink',
+                                    );
+                                    // Navigate to video details screen
+                                  },
+                                  onMoreOptions: (videoId) {
+                                    // Handle more options
+                                    print('More options for video: $videoId');
+                                    _showVideoOptionsBottomSheet(
+                                      context,
+                                      videoId,
+                                    );
+                                  },
+                                ),
+                          ),
+                        );
+                      },
+                      child: const Text('My Account'),
+                    ),
+                  ],
+                ),
               ),
+
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
