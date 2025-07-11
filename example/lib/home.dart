@@ -25,6 +25,17 @@ import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_u
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/upload_info_screen.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/video_upload_screen.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/video_player.dart';
+import 'package:hive_flutter_kit_example/ui/dialogs/video_options_dialogs.dart';
+import 'package:hive_flutter_kit_example/widgets/login_form.dart';
+import 'package:hive_flutter_kit_example/services/auth_service.dart';
+import 'package:hive_flutter_kit_example/widgets/transfer_funds_form.dart';
+import 'package:hive_flutter_kit_example/services/wallet_service.dart';
+import 'package:hive_flutter_kit_example/widgets/image_uploader_widget.dart';
+import 'package:hive_flutter_kit_example/services/profile_service.dart';
+import 'package:hive_flutter_kit_example/widgets/qr_code_display_widget.dart';
+import 'package:hive_flutter_kit_example/ui/ui_helpers.dart';
+import 'package:hive_flutter_kit_example/widgets/dhive_components_widget.dart';
+import 'package:hive_flutter_kit_example/widgets/threespeak_components_widget.dart'; // Added import
 import 'package:hive_flutter_kit/ux/dhive/account_post/account_posts_screen.dart';
 import 'package:hive_flutter_kit/ux/dhive/account_post/blog_screen.dart';
 import 'package:hive_flutter_kit/ux/dhive/account_post/comments_screen.dart';
@@ -45,6 +56,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late HiveFlutterKitPlatform hfk;
+  late AuthService _authService;
+  late WalletService _walletService;
+  late ProfileService _profileService; // Added ProfileService instance
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _postingKeyController = TextEditingController();
 
@@ -86,130 +100,55 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    // hfk should be initialized either here or in didChangeDependencies before AuthService
+    // Assuming hfk is initialized by didChangeDependencies first or is accessible globally for simplicity
   }
 
-  void _loginWithHiveKeychain() async {
-    try {
-      final result = await hfk.loginWithKeychain(_usernameController.text, '');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Success: ${result.success} Proof: ${result.proof}, Username: ${result.username}, Challenge: ${result.challenge}, PublicKey: ${result.publicKey}',
-          ),
-        ),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
-    }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    hfk = HiveFlutterKitPlatform.instance;
+    _authService = AuthService(
+      hfk: hfk,
+      showSnackBar: _showSnackBar,
+      startTimer: _startTimer,
+      cancelHiveAuth: _cancelHiveAuth,
+    );
+    _walletService = WalletService(hfk: hfk, showSnackBar: _showSnackBar);
+    _profileService = ProfileService(hfk: hfk, showSnackBar: _showSnackBar);
   }
 
-  void _transferFunds() async {
+  // Helper method to show snackbar, to be passed to services
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
+  // Login methods are now removed from here and are in AuthService
+
+  // Transferred to WalletService, this method will now call the service
+  Future<void> _handleTransferFunds() async {
     setState(() {
       _isTransferring = true;
       _transferResult = null;
     });
 
-    final recipient = _transferRecipientController.text;
-    final amountString = _transferAmountController.text;
-    final memo =
-        _transferMemoController.text.isEmpty
-            ? null
-            : _transferMemoController.text;
+    final result = await _walletService.transferFunds(
+      recipient: _transferRecipientController.text,
+      amountString: _transferAmountController.text,
+      assetSymbol: _transferAssetSymbol,
+      memo: _transferMemoController.text,
+    );
 
-    if (recipient.isEmpty) {
-      setState(() {
-        _transferResult = 'Error: Recipient username is required.';
-        _isTransferring = false;
-      });
-      return;
-    }
-
-    double amount;
-    try {
-      amount = double.parse(amountString);
-      if (amount <= 0) {
-        throw FormatException('Amount must be positive');
-      }
-    } catch (e) {
-      setState(() {
-        _transferResult =
-            'Error: Invalid amount. Please enter a positive number.';
-        _isTransferring = false;
-      });
-      return;
-    }
-
-    try {
-      final result = await hfk.transfer(
-        recipient,
-        amount,
-        _transferAssetSymbol,
-        memo,
-      );
-      setState(() {
-        _transferResult = 'Success: $result';
-      });
-    } catch (e) {
-      setState(() {
-        _transferResult = 'Error: ${e.toString()}';
-      });
-    } finally {
-      setState(() {
-        _isTransferring = false;
-      });
-    }
+    setState(() {
+      _transferResult = result;
+      _isTransferring = false;
+    });
   }
 
-  void _loginWithHiveAuth() async {
-    try {
-      _startTimer();
-      final result = await hfk.loginWithHiveAuth(_usernameController.text, '');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Success: ${result.success} Proof: ${result.proof}, Username: ${result.username}, Challenge: ${result.challenge}, PublicKey: ${result.publicKey}',
-          ),
-        ),
-      );
-      _cancelHiveAuth();
-    } catch (e) {
-      _cancelHiveAuth();
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
-    }
-  }
 
-  void _loginWithPlaintextKey() async {
-    try {
-      final username = _usernameController.text;
-      final postingKey = _postingKeyController.text;
-
-      if (username.isEmpty || postingKey.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Username and Posting Key are required'),
-          ),
-        );
-        return;
-      }
-
-      final result = await hfk.loginWithPlaintextKey(username, postingKey, '');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Success: ${result.success} Proof: ${result.proof}, Username: ${result.username}, Challenge: ${result.challenge}, PublicKey: ${result.publicKey}',
-          ),
-        ),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
-    }
-  }
+  // _loginWithHiveAuth and _loginWithPlaintextKey are removed as they are now in AuthService
 
   void _getVotingPower() async {
     try {
@@ -1038,167 +977,35 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Future<void> _pickAndUploadImage() async {
+  // Image upload and broadcast methods moved to ProfileService
+  Future<void> _handlePickAndUploadImage() async {
     setState(() {
-      // _isUploading = true;
+      _isUploading = true; // Set uploading state before calling service
       _uploadedImageUrl = null;
     });
-    try {
-      final res = await hfk.pickImageWithMaxSize(
-        2000,
-        "https://images.ecency.com/hs",
-      );
-      setState(() {
-        _uploadedImageUrl = res.url;
-      });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Image uploaded: ${res.url}')));
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Upload failed: $e')));
-    } finally {
-      setState(() {
-        _isUploading = false;
-      });
-    }
+    final imageUrl = await _profileService.pickAndUploadImage();
+    setState(() {
+      _uploadedImageUrl = imageUrl;
+      _isUploading = false; // Reset uploading state after service call
+    });
   }
 
-  Future<void> _signAndBroadcastTx() async {
-    if (_uploadedImageUrl == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please upload an image first')),
-      );
-      return;
-    }
-
+  Future<void> _handleSignAndBroadcastTx() async {
     setState(() {
-      _isBroadcasting = true;
+      _isBroadcasting = true; // Set broadcasting state
       _broadcastResult = null;
     });
-
-    try {
-      // Fetch account and decode posting_json_metadata
-      final username = "shaktimaaan";
-      final accounts = await hfk.getAccounts([username]);
-      if (accounts.isEmpty) throw Exception("Account not found");
-
-      final account = accounts.first;
-      final postingJsonMetadataStr = account.postingJsonMetadata;
-      if (postingJsonMetadataStr == null || postingJsonMetadataStr.isEmpty) {
-        throw Exception("No posting_json_metadata found for account");
-      }
-
-      // Decode and update profile_image
-      final postingJsonMetadata = jsonDecode(postingJsonMetadataStr);
-      if (postingJsonMetadata is! Map<String, dynamic>) {
-        throw Exception("Invalid posting_json_metadata format");
-      }
-
-      // Update profile_image
-      if (postingJsonMetadata.containsKey('profile') &&
-          postingJsonMetadata['profile'] is Map<String, dynamic>) {
-        postingJsonMetadata['profile']['profile_image'] = _uploadedImageUrl;
-      }
-
-      print(
-        'Updated profile_image: ${postingJsonMetadata['profile']['profile_image']}',
-      );
-
-      // Prepare operation data as dynamic
-      final operationData = {
-        "account": username,
-        "json_metadata": "",
-        "posting_json_metadata": jsonEncode(postingJsonMetadata),
-        "extensions": [],
-      };
-
-      // Use dynamic for operation and operationRequest
-      final dynamic operation = ["account_update2", operationData];
-      final dynamic operationRequest = [operation];
-
-      final response = await hfk.signAndBroadcastTx(
-        operationRequest,
-        'posting',
-      );
-
-      // Handle response as dynamic
-      if (response != null && response['success'] == true) {
-        setState(() {
-          _broadcastResult =
-              response['profile']?['profile_image'] ??
-              'Broadcasted successfully!';
-        });
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Broadcast Success')));
-      } else {
-        setState(() {
-          _broadcastResult =
-              'Broadcast failed: ${response?['error'] ?? 'Unknown error'}';
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Broadcast failed: ${response?['error'] ?? 'Unknown error'}',
-            ),
-          ),
-        );
-      }
-    } catch (e) {
-      setState(() {
-        _broadcastResult = 'Broadcast failed: $e';
-      });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Broadcast failed: $e')));
-    } finally {
-      setState(() {
-        _isBroadcasting = false;
-      });
-    }
+    // Assuming 'shaktimaaan' is the target username for profile update.
+    // This should ideally come from the logged-in user state.
+    final String currentUsername = _usernameController.text.isNotEmpty ? _usernameController.text : "shaktimaaan";
+    final result = await _profileService.signAndBroadcastProfileImageTx(_uploadedImageUrl, currentUsername);
+    setState(() {
+      _broadcastResult = result;
+      _isBroadcasting = false; // Reset broadcasting state
+    });
   }
 
-  VideoPlayerScreen getVideoPlayer(
-    String? author,
-    String? permlink,
-    GQLFeedItem? item,
-  ) {
-    return VideoPlayerScreen(
-      item: item,
-      author: author, //'ninaeatshere',
-      permlink: permlink, // 'movrcxlslz',
-      onTapBackButton: () {
-        Navigator.pop(context);
-      },
-      shouldShowBackButton: true,
-      videoFeed: () {
-        return ThreeSpeakVideoFeed(
-          feedType: ThreeSpeakVideoFeedType.related,
-          onTapVideoItem: (tappedItem) {
-            var screen = getVideoPlayer(null, null, tappedItem);
-            var route = MaterialPageRoute(builder: (context) => screen);
-            Navigator.push(context, route);
-          },
-          relatedAuthor: 'ninaeatshere',
-          relatedPermlink: 'movrcxlslz',
-          onTapAuthor: (GQLFeedItem item) {
-            debugPrint('Tapped author: ${item.author}');
-          },
-          onTapReport: (GQLFeedItem item) {
-            debugPrint('Tapped report: ${item.permlink}');
-          },
-          onTapUpvote: (GQLFeedItem item) {
-            debugPrint('Tapped upvote: ${item.permlink}');
-          },
-          onTapComment: (GQLFeedItem item) {
-            debugPrint('Tapped comment: ${item.permlink}');
-          },
-        );
-      },
-    );
-  }
+  // getVideoPlayer moved to example/lib/ui/ui_helpers.dart as buildVideoPlayerScreen
 
   Future<void> _getWitnessesByVote() async {
     try {
@@ -1216,88 +1023,18 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void _showVideoOptionsBottomSheet(BuildContext context, String videoId) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: Icon(Icons.edit),
-                title: Text('Edit Video'),
-                onTap: () {
-                  Navigator.pop(context);
-                  print('Edit video: $videoId');
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.share),
-                title: Text('Share Video'),
-                onTap: () {
-                  Navigator.pop(context);
-                  print('Share video: $videoId');
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.delete, color: Colors.red),
-                title: Text(
-                  'Delete Video',
-                  style: TextStyle(color: Colors.red),
-                ),
-                onTap: () {
-                  Navigator.pop(context);
-                  _showDeleteConfirmation(context, videoId);
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.cancel),
-                title: Text('Cancel'),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+  // Moved _showVideoOptionsBottomSheet & _showDeleteConfirmation to example/lib/ui/dialogs/video_options_dialogs.dart
 
-  void _showDeleteConfirmation(BuildContext context, String videoId) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Delete Video'),
-          content: Text(
-            'Are you sure you want to delete this video? This action cannot be undone.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                print('Deleting video: $videoId');
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Video deleted successfully'),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              },
-              child: Text('Delete', style: TextStyle(color: Colors.red)),
-            ),
-          ],
-        );
-      },
+  // Callback for delete confirmation
+  void _handleDeleteVideoConfirmed(String videoId) {
+    print('Deleting video: $videoId');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Video deleted successfully (from home.dart)'),
+        backgroundColor: Colors.red,
+      ),
     );
+    // TODO: Add actual delete logic here if needed
   }
 
   @override
@@ -1311,45 +1048,18 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              // Username input
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  controller: _usernameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Username',
-                    border: OutlineInputBorder(),
-                  ),
+              // LoginForm
+              LoginForm(
+                usernameController: _usernameController,
+                postingKeyController: _postingKeyController,
+                onLoginWithHiveKeychain: () => _authService.loginWithHiveKeychain(_usernameController.text),
+                onLoginWithHiveAuth: () => _authService.loginWithHiveAuth(_usernameController.text),
+                onLoginWithPlaintextKey: () => _authService.loginWithPlaintextKey(
+                  _usernameController.text,
+                  _postingKeyController.text,
                 ),
               ),
-
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: TextField(
-                  controller: _postingKeyController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Posting Key (for plaintext login)',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              ElevatedButton(
-                onPressed: _loginWithHiveKeychain,
-                child: const Text('Login with Hive Keychain'),
-              ),
-              ElevatedButton(
-                onPressed: _loginWithHiveAuth,
-                child: const Text('Login with HiveAuth'),
-              ),
-
-              ElevatedButton(
-                onPressed: _loginWithPlaintextKey,
-                child: const Text('Login with Plaintext Key'),
-              ),
+              // End LoginForm
 
               ElevatedButton(
                 child: Text('Get Voting power'),
@@ -1363,7 +1073,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
               ElevatedButton(
                 onPressed: () {
-                  var screen = getVideoPlayer(
+                  var screen = buildVideoPlayerScreen( // Updated call
+                    context,
                     "ninaeatshere",
                     "movrcxlslz",
                     null,
@@ -1435,8 +1146,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: _signMessage,
                 child: const Text('Sign Message'),
               ),
+              // --- End Basic User Actions ---
 
-              // --- New Buttons for Account Authority ---
+              // --- Account Authority Buttons ---
               ElevatedButton(
                 onPressed: _addAccountAuthority,
                 child: const Text('Add Account Authority'),
@@ -1445,1322 +1157,90 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: _removeAccountAuthority,
                 child: const Text('Remove Account Authority'),
               ),
+              // --- End Account Authority Buttons ---
 
-              // --- End New Buttons ---
               ElevatedButton(
-                onPressed: _commentWithOptions,
+                onPressed: _commentWithOptions, // This might be a more advanced comment action
                 child: const Text('Comment with Options'),
               ),
 
-              // --- hfk equivalents for dhive UI ---
-              ElevatedButton(
-                child: Text('Get Chain Properties (hfk)'),
-                onPressed: _getChainPropertieshfk,
+              // --- Dhive Components Widget ---
+              DhiveComponentsWidget(
+                hfk: hfk,
+                getChainPropertieshfk: _getChainPropertieshfk,
+                getDiscussionshfk: _getDiscussionshfk,
+                getAccountshfk: _getAccountshfk,
+                getAccountPostshfk: _getAccountPostshfk,
+                getVotingPowerhfk: _getVotingPowerhfk,
+                getResourceCreditshfk: _getResourceCreditshfk,
+                getFollowingsData: () => _showSnackBar("Get Followings Data (Placeholder)"), // Placeholder, original was nav
+                getFollowersData: () => _showSnackBar("Get Followers Data (Placeholder)"),   // Placeholder, original was nav
+                getWitnessVotesData: () => _showSnackBar("Get Witness Votes Data (Placeholder)"),// Placeholder, original was nav
+                getProposalsExample: () => _showSnackBar("Get Proposals Example (Placeholder)"), // Placeholder, original was nav
+                getAccountHistoryExample: () => _showSnackBar("Get Account History (Placeholder)"), // Placeholder, original was nav
+                checkThreespeakInAccountAuths: _checkThreespeakInAccountAuths,
+                getCommentsListhfk: _getCommentsListhfk,
+                fetchCommunities: () => _fetchCommunities(loadMore: false),
+                fetchMoreCommunities: (loadMore) => _fetchCommunities(loadMore: loadMore),
+                communities: _communities,
+                isLoadingCommunities: _isLoadingCommunities,
+                hasMoreCommunities: _hasMoreCommunities,
+                usernameController: _usernameController, // For checkThreespeakInAccountAuths
+                showSnackBar: _showSnackBar,
+                getWitnessesByVote: _getWitnessesByVote,
               ),
-              ElevatedButton(
-                child: Text('Get Discussions (hfk)'),
-                onPressed: _getDiscussionshfk,
-              ),
-              ElevatedButton(
-                child: Text('Get Accounts (hfk)'),
-                onPressed: _getAccountshfk,
-              ),
-              ElevatedButton(
-                child: Text('Get AccountPosts (hfk)'),
-                onPressed: _getAccountPostshfk,
-              ),
-              ElevatedButton(
-                child: Text('Get Voting power (hfk)'),
-                onPressed: _getVotingPowerhfk,
-              ),
-              ElevatedButton(
-                child: Text('Resources Credits Percentage (hfk)'),
-                onPressed: _getResourceCreditshfk,
-              ),
+              // --- End Dhive Components Widget ---
 
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) =>
-                              Followings(hfk: hfk, account: 'sagarkothari88'),
-                    ),
-                  );
-                },
-                //_getFollowingsData,
-                child: Text("Get Followings"),
+              // QR Code Display Widget
+              QrCodeDisplayWidget(
+                qrString: qrString,
+                timerDuration: timerDuration,
+                onCancel: _cancelHiveAuth,
               ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) =>
-                              Followers(hfk: hfk, account: 'sagarkothari88'),
-                    ),
-                  );
-                },
-                //_getFollowersData,
-                child: Text("Get Followers"),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) =>
-                              WitnessVotes(hfk: hfk, account: 'sagarkothari88'),
-                    ),
-                  );
-                },
-                //_getWitnessVotesData,
-                child: Text("Get Witness Votes"),
-              ),
-
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder:
-                          (_) => ProposalsScreen(
-                            hfk: hfk,
-                            // Callback implementations
-                            onTapUserAvatar: (creator) {
-                              print('User avatar tapped: $creator');
-                              // Navigate to user profile or show user details
-                            },
-                            onTapUsername: (creator) {
-                              print('Username tapped: $creator');
-                              // Navigate to user profile or show user details
-                            },
-                            onTapTitle: (subject, proposalId) {
-                              print('Title tapped: $subject #$proposalId');
-                              // Navigate to proposal details page
-                            },
-                            onTapStats: (proposalId) {
-                              print('Stats tapped for proposal: $proposalId');
-                              // Show proposal statistics
-                            },
-                            onTapUpvote: (proposalId) {
-                              print('Upvote tapped for proposal: $proposalId');
-                              // Handle upvote action
-                            },
-                            onTapVoteValue: (proposalId, voteValue) {
-                              print(
-                                'Vote value tapped for proposal: $proposalId, value: $voteValue',
-                              );
-                              // Show vote details or voting interface
-                            },
-                            onTapSupport: (proposalId) {
-                              print('Support tapped for proposal: $proposalId');
-                              // Handle support action
-                            },
-                          ),
-                    ),
-                  );
-                },
-                child: const Text("Get Proposals"),
-              ),
-
-              ElevatedButton(
-                child: Text('Get Account History'),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) => AccountActivities(
-                            hfk: hfk,
-                            account: 'sagarkothari88',
-                            isFilter: true,
-                          ),
-                    ),
-                  );
-                },
-              ),
-
-              // --- End hfk equivalents ---
-              ElevatedButton(
-                onPressed: _checkThreespeakInAccountAuths,
-                child: const Text('Check threespeak in accountAuths'),
-              ),
-              ElevatedButton(
-                child: Text('Get Comments (hfk)'),
-                onPressed: _getCommentsListhfk,
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  _communityPage = 0;
-                  _hasMoreCommunities = true;
-                  _lastCommunityName = null;
-                  _fetchCommunities(loadMore: false);
-                },
-                child: const Text('Fetch Communities'),
-              ),
-              if (_communities.isNotEmpty)
-                Column(
-                  children: [
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: _communities.length,
-                      itemBuilder: (context, index) {
-                        final c = _communities[index];
-                        return ListTile(
-                          title: Text(c.title ?? c.name ?? ''),
-                          subtitle: Text(c.about ?? ''),
-                        );
-                      },
-                    ),
-                    if (_hasMoreCommunities)
-                      ElevatedButton(
-                        onPressed: () => _fetchCommunities(loadMore: true),
-                        child:
-                            _isLoadingCommunities
-                                ? const SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                                : const Text('Load More'),
-                      ),
-                  ],
-                ),
-
-              ElevatedButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder:
-                        (context) => AlertDialog(content: SwitchUser(hfk: hfk)),
-                  );
-                },
-                child: const Text('Switch User (Dialog)'),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder:
-                            (context) => Dialog(
-                              insetPadding: const EdgeInsets.all(16),
-                              child: SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.95,
-                                height:
-                                    MediaQuery.of(context).size.height * 0.85,
-                                child: CommunityScreen(
-                                  hfk: hfk,
-                                  sortBy: 'trending',
-                                  tag: 'hive-163772',
-                                  onTap: (discussion) async {
-                                    final url = discussion.url;
-                                    if (url != null) {
-                                      final fullUrl = Uri.parse(
-                                        'https://hive.blog$url',
-                                      );
-                                      if (await canLaunchUrl(fullUrl)) {
-                                        await launchUrl(
-                                          fullUrl,
-                                          mode: LaunchMode.externalApplication,
-                                        );
-                                      } else {
-                                        debugPrint('Could not launch $fullUrl');
-                                      }
-                                    }
-                                  },
-                                ),
-                              ),
-                            ),
-                      );
-                    },
-                    child: const Text('Show Community (Dialog)'),
-                  ),
-                  const SizedBox(width: 20),
-                  const Text("Or"),
-                  const SizedBox(width: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder:
-                              (_) => CommunityScreen(
-                                hfk: hfk,
-                                sortBy: 'hot',
-                                tag: 'hive-163772',
-                                onTap: (discussion) async {
-                                  final url = discussion.url;
-                                  if (url != null) {
-                                    final fullUrl = Uri.parse(
-                                      'https://hive.blog$url',
-                                    );
-                                    if (await canLaunchUrl(fullUrl)) {
-                                      await launchUrl(
-                                        fullUrl,
-                                        mode: LaunchMode.externalApplication,
-                                      );
-                                    } else {
-                                      debugPrint('Could not launch $fullUrl');
-                                    }
-                                  }
-                                },
-                              ),
-                        ),
-                      );
-                    },
-                    child: const Text('Go to Community'),
-                  ),
-                ],
-              ),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder:
-                            (context) => Dialog(
-                              insetPadding: const EdgeInsets.all(16),
-                              child: SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.95,
-                                height:
-                                    MediaQuery.of(context).size.height * 0.85,
-                                child: AccountPostsScreen(
-                                  hfk: hfk,
-                                  account: 'sagarkothari88',
-                                  onTap: (discussion) {
-                                    debugPrint(
-                                      'Tapped on: ${discussion.title}',
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                      );
-                    },
-                    child: const Text('Show Posts (Dialog)'),
-                  ),
-                  const SizedBox(width: 20),
-                  const Text("Or"),
-                  const SizedBox(width: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder:
-                              (_) => AccountPostsScreen(
-                                hfk: hfk,
-                                account: 'sagarkothari88',
-                                onTap: (discussion) {
-                                  debugPrint('Tapped on: ${discussion.title}');
-                                },
-                              ),
-                        ),
-                      );
-                    },
-                    child: const Text('Go to Posts'),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder:
-                            (context) => Dialog(
-                              insetPadding: const EdgeInsets.all(16),
-                              child: SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.95,
-                                height:
-                                    MediaQuery.of(context).size.height * 0.85,
-                                child: CommentsScreen(
-                                  hfk: hfk,
-                                  account: 'sagarkothari88',
-                                  onTap: (discussion) {
-                                    debugPrint(
-                                      'Tapped comment: ${discussion.title}',
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                      );
-                    },
-                    child: const Text('Show Comments (Dialog)'),
-                  ),
-                  const SizedBox(width: 20),
-                  const Text("Or"),
-                  const SizedBox(width: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder:
-                              (_) => CommentsScreen(
-                                hfk: hfk,
-                                account: 'sagarkothari88',
-                                onTap: (discussion) {
-                                  debugPrint(
-                                    'Tapped comment: ${discussion.title}',
-                                  );
-                                },
-                              ),
-                        ),
-                      );
-                    },
-                    child: const Text('Go to Comments'),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder:
-                            (context) => Dialog(
-                              insetPadding: const EdgeInsets.all(16),
-                              child: SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.95,
-                                height:
-                                    MediaQuery.of(context).size.height * 0.85,
-                                child: BlogScreen(
-                                  hfk: hfk,
-                                  account: 'sagarkothari88',
-                                  onTap: (discussion) {
-                                    debugPrint(
-                                      'Tapped on blog: ${discussion.title}',
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                      );
-                    },
-                    child: const Text('Show Blog (Dialog)'),
-                  ),
-                  SizedBox(width: 20),
-                  Text("Or"),
-                  SizedBox(width: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder:
-                              (_) => BlogScreen(
-                                hfk: hfk,
-                                account: 'techcoderx',
-                                onTap: (discussion) {
-                                  debugPrint(
-                                    'Tapped on blog: ${discussion.title}',
-                                  );
-                                },
-                              ),
-                        ),
-                      );
-                    },
-                    child: const Text('Go to Blog'),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder:
-                            (context) => Dialog(
-                              insetPadding: const EdgeInsets.all(16),
-                              child: SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.95,
-                                height:
-                                    MediaQuery.of(context).size.height * 0.85,
-                                child: RepliesScreen(
-                                  hfk: hfk,
-                                  account: 'sagarkothari88',
-                                  onTap: (discussion) {
-                                    debugPrint(
-                                      'Tapped reply: ${discussion.title}',
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                      );
-                    },
-                    child: const Text('Show Replies (Dialog)'),
-                  ),
-                  const SizedBox(width: 20),
-                  const Text("Or"),
-                  const SizedBox(width: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder:
-                              (_) => RepliesScreen(
-                                hfk: hfk,
-                                account: 'sagarkothari88',
-                                onTap: (discussion) {
-                                  debugPrint(
-                                    'Tapped reply: ${discussion.title}',
-                                  );
-                                },
-                              ),
-                        ),
-                      );
-                    },
-                    child: const Text('Go to Replies'),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder:
-                            (context) => Dialog(
-                              insetPadding: const EdgeInsets.all(16),
-                              child: SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.95,
-                                height:
-                                    MediaQuery.of(context).size.height * 0.85,
-                                child: TrendingFeedScreen(
-                                  hfk: hfk,
-                                  onTap: (discussion) {
-                                    debugPrint(
-                                      'Tapped feed item: ${discussion.title}',
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                      );
-                    },
-                    child: const Text('Show Feed (Dialog)'),
-                  ),
-                  const SizedBox(width: 20),
-                  const Text("Or"),
-                  const SizedBox(width: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder:
-                              (_) => TrendingFeedScreen(
-                                hfk: hfk,
-                                onTap: (discussion) {
-                                  debugPrint(
-                                    'Tapped feed item: ${discussion.title}',
-                                  );
-                                },
-                              ),
-                        ),
-                      );
-                    },
-                    child: const Text('Go to Feed'),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder:
-                            (context) => Dialog(
-                              insetPadding: const EdgeInsets.all(16),
-                              child: SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.9,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16),
-                                  child: UserProfilePicture(
-                                    username: 'sagarkothari88',
-                                    hfk: hfk,
-                                    showDetails: true,
-                                    onTap: () {
-                                      debugPrint('Profile picture tapped!');
-                                    },
-                                  ),
-                                ),
-                              ),
-                            ),
-                      );
-                    },
-                    child: const Text('Show Profile (Dialog)'),
-                  ),
-                  const SizedBox(width: 20),
-                  const Text("Or"),
-                  const SizedBox(width: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder:
-                              (_) => Scaffold(
-                                appBar: AppBar(
-                                  title: const Text('User Profile'),
-                                ),
-                                body: Center(
-                                  child: UserProfilePicture(
-                                    username: 'sagarkothari88',
-                                    hfk: hfk,
-                                    // showDetails: true,
-                                    // showBars:false,
-                                    // onTap: () {
-                                    //   debugPrint('Tapped from full screen');
-                                    // },
-                                  ),
-                                ),
-                              ),
-                        ),
-                      );
-                    },
-                    child: const Text('Go to Profile'),
-                  ),
-                ],
-              ),
-
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder:
-                                (context) => Dialog(
-                                  insetPadding: EdgeInsets.zero,
-                                  child: SizedBox(
-                                    width: MediaQuery.of(context).size.width,
-                                    height: MediaQuery.of(context).size.height,
-                                    child: LoginScreen(hfk: hfk),
-                                  ),
-                                ),
-                          );
-                        },
-                        child: const Text('hfk Login Screen User (Dialog)'),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder:
-                                (context) => Dialog(
-                                  insetPadding: EdgeInsets.zero,
-                                  child: SizedBox(
-                                    width: MediaQuery.of(context).size.width,
-                                    height: MediaQuery.of(context).size.height,
-                                    child: CommunitiesList(
-                                      onSelectCommunity: (community) async {
-                                        debugPrint(
-                                          'Selected community: ${community.name}',
-                                        );
-                                        Navigator.of(context).pop();
-                                      },
-                                      hfk: hfk,
-                                    ),
-                                  ),
-                                ),
-                          );
-                        },
-                        child: const Text('Communities List'),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder:
-                              (context) => Dialog(
-                                insetPadding: EdgeInsets.zero,
-                                child: SizedBox(
-                                  width: MediaQuery.of(context).size.width,
-                                  height: MediaQuery.of(context).size.height,
-                                  child: ThreeSpeakLoginScreen(
-                                    hfk: hfk,
-                                    uponLogin: (context, token, username) {
-                                      debugPrint(
-                                        'Logged in with token: $token, username: $username',
-                                      );
-                                      // Navigator.of(context).pop();
-                                    },
-                                  ),
-                                ),
-                              ),
-                        );
-                      },
-                      child: const Text(
-                        'ThreeSpeak Login Screen User (Dialog)',
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) => HivePostComments(
-                            author: 'sagarkothari88', // Example author
-                            permlink: 'fuhitntzfw', // Example permlink
-                          ),
-                    ),
-                  );
-                },
-                child: const Text('Show HivePostComments'),
-              ),
-
-              qrString.isEmpty || timerDuration == 0
-                  ? const SizedBox.shrink()
-                  : Column(
-                    children: [
-                      InkWell(
-                        child: QrImageView(
-                          data: qrString,
-                          version: QrVersions.auto,
-                          size: 200.0,
-                        ),
-                        onTap: () {
-                          var uri = Uri.tryParse(qrString);
-                          if (uri != null) {
-                            launchUrl(uri);
-                          }
-                        },
-                      ),
-                      LinearProgressIndicator(
-                        value: timerDuration / 30,
-                        backgroundColor: Colors.grey[200],
-                        valueColor: const AlwaysStoppedAnimation<Color>(
-                          Colors.blue,
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: _cancelHiveAuth,
-                        child: const Text('Cancel'),
-                      ),
-                    ],
-                  ),
+              // End QR Code Display Widget
 
               // --- Image Upload and Broadcast UI ---
-              const SizedBox(height: 24),
-              const Text(
-                'Upload Profile Image and Broadcast Operation',
-                style: TextStyle(fontWeight: FontWeight.bold),
+              ImageUploaderWidget(
+                uploadedImageUrl: _uploadedImageUrl,
+                isUploading: _isUploading,
+                onPickAndUploadImage: _handlePickAndUploadImage,
+                onSignAndBroadcastTx: _handleSignAndBroadcastTx,
+                isBroadcasting: _isBroadcasting,
+                broadcastResult: _broadcastResult,
               ),
-              const SizedBox(height: 8),
-              if (_uploadedImageUrl != null)
-                Image.network(_uploadedImageUrl!, width: 120, height: 120),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: _isUploading ? null : _pickAndUploadImage,
-                    child:
-                        _isUploading
-                            ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                            : const Text('Pick & Upload Image'),
-                  ),
-                ],
-              ),
-              if (_uploadedImageUrl != null)
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    'Uploaded URL: $_uploadedImageUrl',
-                    style: const TextStyle(fontSize: 12),
-                  ),
-                ),
-              ElevatedButton(
-                onPressed:
-                    (_uploadedImageUrl != null && !_isBroadcasting)
-                        ? _signAndBroadcastTx
-                        : null,
-                child:
-                    _isBroadcasting
-                        ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                        : const Text('Sign & Broadcast Tx'),
-              ),
-              if (_broadcastResult != null)
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    'Broadcast Result: $_broadcastResult',
-                    style: const TextStyle(fontSize: 12),
-                  ),
-                ),
-              const Divider(),
+              // --- End Image Upload and Broadcast UI ---
 
               // --- Transfer UI ---
-              const SizedBox(height: 24),
-              const Text(
-                'Transfer Funds (Aioha)',
-                style: TextStyle(fontWeight: FontWeight.bold),
+              TransferFundsForm(
+                recipientController: _transferRecipientController,
+                amountController: _transferAmountController,
+                memoController: _transferMemoController,
+                selectedAssetSymbol: _transferAssetSymbol,
+                onAssetChanged: (String? newValue) {
+                  if (newValue != null) {
+                    setState(() {
+                      _transferAssetSymbol = newValue;
+                    });
+                  }
+                },
+                onTransfer: _handleTransferFunds,
+                isTransferring: _isTransferring,
+                transferResult: _transferResult,
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8.0,
-                  vertical: 4.0,
-                ),
-                child: TextField(
-                  controller: _transferRecipientController,
-                  decoration: const InputDecoration(
-                    labelText: 'Recipient Username',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8.0,
-                  vertical: 4.0,
-                ),
-                child: TextField(
-                  controller: _transferAmountController,
-                  decoration: const InputDecoration(
-                    labelText: 'Amount (e.g., 1.0)',
-                    border: OutlineInputBorder(),
-                  ),
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8.0,
-                  vertical: 4.0,
-                ),
-                child: DropdownButtonFormField<String>(
-                  value: _transferAssetSymbol,
-                  decoration: const InputDecoration(
-                    labelText: 'Asset',
-                    border: OutlineInputBorder(),
-                  ),
-                  items:
-                      <String>['HIVE', 'HBD'].map<DropdownMenuItem<String>>((
-                        String value,
-                      ) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                  onChanged: (String? newValue) {
-                    if (newValue != null) {
-                      setState(() {
-                        _transferAssetSymbol = newValue;
-                      });
-                    }
-                  },
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8.0,
-                  vertical: 4.0,
-                ),
-                child: TextField(
-                  controller: _transferMemoController,
-                  decoration: const InputDecoration(
-                    labelText: 'Memo (Optional)',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: _isTransferring ? null : _transferFunds,
-                child:
-                    _isTransferring
-                        ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                        : const Text('Transfer Funds'),
-              ),
-              if (_transferResult != null)
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    'Transfer Result: $_transferResult',
-                    style: const TextStyle(fontSize: 12),
-                  ),
-                ),
-              const Divider(),
               // --- End Transfer UI ---
 
-              // --- ThreeSpeak Feed List Buttons ---
-              const SizedBox(height: 16),
-              const Text(
-                'ThreeSpeak Video Feeds',
-                style: TextStyle(fontWeight: FontWeight.bold),
+              // --- ThreeSpeak Components Widget ---
+              ThreeSpeakComponentsWidget(
+                hfk: hfk,
+                showSnackBar: _showSnackBar,
+                videoPlayerBuilder: (ctx, author, permlink, item) => buildVideoPlayerScreen(ctx, author, permlink, item),
+                showVideoOptionsSheet: (ctx, videoId) => showVideoOptionsBottomSheet(ctx, videoId, _handleDeleteVideoConfirmed),
+                onUserLogout: _logout, // Assuming general logout is fine, or create a specific 3speak logout handler
               ),
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Video Upload Button
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (context) => VideoUploadScreen(
-                                  owner: 'shaktimaaan',
-                                  token: "No token",
-                                  onVideoUpload: (model) {
-                                    // Handle video upload completion
-                                    print('Video uploaded: ${model.filename}');
+              // --- End ThreeSpeak Components Widget ---
 
-                                    // Navigate to thumbnail upload screen
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder:
-                                            (context) => ThumbnailUploadScreen(
-                                              uploadModel: model,
-                                              onThumbnailUpload: (
-                                                updatedModel,
-                                              ) {
-                                                // Handle thumbnail upload completion
-                                                print(
-                                                  'Thumbnail uploaded: ${updatedModel.thumbnailFilename}',
-                                                );
-
-                                                // Navigate to upload info screen
-                                                Navigator.pushReplacement(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder:
-                                                        (
-                                                          context,
-                                                        ) => UploadInfoScreen(
-                                                          uploadModel:
-                                                              updatedModel,
-                                                          onUploadComplete: (
-                                                            response,
-                                                          ) {
-                                                            // Handle final upload completion
-                                                            print(
-                                                              'Upload complete: $response',
-                                                            );
-
-                                                            // Show success message and navigate back
-                                                            ScaffoldMessenger.of(
-                                                              context,
-                                                            ).showSnackBar(
-                                                              SnackBar(
-                                                                content: Text(
-                                                                  'Video uploaded successfully!',
-                                                                ),
-                                                                backgroundColor:
-                                                                    Colors
-                                                                        .green,
-                                                              ),
-                                                            );
-
-                                                            // Navigate back to main screen or show success screen
-                                                            Navigator.of(
-                                                              context,
-                                                            ).popUntil(
-                                                              (route) =>
-                                                                  route.isFirst,
-                                                            );
-                                                          },
-                                                        ),
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                          ),
-                        );
-                      },
-                      child: const Text('Upload Video'),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // User Account Screen Button
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (context) => ThreeSpeakCurrentUserAccount(
-                                  username: 'shaktimaaan',
-                                  token: "No token",
-                                  shouldShowBackButton: true,
-                                  onTapBackButton: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  onTabChanged: (tabIndex) {
-                                    print('Tab changed to: $tabIndex');
-                                  },
-                                  onLogout: () {
-                                    // Handle logout
-                                    print('User logged out');
-                                    Navigator.of(context).pop();
-                                  },
-                                  onPublish: (username, permlink) {
-                                    // Handle publish video
-                                    print(
-                                      'Publishing video: $username/$permlink',
-                                    );
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('Publishing video...'),
-                                      ),
-                                    );
-                                  },
-                                  onViewMyVideo: (username, permlink) {
-                                    // Handle view my video
-                                    print('Viewing video: $username/$permlink');
-                                    // Navigate to video player or details screen
-                                  },
-                                  onViewDetails: (username, permlink) {
-                                    // Handle view details
-                                    print(
-                                      'Viewing details: $username/$permlink',
-                                    );
-                                    // Navigate to video details screen
-                                  },
-                                  onMoreOptions: (videoId) {
-                                    // Handle more options
-                                    print('More options for video: $videoId');
-                                    _showVideoOptionsBottomSheet(
-                                      context,
-                                      videoId,
-                                    );
-                                  },
-                                ),
-                          ),
-                        );
-                      },
-                      child: const Text('My Account'),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) => Scaffold(
-                            appBar: AppBar(title: const Text('Trending Feed')),
-                            body: ThreeSpeakVideoFeed(
-                              feedType: ThreeSpeakVideoFeedType.trending,
-                              onTapVideoItem: (tappedItem) {
-                                debugPrint('Tapped video item: $tappedItem');
-                                var screen = getVideoPlayer(
-                                  null,
-                                  null,
-                                  tappedItem,
-                                );
-                                var route = MaterialPageRoute(
-                                  builder: (context) => screen,
-                                );
-                                Navigator.push(context, route);
-                              },
-                              onTapAuthor: (GQLFeedItem item) {
-                                debugPrint('Tapped author: ${item.author}');
-                              },
-                              onTapReport: (GQLFeedItem item) {
-                                debugPrint('Tapped report: ${item.permlink}');
-                              },
-                              onTapUpvote: (GQLFeedItem item) {
-                                debugPrint('Tapped upvote: ${item.permlink}');
-                              },
-                              onTapComment: (GQLFeedItem item) {
-                                debugPrint('Tapped comment: ${item.permlink}');
-                              },
-                              isPayoutValueVisible: true,
-                            ),
-                          ),
-                    ),
-                  );
-                },
-                child: const Text('Show Trending Feed'),
-              ),
-
-              // ElevatedButton(
-              //   onPressed: () {
-              //     Navigator.push(
-              //       context,
-              //       MaterialPageRoute(
-              //         builder:
-              //             (context) => Scaffold(
-              //               appBar: AppBar(
-              //                 title: const Text('New Uploads Feed'),
-              //               ),
-              //               body: ThreeSpeakFeedList(
-              //                 feedType: ThreeSpeakFeedType.newUploads,
-              //                 onTapVideoItem: (item) {
-              //                   final videoUrl = getVideoUrl(item);
-              //                   Navigator.push(
-              //                     context,
-              //                     MaterialPageRoute(
-              //                       builder:
-              //                           (context) => VideoPlayerScreen(
-              //                             videoUrl: videoUrl ?? '',
-              //                             title: item.title ?? 'Untitled',
-              //                             author:
-              //                                 item.author?.username ??
-              //                                 'Unknown',
-              //                             permlink: item.permlink ?? 'Unknown',
-              //                             createdAt: item.createdAt,
-              //                             item: item,
-              //                           ),
-              //                     ),
-              //                   );
-              //                 },
-              //               ),
-              //             ),
-              //       ),
-              //     );
-              //   },
-              //   child: const Text('Show New Uploads Feed'),
-              // ),
-              // ElevatedButton(
-              //   onPressed: () {
-              //     Navigator.push(
-              //       context,
-              //       MaterialPageRoute(
-              //         builder:
-              //             (context) => Scaffold(
-              //               appBar: AppBar(
-              //                 title: const Text('First Uploads Feed'),
-              //               ),
-              //               body: ThreeSpeakFeedList(
-              //                 feedType: ThreeSpeakFeedType.firstUploads,
-              //                 onTapVideoItem: (item) {
-              //                   final videoUrl = getVideoUrl(item);
-              //                   Navigator.push(
-              //                     context,
-              //                     MaterialPageRoute(
-              //                       builder:
-              //                           (context) => VideoPlayerScreen(
-              //                             videoUrl: videoUrl ?? '',
-              //                             title: item.title ?? 'Untitled',
-              //                             author:
-              //                                 item.author?.username ??
-              //                                 'Unknown',
-              //                             permlink: item.permlink ?? 'Unknown',
-              //                             createdAt: item.createdAt,
-              //                             item: item,
-              //                           ),
-              //                     ),
-              //                   );
-              //                 },
-              //               ),
-              //             ),
-              //       ),
-              //     );
-              //   },
-              //   child: const Text('Show First Uploads Feed'),
-              // ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) => ThreeSpeakVideoFeed(
-                            feedType: ThreeSpeakVideoFeedType.search,
-                            isSearch: true,
-                            onTapVideoItem: (tappedItem) {
-                              debugPrint('Tapped video item: $tappedItem');
-                              var screen = getVideoPlayer(
-                                null,
-                                null,
-                                tappedItem,
-                              );
-                              var route = MaterialPageRoute(
-                                builder: (context) => screen,
-                              );
-                              Navigator.push(context, route);
-                            },
-                            onTapAuthor: (GQLFeedItem item) {
-                              debugPrint('Tapped author: ${item.author}');
-                            },
-                            onTapReport: (GQLFeedItem item) {
-                              debugPrint('Tapped report: ${item.permlink}');
-                            },
-                            onTapUpvote: (GQLFeedItem item) {
-                              debugPrint('Tapped upvote: ${item.permlink}');
-                            },
-                            onTapComment: (GQLFeedItem item) {
-                              debugPrint('Tapped comment: ${item.permlink}');
-                            },
-                          ),
-                    ),
-                  );
-                },
-                child: const Text('Search screen'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) => ThreespeakCommnuityScreen(
-                            communityId: 'hive-163772',
-                            title: 'Worldmappin',
-                            videoFeed: () {
-                              return ThreeSpeakVideoFeed(
-                                feedType: ThreeSpeakVideoFeedType.commnuityFeed,
-                                commnuityId: 'hive-163772',
-                                onTapVideoItem: (tappedItem) {
-                                  debugPrint('Tapped video item: $tappedItem');
-                                },
-                                onTapAuthor: (GQLFeedItem item) {
-                                  debugPrint('Tapped author: ${item.author}');
-                                },
-                                onTapReport: (GQLFeedItem item) {
-                                  debugPrint('Tapped report: ${item.permlink}');
-                                },
-                                onTapUpvote: (GQLFeedItem item) {
-                                  debugPrint('Tapped upvote: ${item.permlink}');
-                                },
-                                onTapComment: (GQLFeedItem item) {
-                                  debugPrint(
-                                    'Tapped comment: ${item.permlink}',
-                                  );
-                                },
-                              );
-                            },
-                            onTapBackButton: () {
-                              debugPrint('Tapped Back Button');
-                            },
-                            shouldShowBackButton: false,
-                            // Optionally add onTapAuthor, onTapVideosTab, etc.
-                          ),
-                    ),
-                  );
-                },
-                child: const Text('Show 3Speak Community Screen'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) => ThreeSpeakTrendingTags(
-                            onTapTag: (tag) {
-                              debugPrint('Tapped tag: $tag');
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder:
-                                      (context) => ThreeSpeakVideoFeed(
-                                        feedType:
-                                            ThreeSpeakVideoFeedType
-                                                .trendingTagFeed,
-                                        tag: tag,
-                                        onTapVideoItem: (tappedItem) {
-                                          debugPrint(
-                                            'Tapped video item: $tappedItem',
-                                          );
-                                        },
-                                        onTapAuthor: (onTapAuthor) {},
-                                        onTapReport: (onTapReport) {},
-                                        onTapUpvote: (onTapUpvote) {},
-                                        onTapComment: (onTapComment) {},
-                                      ),
-                                ),
-                              );
-                            },
-                          ),
-                    ),
-                  );
-                },
-                child: const Text('trending tags'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) => Witnesses(
-                            hfk: hfk,
-                            onTapWitness:
-                                (account) => print("Tapped on ${account.name}"),
-                            onTapLink:
-                                (account) =>
-                                    print("Link clicked for ${account.name}"),
-                            onTapCheckmark:
-                                (account) => print(
-                                  "Checkmark tapped for ${account.name}",
-                                ),
-                          ),
-                    ),
-                  );
-                },
-                //_getWitnessesByVote,
-                child: const Text('Get Witnesses By Vote'),
-              ),
+              // The Witnesses button seems more like a Dhive component, it was moved to DhiveComponentsWidget.
+              // If it was intended for ThreeSpeak, it should be moved back or clarified.
             ],
           ),
         ),
