@@ -16,8 +16,7 @@ import 'package:hive_flutter_kit_example/ui/ui_helpers.dart';
 import 'package:hive_flutter_kit_example/widgets/dhive_components_widget.dart';
 import 'package:hive_flutter_kit_example/widgets/threespeak_components_widget.dart';
 import 'package:hive_flutter_kit_example/services/dhive_service.dart';
-import 'package:hive_flutter_kit_example/services/threespeak_service.dart'; // Import ThreeSpeakService
-//import 'package:hive_flutter_ux/ux/dhive/witnesses/witnesses.dart';
+import 'package:hive_flutter_kit_example/services/threespeak_service.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -64,12 +63,10 @@ class _MyHomePageState extends State<MyHomePage> {
   String? _transferResult;
   bool _isTransferring = false;
   // --- End Transfer State Variables ---
-  
+
   @override
   void initState() {
     super.initState();
-    // hfk should be initialized either here or in didChangeDependencies before AuthService
-    // Assuming hfk is initialized by didChangeDependencies first or is accessible globally for simplicity
   }
 
   @override
@@ -98,12 +95,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Helper method to show snackbar, to be passed to services
   void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
-
-  // Login methods are now removed from here and are in AuthService
 
   // Transferred to WalletService, this method will now call the service
   Future<void> _handleTransferFunds() async {
@@ -125,54 +120,32 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  Timer? _qrRefreshTimerInstance;
 
-  // _loginWithHiveAuth and _loginWithPlaintextKey are removed as they are now in AuthService
-
-  // All Hive direct interaction methods like _getVotingPower, _logout, etc., are now removed.
-  // Their logic is in DhiveService and they are called via _dhiveService instance.
-
-  // _checkThreespeakInAccountAuths has been moved to ThreeSpeakService.
-  // The local method is now removed.
-
-  // _startTimer and _cancelHiveAuth are passed to AuthService and DhiveService constructor
-  // for them to call. The state update (qrString, timerDuration) happens here.
-  // Timer object needs to be managed to be cancellable.
-  Timer? _qrRefreshTimerInstance; // Renamed to avoid conflict if any old one lingered
-
-  // Restored _startTimer as per user's working snippet
   void _startTimer() async {
     _qrRefreshTimerInstance?.cancel(); // Cancel any existing timer
 
     var result = await hfk.getQrString();
     if (!mounted) return; // Check mounted after await
-
-    // It's crucial to check if the result is empty here, as the user reported
-    // the error "Could not retrieve QR code for login."
-    // This implies hfk.getQrString() can return empty.
-    if (result.isEmpty) {
-      _showSnackBar('Error: Could not retrieve QR code.'); // Generic error for now
-      setState(() {
-        qrString = '';
-        timerDuration = 0;
-      });
-      return; // Do not start timer if QR is empty
-    }
-
     setState(() {
       qrString = result;
       timerDuration = 30;
     });
 
-    _qrRefreshTimerInstance = Timer.periodic(const Duration(seconds: 1), (timer) async {
-      if (!mounted) { // Check mounted inside timer callback
+    _qrRefreshTimerInstance = Timer.periodic(const Duration(seconds: 1), (
+      timer,
+    ) async {
+      if (!mounted) {
+        // Check mounted inside timer callback
         timer.cancel();
         return;
       }
       if (timerDuration > 0) {
         var refreshedResult = await hfk.getQrString();
-        if (!mounted) { // Check mounted after await inside timer
-           timer.cancel();
-           return;
+        if (!mounted) {
+          // Check mounted after await inside timer
+          timer.cancel();
+          return;
         }
         setState(() {
           qrString = refreshedResult;
@@ -180,18 +153,16 @@ class _MyHomePageState extends State<MyHomePage> {
         });
       } else {
         timer.cancel();
-        // Optionally, clear qrString here if not done by _cancelHiveAuth immediately after timeout
-        if(mounted){
-             setState(() {
-                qrString = '';
-                timerDuration = 0;
-            });
+        if (mounted) {
+          setState(() {
+            qrString = '';
+            timerDuration = 0;
+          });
         }
       }
     });
   }
 
-  // Restored _cancelHiveAuth as per user's working snippet
   void _cancelHiveAuth() {
     _qrRefreshTimerInstance?.cancel();
     if (!mounted) return;
@@ -201,15 +172,13 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  // Image upload and broadcast methods are already in ProfileService.
-  // _handlePickAndUploadImage and _handleSignAndBroadcastTx call ProfileService and manage UI state.
   Future<void> _handlePickAndUploadImage() async {
     setState(() {
       _isUploading = true;
       _uploadedImageUrl = null;
     });
     final imageUrl = await _profileService.pickAndUploadImage();
-    if(mounted) {
+    if (mounted) {
       setState(() {
         _uploadedImageUrl = imageUrl;
         _isUploading = false;
@@ -222,21 +191,21 @@ class _MyHomePageState extends State<MyHomePage> {
       _isBroadcasting = true;
       _broadcastResult = null;
     });
-    final String currentUsername = _usernameController.text.isNotEmpty ? _usernameController.text : "shaktimaaan"; // Example
-    final result = await _profileService.signAndBroadcastProfileImageTx(_uploadedImageUrl, currentUsername);
-    if(mounted) {
+    final String currentUsername =
+        _usernameController.text.isNotEmpty
+            ? _usernameController.text
+            : "shaktimaaan"; // Example
+    final result = await _profileService.signAndBroadcastProfileImageTx(
+      _uploadedImageUrl,
+      currentUsername,
+    );
+    if (mounted) {
       setState(() {
         _broadcastResult = result;
         _isBroadcasting = false;
       });
     }
   }
-
-  // getVideoPlayer is a UI helper, correctly placed.
-  // _handleDeleteVideoConfirmed is a UI callback, correctly placed.
-  // The methods _getCommentsListhfk, _fetchCommunities, _getWitnessesByVote were removed as their direct calls
-  // are now part of DhiveService, and DhiveComponentsWidget calls them via _dhiveService.
-  // The wrappers _handleFetchCommunities is kept to manage state.
 
   // Callback for delete confirmation
   void _handleDeleteVideoConfirmed(String videoId) {
@@ -251,7 +220,9 @@ class _MyHomePageState extends State<MyHomePage> {
       "tags": ["sagar", "kothari"],
       "app": "checkinwithxyz/1.0.0",
       "username": "sagar",
-      "image": ["https://canopas-blogs.s3.ap-south-1.amazonaws.com/my_profile_c0f157624c.jpeg"],
+      "image": [
+        "https://canopas-blogs.s3.ap-south-1.amazonaws.com/my_profile_c0f157624c.jpeg",
+      ],
       "onboarder": "sagarkothari",
       "introductionText": "Hello, I am a new user",
       "communityName": "blabla",
@@ -265,15 +236,25 @@ class _MyHomePageState extends State<MyHomePage> {
       "percent_hbd": 10000,
       "allow_curation_rewards": true,
       "extensions": [
-        [0, {"beneficiaries": [{"weight": 3000, "account": "threespeakselfie"}]}],
+        [
+          0,
+          {
+            "beneficiaries": [
+              {"weight": 3000, "account": "threespeakselfie"},
+            ],
+          },
+        ],
       ],
     };
     _dhiveService.commentWithOptions(
       parentAuthor: '', // Or actual parent author
       parentPermlink: 'hive-184437', // Or actual parent permlink
-      permlink: 'asdfasfaasdfsdfasdfasfasdf-${DateTime.now().millisecondsSinceEpoch}', // Ensure permlink is unique
-      title: 'this is a test title from hfk comment with options via DhiveService',
-      body: 'I am going to try this comment with options via DhiveService and see how it works.',
+      permlink:
+          'asdfasfaasdfsdfasdfasfasdf-${DateTime.now().millisecondsSinceEpoch}', // Ensure permlink is unique
+      title:
+          'this is a test title from hfk comment with options via DhiveService',
+      body:
+          'I am going to try this comment with options via DhiveService and see how it works.',
       jsonMetadataStr: jsonEncode(jsonMetadata),
       optionsStr: jsonEncode(options),
     );
@@ -281,7 +262,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Wrapper for fetching communities
   Future<void> _handleFetchCommunities({bool loadMore = false}) async {
-    if (_isLoadingCommunities || (!loadMore && !_hasMoreCommunities && _communities.isNotEmpty)) return;
+    if (_isLoadingCommunities ||
+        (!loadMore && !_hasMoreCommunities && _communities.isNotEmpty))
+      return;
 
     setState(() {
       _isLoadingCommunities = true;
@@ -312,8 +295,10 @@ class _MyHomePageState extends State<MyHomePage> {
           }
           _lastCommunityName = result.isNotEmpty ? result.last.name : null;
           _hasMoreCommunities = result.length == _communityPageSize;
-          if (result.isNotEmpty && !loadMore) _communityPage = 1;
-          else if (result.isNotEmpty && loadMore) _communityPage++;
+          if (result.isNotEmpty && !loadMore)
+            _communityPage = 1;
+          else if (result.isNotEmpty && loadMore)
+            _communityPage++;
         }
         _isLoadingCommunities = false;
       });
@@ -322,7 +307,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Wrapper for _dhiveService.switchUser and related dialog
   Future<void> _handleSwitchUser() async {
-    if (hfk == null) { // hfk instance check, though _dhiveService also has it
+    if (hfk == null) {
+      // hfk instance check, though _dhiveService also has it
       _showSnackBar('Error: Component not initialized properly');
       return;
     }
@@ -337,7 +323,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
     await showDialog<String>(
       context: context,
-      builder: (BuildContext dialogContext) { // Use a different context name
+      builder: (BuildContext dialogContext) {
+        // Use a different context name
         return AlertDialog(
           title: const Text('Manage Logged-in Users'),
           content: SizedBox(
@@ -360,7 +347,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   onTap: () async {
                     await _dhiveService.performSwitchUser(user);
                     Navigator.of(dialogContext).pop(); // Close dialog
-                     // Optionally, refresh user data on UI
+                    // Optionally, refresh user data on UI
                   },
                 );
               },
@@ -370,7 +357,6 @@ class _MyHomePageState extends State<MyHomePage> {
       },
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -387,18 +373,27 @@ class _MyHomePageState extends State<MyHomePage> {
               LoginForm(
                 usernameController: _usernameController,
                 postingKeyController: _postingKeyController,
-                onLoginWithHiveKeychain: () => _authService.loginWithHiveKeychain(_usernameController.text),
-                onLoginWithHiveAuth: () => _authService.loginWithHiveAuth(_usernameController.text),
-                onLoginWithPlaintextKey: () => _authService.loginWithPlaintextKey(
-                  _usernameController.text,
-                  _postingKeyController.text,
-                ),
+                onLoginWithHiveKeychain:
+                    () => _authService.loginWithHiveKeychain(
+                      _usernameController.text,
+                    ),
+                onLoginWithHiveAuth:
+                    () => _authService.loginWithHiveAuth(
+                      _usernameController.text,
+                    ),
+                onLoginWithPlaintextKey:
+                    () => _authService.loginWithPlaintextKey(
+                      _usernameController.text,
+                      _postingKeyController.text,
+                    ),
               ),
-              // End LoginForm
 
+              // End LoginForm
               ElevatedButton(
                 child: Text('Get Voting power'),
-                onPressed: () => _dhiveService.getVotingPower(_usernameController.text),
+                onPressed:
+                    () =>
+                        _dhiveService.getVotingPower(_usernameController.text),
               ),
 
               ElevatedButton(
@@ -408,7 +403,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
               ElevatedButton(
                 onPressed: () {
-                  var screen = buildVideoPlayerScreen( // Updated call
+                  var screen = buildVideoPlayerScreen(
+                    // Updated call
                     context,
                     "ninaeatshere",
                     "movrcxlslz",
@@ -422,7 +418,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
               ElevatedButton(
                 onPressed: () async {
-                  String username = await hfk.getCurrentUser(); // Stays, as it's UI related
+                  String username =
+                      await hfk.getCurrentUser(); // Stays, as it's UI related
                   username = username.replaceAll('"', '');
                   showDialog(
                     context: context,
@@ -457,18 +454,39 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
                 child: const Text('Show User Profile'),
               ),
-              ElevatedButton(onPressed: () => _dhiveService.logout(), child: const Text('Logout')),
-              ElevatedButton(onPressed: () => _dhiveService.singleVote('sagarkothari88', 'aihoa-based-login-with-hiveauth-and-sign-a-message-works-well-with-ios-app-now',1000), child: const Text('Vote')),
+              ElevatedButton(
+                onPressed: () => _dhiveService.logout(),
+                child: const Text('Logout'),
+              ),
+              ElevatedButton(
+                onPressed:
+                    () => _dhiveService.singleVote(
+                      'sagarkothari88',
+                      'aihoa-based-login-with-hiveauth-and-sign-a-message-works-well-with-ios-app-now',
+                      1000,
+                    ),
+                child: const Text('Vote'),
+              ),
               ElevatedButton(
                 onPressed: () => _dhiveService.deleteComment('permlinktodel'),
                 child: const Text('Delete Comment'),
               ),
-              ElevatedButton(onPressed: () => _dhiveService.reblog('sagarkothari', 'rblmtojs', true), child: const Text('Reblog')),
               ElevatedButton(
-                onPressed: () => _dhiveService.reblog('sagarkothari', 'rblmtojs', false),
+                onPressed:
+                    () =>
+                        _dhiveService.reblog('sagarkothari', 'rblmtojs', true),
+                child: const Text('Reblog'),
+              ),
+              ElevatedButton(
+                onPressed:
+                    () =>
+                        _dhiveService.reblog('sagarkothari', 'rblmtojs', false),
                 child: const Text('Remove Reblog'),
               ),
-              ElevatedButton(onPressed: () => _dhiveService.follow('sagarkothari', false), child: const Text('Follow')),
+              ElevatedButton(
+                onPressed: () => _dhiveService.follow('sagarkothari', false),
+                child: const Text('Follow'),
+              ),
               ElevatedButton(
                 onPressed: () => _dhiveService.follow('sagarkothari', true),
                 child: const Text('Unfollow'),
@@ -478,51 +496,88 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: const Text('Claim Rewards'),
               ),
               ElevatedButton(
-                onPressed: () => _dhiveService.signMessage('Hello, hfk!', 'Posting'),
+                onPressed:
+                    () => _dhiveService.signMessage('Hello, hfk!', 'Posting'),
                 child: const Text('Sign Message'),
               ),
               // --- End Basic User Actions ---
 
               // --- Account Authority Buttons ---
               ElevatedButton(
-                onPressed: () => _dhiveService.addAccountAuthority(_usernameController.text, 'posting', 'threespeak', 1),
+                onPressed:
+                    () => _dhiveService.addAccountAuthority(
+                      _usernameController.text,
+                      'posting',
+                      'threespeak',
+                      1,
+                    ),
                 child: const Text('Add Account Authority'),
               ),
               ElevatedButton(
-                onPressed: () => _dhiveService.removeAccountAuthority(_usernameController.text, 'posting', 'threespeak'),
+                onPressed:
+                    () => _dhiveService.removeAccountAuthority(
+                      _usernameController.text,
+                      'posting',
+                      'threespeak',
+                    ),
                 child: const Text('Remove Account Authority'),
               ),
-              // --- End Account Authority Buttons ---
 
+              // --- End Account Authority Buttons ---
               ElevatedButton(
-                onPressed: _handleCommentWithOptions, // Updated to call a wrapper
+                onPressed:
+                    _handleCommentWithOptions, // Updated to call a wrapper
                 child: const Text('Comment with Options'),
               ),
 
               // --- Dhive Components Widget ---
               DhiveComponentsWidget(
-                hfk: hfk, // hfk might still be needed for some direct calls or pass _dhiveService
+                hfk:
+                    hfk, // hfk might still be needed for some direct calls or pass _dhiveService
                 getChainPropertieshfk: () => _dhiveService.getChainProperties(),
-                getDiscussionshfk: () => _dhiveService.getDiscussions('trending'), // Example parameters
-                getAccountshfk: () => _dhiveService.getAccounts(['sagarkothari88']),
-                getAccountPostshfk: () => _dhiveService.getAccountPosts('sagarkothari88', sort: 'comments'),
-                getVotingPowerhfk: () => _dhiveService.getVotingPowerExtended('sagarkothari88'),
-                getResourceCreditshfk: () => _dhiveService.getResourceCredits('sagarkothari88'),
-                getFollowingsData: () => _dhiveService.getFollowingsData('sagarkothari88'),
-                getFollowersData: () => _dhiveService.getFollowersData('sagarkothari88'),
-                getWitnessVotesData: () => _dhiveService.getWitnessVotesData('sagarkothari88'),
-                getProposalsExample: () => _dhiveService.getProposals(status: 'votable'),
-                getAccountHistoryExample: () => _dhiveService.getAccountHistory('sagarkothari88'),
-                checkThreespeakInAccountAuths: () => _threeSpeakService.checkThreespeakInAccountAuths(_usernameController.text),
-                getCommentsListhfk: () => _dhiveService.getCommentsList('cositav','miwbidtw'),
-                fetchCommunities: () => _handleFetchCommunities(loadMore: false),
-                fetchMoreCommunities: (loadMore) => _handleFetchCommunities(loadMore: loadMore),
+                getDiscussionshfk:
+                    () => _dhiveService.getDiscussions(
+                      'trending',
+                    ), // Example parameters
+                getAccountshfk:
+                    () => _dhiveService.getAccounts(['sagarkothari88']),
+                getAccountPostshfk:
+                    () => _dhiveService.getAccountPosts(
+                      'sagarkothari88',
+                      sort: 'comments',
+                    ),
+                getVotingPowerhfk:
+                    () =>
+                        _dhiveService.getVotingPowerExtended('sagarkothari88'),
+                getResourceCreditshfk:
+                    () => _dhiveService.getResourceCredits('sagarkothari88'),
+                getFollowingsData:
+                    () => _dhiveService.getFollowingsData('sagarkothari88'),
+                getFollowersData:
+                    () => _dhiveService.getFollowersData('sagarkothari88'),
+                getWitnessVotesData:
+                    () => _dhiveService.getWitnessVotesData('sagarkothari88'),
+                getProposalsExample:
+                    () => _dhiveService.getProposals(status: 'votable'),
+                getAccountHistoryExample:
+                    () => _dhiveService.getAccountHistory('sagarkothari88'),
+                checkThreespeakInAccountAuths:
+                    () => _threeSpeakService.checkThreespeakInAccountAuths(
+                      _usernameController.text,
+                    ),
+                getCommentsListhfk:
+                    () => _dhiveService.getCommentsList('cositav', 'miwbidtw'),
+                fetchCommunities:
+                    () => _handleFetchCommunities(loadMore: false),
+                fetchMoreCommunities:
+                    (loadMore) => _handleFetchCommunities(loadMore: loadMore),
                 communities: _communities,
                 isLoadingCommunities: _isLoadingCommunities,
                 hasMoreCommunities: _hasMoreCommunities,
                 usernameController: _usernameController,
                 showSnackBar: _showSnackBar,
-                getWitnessesByVote: () => _dhiveService.getWitnessesByVote(limit: 10),
+                getWitnessesByVote:
+                    () => _dhiveService.getWitnessesByVote(limit: 10),
               ),
               // --- End Dhive Components Widget ---
 
@@ -530,7 +585,7 @@ class _MyHomePageState extends State<MyHomePage> {
               QrCodeDisplayWidget(
                 qrString: qrString,
                 timerDuration: timerDuration,
-                onCancel: _clearQrDisplay, // Use the renamed callback
+                onCancel: _cancelHiveAuth, // Use the renamed callback
               ),
               // End QR Code Display Widget
 
@@ -568,14 +623,19 @@ class _MyHomePageState extends State<MyHomePage> {
               ThreeSpeakComponentsWidget(
                 hfk: hfk,
                 showSnackBar: _showSnackBar,
-                videoPlayerBuilder: (ctx, author, permlink, item) => buildVideoPlayerScreen(ctx, author, permlink, item),
-                showVideoOptionsSheet: (ctx, videoId) => showVideoOptionsBottomSheet(ctx, videoId, _handleDeleteVideoConfirmed),
-                onUserLogout: () => _dhiveService.logout(), // Updated to use DhiveService
+                videoPlayerBuilder:
+                    (ctx, author, permlink, item) =>
+                        buildVideoPlayerScreen(ctx, author, permlink, item),
+                showVideoOptionsSheet:
+                    (ctx, videoId) => showVideoOptionsBottomSheet(
+                      ctx,
+                      videoId,
+                      _handleDeleteVideoConfirmed,
+                    ),
+                onUserLogout:
+                    () => _dhiveService.logout(), // Updated to use DhiveService
               ),
               // --- End ThreeSpeak Components Widget ---
-
-              // The Witnesses button seems more like a Dhive component, it was moved to DhiveComponentsWidget.
-              // If it was intended for ThreeSpeak, it should be moved back or clarified.
             ],
           ),
         ),
