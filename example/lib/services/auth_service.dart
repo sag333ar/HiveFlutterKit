@@ -3,15 +3,15 @@ import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 
 class AuthService {
   final HiveFlutterKitPlatform hfk;
-  final Function(String) showSnackBar; // To show snackbar messages
-  final VoidCallback startTimer; // Callback to start timer for HiveAuth
-  final VoidCallback cancelHiveAuth; // Callback to cancel HiveAuth
+  final Function(String) showSnackBar;
+  final VoidCallback startHiveAuthTimer; // Reverted to original conceptual name
+  final VoidCallback cancelHiveAuthTimer; // Reverted to original conceptual name
 
   AuthService({
     required this.hfk,
     required this.showSnackBar,
-    required this.startTimer,
-    required this.cancelHiveAuth,
+    required this.startHiveAuthTimer,
+    required this.cancelHiveAuthTimer,
   });
 
   Future<void> loginWithHiveKeychain(String username) async {
@@ -35,15 +35,20 @@ class AuthService {
       return;
     }
     try {
-      startTimer();
+      // Trigger the UI to start the QR display process (which includes initial QR fetch)
+      startHiveAuthTimer();
+
+      // Await the login operation. _startTimer in UI is already running.
       final result = await hfk.loginWithHiveAuth(username, '');
+
       showSnackBar(
         'Success: ${result.success} Proof: ${result.proof}, Username: ${result.username}, Challenge: ${result.challenge}, PublicKey: ${result.publicKey}',
       );
-      cancelHiveAuth();
     } catch (e) {
-      cancelHiveAuth();
-      showSnackBar('Error: $e');
+      showSnackBar('Error during HiveAuth login: $e');
+    } finally {
+      // Always cancel the QR display and timer, whether success or error.
+      cancelHiveAuthTimer();
     }
   }
 
