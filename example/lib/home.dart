@@ -153,12 +153,12 @@ class _MyHomePageState extends State<MyHomePage> {
       if (timerDuration > 0) {
         // The QR string might be dynamic and refresh itself via the platform plugin's native view,
         // or hfk.getQrString() might be needed if it changes over time.
-        // For now, assume the initial QR string is what we display, and the timer is just a countdown.
-        // If hfk.getQrString() is needed for refresh, it should be called here.
-        // var currentQr = await hfk.getQrString(); // Example if refresh is needed
+        // Reinstating periodic fetch as it was in the original _startTimer logic,
+        // as this is often required for HiveAuth QR codes to stay valid.
+        String currentRefreshedQr = await hfk.getQrString();
         if (mounted) {
           setState(() {
-            // qrString = currentQr; // Update if QR string itself refreshes
+            qrString = currentRefreshedQr; // Update with refreshed QR
             timerDuration--;
           });
         }
