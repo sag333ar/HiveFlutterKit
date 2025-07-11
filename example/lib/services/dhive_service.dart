@@ -10,14 +10,14 @@ import 'package:hive_flutter_kit/core/models/community_model.dart'; // Required 
 class DhiveService {
   final HiveFlutterKitPlatform hfk;
   final Function(String message) showSnackBar;
-  final Function(String)? initiateQrDisplay; // Updated callback type
-  final VoidCallback? clearQrDisplay; // Updated callback name
+  final VoidCallback? triggerQrDisplayAndTimer; // Renamed to match AuthService
+  final VoidCallback? clearQrDisplay;
 
 
   DhiveService({
     required this.hfk,
     required this.showSnackBar,
-    this.initiateQrDisplay,
+    this.triggerQrDisplayAndTimer, // Renamed
     this.clearQrDisplay,
   });
 
@@ -57,10 +57,7 @@ class DhiveService {
 
   Future<void> singleVote(String author, String permlink, int weight) async {
     try {
-      if (initiateQrDisplay != null) {
-        final qr = await hfk.getQrString(); // Assuming getQrString is needed before action
-        initiateQrDisplay!(qr);
-      }
+      triggerQrDisplayAndTimer?.call(); // Trigger UI to fetch and show QR
       final result = await hfk.singleVote(author, permlink, weight);
       showSnackBar('Vote Success: $result');
       clearQrDisplay?.call();
@@ -106,10 +103,7 @@ class DhiveService {
 
   Future<void> deleteComment(String permlink) async {
     try {
-      if (initiateQrDisplay != null) {
-        final qr = await hfk.getQrString();
-        initiateQrDisplay!(qr);
-      }
+      triggerQrDisplayAndTimer?.call(); // Trigger UI to fetch and show QR
       final result = await hfk.deleteComment(permlink);
       showSnackBar('Delete Comment Success: $result');
       clearQrDisplay?.call();
@@ -220,10 +214,7 @@ class DhiveService {
       // You might need: `KeyType keyType = KeyType.values.firstWhere((e) => e.toString().split('.').last.toLowerCase() == keyTypeString.toLowerCase());`
       // For simplicity, assuming the platform interface takes a string.
       // The original code uses 'Posting', so it's likely a string.
-      if (initiateQrDisplay != null) {
-        final qr = await hfk.getQrString();
-        initiateQrDisplay!(qr);
-      }
+      triggerQrDisplayAndTimer?.call(); // Trigger UI to fetch and show QR
       final result = await hfk.signMessage(message, keyTypeString);
       debugPrint('Sign Message result: $result');
       showSnackBar('Sign Message Success: $result');
