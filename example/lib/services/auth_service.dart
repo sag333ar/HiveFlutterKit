@@ -4,14 +4,14 @@ import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 class AuthService {
   final HiveFlutterKitPlatform hfk;
   final Function(String) showSnackBar;
-  final VoidCallback triggerQrDisplayAndTimer; // Updated callback
-  final VoidCallback clearQrDisplay;
+  final VoidCallback startHiveAuthTimer; // Reverted to original conceptual name
+  final VoidCallback cancelHiveAuthTimer; // Reverted to original conceptual name
 
   AuthService({
     required this.hfk,
     required this.showSnackBar,
-    required this.triggerQrDisplayAndTimer, // Updated
-    required this.clearQrDisplay,
+    required this.startHiveAuthTimer,
+    required this.cancelHiveAuthTimer,
   });
 
   Future<void> loginWithHiveKeychain(String username) async {
@@ -35,24 +35,20 @@ class AuthService {
       return;
     }
     try {
-      // Step 1: Trigger the UI to display the QR code and start its timer.
-      // _initiateQrDisplayAndFetchFirstQr (in home.dart) will now handle fetching the initial QR string.
-      triggerQrDisplayAndTimer();
+      // Trigger the UI to start the QR display process (which includes initial QR fetch)
+      startHiveAuthTimer();
 
-      // Step 2: Await the actual login process completion.
-      // This call will typically block until the user scans the QR and authorizes.
-      // The UI (via _initiateQrDisplayAndFetchFirstQr) is responsible for showing the QR.
+      // Await the login operation. _startTimer in UI is already running.
       final result = await hfk.loginWithHiveAuth(username, '');
 
       showSnackBar(
         'Success: ${result.success} Proof: ${result.proof}, Username: ${result.username}, Challenge: ${result.challenge}, PublicKey: ${result.publicKey}',
       );
-      clearQrDisplay(); // Clear QR from UI on successful login
     } catch (e) {
-      // If an error occurs (e.g. user rejects, timeout on native side), clear the QR.
-      // The _initiateQrDisplayAndFetchFirstQr might also show an error if its initial QR fetch fails.
-      clearQrDisplay();
       showSnackBar('Error during HiveAuth login: $e');
+    } finally {
+      // Always cancel the QR display and timer, whether success or error.
+      cancelHiveAuthTimer();
     }
   }
 

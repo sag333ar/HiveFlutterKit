@@ -10,15 +10,15 @@ import 'package:hive_flutter_kit/core/models/community_model.dart'; // Required 
 class DhiveService {
   final HiveFlutterKitPlatform hfk;
   final Function(String message) showSnackBar;
-  final VoidCallback? triggerQrDisplayAndTimer; // Renamed to match AuthService
-  final VoidCallback? clearQrDisplay;
+  final VoidCallback? startHiveAuthTimer; // Reverted name
+  final VoidCallback? cancelHiveAuthTimer; // Reverted name
 
 
   DhiveService({
     required this.hfk,
     required this.showSnackBar,
-    this.triggerQrDisplayAndTimer, // Renamed
-    this.clearQrDisplay,
+    this.startHiveAuthTimer, // Reverted
+    this.cancelHiveAuthTimer, // Reverted
   });
 
   Future<void> getVotingPower(String username) async {
@@ -57,13 +57,13 @@ class DhiveService {
 
   Future<void> singleVote(String author, String permlink, int weight) async {
     try {
-      triggerQrDisplayAndTimer?.call(); // Trigger UI to fetch and show QR
+      startHiveAuthTimer?.call();
       final result = await hfk.singleVote(author, permlink, weight);
       showSnackBar('Vote Success: $result');
-      clearQrDisplay?.call();
     } catch (e) {
-      clearQrDisplay?.call();
       showSnackBar('Vote Error: $e');
+    } finally {
+      cancelHiveAuthTimer?.call();
     }
   }
 
@@ -103,13 +103,13 @@ class DhiveService {
 
   Future<void> deleteComment(String permlink) async {
     try {
-      triggerQrDisplayAndTimer?.call(); // Trigger UI to fetch and show QR
+      startHiveAuthTimer?.call();
       final result = await hfk.deleteComment(permlink);
       showSnackBar('Delete Comment Success: $result');
-      clearQrDisplay?.call();
     } catch (e) {
-      clearQrDisplay?.call();
       showSnackBar('Delete Comment Error: $e');
+    } finally {
+      cancelHiveAuthTimer?.call();
     }
   }
 
@@ -214,15 +214,15 @@ class DhiveService {
       // You might need: `KeyType keyType = KeyType.values.firstWhere((e) => e.toString().split('.').last.toLowerCase() == keyTypeString.toLowerCase());`
       // For simplicity, assuming the platform interface takes a string.
       // The original code uses 'Posting', so it's likely a string.
-      triggerQrDisplayAndTimer?.call(); // Trigger UI to fetch and show QR
+      startHiveAuthTimer?.call();
       final result = await hfk.signMessage(message, keyTypeString);
       debugPrint('Sign Message result: $result');
       showSnackBar('Sign Message Success: $result');
-      clearQrDisplay?.call();
     } catch (e) {
       debugPrint('Sign Message failed: $e');
-      clearQrDisplay?.call();
       showSnackBar('Sign Message Error: $e');
+    } finally {
+      cancelHiveAuthTimer?.call();
     }
   }
 
