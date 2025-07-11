@@ -37,7 +37,7 @@ class VideoCard extends StatelessWidget {
         item.createdAt != null ? timeago.format(item.createdAt!) : 'Unknown';
     final votes = item.stats?.numVotes?.toString() ?? '0';
     final comments = item.stats?.numComments?.toString() ?? '0';
-    final rewards = item.stats?.totalHiveReward?.toString() ?? '0';
+    final rewards = item.stats?.totalHiveReward?.toStringAsFixed(3) ?? '0.000';
 
     return GestureDetector(
       onTap: onTap,
