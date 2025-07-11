@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter_kit/core/common/enum.dart';
 import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/three_speak_trending_tags.dart';
@@ -9,7 +10,6 @@ import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_u
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/thumbnail_upload_screen.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/upload_info_screen.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/video_upload_screen.dart';
-import 'package:hive_flutter_kit_example/ui/ui_helpers.dart'; // For buildVideoPlayerScreen
 
 // Callback type for showing video options
 typedef ShowVideoOptionsCallback = void Function(BuildContext context, String videoId);
@@ -143,7 +143,7 @@ class ThreeSpeakComponentsWidget extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ThreeSpeakVideoFeed( // This is a screen itself
+                builder: (context) => ThreeSpeakVideoFeed( 
                   feedType: ThreeSpeakVideoFeedType.search,
                   isSearch: true,
                   onTapVideoItem: (tappedItem) {
@@ -206,7 +206,7 @@ class ThreeSpeakComponentsWidget extends StatelessWidget {
                         MaterialPageRoute(
                           builder: (context) => ThreeSpeakVideoFeed(
                                 feedType: ThreeSpeakVideoFeedType.trendingTagFeed,
-                                currentTag: tag, // Pass the tag
+                                tag: tag,
                                 onTapVideoItem: (tappedItem) {
                                    var screen = videoPlayerBuilder(context, null, null, tappedItem);
                                    Navigator.push(context, MaterialPageRoute(builder: (context) => screen));

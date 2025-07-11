@@ -1,6 +1,5 @@
 import 'package:hive_flutter_kit_example/home.dart';
 import 'package:flutter/material.dart';
-import 'package:hive_flutter_kit_example/subscribe.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
