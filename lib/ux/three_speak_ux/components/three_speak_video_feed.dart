@@ -126,7 +126,7 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
     }
     return AppBar(
       leading:
-            widget.shouldShowBackButton!
+            widget.shouldShowBackButton?? false
                 ? BackButton(onPressed: widget.onTapBackButton)
                 : null,
       title: TextField(
