@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
+import 'package:hive_flutter_kit/core/models/community_model.dart';
+import 'package:hive_flutter_kit/core/models/discussion.dart';
 import 'package:hive_flutter_kit/ux/dhive/account_activities/account_activities.dart';
 import 'package:hive_flutter_kit/ux/dhive/comments/hive_post_comments.dart';
 import 'package:hive_flutter_kit/ux/dhive/witnesses/witnesses.dart';
@@ -17,7 +19,6 @@ import 'package:hive_flutter_kit/ux/dhive/account_post/community_screen.dart';
 import 'package:hive_flutter_kit/ux/dhive/account_post/replies_screen.dart';
 import 'package:hive_flutter_kit/ux/dhive/feed_screen/trending_feed_screen.dart';
 import 'package:hive_flutter_kit/ux/dhive/user_profile/user_profile_picture.dart';
-import 'package:hive_flutter_kit/core/models/models.dart'; // For Discussion
 import 'package:url_launcher/url_launcher.dart';
 
 
