@@ -1,10 +1,12 @@
+import 'package:hive_flutter_kit/core/models/account_history.dart';
+import 'package:hive_flutter_kit/core/models/followers.dart';
+import 'package:hive_flutter_kit/core/models/followings.dart';
+import 'package:hive_flutter_kit/core/models/proposal.dart';
+import 'package:hive_flutter_kit/core/models/witnessvote.dart';
 import 'package:hive_flutter_kit/hive_flutter_kit.dart';
-// import 'package:flutter/material.dart'; // Replaced by foundation for VoidCallback/ValueChanged if sufficient
-
-// import 'dart:convert'; // Not currently used
-import 'package:flutter/foundation.dart'; // For debugPrint, ValueChanged, VoidCallback
-import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart'; // Required for HiveFlutterKitPlatform
-import 'package:hive_flutter_kit/core/models/community_model.dart'; // Required for CommunityItem
+import 'package:flutter/foundation.dart';
+import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
+import 'package:hive_flutter_kit/core/models/community_model.dart';
 
 
 class DhiveService {
@@ -143,24 +145,6 @@ class DhiveService {
         return;
       }
 
-      // This part requires context to show a dialog.
-      // For now, let's assume the UI part (dialog) is handled in the widget,
-      // and this service method just provides the data or performs the action.
-      // Or, the calling widget can pass a function to show the dialog.
-      // For simplicity here, I'll just log and show a snackbar.
-      // A more robust solution would involve passing a dialog display function.
-
-      // Example: Switching to the first available user for demonstration
-      // final selectedUser = otherLogins.first;
-      // final result = await hfk.switchUser(selectedUser);
-      // debugPrint('Switch user result: $result');
-      // onSwitchSuccess(selectedUser); // Call callback on success
-
-      // The dialog logic from home.dart needs to be invoked by the calling widget.
-      // This service method can be split or adapted.
-      // For now, I'll keep the core logic of fetching users.
-      // The actual switching/removing will be triggered by UI actions.
-
     } catch (e) {
       debugPrint('Switch user failed: $e');
       showSnackBar('Error managing users: $e');
@@ -208,12 +192,6 @@ class DhiveService {
 
   Future<void> signMessage(String message, String keyTypeString) async {
     try {
-      // Assuming KeyType is an enum or similar. The string needs to be mapped.
-      // For now, using the string directly if the native side handles it.
-      // If KeyType is an enum like `enum KeyType { POSTING, ACTIVE, MEMO }`
-      // You might need: `KeyType keyType = KeyType.values.firstWhere((e) => e.toString().split('.').last.toLowerCase() == keyTypeString.toLowerCase());`
-      // For simplicity, assuming the platform interface takes a string.
-      // The original code uses 'Posting', so it's likely a string.
       startHiveAuthTimer?.call();
       final result = await hfk.signMessage(message, keyTypeString);
       debugPrint('Sign Message result: $result');
@@ -308,7 +286,7 @@ class DhiveService {
     }
   }
 
-  Future<List<Post>> getAccountPosts(
+  Future<List<Discussion>> getAccountPosts(
     String username, {
     int limit = 20,
     String sort = 'posts', // Default to 'posts', can be 'comments', 'blog', etc.
@@ -417,7 +395,7 @@ class DhiveService {
     }
   }
 
-  Future<List<AccountHistory>> getAccountHistory(String account, {int index = -1, int limit = 100, String? start, String? stop}) async {
+  Future<List<AccountHistoryOp>> getAccountHistory(String account, {int index = -1, int limit = 100, String? start, String? stop}) async {
     try {
       final result = await hfk.getAccountHistory(account, index: index, limit: limit, start: start, stop: stop);
       if (result.isEmpty) {
@@ -476,7 +454,7 @@ class DhiveService {
     }
   }
 
-  Future<List<CommentDetails>> getCommentsList(String author, String permlink) async {
+  Future<List<Discussion>> getCommentsList(String author, String permlink) async {
     try {
       final comments = await hfk.getCommentsList(author, permlink);
       if (comments.isEmpty) {
@@ -498,7 +476,7 @@ class DhiveService {
     }
   }
 
-  Future<List<Witness>> getWitnessesByVote({int limit = 50}) async {
+  Future<List<Account>> getWitnessesByVote({int limit = 50}) async {
     try {
       final result = await hfk.getWitnessesByVote(limit: limit);
       debugPrint('Witnesses by vote: ${result.map((w) => w.name).join(', ')}');
