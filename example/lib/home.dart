@@ -79,16 +79,16 @@ class _MyHomePageState extends State<MyHomePage> {
     _authService = AuthService(
       hfk: hfk,
       showSnackBar: _showSnackBar,
-      initiateQrDisplay: _initiateQrDisplay, // Pass new callback
-      clearQrDisplay: _clearQrDisplay,     // Pass new callback
+      triggerQrDisplayAndTimer: _initiateQrDisplayAndFetchFirstQr, // Updated callback name
+      clearQrDisplay: _clearQrDisplay,
     );
     _walletService = WalletService(hfk: hfk, showSnackBar: _showSnackBar);
     _profileService = ProfileService(hfk: hfk, showSnackBar: _showSnackBar);
     _dhiveService = DhiveService(
       hfk: hfk,
       showSnackBar: _showSnackBar,
-      initiateQrDisplay: _initiateQrDisplay, // Pass new callback
-      clearQrDisplay: _clearQrDisplay,     // Pass new callback
+      triggerQrDisplayAndTimer: _initiateQrDisplayAndFetchFirstQr, // Updated callback name
+      clearQrDisplay: _clearQrDisplay,
     );
     _threeSpeakService = ThreeSpeakService(
       hfk: hfk,
@@ -139,26 +139,36 @@ class _MyHomePageState extends State<MyHomePage> {
   // Timer object needs to be managed to be cancellable.
   Timer? _qrRefreshTimer;
 
-  void _initiateQrDisplay(String initialQrString) {
+  // This method now behaves like the original _startTimer
+  void _initiateQrDisplayAndFetchFirstQr() async {
     _qrRefreshTimer?.cancel(); // Cancel any existing timer
+
+    String initialQr = await hfk.getQrString();
+    if (initialQr.isEmpty && mounted) {
+      // If the first fetch is empty, show an error directly.
+      // This matches the user's report that the error appears immediately.
+      _showSnackBar('Error: Could not retrieve QR code for login.');
+      // Ensure display is cleared if it was somehow active from a stale state
+      setState(() {
+        qrString = '';
+        timerDuration = 0;
+      });
+      return; // Don't start the timer if QR is initially empty
+    }
 
     if (mounted) {
       setState(() {
-        qrString = initialQrString;
+        qrString = initialQr;
         timerDuration = 30; // Reset timer duration
       });
     }
 
     _qrRefreshTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       if (timerDuration > 0) {
-        // The QR string might be dynamic and refresh itself via the platform plugin's native view,
-        // or hfk.getQrString() might be needed if it changes over time.
-        // Reinstating periodic fetch as it was in the original _startTimer logic,
-        // as this is often required for HiveAuth QR codes to stay valid.
         String currentRefreshedQr = await hfk.getQrString();
         if (mounted) {
           setState(() {
-            qrString = currentRefreshedQr; // Update with refreshed QR
+            qrString = currentRefreshedQr;
             timerDuration--;
           });
         }
@@ -166,7 +176,7 @@ class _MyHomePageState extends State<MyHomePage> {
         timer.cancel();
         if (mounted) {
           setState(() {
-            qrString = ''; // Clear QR when timer expires
+            qrString = '';
             timerDuration = 0;
           });
         }
