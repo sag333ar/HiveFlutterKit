@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter_kit/core/common/enum.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/three_speak_video_feed.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/video_player.dart'; // Assuming GQLFeedItem is here or in a related import
@@ -30,7 +31,7 @@ Widget buildVideoPlayerScreen(
           Navigator.push(context, route);
         },
         // These might need to be passed as parameters if they vary
-        relatedAuthor: item?.author ?? author ?? 'unknown',
+        relatedAuthor: item?.author?.username ?? author ?? 'unknown',
         relatedPermlink: item?.permlink ?? permlink ?? 'unknown',
         onTapAuthor: (GQLFeedItem feedItem) {
           debugPrint('Tapped author: ${feedItem.author}');

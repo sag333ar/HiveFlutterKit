@@ -1,32 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:hive_flutter_kit/core/common/enum.dart';
 import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit/core/models/community_model.dart';
 import 'package:flutter/material.dart';
-import 'package:hive_flutter_kit/core/three_speak_core/models/studio_video_model.dart';
-import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 import 'package:hive_flutter_kit/ux/bottom_tool_bar.dart';
-import 'package:hive_flutter_kit/ux/dhive/account_activities/account_activities.dart';
-import 'package:hive_flutter_kit/ux/dhive/comments/hive_post_comments.dart';
-import 'package:hive_flutter_kit/ux/dhive/witnesses/witnesses.dart';
-import 'package:hive_flutter_kit/ux/dhive/following_followers/followers.dart';
-import 'package:hive_flutter_kit/ux/dhive/following_followers/followings.dart';
-import 'package:hive_flutter_kit/ux/dhive/following_followers/witness_votes.dart';
-import 'package:hive_flutter_kit/ux/dhive/proposals/proposals.dart';
-import 'package:hive_flutter_kit/ux/login_screen.dart';
-import 'package:hive_flutter_kit/ux/switch_user.dart';
-import 'package:hive_flutter_kit/ux/dhive/community_list/community_list.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/components/studio/video_feed.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/components/three_speak_trending_tags.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/components/three_speak_video_feed.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_community_screen/threespeak_commnuity_screen.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_login_screen.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/threespeak_user_account.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/thumbnail_upload_screen.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/upload_info_screen.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/video_upload_screen.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/components/video_player.dart';
 import 'package:hive_flutter_kit_example/ui/dialogs/video_options_dialogs.dart';
 import 'package:hive_flutter_kit_example/widgets/login_form.dart';
 import 'package:hive_flutter_kit_example/services/auth_service.dart';
@@ -38,15 +15,6 @@ import 'package:hive_flutter_kit_example/widgets/qr_code_display_widget.dart';
 import 'package:hive_flutter_kit_example/ui/ui_helpers.dart';
 import 'package:hive_flutter_kit_example/widgets/dhive_components_widget.dart';
 import 'package:hive_flutter_kit_example/widgets/threespeak_components_widget.dart'; // Added import
-import 'package:hive_flutter_kit/ux/dhive/account_post/account_posts_screen.dart';
-import 'package:hive_flutter_kit/ux/dhive/account_post/blog_screen.dart';
-import 'package:hive_flutter_kit/ux/dhive/account_post/comments_screen.dart';
-import 'package:hive_flutter_kit/ux/dhive/account_post/community_screen.dart';
-import 'package:hive_flutter_kit/ux/dhive/account_post/replies_screen.dart';
-import 'package:hive_flutter_kit/ux/dhive/feed_screen/trending_feed_screen.dart';
-import 'package:hive_flutter_kit/ux/dhive/user_profile/user_profile_picture.dart';
-import 'package:qr_flutter/qr_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
 //import 'package:hive_flutter_ux/ux/dhive/witnesses/witnesses.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -92,13 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String? _transferResult;
   bool _isTransferring = false;
   // --- End Transfer State Variables ---
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    hfk = HiveFlutterKitPlatform.instance;
-  }
-
+  
   @override
   void initState() {
     super.initState();
