@@ -35,24 +35,28 @@ class AuthService {
       return;
     }
     try {
-      // Step 1: Get the QR string for the login operation.
-      // This assumes hfk.getQrString() is context-aware or that loginWithHiveAuth doesn't need prior session setup for QR.
-      // If loginWithHiveAuth itself needs to be called to *start* a session before QR can be fetched,
-      // this order might need adjustment based on hfk's specific API contract.
-      // However, mirroring DhiveService's pattern:
+      // Step 1: Initiate the login process with HiveAuth.
+      // This call is expected to set up the necessary session on the native side.
+      // We will await its Future *after* displaying the QR code.
+      Future<LoginResult> loginOperationFuture = hfk.loginWithHiveAuth(username, '');
+
+      // Step 2: Fetch the QR string for the initiated session.
       final String qrToDisplay = await hfk.getQrString();
 
       if (qrToDisplay.isEmpty) {
+        // If QR is still empty here, the platform plugin might not have generated/provided it
+        // even after loginWithHiveAuth was called.
         showSnackBar('Error: Could not retrieve QR code for login.');
+        // We might not want to call clearQrDisplay if initiateQrDisplay was never called.
         return;
       }
 
-      // Step 2: Ask the UI to display the QR code and start the timer.
+      // Step 3: Ask the UI to display the QR code and start its timer.
       initiateQrDisplay(qrToDisplay);
 
-      // Step 3: Await the actual login process completion.
-      // This is the call that will typically block until the user scans the QR and authorizes.
-      final result = await hfk.loginWithHiveAuth(username, '');
+      // Step 4: Await the completion of the login operation initiated in Step 1.
+      // This Future should resolve after the user scans the QR and the backend confirms.
+      final LoginResult result = await loginOperationFuture;
 
       showSnackBar(
         'Success: ${result.success} Proof: ${result.proof}, Username: ${result.username}, Challenge: ${result.challenge}, PublicKey: ${result.publicKey}',
