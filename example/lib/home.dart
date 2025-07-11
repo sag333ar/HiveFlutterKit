@@ -79,16 +79,16 @@ class _MyHomePageState extends State<MyHomePage> {
     _authService = AuthService(
       hfk: hfk,
       showSnackBar: _showSnackBar,
-      triggerQrDisplayAndTimer: _initiateQrDisplayAndFetchFirstQr, // Updated callback name
-      clearQrDisplay: _clearQrDisplay,
+      startHiveAuthTimer: _startTimer, // Pass the restored _startTimer
+      cancelHiveAuthTimer: _cancelHiveAuth, // Pass the restored _cancelHiveAuth
     );
     _walletService = WalletService(hfk: hfk, showSnackBar: _showSnackBar);
     _profileService = ProfileService(hfk: hfk, showSnackBar: _showSnackBar);
     _dhiveService = DhiveService(
       hfk: hfk,
       showSnackBar: _showSnackBar,
-      triggerQrDisplayAndTimer: _initiateQrDisplayAndFetchFirstQr, // Updated callback name
-      clearQrDisplay: _clearQrDisplay,
+      startHiveAuthTimer: _startTimer, // Pass the restored _startTimer
+      cancelHiveAuthTimer: _cancelHiveAuth, // Pass the restored _cancelHiveAuth
     );
     _threeSpeakService = ThreeSpeakService(
       hfk: hfk,
@@ -137,61 +137,68 @@ class _MyHomePageState extends State<MyHomePage> {
   // _startTimer and _cancelHiveAuth are passed to AuthService and DhiveService constructor
   // for them to call. The state update (qrString, timerDuration) happens here.
   // Timer object needs to be managed to be cancellable.
-  Timer? _qrRefreshTimer;
+  Timer? _qrRefreshTimerInstance; // Renamed to avoid conflict if any old one lingered
 
-  // This method now behaves like the original _startTimer
-  void _initiateQrDisplayAndFetchFirstQr() async {
-    _qrRefreshTimer?.cancel(); // Cancel any existing timer
+  // Restored _startTimer as per user's working snippet
+  void _startTimer() async {
+    _qrRefreshTimerInstance?.cancel(); // Cancel any existing timer
 
-    String initialQr = await hfk.getQrString();
-    if (initialQr.isEmpty && mounted) {
-      // If the first fetch is empty, show an error directly.
-      // This matches the user's report that the error appears immediately.
-      _showSnackBar('Error: Could not retrieve QR code for login.');
-      // Ensure display is cleared if it was somehow active from a stale state
+    var result = await hfk.getQrString();
+    if (!mounted) return; // Check mounted after await
+
+    // It's crucial to check if the result is empty here, as the user reported
+    // the error "Could not retrieve QR code for login."
+    // This implies hfk.getQrString() can return empty.
+    if (result.isEmpty) {
+      _showSnackBar('Error: Could not retrieve QR code.'); // Generic error for now
       setState(() {
         qrString = '';
         timerDuration = 0;
       });
-      return; // Don't start the timer if QR is initially empty
+      return; // Do not start timer if QR is empty
     }
 
-    if (mounted) {
-      setState(() {
-        qrString = initialQr;
-        timerDuration = 30; // Reset timer duration
-      });
-    }
+    setState(() {
+      qrString = result;
+      timerDuration = 30;
+    });
 
-    _qrRefreshTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
+    _qrRefreshTimerInstance = Timer.periodic(const Duration(seconds: 1), (timer) async {
+      if (!mounted) { // Check mounted inside timer callback
+        timer.cancel();
+        return;
+      }
       if (timerDuration > 0) {
-        String currentRefreshedQr = await hfk.getQrString();
-        if (mounted) {
-          setState(() {
-            qrString = currentRefreshedQr;
-            timerDuration--;
-          });
+        var refreshedResult = await hfk.getQrString();
+        if (!mounted) { // Check mounted after await inside timer
+           timer.cancel();
+           return;
         }
+        setState(() {
+          qrString = refreshedResult;
+          timerDuration--;
+        });
       } else {
         timer.cancel();
-        if (mounted) {
-          setState(() {
-            qrString = '';
-            timerDuration = 0;
-          });
+        // Optionally, clear qrString here if not done by _cancelHiveAuth immediately after timeout
+        if(mounted){
+             setState(() {
+                qrString = '';
+                timerDuration = 0;
+            });
         }
       }
     });
   }
 
-  void _clearQrDisplay() {
-    _qrRefreshTimer?.cancel();
-    if (mounted) {
-      setState(() {
-        qrString = '';
-        timerDuration = 0;
-      });
-    }
+  // Restored _cancelHiveAuth as per user's working snippet
+  void _cancelHiveAuth() {
+    _qrRefreshTimerInstance?.cancel();
+    if (!mounted) return;
+    setState(() {
+      qrString = '';
+      timerDuration = 0;
+    });
   }
 
   // Image upload and broadcast methods are already in ProfileService.
