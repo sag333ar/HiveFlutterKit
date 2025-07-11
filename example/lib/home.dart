@@ -14,7 +14,9 @@ import 'package:hive_flutter_kit_example/services/profile_service.dart';
 import 'package:hive_flutter_kit_example/widgets/qr_code_display_widget.dart';
 import 'package:hive_flutter_kit_example/ui/ui_helpers.dart';
 import 'package:hive_flutter_kit_example/widgets/dhive_components_widget.dart';
-import 'package:hive_flutter_kit_example/widgets/threespeak_components_widget.dart'; // Added import
+import 'package:hive_flutter_kit_example/widgets/threespeak_components_widget.dart';
+import 'package:hive_flutter_kit_example/services/dhive_service.dart';
+import 'package:hive_flutter_kit_example/services/threespeak_service.dart'; // Import ThreeSpeakService
 //import 'package:hive_flutter_ux/ux/dhive/witnesses/witnesses.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -28,7 +30,9 @@ class _MyHomePageState extends State<MyHomePage> {
   late HiveFlutterKitPlatform hfk;
   late AuthService _authService;
   late WalletService _walletService;
-  late ProfileService _profileService; // Added ProfileService instance
+  late ProfileService _profileService;
+  late DhiveService _dhiveService;
+  late ThreeSpeakService _threeSpeakService; // Add ThreeSpeakService instance
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _postingKeyController = TextEditingController();
 
@@ -75,11 +79,21 @@ class _MyHomePageState extends State<MyHomePage> {
     _authService = AuthService(
       hfk: hfk,
       showSnackBar: _showSnackBar,
-      startTimer: _startTimer,
-      cancelHiveAuth: _cancelHiveAuth,
+      initiateQrDisplay: _initiateQrDisplay, // Pass new callback
+      clearQrDisplay: _clearQrDisplay,     // Pass new callback
     );
     _walletService = WalletService(hfk: hfk, showSnackBar: _showSnackBar);
     _profileService = ProfileService(hfk: hfk, showSnackBar: _showSnackBar);
+    _dhiveService = DhiveService(
+      hfk: hfk,
+      showSnackBar: _showSnackBar,
+      initiateQrDisplay: _initiateQrDisplay, // Pass new callback
+      clearQrDisplay: _clearQrDisplay,     // Pass new callback
+    );
+    _threeSpeakService = ThreeSpeakService(
+      hfk: hfk,
+      showSnackBar: _showSnackBar,
+    );
   }
 
   // Helper method to show snackbar, to be passed to services
@@ -114,892 +128,232 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // _loginWithHiveAuth and _loginWithPlaintextKey are removed as they are now in AuthService
 
-  void _getVotingPower() async {
-    try {
-      final username = _usernameController.text;
+  // All Hive direct interaction methods like _getVotingPower, _logout, etc., are now removed.
+  // Their logic is in DhiveService and they are called via _dhiveService instance.
 
-      if (username.isEmpty) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Username is required')));
-        return;
-      }
+  // _checkThreespeakInAccountAuths has been moved to ThreeSpeakService.
+  // The local method is now removed.
 
-      var result = await hfk.getVotingPower(username);
-      debugPrint(
-        "Voting Power: ${result.downvotePower}, ${result.upvotePower}",
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
-    }
-  }
+  // _startTimer and _cancelHiveAuth are passed to AuthService and DhiveService constructor
+  // for them to call. The state update (qrString, timerDuration) happens here.
+  // Timer object needs to be managed to be cancellable.
+  Timer? _qrRefreshTimer;
 
-  void _logout() async {
-    try {
-      var userStatus = await hfk.getCurrentUser();
-      userStatus = userStatus.replaceAll('"', '');
+  void _initiateQrDisplay(String initialQrString) {
+    _qrRefreshTimer?.cancel(); // Cancel any existing timer
 
-      if (userStatus == null ||
-          userStatus == '' ||
-          userStatus.contains('No user is currently logged in')) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No user is currently logged in')),
-        );
-        return;
-      }
-      await hfk.logout();
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Successfully logged out')));
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error during logout: $e')));
-    }
-  }
-
-  void _singleVote() async {
-    try {
-      _startTimer();
-      final result = await hfk.singleVote(
-        'sagarkothari88',
-        'aihoa-based-login-with-hiveauth-and-sign-a-message-works-well-with-ios-app-now',
-        1000,
-      );
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Vote Success: $result')));
-      _cancelHiveAuth();
-    } catch (e) {
-      _cancelHiveAuth();
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Vote Error: $e')));
-    }
-  }
-
-  void _comment() async {
-    try {
-      final result = await hfk.comment(
-        'parentAuthor',
-        'parentPermlink',
-        'permlink',
-        'title',
-        'body',
-        {'foo': 'bar'},
-      );
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Comment Success: $result')));
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Comment Error: $e')));
-    }
-  }
-
-  void _commentWithOptions() async {
-    try {
-      final jsonMetadata = {
-        "tags": ["sagar", "kothari"],
-        "app": "checkinwithxyz/1.0.0",
-        "username": "sagar",
-        "image": [
-          "https://canopas-blogs.s3.ap-south-1.amazonaws.com/my_profile_c0f157624c.jpeg",
-        ],
-        "onboarder": "sagarkothari",
-        "introductionText": "Hello, I am a new user",
-        "communityName": "blabla",
-        "lightningAddress": "bla@bla.v4v.app",
-      };
-
-      final Map<String, dynamic> options = {
-        "author": "shaktimaaan",
-        "permlink": "asdfasfaasdfsdfasdfasfasdf",
-        "allow_votes": true,
-        "max_accepted_payout": "100000.000 SBD",
-        "percent_hbd": 10000,
-        "allow_curation_rewards": true,
-        "extensions": [
-          [
-            0,
-            {
-              "beneficiaries": [
-                {"weight": 3000, "account": "threespeakselfie"},
-              ],
-            },
-          ],
-        ],
-      };
-
-      final result = await hfk.commentWithOptions(
-        '',
-        'hive-184437',
-        'asdfasfaasdfsdfasdfasfasdf',
-        'this is a test title from hfk comment with options',
-        'I am going to try this comment with options and see how it works and if it works or not and if it works or not asdfafadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfadsfads',
-        jsonEncode(jsonMetadata),
-        jsonEncode(options),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('CommentWithOptions Success: $result')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('CommentWithOptions Error: $e')));
-    }
-  }
-
-  void _deleteComment() async {
-    try {
-      _startTimer();
-      final result = await hfk.deleteComment(
-        'permlinktodel',
-      ); //Permlink to delete
-      // Replace with the actual permlink you want to delete
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Delete Comment Success: $result')),
-      );
-      _cancelHiveAuth();
-    } catch (e) {
-      _cancelHiveAuth();
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Delete Comment Error: $e')));
-    }
-  }
-
-  void _reblog() async {
-    try {
-      final result = await hfk.reblog('sagarkothari', 'rblmtojs', true);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Reblog Success: $result')));
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Reblog Error: $e')));
-    }
-  }
-
-  void _removeReblog() async {
-    try {
-      final result = await hfk.reblog('sagarkothari', 'rblmtojs', false);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Remove Reblog Success: $result')));
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Remove Reblog Error: $e')));
-    }
-  }
-
-  void _follow() async {
-    try {
-      final result = await hfk.follow('sagarkothari', false);
-      print('Follow result: $result');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Follow Success: $result')));
-    } catch (e) {
-      print('Follow failed: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Follow Error: $e')));
-    }
-  }
-
-  void _switchUser() async {
-    if (hfk == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error: hfk is not initialized')),
-      );
-      return;
+    if (mounted) {
+      setState(() {
+        qrString = initialQrString;
+        timerDuration = 30; // Reset timer duration
+      });
     }
 
-    try {
-      final otherLogins = await hfk.getOtherLogins();
-      print('Other logged-in users: $otherLogins');
-
-      if (otherLogins.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No other logged-in users available')),
-        );
-        return;
-      }
-
-      // Show a dialog to select or remove a user
-      await showDialog<String>(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('Manage Logged-in Users'),
-            content: SizedBox(
-              width: double.maxFinite,
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: otherLogins.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(otherLogins[index]),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.close, color: Colors.red),
-                      onPressed: () async {
-                        try {
-                          final result = await hfk.removeOtherLogin(
-                            otherLogins[index],
-                          );
-                          print('Removed user: $result');
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Removed user: ${otherLogins[index]}',
-                              ),
-                            ),
-                          );
-                          Navigator.of(context).pop(); // Close the dialog
-                        } catch (e) {
-                          print('Failed to remove user: $e');
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Failed to remove user: ${otherLogins[index]}',
-                              ),
-                            ),
-                          );
-                        }
-                      },
-                    ),
-                    onTap: () async {
-                      final selectedUser = otherLogins[index];
-                      final result = await hfk.switchUser(selectedUser);
-                      print('Switch user result: $result');
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Switched to user: $selectedUser'),
-                        ),
-                      );
-                      Navigator.of(context).pop(); // Close the dialog
-                    },
-                  );
-                },
-              ),
-            ),
-          );
-        },
-      );
-    } catch (e) {
-      print('Switch user failed: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
-    }
-  }
-
-  void _unfollow() async {
-    try {
-      final result = await hfk.follow('sagarkothari', true);
-      print('Unfollow result: $result');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Unfollow Success: $result')));
-    } catch (e) {
-      print('Unfollow failed: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Unfollow Error: $e')));
-    }
-  }
-
-  void _claimRewards() async {
-    try {
-      final result = await hfk.claimRewards();
-      print('Claim Rewards result: $result');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Claim Rewards Success: $result')));
-    } catch (e) {
-      print('Claim Rewards failed: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Claim Rewards Error: $e')));
-    }
-  }
-
-  void _signMessage() async {
-    try {
-      _startTimer();
-      final result = await hfk.signMessage(
-        'Hello, hfk!',
-        'Posting', // Add KeyType here
-      );
-      print('Sign Message result: $result');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Sign Message Success: $result')));
-      _cancelHiveAuth();
-    } catch (e) {
-      print('Sign Message failed: $e');
-      _cancelHiveAuth();
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Sign Message Error: $e')));
-    }
-  }
-
-  void _addAccountAuthority() async {
-    try {
-      final username = _usernameController.text;
-      if (username.isEmpty) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Username is required')));
-        return;
-      }
-      // Example: add 'hfk' to Posting authority with weight 1
-      final result = await hfk.addAccountAuthority("threespeak", 'posting', 1);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Add Account Authority: $result')));
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Add Account Authority Error: $e')),
-      );
-    }
-  }
-
-  void _removeAccountAuthority() async {
-    try {
-      final username = _usernameController.text;
-      if (username.isEmpty) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Username is required')));
-        return;
-      }
-      // Example: remove 'hfk' from Posting authority
-      final result = await hfk.removeAccountAuthority('threespeak', 'posting');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Remove Account Authority: $result')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Remove Account Authority Error: $e')),
-      );
-    }
-  }
-
-  Future<void> _getChainPropertieshfk() async {
-    try {
-      var result = await hfk.getChainProperties();
-      debugPrint("hfk Chain Properties: $result");
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Chain Properties: $result')));
-    } catch (e) {
-      debugPrint('hfk getChainProperties error: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Chain Properties Error: $e')));
-    }
-  }
-
-  Future<void> _getDiscussionshfk() async {
-    try {
-      final result = await hfk.getDiscussions(
-        'trending',
-        limit: 20,
-        tag: '',
-        startAuthor: null,
-        startPermlink: null,
-        observer: '',
-      );
-      for (var discussion in result) {
-        final metadata = discussion.jsonMetadata;
-        debugPrint('--- ${discussion.title} ---');
-        debugPrint('--- ${discussion.community} ---');
-        debugPrint('--- ${discussion.communityTitle} ---');
-        debugPrint('Uplovte Count : ${discussion.stats?.totalVotes}');
-        debugPrint('App: ${metadata?.app}');
-        debugPrint('Tags: ${metadata?.tags?.join(', ') ?? 'none'}');
-        debugPrint(
-          'First image: ${metadata?.image?.isNotEmpty == true ? metadata!.image!.first : 'none'}',
-        );
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Fetched discussions (see debug output)')),
-      );
-    } catch (e) {
-      debugPrint('hfk getDiscussions error: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Get Discussions Error: $e')));
-    }
-  }
-
-  Future<void> _getAccountshfk() async {
-    try {
-      var result = await hfk.getAccounts(['sagarkothari88']);
-      for (var account in result) {
-        debugPrint("Account: ${account.posting?.accountAuths}");
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Fetched accounts (see debug output)')),
-      );
-    } catch (e) {
-      debugPrint('hfk getAccounts error: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Get Accounts Error: $e')));
-    }
-  }
-
-  Future<void> _getAccountPostshfk() async {
-    try {
-      String username = 'sagarkothari88';
-      String sort = 'comments';
-      var result = await hfk.getAccountPosts(
-        username,
-        limit: 20,
-        sort,
-        // observer: 'shaktimaaan',
-        // startAuthor: 'sagarkothari88',
-        // startPermlink: 're-sagarkothari88-20250204t071809647',
-      );
-      if (result.isEmpty) {
-        debugPrint('No posts found.');
-      } else {
-        for (var post in result) {
-          debugPrint('--- Post Debug Start ---');
-          debugPrint('Author: ${post.author}');
-          debugPrint('Title: ${post.title}');
-          debugPrint('Permlink: ${post.permlink}');
-          debugPrint('Author Reputation: ${post.authorReputation}');
-          debugPrint('FirstRebloggedBy: ${post.firstRebloggedBy ?? "null"}');
-          debugPrint('FirstRebloggedOn: ${post.firstRebloggedOn ?? "null"}');
-          debugPrint('PendingPayoutValue: ${post.pendingPayoutValue}');
-          debugPrint(
-            'TotalPendingPayoutValue: ${post.totalPendingPayoutValue}',
-          );
-          debugPrint('Promoted: ${post.promoted}');
-          debugPrint('RootTitle: ${post.rootTitle}');
-          debugPrint('URL: ${post.url}');
-          debugPrint('ActiveVotes Count: ${post.activeVotes?.length ?? 0}');
-          debugPrint('Replies Count: ${post.replies?.length ?? 0}');
-          debugPrint('RebloggedBy Count: ${post.rebloggedBy?.length ?? 0}');
-          debugPrint('Beneficiaries Count: ${post.beneficiaries?.length ?? 0}');
-          debugPrint('Payout : ${post.payout ?? 0}');
-          debugPrint('Uplovte Count : ${post.stats?.totalVotes}');
-          debugPrint('--- Post Debug End ---\n');
-        }
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Fetched account posts (see debug output)')),
-      );
-    } catch (e) {
-      debugPrint('hfk getAccountPosts error: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Get AccountPosts Error: $e')));
-    }
-  }
-
-  Future<void> _getVotingPowerhfk() async {
-    try {
-      var result = await hfk.getVotingPower('sagarkothari88');
-      debugPrint(
-        "Voting Power: ${result.downvotePower}, ${result.upvotePower}",
-      );
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Voting Power: ${result.downvotePower}, ${result.upvotePower}',
-          ),
-        ),
-      );
-    } catch (e) {
-      debugPrint('hfk getVotingPower error: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Get Voting Power Error: $e')));
-    }
-  }
-
-  Future<void> _getResourceCreditshfk() async {
-    try {
-      var result = await hfk.getResourceCredits('sagarkothari88');
-      debugPrint("Resources Credits Percentage: ${result.percentage}");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Resources Credits Percentage: ${result.percentage}'),
-        ),
-      );
-    } catch (e) {
-      debugPrint('hfk getResourceCredits error: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Get Resource Credits Error: $e')));
-    }
-  }
-
-  Future<void> _getFollowingsData() async {
-    try {
-      var result = await hfk.getFollowingsData(
-        'sagarkothari88', // username
-        start: '', // optional
-        type: 'blog', // optional
-        limit: 100, // optional
-      );
-
-      debugPrint("Followings Count: ${result.count}");
-      for (var user in result.followings ?? []) {
-        debugPrint("Following: ${user['following']}");
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Fetched ${result.count} followings')),
-      );
-    } catch (e) {
-      debugPrint('getFollowingsData error: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Failed to get followings')));
-    }
-  }
-
-  Future<void> _getFollowersData() async {
-    try {
-      var result = await hfk.getFollowersData(
-        'sagarkothari88', // username
-        start: '', // optional
-        type: 'blog', // optional
-        limit: 100, // optional
-      );
-
-      debugPrint("Followers Count: ${result.count}");
-      for (var user in result.followers ?? []) {
-        debugPrint("Follower: ${user['follower']}");
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Fetched ${result.count} followers')),
-      );
-    } catch (e) {
-      debugPrint('getFollowersData error: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Failed to get followers')));
-    }
-  }
-
-  Future<void> _getWitnessVotesData() async {
-    try {
-      var result = await hfk.getWitnessVotesData('sagarkothari88');
-
-      for (var witness in result.witnessVotes ?? []) {
-        debugPrint("Voted for: $witness");
-      }
-      debugPrint("Voted count: ${result.witnessesVotedFor ?? 0}");
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Witnesses voted for: ${result.witnessesVotedFor ?? 0}',
-          ),
-        ),
-      );
-    } catch (e) {
-      debugPrint('getWitnessVotesData error: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Failed to get witness votes')));
-    }
-  }
-
-  Future<void> _getAccountHistoryExample() async {
-    try {
-      String account = 'sagarkothari88';
-      int index = -1; // latest
-      int limit = 100; // fetch last 100 operations
-      String? start = null;
-      String? stop = null;
-
-      final result = await hfk.getAccountHistory(
-        account,
-        index: index,
-        limit: limit,
-        start: start,
-        stop: stop,
-      );
-
-      if (result.isEmpty) {
-        debugPrint('No account history found.');
-      } else {
-        for (var op in result) {
-          debugPrint('--- History Op Start ---');
-          debugPrint('Index: ${op.index}');
-          final detail = op.detail;
-
-          debugPrint('Block: ${detail?.block}');
-          debugPrint('Transaction ID: ${detail?.trxId}');
-          debugPrint('Timestamp: ${detail?.timestamp}');
-          debugPrint('Virtual Op: ${detail?.virtualOp}');
-          if (detail?.op != null && detail!.op!.length == 2) {
-            debugPrint('Operation Type: ${detail.op![0]}');
-            debugPrint('Operation Payload: ${jsonEncode(detail.op![1])}');
-          } else {
-            debugPrint('Operation: null or malformed');
-          }
-          debugPrint('--- History Op End ---\n');
-        }
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Fetched account history (see debug output)')),
-      );
-    } catch (e) {
-      debugPrint('Error in getAccountHistory: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Get Account History Error: $e')));
-    }
-  }
-
-  Future<void> _getProposalsExample() async {
-    try {
-      final result = await hfk.getProposals(
-        start: [-1],
-        limit: 100,
-        order: 'by_total_votes',
-        orderDirection: 'descending',
-        status: 'votable',
-      );
-      // Example: Print the number of proposals fetched
-      debugPrint('Fetched ${result.length} proposals');
-      if (result.isEmpty) {
-        debugPrint('No proposals found.');
-      } else {
-        for (var proposal in result) {
-          debugPrint('--- Proposal Start ---');
-          debugPrint('ID: ${proposal.id}');
-          debugPrint('Proposal ID: ${proposal.proposalId}');
-          debugPrint('Creator: ${proposal.creator}');
-          debugPrint('Receiver: ${proposal.receiver}');
-          debugPrint('Subject: ${proposal.subject}');
-          debugPrint('Permlink: ${proposal.permlink}');
-          debugPrint(
-            'Daily Pay: ${proposal.dailyPay.amount} ${proposal.dailyPay.nai}',
-          );
-          debugPrint('Start Date: ${proposal.startDate}');
-          debugPrint('End Date: ${proposal.endDate}');
-          debugPrint('Total Votes: ${proposal.totalVotes}');
-          debugPrint('Status: ${proposal.status}');
-          debugPrint('--- Proposal End ---\n');
-        }
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Fetched proposals (see debug output)')),
-      );
-    } catch (e) {
-      debugPrint('Error in getProposals: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Get Proposals Error: $e')));
-    }
-  }
-
-  Future<void> _checkThreespeakInAccountAuths() async {
-    try {
-      final username = _usernameController.text;
-      if (username.isEmpty) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Username is required')));
-        return;
-      }
-      bool hasThreespeak = await hfk.hasThreespeakInAccountAuths(username);
-      debugPrint('threespeak present in accountAuths: $hasThreespeak');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('threespeak present: $hasThreespeak')),
-      );
-    } catch (e) {
-      debugPrint('Error checking threespeak in accountAuths: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
-    }
-  }
-
-  void _startTimer() async {
-    var result = await hfk.getQrString();
-    setState(() {
-      qrString = result;
-      timerDuration = 30;
-    });
-    Timer.periodic(const Duration(seconds: 1), (timer) async {
+    _qrRefreshTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       if (timerDuration > 0) {
-        var result = await hfk.getQrString();
-        setState(() {
-          qrString = result;
-          timerDuration--;
-        });
+        // The QR string might be dynamic and refresh itself via the platform plugin's native view,
+        // or hfk.getQrString() might be needed if it changes over time.
+        // For now, assume the initial QR string is what we display, and the timer is just a countdown.
+        // If hfk.getQrString() is needed for refresh, it should be called here.
+        // var currentQr = await hfk.getQrString(); // Example if refresh is needed
+        if (mounted) {
+          setState(() {
+            // qrString = currentQr; // Update if QR string itself refreshes
+            timerDuration--;
+          });
+        }
       } else {
         timer.cancel();
+        if (mounted) {
+          setState(() {
+            qrString = ''; // Clear QR when timer expires
+            timerDuration = 0;
+          });
+        }
       }
     });
   }
 
-  void _cancelHiveAuth() {
-    setState(() {
-      qrString = '';
-      timerDuration = 0;
-    });
+  void _clearQrDisplay() {
+    _qrRefreshTimer?.cancel();
+    if (mounted) {
+      setState(() {
+        qrString = '';
+        timerDuration = 0;
+      });
+    }
   }
 
-  Future<void> _fetchCommunities({bool loadMore = false}) async {
-    if (_isLoadingCommunities || !_hasMoreCommunities) return;
+  // Image upload and broadcast methods are already in ProfileService.
+  // _handlePickAndUploadImage and _handleSignAndBroadcastTx call ProfileService and manage UI state.
+  Future<void> _handlePickAndUploadImage() async {
+    setState(() {
+      _isUploading = true;
+      _uploadedImageUrl = null;
+    });
+    final imageUrl = await _profileService.pickAndUploadImage();
+    if(mounted) {
+      setState(() {
+        _uploadedImageUrl = imageUrl;
+        _isUploading = false;
+      });
+    }
+  }
+
+  Future<void> _handleSignAndBroadcastTx() async {
+    setState(() {
+      _isBroadcasting = true;
+      _broadcastResult = null;
+    });
+    final String currentUsername = _usernameController.text.isNotEmpty ? _usernameController.text : "shaktimaaan"; // Example
+    final result = await _profileService.signAndBroadcastProfileImageTx(_uploadedImageUrl, currentUsername);
+    if(mounted) {
+      setState(() {
+        _broadcastResult = result;
+        _isBroadcasting = false;
+      });
+    }
+  }
+
+  // getVideoPlayer is a UI helper, correctly placed.
+  // _handleDeleteVideoConfirmed is a UI callback, correctly placed.
+  // The methods _getCommentsListhfk, _fetchCommunities, _getWitnessesByVote were removed as their direct calls
+  // are now part of DhiveService, and DhiveComponentsWidget calls them via _dhiveService.
+  // The wrappers _handleFetchCommunities is kept to manage state.
+
+  // Callback for delete confirmation
+  void _handleDeleteVideoConfirmed(String videoId) {
+    print('Deleting video: $videoId');
+    _showSnackBar('Video deleted successfully (from home.dart)');
+    // TODO: Add actual delete logic here if needed
+  }
+
+  // Wrapper for _dhiveService.commentWithOptions
+  void _handleCommentWithOptions() {
+    final jsonMetadata = {
+      "tags": ["sagar", "kothari"],
+      "app": "checkinwithxyz/1.0.0",
+      "username": "sagar",
+      "image": ["https://canopas-blogs.s3.ap-south-1.amazonaws.com/my_profile_c0f157624c.jpeg"],
+      "onboarder": "sagarkothari",
+      "introductionText": "Hello, I am a new user",
+      "communityName": "blabla",
+      "lightningAddress": "bla@bla.v4v.app",
+    };
+    final Map<String, dynamic> options = {
+      "author": "shaktimaaan",
+      "permlink": "asdfasfaasdfsdfasdfasfasdf", // This should be unique
+      "allow_votes": true,
+      "max_accepted_payout": "100000.000 SBD",
+      "percent_hbd": 10000,
+      "allow_curation_rewards": true,
+      "extensions": [
+        [0, {"beneficiaries": [{"weight": 3000, "account": "threespeakselfie"}]}],
+      ],
+    };
+    _dhiveService.commentWithOptions(
+      parentAuthor: '', // Or actual parent author
+      parentPermlink: 'hive-184437', // Or actual parent permlink
+      permlink: 'asdfasfaasdfsdfasdfasfasdf-${DateTime.now().millisecondsSinceEpoch}', // Ensure permlink is unique
+      title: 'this is a test title from hfk comment with options via DhiveService',
+      body: 'I am going to try this comment with options via DhiveService and see how it works.',
+      jsonMetadataStr: jsonEncode(jsonMetadata),
+      optionsStr: jsonEncode(options),
+    );
+  }
+
+  // Wrapper for fetching communities
+  Future<void> _handleFetchCommunities({bool loadMore = false}) async {
+    if (_isLoadingCommunities || (!loadMore && !_hasMoreCommunities && _communities.isNotEmpty)) return;
 
     setState(() {
       _isLoadingCommunities = true;
+      if (!loadMore) {
+        _communities = []; // Clear list for a new search/initial fetch
+        _communityPage = 0;
+        _lastCommunityName = null;
+        _hasMoreCommunities = true; // Reset for new search
+      }
     });
 
-    try {
-      final result = await hfk.getListOfCommunities(
-        _searchQuery.isNotEmpty ? _searchQuery : null,
-        limit: _communityPageSize,
-        last: loadMore ? _lastCommunityName : null,
-        observer: _currentObserver, // optional, nullable
-      );
+    final result = await _dhiveService.fetchCommunities(
+      _searchQuery.isNotEmpty ? _searchQuery : null,
+      _communityPageSize,
+      loadMore ? _lastCommunityName : null,
+      _currentObserver,
+    );
 
-      if (result.isEmpty) {
-        setState(() {
+    if (mounted) {
+      setState(() {
+        if (result.isEmpty) {
           _hasMoreCommunities = false;
-        });
-      } else {
-        setState(() {
+        } else {
           if (loadMore) {
             _communities.addAll(result);
           } else {
             _communities = result;
           }
-          _lastCommunityName = result.last.name;
+          _lastCommunityName = result.isNotEmpty ? result.last.name : null;
           _hasMoreCommunities = result.length == _communityPageSize;
-          _communityPage += 1;
-        });
-      }
-
-      debugPrint('Communities: ${_communities.map((c) => c.name).join(', ')}');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Fetched ${result.length} communities')),
-      );
-    } catch (e) {
-      debugPrint('Error fetching communities: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error fetching communities: $e')));
-    } finally {
-      setState(() {
+          if (result.isNotEmpty && !loadMore) _communityPage = 1;
+          else if (result.isNotEmpty && loadMore) _communityPage++;
+        }
         _isLoadingCommunities = false;
       });
     }
   }
 
-  Future<void> _getCommentsListhfk() async {
-    try {
-      String author = 'cositav'; // Replace with actual video author
-      String permlink = 'miwbidtw'; // Replace with actual video permlink
-
-      final comments = await hfk.getCommentsList(author, permlink);
-
-      if (comments.isEmpty) {
-        debugPrint('No comments found.');
-      } else {
-        debugPrint('--- Comments Start ---');
-        for (var comment in comments) {
-          debugPrint('Author: ${comment.author}');
-          debugPrint('Body: ${comment.body}'); // Full comment
-          debugPrint('Permlink: ${comment.permlink}');
-          debugPrint('Reputation: ${comment.authorReputation}');
-          debugPrint('---');
-        }
-        debugPrint('--- Comments End ---');
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Fetched ${comments.length} comments')),
-      );
-    } catch (e) {
-      debugPrint('hfk getCommentsList error: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Get Comments Error: $e')));
+  // Wrapper for _dhiveService.switchUser and related dialog
+  Future<void> _handleSwitchUser() async {
+    if (hfk == null) { // hfk instance check, though _dhiveService also has it
+      _showSnackBar('Error: Component not initialized properly');
+      return;
     }
-  }
 
-  // Image upload and broadcast methods moved to ProfileService
-  Future<void> _handlePickAndUploadImage() async {
-    setState(() {
-      _isUploading = true; // Set uploading state before calling service
-      _uploadedImageUrl = null;
-    });
-    final imageUrl = await _profileService.pickAndUploadImage();
-    setState(() {
-      _uploadedImageUrl = imageUrl;
-      _isUploading = false; // Reset uploading state after service call
-    });
-  }
-
-  Future<void> _handleSignAndBroadcastTx() async {
-    setState(() {
-      _isBroadcasting = true; // Set broadcasting state
-      _broadcastResult = null;
-    });
-    // Assuming 'shaktimaaan' is the target username for profile update.
-    // This should ideally come from the logged-in user state.
-    final String currentUsername = _usernameController.text.isNotEmpty ? _usernameController.text : "shaktimaaan";
-    final result = await _profileService.signAndBroadcastProfileImageTx(_uploadedImageUrl, currentUsername);
-    setState(() {
-      _broadcastResult = result;
-      _isBroadcasting = false; // Reset broadcasting state
-    });
-  }
-
-  // getVideoPlayer moved to example/lib/ui/ui_helpers.dart as buildVideoPlayerScreen
-
-  Future<void> _getWitnessesByVote() async {
-    try {
-      final result = await hfk.getWitnessesByVote(limit: 10);
-      //debugPrint('Witnesses by vote: ${result.map((w) => w.owner).join(', ')}');
-      debugPrint('Witnesses by vote: ${result.map((w) => w.name).join(', ')}');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Fetched ${result.length} witnesses')),
-      );
-    } catch (e) {
-      debugPrint('Error fetching witnesses by vote: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+    final otherLogins = await _dhiveService.getOtherLogins();
+    if (otherLogins.isEmpty) {
+      _showSnackBar('No other logged-in users available');
+      return;
     }
-  }
 
-  // Moved _showVideoOptionsBottomSheet & _showDeleteConfirmation to example/lib/ui/dialogs/video_options_dialogs.dart
+    if (!mounted) return; // Check if the widget is still in the tree
 
-  // Callback for delete confirmation
-  void _handleDeleteVideoConfirmed(String videoId) {
-    print('Deleting video: $videoId');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Video deleted successfully (from home.dart)'),
-        backgroundColor: Colors.red,
-      ),
+    await showDialog<String>(
+      context: context,
+      builder: (BuildContext dialogContext) { // Use a different context name
+        return AlertDialog(
+          title: const Text('Manage Logged-in Users'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: otherLogins.length,
+              itemBuilder: (context, index) {
+                final user = otherLogins[index];
+                return ListTile(
+                  title: Text(user),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.close, color: Colors.red),
+                    onPressed: () async {
+                      await _dhiveService.performRemoveOtherLogin(user);
+                      Navigator.of(dialogContext).pop(); // Close dialog
+                      // Optionally, refresh user list or UI
+                    },
+                  ),
+                  onTap: () async {
+                    await _dhiveService.performSwitchUser(user);
+                    Navigator.of(dialogContext).pop(); // Close dialog
+                     // Optionally, refresh user data on UI
+                  },
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
-    // TODO: Add actual delete logic here if needed
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -1027,11 +381,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
               ElevatedButton(
                 child: Text('Get Voting power'),
-                onPressed: _getVotingPower,
+                onPressed: () => _dhiveService.getVotingPower(_usernameController.text),
               ),
 
               ElevatedButton(
-                onPressed: _switchUser,
+                onPressed: _handleSwitchUser, // Updated to call a wrapper
                 child: const Text('Switch User'),
               ),
 
@@ -1051,7 +405,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
               ElevatedButton(
                 onPressed: () async {
-                  String username = await hfk.getCurrentUser();
+                  String username = await hfk.getCurrentUser(); // Stays, as it's UI related
                   username = username.replaceAll('"', '');
                   showDialog(
                     context: context,
@@ -1086,72 +440,72 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
                 child: const Text('Show User Profile'),
               ),
-              ElevatedButton(onPressed: _logout, child: const Text('Logout')),
-              ElevatedButton(onPressed: _singleVote, child: const Text('Vote')),
+              ElevatedButton(onPressed: () => _dhiveService.logout(), child: const Text('Logout')),
+              ElevatedButton(onPressed: () => _dhiveService.singleVote('sagarkothari88', 'aihoa-based-login-with-hiveauth-and-sign-a-message-works-well-with-ios-app-now',1000), child: const Text('Vote')),
               ElevatedButton(
-                onPressed: _deleteComment,
+                onPressed: () => _dhiveService.deleteComment('permlinktodel'),
                 child: const Text('Delete Comment'),
               ),
-              ElevatedButton(onPressed: _reblog, child: const Text('Reblog')),
+              ElevatedButton(onPressed: () => _dhiveService.reblog('sagarkothari', 'rblmtojs', true), child: const Text('Reblog')),
               ElevatedButton(
-                onPressed: _removeReblog,
+                onPressed: () => _dhiveService.reblog('sagarkothari', 'rblmtojs', false),
                 child: const Text('Remove Reblog'),
               ),
-              ElevatedButton(onPressed: _follow, child: const Text('Follow')),
+              ElevatedButton(onPressed: () => _dhiveService.follow('sagarkothari', false), child: const Text('Follow')),
               ElevatedButton(
-                onPressed: _unfollow,
+                onPressed: () => _dhiveService.follow('sagarkothari', true),
                 child: const Text('Unfollow'),
               ),
               ElevatedButton(
-                onPressed: _claimRewards,
+                onPressed: () => _dhiveService.claimRewards(),
                 child: const Text('Claim Rewards'),
               ),
               ElevatedButton(
-                onPressed: _signMessage,
+                onPressed: () => _dhiveService.signMessage('Hello, hfk!', 'Posting'),
                 child: const Text('Sign Message'),
               ),
               // --- End Basic User Actions ---
 
               // --- Account Authority Buttons ---
               ElevatedButton(
-                onPressed: _addAccountAuthority,
+                onPressed: () => _dhiveService.addAccountAuthority(_usernameController.text, 'posting', 'threespeak', 1),
                 child: const Text('Add Account Authority'),
               ),
               ElevatedButton(
-                onPressed: _removeAccountAuthority,
+                onPressed: () => _dhiveService.removeAccountAuthority(_usernameController.text, 'posting', 'threespeak'),
                 child: const Text('Remove Account Authority'),
               ),
               // --- End Account Authority Buttons ---
 
               ElevatedButton(
-                onPressed: _commentWithOptions, // This might be a more advanced comment action
+                onPressed: _handleCommentWithOptions, // Updated to call a wrapper
                 child: const Text('Comment with Options'),
               ),
 
               // --- Dhive Components Widget ---
               DhiveComponentsWidget(
-                hfk: hfk,
-                getChainPropertieshfk: _getChainPropertieshfk,
-                getDiscussionshfk: _getDiscussionshfk,
-                getAccountshfk: _getAccountshfk,
-                getAccountPostshfk: _getAccountPostshfk,
-                getVotingPowerhfk: _getVotingPowerhfk,
-                getResourceCreditshfk: _getResourceCreditshfk,
-                getFollowingsData: () => _showSnackBar("Get Followings Data (Placeholder)"), // Placeholder, original was nav
-                getFollowersData: () => _showSnackBar("Get Followers Data (Placeholder)"),   // Placeholder, original was nav
-                getWitnessVotesData: () => _showSnackBar("Get Witness Votes Data (Placeholder)"),// Placeholder, original was nav
-                getProposalsExample: () => _showSnackBar("Get Proposals Example (Placeholder)"), // Placeholder, original was nav
-                getAccountHistoryExample: () => _showSnackBar("Get Account History (Placeholder)"), // Placeholder, original was nav
-                checkThreespeakInAccountAuths: _checkThreespeakInAccountAuths,
-                getCommentsListhfk: _getCommentsListhfk,
-                fetchCommunities: () => _fetchCommunities(loadMore: false),
-                fetchMoreCommunities: (loadMore) => _fetchCommunities(loadMore: loadMore),
+                hfk: hfk, // hfk might still be needed for some direct calls or pass _dhiveService
+                getChainPropertieshfk: () => _dhiveService.getChainProperties(),
+                getDiscussionshfk: () => _dhiveService.getDiscussions('trending'), // Example parameters
+                getAccountshfk: () => _dhiveService.getAccounts(['sagarkothari88']),
+                getAccountPostshfk: () => _dhiveService.getAccountPosts('sagarkothari88', sort: 'comments'),
+                getVotingPowerhfk: () => _dhiveService.getVotingPowerExtended('sagarkothari88'),
+                getResourceCreditshfk: () => _dhiveService.getResourceCredits('sagarkothari88'),
+                getFollowingsData: () => _dhiveService.getFollowingsData('sagarkothari88'),
+                getFollowersData: () => _dhiveService.getFollowersData('sagarkothari88'),
+                getWitnessVotesData: () => _dhiveService.getWitnessVotesData('sagarkothari88'),
+                getProposalsExample: () => _dhiveService.getProposals(status: 'votable'),
+                getAccountHistoryExample: () => _dhiveService.getAccountHistory('sagarkothari88'),
+                checkThreespeakInAccountAuths: () => _threeSpeakService.checkThreespeakInAccountAuths(_usernameController.text),
+                getCommentsListhfk: () => _dhiveService.getCommentsList('cositav','miwbidtw'),
+                fetchCommunities: () => _handleFetchCommunities(loadMore: false),
+                fetchMoreCommunities: (loadMore) => _handleFetchCommunities(loadMore: loadMore),
                 communities: _communities,
                 isLoadingCommunities: _isLoadingCommunities,
                 hasMoreCommunities: _hasMoreCommunities,
-                usernameController: _usernameController, // For checkThreespeakInAccountAuths
+                usernameController: _usernameController,
                 showSnackBar: _showSnackBar,
-                getWitnessesByVote: _getWitnessesByVote,
+                getWitnessesByVote: () => _dhiveService.getWitnessesByVote(limit: 10),
               ),
               // --- End Dhive Components Widget ---
 
@@ -1159,7 +513,7 @@ class _MyHomePageState extends State<MyHomePage> {
               QrCodeDisplayWidget(
                 qrString: qrString,
                 timerDuration: timerDuration,
-                onCancel: _cancelHiveAuth,
+                onCancel: _clearQrDisplay, // Use the renamed callback
               ),
               // End QR Code Display Widget
 
@@ -1199,7 +553,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 showSnackBar: _showSnackBar,
                 videoPlayerBuilder: (ctx, author, permlink, item) => buildVideoPlayerScreen(ctx, author, permlink, item),
                 showVideoOptionsSheet: (ctx, videoId) => showVideoOptionsBottomSheet(ctx, videoId, _handleDeleteVideoConfirmed),
-                onUserLogout: _logout, // Assuming general logout is fine, or create a specific 3speak logout handler
+                onUserLogout: () => _dhiveService.logout(), // Updated to use DhiveService
               ),
               // --- End ThreeSpeak Components Widget ---
 
