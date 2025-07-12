@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/studio_video_model.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/services/api_service.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/studio/video_listView.dart';
-
-import 'video_card.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/video_card_widget.dart';
 
 enum ApiVideoFeedType {
   home,
@@ -52,6 +51,7 @@ class _VideoFeedState extends State<VideoFeed> {
   List<ThreeSpeakVideo> _items = [];
   bool _loading = true;
   String? _error;
+  List<VideoFeedGridItemViewModel> _viewModels = [];
 
   @override
   void initState() {
@@ -64,8 +64,10 @@ class _VideoFeedState extends State<VideoFeed> {
       _loading = true;
       _error = null;
     });
+
     try {
       List<ThreeSpeakVideo> items = [];
+
       switch (widget.feedType) {
         case ApiVideoFeedType.home:
           items = await _api.getHomeVideos();
@@ -90,8 +92,18 @@ class _VideoFeedState extends State<VideoFeed> {
           }
           break;
       }
+
+      final viewModels =
+          items
+              .map(
+                (video) =>
+                    VideoFeedGridItemViewModel.fromThreeSpeakVideo(video),
+              )
+              .toList();
+
       setState(() {
         _items = items;
+        _viewModels = viewModels;
         _loading = false;
       });
     } catch (e) {
@@ -134,53 +146,32 @@ class _VideoFeedState extends State<VideoFeed> {
           ),
           itemCount: _items.length,
           itemBuilder: (context, index) {
-            final item = _items[index];
-            print('title: ${item.title}');
-            print('owner: ${item.owner}');
-            print('date: ${item.created}');
-            print('thumbnail: ${item.thumbnail}');
-            return ThreeSpeakVideoCard(
-              title: item.title ?? 'Untitled',
-              username: item.owner ?? 'unknown',
-              createdAt: item.created ?? DateTime.now(),
-              thumbnailUrl: item.thumbnail ?? '',
-              duration: item.duration ?? 0,
-              votes: '0',
-              comments: '0',
-              rewards: '0',
+            final item = _viewModels[index];
+            return VideoCard(
+              item: item,
               isVisible: true,
               isInGrid: true,
               isPayoutValueVisible: widget.isPayoutValueVisible,
-              onTap: () => _handleTapVideoItem(context, item),
-              onTapAuthor: () => _handleTapAuthor(context, item),
-              onTapReport: () => widget.onTapReport(item),
-              onTapUpvote: () => widget.onTapUpvote(item),
-              onTapComment: () => widget.onTapComment(item),
+              onTap: () => _handleTapVideoItem(context, _items[index]),
+              onTapAuthor: () => _handleTapAuthor(context, _items[index]),
+              onTapReport: () => widget.onTapReport(_items[index]),
+              onTapUpvote: () => widget.onTapUpvote(_items[index]),
+              onTapComment: () => widget.onTapComment(_items[index]),
             );
           },
         );
-      }
-      else {
+      } else {
         content = VideoListview(
-          items: _items,
+          items: _viewModels,
           itemBuilder: (context, item, index, isVisible) {
-            return ThreeSpeakVideoCard(
-              title: item.title ?? 'Untitled',
-              username: item.owner ?? 'unknown',
-              createdAt: item.created ?? DateTime.now(),
-              thumbnailUrl: item.thumbnail ?? '',
-              duration: item.duration ?? 0,
-              votes: '0',
-              comments: '0',
-              rewards: '0',
-              isVisible: isVisible,
-              isInGrid: false,
-              isPayoutValueVisible: widget.isPayoutValueVisible,
-              onTap: () => _handleTapVideoItem(context, item),
-              onTapAuthor: () => _handleTapAuthor(context, item),
-              onTapReport: () => widget.onTapReport(item),
-              onTapUpvote: () => widget.onTapUpvote(item),
-              onTapComment: () => widget.onTapComment(item),
+            return VideoCard(
+              item: _viewModels[index], // Pass viewModel instead of raw video
+              isVisible: true,
+              onTap: () => _handleTapVideoItem(context, _items[index]),
+              onTapAuthor: () => _handleTapAuthor(context, _items[index]),
+              onTapReport: () => widget.onTapReport(_items[index]),
+              onTapUpvote: () => widget.onTapUpvote(_items[index]),
+              onTapComment: () => widget.onTapComment(_items[index]),
             );
           },
         );
@@ -188,9 +179,10 @@ class _VideoFeedState extends State<VideoFeed> {
     }
 
     return Scaffold(
-      appBar: widget.shouldShowBackButton == true
-          ? AppBar(leading: BackButton(onPressed: widget.onTapBackButton))
-          : null,
+      appBar:
+          widget.shouldShowBackButton == true
+              ? AppBar(leading: BackButton(onPressed: widget.onTapBackButton))
+              : null,
       body: content,
     );
   }

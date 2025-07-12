@@ -2509,43 +2509,44 @@ class _MyHomePageState extends State<MyHomePage> {
                       builder:
                           (context) => Scaffold(
                             appBar: AppBar(title: const Text('Trending Feed')),
-                            body: VideoFeed(
-                              feedType: ApiVideoFeedType.newVideos,
-                              isPayoutValueVisible: true,
-                              onTapAuthor: (ThreeSpeakVideo item) {},
-                              onTapReport: (ThreeSpeakVideo item) {},
-                              onTapUpvote: (ThreeSpeakVideo item) {},
-                              onTapComment: (ThreeSpeakVideo item) {},
-                              onTapVideoItem: (ThreeSpeakVideo item) {},
-                            )
-                            // ThreeSpeakVideoFeed(
-                            //   feedType: ThreeSpeakVideoFeedType.trending,
-                            //   onTapVideoItem: (tappedItem) {
-                            //     debugPrint('Tapped video item: $tappedItem');
-                            //     var screen = getVideoPlayer(
-                            //       null,
-                            //       null,
-                            //       tappedItem,
-                            //     );
-                            //     var route = MaterialPageRoute(
-                            //       builder: (context) => screen,
-                            //     );
-                            //     Navigator.push(context, route);
-                            //   },
-                            //   onTapAuthor: (GQLFeedItem item) {
-                            //     debugPrint('Tapped author: ${item.author}');
-                            //   },
-                            //   onTapReport: (GQLFeedItem item) {
-                            //     debugPrint('Tapped report: ${item.permlink}');
-                            //   },
-                            //   onTapUpvote: (GQLFeedItem item) {
-                            //     debugPrint('Tapped upvote: ${item.permlink}');
-                            //   },
-                            //   onTapComment: (GQLFeedItem item) {
-                            //     debugPrint('Tapped comment: ${item.permlink}');
-                            //   },
+                            body: 
+                            // VideoFeed(
+                            //   feedType: ApiVideoFeedType.newVideos,
                             //   isPayoutValueVisible: true,
-                            // ),
+                            //   onTapAuthor: (ThreeSpeakVideo item) {},
+                            //   onTapReport: (ThreeSpeakVideo item) {},
+                            //   onTapUpvote: (ThreeSpeakVideo item) {},
+                            //   onTapComment: (ThreeSpeakVideo item) {},
+                            //   onTapVideoItem: (ThreeSpeakVideo item) {},
+                            // )
+                            ThreeSpeakVideoFeed(
+                              feedType: ThreeSpeakVideoFeedType.trending,
+                              onTapVideoItem: (tappedItem) {
+                                debugPrint('Tapped video item: $tappedItem');
+                                var screen = getVideoPlayer(
+                                  null,
+                                  null,
+                                  tappedItem,
+                                );
+                                var route = MaterialPageRoute(
+                                  builder: (context) => screen,
+                                );
+                                Navigator.push(context, route);
+                              },
+                              onTapAuthor: (GQLFeedItem item) {
+                                debugPrint('Tapped author: ${item.author}');
+                              },
+                              onTapReport: (GQLFeedItem item) {
+                                debugPrint('Tapped report: ${item.permlink}');
+                              },
+                              onTapUpvote: (GQLFeedItem item) {
+                                debugPrint('Tapped upvote: ${item.permlink}');
+                              },
+                              onTapComment: (GQLFeedItem item) {
+                                debugPrint('Tapped comment: ${item.permlink}');
+                              },
+                              isPayoutValueVisible: true,
+                            ),
                           ),
                     ),
                   );

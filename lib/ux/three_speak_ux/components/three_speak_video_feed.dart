@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/core/common/enum.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/graphql/gql_communicator.dart';
+import 'package:hive_flutter_kit/core/three_speak_core/models/studio_video_model.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_tags_response.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/user_profile_image.dart';
@@ -337,7 +338,7 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
           items: _items,
           itemBuilder: (context, item, index, isVisible) {
             return VideoCard(
-              item: item,
+              item: VideoFeedGridItemViewModel.fromGQLFeedItem(item),
               isVisible: isVisible,
               isInGrid: false,
               isPayoutValueVisible: widget.isPayoutValueVisible,

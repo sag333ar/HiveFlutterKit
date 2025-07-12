@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
+import 'package:hive_flutter_kit/core/three_speak_core/models/studio_video_model.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/server_proxy.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/video_thumbnail.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class VideoCard extends StatelessWidget {
-  final GQLFeedItem item;
+  final VideoFeedGridItemViewModel item;
   final bool isVisible;
   final void Function() onTap;
   final void Function() onTapAuthor;
@@ -31,14 +31,6 @@ class VideoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final username = item.author?.username ?? 'unknown';
-    final title = item.title ?? 'Untitled';
-    final createdAt =
-        item.createdAt != null ? timeago.format(item.createdAt!) : 'Unknown';
-    final votes = item.stats?.numVotes?.toString() ?? '0';
-    final comments = item.stats?.numComments?.toString() ?? '0';
-    final rewards = item.stats?.totalHiveReward?.toString() ?? '0';
-
     return GestureDetector(
       onTap: onTap,
       child: Card(
@@ -63,7 +55,7 @@ class VideoCard extends StatelessWidget {
                         onTap: onTapAuthor,
                         child: ClipOval(
                           child: CachedNetworkImage(
-                            imageUrl: server.userOwnerThumb(username),
+                            imageUrl: server.userOwnerThumb(item.author),
                             width: 32,
                             height: 32,
                             placeholder:
@@ -84,7 +76,7 @@ class VideoCard extends StatelessWidget {
                       GestureDetector(
                         onTap: onTapAuthor,
                         child: Text(
-                          username,
+                          item.author,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
@@ -93,22 +85,28 @@ class VideoCard extends StatelessWidget {
                       ),
                       Spacer(),
                       Text(
-                        createdAt,
+                        timeago.format(item.created),
                         style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                       ),
                     ],
                   ),
                 ),
 
-                if (isInGrid!)
+                if (isInGrid ?? false)
                   Expanded(
                     flex: 1,
-                    child: VideoThumbnail(item: item, isVisible: isVisible),
+                    child: VideoThumbnail(
+                      item: item,
+                      isVisible: isVisible,
+                    ),
                   )
                 else
                   AspectRatio(
                     aspectRatio: 16 / 9,
-                    child: VideoThumbnail(item: item, isVisible: isVisible),
+                    child: VideoThumbnail(
+                      item: item,
+                      isVisible: isVisible,
+                    ),
                   ),
 
                 // Title + Report
@@ -122,7 +120,7 @@ class VideoCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          title,
+                          item.title,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -161,7 +159,7 @@ class VideoCard extends StatelessWidget {
                     children: [
                       if (isPayoutValueVisible == true)
                         Text(
-                          '\$$rewards',
+                          item.hiveValue != null ? '\$${item.hiveValue}' : '',
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey[600],
@@ -169,15 +167,25 @@ class VideoCard extends StatelessWidget {
                         ),
                       Row(
                         children: [
-                          GestureDetector(
-                            onTap: onTapUpvote,
-                            child: _iconStat(Icons.favorite_border, votes),
-                          ),
+                          item.numOfUpvotes != null
+                              ? GestureDetector(
+                                onTap: onTapUpvote,
+                                child: _iconStat(
+                                  Icons.favorite_border,
+                                  "${item.numOfUpvotes ?? 0}",
+                                ),
+                              )
+                              : Container(),
                           const SizedBox(width: 12),
-                          GestureDetector(
-                            onTap: onTapComment,
-                            child: _iconStat(Icons.comment_outlined, comments),
-                          ),
+                          item.numOfComments != null
+                              ? GestureDetector(
+                                onTap: onTapUpvote,
+                                child: _iconStat(
+                                  Icons.favorite_border,
+                                  "${item.numOfComments ?? 0}",
+                                ),
+                              )
+                              : Container(),
                         ],
                       ),
                     ],

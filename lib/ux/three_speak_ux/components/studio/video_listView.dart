@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/studio_video_model.dart';
 
 class VideoListview extends StatefulWidget {
-  final List<ThreeSpeakVideo> items;
-  final Widget Function(BuildContext, ThreeSpeakVideo, int, bool) itemBuilder;
+  final List<VideoFeedGridItemViewModel> items;
+  final Widget Function(BuildContext, VideoFeedGridItemViewModel, int, bool) itemBuilder;
 
   const VideoListview({
     Key? key,
