@@ -42,6 +42,20 @@ class VideoFeed extends StatefulWidget {
     this.onTapBackButton,
   });
 
+  /// Static in-memory cache
+  static final Map<String, List<ThreeSpeakVideo>> _feedCache = {};
+
+  static String _getCacheKey(ApiVideoFeedType feedType, String? username, String? communityId) {
+    switch (feedType) {
+      case ApiVideoFeedType.user:
+        return 'user:${username ?? ''}';
+      case ApiVideoFeedType.community:
+        return 'community:${communityId ?? ''}';
+      default:
+        return feedType.name;
+    }
+  }
+
   @override
   State<VideoFeed> createState() => _VideoFeedState();
 }
@@ -49,9 +63,9 @@ class VideoFeed extends StatefulWidget {
 class _VideoFeedState extends State<VideoFeed> {
   final ApiService _api = ApiService();
   List<ThreeSpeakVideo> _items = [];
+  List<VideoFeedGridItemViewModel> _viewModels = [];
   bool _loading = true;
   String? _error;
-  List<VideoFeedGridItemViewModel> _viewModels = [];
 
   @override
   void initState() {
@@ -59,11 +73,23 @@ class _VideoFeedState extends State<VideoFeed> {
     _fetchFeed();
   }
 
-  Future<void> _fetchFeed() async {
+  Future<void> _fetchFeed({bool forceRefresh = false}) async {
     setState(() {
       _loading = true;
       _error = null;
     });
+
+    final key = VideoFeed._getCacheKey(widget.feedType, widget.username, widget.communityId);
+
+    if (!forceRefresh && VideoFeed._feedCache.containsKey(key)) {
+      final cachedItems = VideoFeed._feedCache[key]!;
+      setState(() {
+        _items = cachedItems;
+        _viewModels = cachedItems.map(VideoFeedGridItemViewModel.fromThreeSpeakVideo).toList();
+        _loading = false;
+      });
+      return;
+    }
 
     try {
       List<ThreeSpeakVideo> items = [];
@@ -93,17 +119,12 @@ class _VideoFeedState extends State<VideoFeed> {
           break;
       }
 
-      final viewModels =
-          items
-              .map(
-                (video) =>
-                    VideoFeedGridItemViewModel.fromThreeSpeakVideo(video),
-              )
-              .toList();
+      // Cache it
+      VideoFeed._feedCache[key] = items;
 
       setState(() {
         _items = items;
-        _viewModels = viewModels;
+        _viewModels = items.map(VideoFeedGridItemViewModel.fromThreeSpeakVideo).toList();
         _loading = false;
       });
     } catch (e) {
@@ -114,76 +135,101 @@ class _VideoFeedState extends State<VideoFeed> {
     }
   }
 
-  void _handleTapAuthor(BuildContext context, ThreeSpeakVideo item) {
-    widget.onTapAuthor(item);
-  }
-
   void _handleTapVideoItem(BuildContext context, ThreeSpeakVideo item) {
     widget.onTapVideoItem(item);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    Widget content;
+  void _handleTapAuthor(BuildContext context, ThreeSpeakVideo item) {
+    widget.onTapAuthor(item);
+  }
+
+  Widget _buildContent(BuildContext context) {
     if (_loading) {
-      content = const Center(child: CircularProgressIndicator());
-    } else if (_error != null) {
-      content = Center(child: Text('Error: $_error'));
-    } else if (_items.isEmpty) {
-      content = const Center(child: Text('No videos found.'));
-    } else {
-      final screenWidth = MediaQuery.of(context).size.width;
-      final isWide = screenWidth >= 600;
-      if (isWide) {
-        final crossAxisCount = screenWidth ~/ 350;
-        content = GridView.builder(
-          padding: const EdgeInsets.all(8),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: crossAxisCount,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 8,
-            childAspectRatio: 0.99,
-          ),
-          itemCount: _items.length,
-          itemBuilder: (context, index) {
-            final item = _viewModels[index];
-            return VideoCard(
-              item: item,
-              isVisible: true,
-              isInGrid: true,
-              isPayoutValueVisible: widget.isPayoutValueVisible,
-              onTap: () => _handleTapVideoItem(context, _items[index]),
-              onTapAuthor: () => _handleTapAuthor(context, _items[index]),
-              onTapReport: () => widget.onTapReport(_items[index]),
-              onTapUpvote: () => widget.onTapUpvote(_items[index]),
-              onTapComment: () => widget.onTapComment(_items[index]),
-            );
-          },
-        );
-      } else {
-        content = VideoListview(
-          items: _viewModels,
-          itemBuilder: (context, item, index, isVisible) {
-            return VideoCard(
-              item: _viewModels[index], // Pass viewModel instead of raw video
-              isVisible: true,
-              onTap: () => _handleTapVideoItem(context, _items[index]),
-              onTapAuthor: () => _handleTapAuthor(context, _items[index]),
-              onTapReport: () => widget.onTapReport(_items[index]),
-              onTapUpvote: () => widget.onTapUpvote(_items[index]),
-              onTapComment: () => widget.onTapComment(_items[index]),
-            );
-          },
-        );
-      }
+      return const Center(child: CircularProgressIndicator());
     }
 
+    if (_error != null) {
+      return Center(child: Text('Error: $_error'));
+    }
+
+    if (_items.isEmpty) {
+      return const Center(child: Text('No videos found.'));
+    }
+
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isWide = screenWidth >= 600;
+
+    if (isWide) {
+      final crossAxisCount = screenWidth ~/ 350;
+      return GridView.builder(
+        padding: const EdgeInsets.all(8),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: crossAxisCount,
+          crossAxisSpacing: 8,
+          mainAxisSpacing: 8,
+          childAspectRatio: 0.99,
+        ),
+        itemCount: _items.length,
+        itemBuilder: (context, index) {
+          final item = _viewModels[index];
+          return VideoCard(
+            item: item,
+            isVisible: true,
+            isInGrid: true,
+            isPayoutValueVisible: widget.isPayoutValueVisible,
+            onTap: () => _handleTapVideoItem(context, _items[index]),
+            onTapAuthor: () => _handleTapAuthor(context, _items[index]),
+            onTapReport: () => widget.onTapReport(_items[index]),
+            onTapUpvote: () => widget.onTapUpvote(_items[index]),
+            onTapComment: () => widget.onTapComment(_items[index]),
+          );
+        },
+      );
+    } else {
+      return VideoListview(
+        items: _viewModels,
+        itemBuilder: (context, item, index, isVisible) {
+          return VideoCard(
+            item: _viewModels[index],
+            isVisible: true,
+            onTap: () => _handleTapVideoItem(context, _items[index]),
+            onTapAuthor: () => _handleTapAuthor(context, _items[index]),
+            onTapReport: () => widget.onTapReport(_items[index]),
+            onTapUpvote: () => widget.onTapUpvote(_items[index]),
+            onTapComment: () => widget.onTapComment(_items[index]),
+          );
+        },
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar:
-          widget.shouldShowBackButton == true
-              ? AppBar(leading: BackButton(onPressed: widget.onTapBackButton))
-              : null,
-      body: content,
+      appBar: widget.shouldShowBackButton == true
+          ? AppBar(
+              leading: BackButton(onPressed: widget.onTapBackButton),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.refresh),
+                  tooltip: 'Refresh',
+                  onPressed: () async {
+                    final key = VideoFeed._getCacheKey(widget.feedType, widget.username, widget.communityId);
+                    VideoFeed._feedCache.remove(key);
+                    await _fetchFeed(forceRefresh: true);
+                  },
+                ),
+              ],
+            )
+          : null,
+      body: RefreshIndicator(
+        onRefresh: () async {
+          final key = VideoFeed._getCacheKey(widget.feedType, widget.username, widget.communityId);
+          VideoFeed._feedCache.remove(key);
+          await _fetchFeed(forceRefresh: true);
+        },
+        child: _buildContent(context),
+      ),
     );
   }
 }
