@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
-
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 
 class VideoFeedGridItemViewModel {
@@ -11,7 +9,7 @@ class VideoFeedGridItemViewModel {
   String category; // community / tag
   int? numOfUpvotes;
   int? numOfComments;
-  Float? hiveValue;
+  double? hiveValue;
   int? duration;
   String? thumbnail;
 
@@ -48,13 +46,13 @@ class VideoFeedGridItemViewModel {
       title: video.title ?? '',
       author: video.author?.username ?? '',
       permlink: video.permlink ?? '',
-      created: video.createdAt ?? DateTime.now()),
-      category: video.category ?? '',
-      numOfComments: null,
-      numOfUpvotes: null,
-      hiveValue: null,
-      duration: video.duration ?? 0,
-      thumbnail: video.getThumbnail(),
+      created: video.createdAt ?? DateTime.now(),
+      category: video.community?.title ?? '',
+      numOfComments: video.stats?.numComments,
+      numOfUpvotes: video.stats?.numVotes,
+      hiveValue: video.stats?.totalHiveReward,
+      duration: video.spkvideo?.duration?.toInt(),
+      thumbnail: video.spkvideo?.thumbnailUrl,
     );
   }
 }
@@ -349,7 +347,10 @@ class ThreeSpeakVideo {
   };
 
   String getThumbnail() {
-    return thumbnail ??
-        ''.replaceAll('ipfs://', 'https://ipfs-3speak.b-cdn.net/ipfs/');
+    if (thumbnail == null) return '';
+    return thumbnail!.replaceAll(
+      'ipfs://',
+      'https://ipfs-3speak.b-cdn.net/ipfs/',
+    );
   }
 }
