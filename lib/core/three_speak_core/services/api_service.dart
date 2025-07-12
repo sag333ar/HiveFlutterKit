@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:hive_flutter_kit/core/three_speak_core/models/studio_video_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:hive_flutter_kit/core/models/login_model.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/server_proxy.dart';
@@ -42,7 +43,9 @@ class ApiService {
     if (response.statusCode == 200) {
       return jsonDecode(response.body) as Map<String, dynamic>;
     } else {
-      throw Exception(jsonDecode(response.body)['error'] ?? 'Unknown API error');
+      throw Exception(
+        jsonDecode(response.body)['error'] ?? 'Unknown API error',
+      );
     }
   }
 
@@ -65,7 +68,24 @@ class ApiService {
     if (response.statusCode == 200) {
       return jsonDecode(response.body) as Map<String, dynamic>;
     } else {
-      throw Exception(jsonDecode(response.body)['error'] ?? 'Unknown API error');
+      throw Exception(
+        jsonDecode(response.body)['error'] ?? 'Unknown API error',
+      );
+    }
+  }
+
+  Future<List<ThreeSpeakVideo>> getUserVideos(String username) async {
+    var request = http.Request(
+      'GET',
+      Uri.parse('https://studio.3speak.tv/mobile/api/feed/user/@$username'),
+    );
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      var string = await response.stream.bytesToString();
+      return ThreeSpeakVideo.threeSpeakVideosFromJsonString(string);
+    } else {
+      print(response.reasonPhrase);
+      throw response.reasonPhrase ?? 'Something went wrong';
     }
   }
 }
