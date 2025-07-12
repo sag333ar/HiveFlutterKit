@@ -120,7 +120,7 @@ class GQLCommunicator {
     String? lang,
   ) async {
     var spkVideoQuery =
-        "\nspkvideo: {only: true, firstUpload: true${isShorts ? ", isShort: true" : ""}}\n";
+        "\nspkvideo: {only: true, ${isShorts ? ", isShort: true" : ""}}\n";
     var feedOptionsQuery =
         "\nfeedOptions: { byTag: {_eq: \"$tag\"} \n ${lang != null ? "byLang: {_eq: \"$lang\"}" : ""} }\n";
     var paginationQuery = "\npagination: { limit: 50, skip: $skip }\n";

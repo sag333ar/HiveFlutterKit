@@ -2717,6 +2717,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                         feedType:
                                             ThreeSpeakVideoFeedType
                                                 .trendingTagFeed,
+                                        tag: tag,
                                         onTapVideoItem: (tappedItem) {
                                           debugPrint(
                                             'Tapped video item: $tappedItem',
