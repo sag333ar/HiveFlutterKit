@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:hive_flutter_kit/core/three_speak_core/models/studio_video_model.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/server_proxy.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 import 'thumnail.dart';
 
 class ThreeSpeakVideoCard extends StatelessWidget {
-  final String title;
-  final String username;
-  final DateTime createdAt;
-  final String votes;
-  final String comments;
-  final String rewards;
-  final String? thumbnailUrl;
+  final VideoFeedGridItemViewModel item;
   final void Function() onTap;
   final void Function() onTapAuthor;
   final void Function() onTapReport;
@@ -25,13 +20,7 @@ class ThreeSpeakVideoCard extends StatelessWidget {
 
   const ThreeSpeakVideoCard({
     super.key,
-    required this.title,
-    required this.username,
-    required this.createdAt,
-    required this.votes,
-    required this.comments,
-    required this.rewards,
-    this.thumbnailUrl,
+    required this.item,
     required this.onTap,
     required this.onTapAuthor,
     required this.onTapReport,
@@ -40,7 +29,7 @@ class ThreeSpeakVideoCard extends StatelessWidget {
     this.isInGrid,
     this.isPayoutValueVisible,
     required this.isVisible,
-    required this.duration
+    required this.duration,
   });
 
   @override
@@ -69,7 +58,7 @@ class ThreeSpeakVideoCard extends StatelessWidget {
                         onTap: onTapAuthor,
                         child: ClipOval(
                           child: CachedNetworkImage(
-                            imageUrl: server.userOwnerThumb(username),
+                            imageUrl: server.userOwnerThumb(item.author),
                             width: 32,
                             height: 32,
                             placeholder:
@@ -90,7 +79,7 @@ class ThreeSpeakVideoCard extends StatelessWidget {
                       GestureDetector(
                         onTap: onTapAuthor,
                         child: Text(
-                          username,
+                          item.author,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
@@ -99,7 +88,7 @@ class ThreeSpeakVideoCard extends StatelessWidget {
                       ),
                       Spacer(),
                       Text(
-                        timeago.format(createdAt),
+                        timeago.format(item.created),
                         style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                       ),
                     ],
@@ -110,7 +99,7 @@ class ThreeSpeakVideoCard extends StatelessWidget {
                   Expanded(
                     flex: 1,
                     child: VideoThumbnail(
-                      thumbnailurl: thumbnailUrl ?? '',
+                      thumbnailurl: item.thumbnail ?? '',
                       isVisible: isVisible,
                       duration: duration,
                     ),
@@ -119,9 +108,9 @@ class ThreeSpeakVideoCard extends StatelessWidget {
                   AspectRatio(
                     aspectRatio: 16 / 9,
                     child: VideoThumbnail(
-                      thumbnailurl: thumbnailUrl ?? '',
+                      thumbnailurl: item.thumbnail ?? '',
                       isVisible: isVisible,
-                      duration: duration
+                      duration: duration,
                     ),
                   ),
 
@@ -136,7 +125,7 @@ class ThreeSpeakVideoCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          title,
+                          item.title,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -175,7 +164,7 @@ class ThreeSpeakVideoCard extends StatelessWidget {
                     children: [
                       if (isPayoutValueVisible == true)
                         Text(
-                          '\$$rewards',
+                          item.hiveValue != null ? '\$${item.hiveValue}' : '',
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey[600],
@@ -183,10 +172,15 @@ class ThreeSpeakVideoCard extends StatelessWidget {
                         ),
                       Row(
                         children: [
-                          GestureDetector(
-                            onTap: onTapUpvote,
-                            child: _iconStat(Icons.favorite_border, votes),
-                          ),
+                          item.numOfUpvotes != null
+                              ? GestureDetector(
+                                onTap: onTapUpvote,
+                                child: _iconStat(
+                                  Icons.favorite_border,
+                                  "${item.numOfUpvotes ?? 0}",
+                                ),
+                              )
+                              : Container(),
                           const SizedBox(width: 12),
                           GestureDetector(
                             onTap: onTapComment,

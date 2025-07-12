@@ -1,4 +1,63 @@
 import 'dart:convert';
+import 'dart:ffi';
+
+import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
+
+class VideoFeedGridItemViewModel {
+  String title;
+  String author;
+  String permlink;
+  DateTime created;
+  String category; // community / tag
+  int? numOfUpvotes;
+  int? numOfComments;
+  Float? hiveValue;
+  int? duration;
+  String? thumbnail;
+
+  VideoFeedGridItemViewModel({
+    required this.title,
+    required this.author,
+    required this.permlink,
+    required this.created,
+    required this.category,
+    required this.numOfUpvotes,
+    required this.numOfComments,
+    required this.hiveValue,
+    required this.duration,
+    required this.thumbnail,
+  });
+
+  static VideoFeedGridItemViewModel fromThreeSpeakVideo(ThreeSpeakVideo video) {
+    return VideoFeedGridItemViewModel(
+      title: video.title ?? '',
+      author: video.owner ?? '',
+      permlink: video.permlink ?? '',
+      created: video.created ?? DateTime.now(),
+      category: video.category ?? '',
+      numOfComments: null,
+      numOfUpvotes: null,
+      hiveValue: null,
+      duration: video.duration ?? 0,
+      thumbnail: video.getThumbnail(),
+    );
+  }
+
+  static VideoFeedGridItemViewModel fromGQLFeedItem(GQLFeedItem video) {
+    return VideoFeedGridItemViewModel(
+      title: video.title ?? '',
+      author: video.author?.username ?? '',
+      permlink: video.permlink ?? '',
+      created: video.createdAt ?? DateTime.now()),
+      category: video.category ?? '',
+      numOfComments: null,
+      numOfUpvotes: null,
+      hiveValue: null,
+      duration: video.duration ?? 0,
+      thumbnail: video.getThumbnail(),
+    );
+  }
+}
 
 class ThreeSpeakVideo {
   Map<String, bool>? encoding;
@@ -288,4 +347,9 @@ class ThreeSpeakVideo {
     "steemPosted": steemPosted,
     "job_id": jobId,
   };
+
+  String getThumbnail() {
+    return thumbnail ??
+        ''.replaceAll('ipfs://', 'https://ipfs-3speak.b-cdn.net/ipfs/');
+  }
 }

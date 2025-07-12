@@ -49,7 +49,7 @@ class ThreeSpeakVideoFeed extends StatefulWidget {
     this.tag,
     this.isPayoutValueVisible,
     this.shouldShowBackButton,
-    this.onTapBackButton
+    this.onTapBackButton,
   });
 
   @override
@@ -126,9 +126,9 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
     }
     return AppBar(
       leading:
-            widget.shouldShowBackButton!
-                ? BackButton(onPressed: widget.onTapBackButton)
-                : null,
+          widget.shouldShowBackButton!
+              ? BackButton(onPressed: widget.onTapBackButton)
+              : null,
       title: TextField(
         controller: _controller,
         cursorColor: Colors.black,
@@ -320,7 +320,7 @@ class _ThreeSpeakVideoFeedState extends State<ThreeSpeakVideoFeed> {
           itemBuilder: (context, index) {
             final item = _items[index];
             return VideoCard(
-              item: item,
+              item: VideoFeedGridItemViewModel.fromGQLFeedItem(item),
               isVisible: true,
               isInGrid: true,
               isPayoutValueVisible: widget.isPayoutValueVisible,
