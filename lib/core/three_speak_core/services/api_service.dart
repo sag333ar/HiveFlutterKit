@@ -88,4 +88,94 @@ class ApiService {
       throw response.reasonPhrase ?? 'Something went wrong';
     }
   }
+
+  Future<List<ThreeSpeakVideo>> getHomeVideos() async {
+    var request = http.Request(
+      'GET',
+      Uri.parse(' https://studio.3speak.tv/mobile/api/feed/home'),
+    );
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      var string = await response.stream.bytesToString();
+      return ThreeSpeakVideo.threeSpeakVideosFromJsonString(string);
+    } else {
+      print(response.reasonPhrase);
+      throw response.reasonPhrase ?? 'Something went wrong';
+    }
+  }
+
+  Future<List<ThreeSpeakVideo>> getTrendingVideos() async {
+    var request = http.Request(
+      'GET',
+      Uri.parse('https://studio.3speak.tv/mobile/api/feed/trending'),
+    );
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      var string = await response.stream.bytesToString();
+      return ThreeSpeakVideo.threeSpeakVideosFromJsonString(string);
+    } else {
+      print(response.reasonPhrase);
+      throw response.reasonPhrase ?? 'Something went wrong';
+    }
+  }
+
+  Future<List<ThreeSpeakVideo>> getNewVideos() async {
+    var request = http.Request(
+      'GET',
+      Uri.parse('https://studio.3speak.tv/mobile/api/feed/new'),
+    );
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      var string = await response.stream.bytesToString();
+      return ThreeSpeakVideo.threeSpeakVideosFromJsonString(string);
+    } else {
+      print(response.reasonPhrase);
+      throw response.reasonPhrase ?? 'Something went wrong';
+    }
+  }
+
+  Future<List<ThreeSpeakVideo>> getFirstUploadsVideos() async {
+    var request = http.Request(
+      'GET',
+      Uri.parse('https://studio.3speak.tv/mobile/api/feed/first'),
+    );
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      var string = await response.stream.bytesToString();
+      return ThreeSpeakVideo.threeSpeakVideosFromJsonString(string);
+    } else {
+      print(response.reasonPhrase);
+      throw response.reasonPhrase ?? 'Something went wrong';
+    }
+  }
+
+  Future<List<ThreeSpeakVideo>> getVideoDetails(String username, String permlink) async {
+    var request = http.Request(
+      'GET',
+      Uri.parse('https://studio.3speak.tv/mobile/api/video/@:$username/:$permlink'),
+    );
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      var string = await response.stream.bytesToString();
+      return ThreeSpeakVideo.threeSpeakVideosFromJsonString(string);
+    } else {
+      print(response.reasonPhrase);
+      throw response.reasonPhrase ?? 'Something went wrong';
+    }
+  }
+
+  Future<List<ThreeSpeakVideo>> getCommunityVideos(String community) async {
+    var request = http.Request(
+      'GET',
+      Uri.parse('https://studio.3speak.tv/mobile/api/feed/community/@:$community'),
+    );
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      var string = await response.stream.bytesToString();
+      return ThreeSpeakVideo.threeSpeakVideosFromJsonString(string);
+    } else {
+      print(response.reasonPhrase);
+      throw response.reasonPhrase ?? 'Something went wrong';
+    }
+  }
 }

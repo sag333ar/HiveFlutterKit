@@ -4,6 +4,7 @@ import 'package:hive_flutter_kit/core/common/enum.dart';
 import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit/core/models/community_model.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter_kit/core/three_speak_core/models/studio_video_model.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 import 'package:hive_flutter_kit/ux/bottom_tool_bar.dart';
 import 'package:hive_flutter_kit/ux/dhive/account_activities/account_activities.dart';
@@ -16,6 +17,7 @@ import 'package:hive_flutter_kit/ux/dhive/proposals/proposals.dart';
 import 'package:hive_flutter_kit/ux/login_screen.dart';
 import 'package:hive_flutter_kit/ux/switch_user.dart';
 import 'package:hive_flutter_kit/ux/dhive/community_list/community_list.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/studio/video_feed.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/three_speak_trending_tags.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/three_speak_video_feed.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_community_screen/threespeak_commnuity_screen.dart';
@@ -2507,34 +2509,43 @@ class _MyHomePageState extends State<MyHomePage> {
                       builder:
                           (context) => Scaffold(
                             appBar: AppBar(title: const Text('Trending Feed')),
-                            body: ThreeSpeakVideoFeed(
-                              feedType: ThreeSpeakVideoFeedType.trending,
-                              onTapVideoItem: (tappedItem) {
-                                debugPrint('Tapped video item: $tappedItem');
-                                var screen = getVideoPlayer(
-                                  null,
-                                  null,
-                                  tappedItem,
-                                );
-                                var route = MaterialPageRoute(
-                                  builder: (context) => screen,
-                                );
-                                Navigator.push(context, route);
-                              },
-                              onTapAuthor: (GQLFeedItem item) {
-                                debugPrint('Tapped author: ${item.author}');
-                              },
-                              onTapReport: (GQLFeedItem item) {
-                                debugPrint('Tapped report: ${item.permlink}');
-                              },
-                              onTapUpvote: (GQLFeedItem item) {
-                                debugPrint('Tapped upvote: ${item.permlink}');
-                              },
-                              onTapComment: (GQLFeedItem item) {
-                                debugPrint('Tapped comment: ${item.permlink}');
-                              },
+                            body: VideoFeed(
+                              feedType: ApiVideoFeedType.newVideos,
                               isPayoutValueVisible: true,
-                            ),
+                              onTapAuthor: (ThreeSpeakVideo item) {},
+                              onTapReport: (ThreeSpeakVideo item) {},
+                              onTapUpvote: (ThreeSpeakVideo item) {},
+                              onTapComment: (ThreeSpeakVideo item) {},
+                              onTapVideoItem: (ThreeSpeakVideo item) {},
+                            )
+                            // ThreeSpeakVideoFeed(
+                            //   feedType: ThreeSpeakVideoFeedType.trending,
+                            //   onTapVideoItem: (tappedItem) {
+                            //     debugPrint('Tapped video item: $tappedItem');
+                            //     var screen = getVideoPlayer(
+                            //       null,
+                            //       null,
+                            //       tappedItem,
+                            //     );
+                            //     var route = MaterialPageRoute(
+                            //       builder: (context) => screen,
+                            //     );
+                            //     Navigator.push(context, route);
+                            //   },
+                            //   onTapAuthor: (GQLFeedItem item) {
+                            //     debugPrint('Tapped author: ${item.author}');
+                            //   },
+                            //   onTapReport: (GQLFeedItem item) {
+                            //     debugPrint('Tapped report: ${item.permlink}');
+                            //   },
+                            //   onTapUpvote: (GQLFeedItem item) {
+                            //     debugPrint('Tapped upvote: ${item.permlink}');
+                            //   },
+                            //   onTapComment: (GQLFeedItem item) {
+                            //     debugPrint('Tapped comment: ${item.permlink}');
+                            //   },
+                            //   isPayoutValueVisible: true,
+                            // ),
                           ),
                     ),
                   );
