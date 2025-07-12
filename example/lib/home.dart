@@ -2509,7 +2509,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       builder:
                           (context) => Scaffold(
                             appBar: AppBar(title: const Text('Trending Feed')),
-                            body: 
+                            body:
                             // VideoFeed(
                             //   feedType: ApiVideoFeedType.newVideos,
                             //   isPayoutValueVisible: true,
@@ -2679,26 +2679,16 @@ class _MyHomePageState extends State<MyHomePage> {
                             communityId: 'hive-163772',
                             title: 'Worldmappin',
                             videoFeed: () {
-                              return ThreeSpeakVideoFeed(
-                                feedType: ThreeSpeakVideoFeedType.commnuityFeed,
-                                commnuityId: 'hive-163772',
+                              return VideoFeed(
+                                feedType: ApiVideoFeedType.community,
+                                communityId: 'hive-163772',
                                 onTapVideoItem: (tappedItem) {
                                   debugPrint('Tapped video item: $tappedItem');
                                 },
-                                onTapAuthor: (GQLFeedItem item) {
-                                  debugPrint('Tapped author: ${item.author}');
-                                },
-                                onTapReport: (GQLFeedItem item) {
-                                  debugPrint('Tapped report: ${item.permlink}');
-                                },
-                                onTapUpvote: (GQLFeedItem item) {
-                                  debugPrint('Tapped upvote: ${item.permlink}');
-                                },
-                                onTapComment: (GQLFeedItem item) {
-                                  debugPrint(
-                                    'Tapped comment: ${item.permlink}',
-                                  );
-                                },
+                                onTapAuthor: (ThreeSpeakVideo item) {},
+                                onTapReport: (ThreeSpeakVideo item) {},
+                                onTapUpvote: (ThreeSpeakVideo item) {},
+                                onTapComment: (ThreeSpeakVideo item) {},
                               );
                             },
                             onTapBackButton: () {
