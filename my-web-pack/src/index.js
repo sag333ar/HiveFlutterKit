@@ -927,3 +927,13 @@ async function listProposals(
   }
 }
 window.listProposals = listProposals;
+
+async function getContent(author, permlink) {
+  try {
+    const result = await dhiveClient.call('condenser_api', 'get_content', [author, permlink]);
+    return JSON.stringify(result);
+  } catch (error) {
+    console.error('Error fetching content:', error);
+  }
+}
+window.getContent = getContent;
