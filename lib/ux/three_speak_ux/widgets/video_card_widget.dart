@@ -15,6 +15,7 @@ class VideoCard extends StatelessWidget {
   final void Function() onTapComment;
   final bool? isInGrid;
   final bool? isPayoutValueVisible;
+  final bool? isReportVisible; 
 
   const VideoCard({
     super.key,
@@ -27,6 +28,7 @@ class VideoCard extends StatelessWidget {
     required this.onTapComment,
     this.isInGrid,
     this.isPayoutValueVisible,
+    this.isReportVisible,
   });
 
   @override
@@ -95,18 +97,12 @@ class VideoCard extends StatelessWidget {
                 if (isInGrid ?? false)
                   Expanded(
                     flex: 1,
-                    child: VideoThumbnail(
-                      item: item,
-                      isVisible: isVisible,
-                    ),
+                    child: VideoThumbnail(item: item, isVisible: isVisible),
                   )
                 else
                   AspectRatio(
                     aspectRatio: 16 / 9,
-                    child: VideoThumbnail(
-                      item: item,
-                      isVisible: isVisible,
-                    ),
+                    child: VideoThumbnail(item: item, isVisible: isVisible),
                   ),
 
                 // Title + Report
@@ -129,24 +125,25 @@ class VideoCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      PopupMenuButton<String>(
-                        onSelected: (value) {
-                          if (value == 'Report') {
-                            onTapReport.call();
-                          }
-                        },
-                        itemBuilder:
-                            (context) => const [
-                              PopupMenuItem(
-                                value: 'Report',
-                                child: Text(
-                                  'Report',
-                                  style: TextStyle(color: Colors.red),
+                      if (isReportVisible == true) 
+                        PopupMenuButton<String>(
+                          onSelected: (value) {
+                            if (value == 'Report') {
+                              onTapReport.call();
+                            }
+                          },
+                          itemBuilder:
+                              (context) => const [
+                                PopupMenuItem(
+                                  value: 'Report',
+                                  child: Text(
+                                    'Report',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
                                 ),
-                              ),
-                            ],
-                        icon: const Icon(Icons.more_vert),
-                      ),
+                              ],
+                          icon: const Icon(Icons.more_vert),
+                        ),
                     ],
                   ),
                 ),
