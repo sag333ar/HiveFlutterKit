@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/studio_video_model.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/server_proxy.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/video_thumbnail.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-class VideoCard extends StatelessWidget {
+class VideoCard extends StatefulWidget {
   final VideoFeedGridItemViewModel item;
   final bool isVisible;
   final void Function() onTap;
@@ -15,7 +16,7 @@ class VideoCard extends StatelessWidget {
   final void Function() onTapComment;
   final bool? isInGrid;
   final bool? isPayoutValueVisible;
-  final bool? isReportVisible; 
+  final bool? isReportVisible;
 
   const VideoCard({
     super.key,
@@ -32,9 +33,56 @@ class VideoCard extends StatelessWidget {
   });
 
   @override
+  State<VideoCard> createState() => _VideoCardState();
+}
+
+class _VideoCardState extends State<VideoCard> {
+  int? _comments;
+  int? _upvotes;
+  String? _payoutValue;
+  bool _loadingStats = false;
+  late HiveFlutterKitPlatform hfk;
+
+  @override
+  void initState() {
+    super.initState();
+    hfk = HiveFlutterKitPlatform.instance; 
+    if (widget.item.numOfComments == null || widget.item.numOfUpvotes == null) {
+      _fetchStats();
+    }
+  }
+
+  Future<void> _fetchStats() async {
+    setState(() {
+      _loadingStats = true;
+    });
+    try {
+      final discussion = await hfk.getContent(
+        author: widget.item.author,
+        permlink: widget.item.permlink,
+      );
+      if (discussion != null) {
+        setState(() {
+          _comments = discussion.children ?? 0;
+          _upvotes = (discussion.activeVotes?.length ?? 0);
+          // _payoutValue =
+          //     discussion.totalPayoutValue
+          //         ?.toString();
+        });
+      }
+    } catch (e) {
+    } finally {
+      setState(() {
+        _loadingStats = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final item = widget.item;
     return GestureDetector(
-      onTap: onTap,
+      onTap: widget.onTap,
       child: Card(
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -47,16 +95,21 @@ class VideoCard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
-                if (isInGrid ?? false)
+                if (widget.isInGrid ?? false)
                   Expanded(
                     flex: 1,
-                    child: VideoThumbnail(item: item, isVisible: isVisible),
+                    child: VideoThumbnail(
+                      item: item,
+                      isVisible: widget.isVisible,
+                    ),
                   )
                 else
                   AspectRatio(
                     aspectRatio: 16 / 9,
-                    child: VideoThumbnail(item: item, isVisible: isVisible),
+                    child: VideoThumbnail(
+                      item: item,
+                      isVisible: widget.isVisible,
+                    ),
                   ),
 
                 // Title + Report
@@ -79,11 +132,11 @@ class VideoCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      if (isReportVisible == true) 
+                      if (widget.isReportVisible == true)
                         PopupMenuButton<String>(
                           onSelected: (value) {
                             if (value == 'Report') {
-                              onTapReport.call();
+                              widget.onTapReport.call();
                             }
                           },
                           itemBuilder:
@@ -111,7 +164,7 @@ class VideoCard extends StatelessWidget {
                   child: Row(
                     children: [
                       GestureDetector(
-                        onTap: onTapAuthor,
+                        onTap: widget.onTapAuthor,
                         child: ClipOval(
                           child: CachedNetworkImage(
                             imageUrl: server.userOwnerThumb(item.author),
@@ -133,7 +186,7 @@ class VideoCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       GestureDetector(
-                        onTap: onTapAuthor,
+                        onTap: widget.onTapAuthor,
                         child: Text(
                           item.author,
                           style: const TextStyle(
@@ -157,35 +210,62 @@ class VideoCard extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      if (isPayoutValueVisible == true)
+                      if (widget.isPayoutValueVisible == true)
                         Text(
-                          item.hiveValue != null ? '\$${item.hiveValue}' : '',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.green,
-                          ),
+                          item.hiveValue != null
+                              ? '\$${item.hiveValue}'
+                              : (_payoutValue != null ? '\$$_payoutValue' : ''),
+                          style: TextStyle(fontSize: 12, color: Colors.green),
                         ),
                       Row(
                         children: [
-                          item.numOfUpvotes != null
+                          (item.numOfUpvotes != null)
                               ? GestureDetector(
-                                onTap: onTapUpvote,
+                                onTap: widget.onTapUpvote,
                                 child: _iconStat(
                                   Icons.thumb_up_alt_outlined,
                                   "${item.numOfUpvotes ?? 0}",
                                 ),
                               )
-                              : Container(),
+                              : (_loadingStats
+                                  ? SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                  : GestureDetector(
+                                    onTap: widget.onTapUpvote,
+                                    child: _iconStat(
+                                      Icons.thumb_up_alt_outlined,
+                                      "${_upvotes ?? 0}",
+                                    ),
+                                  )),
                           const SizedBox(width: 12),
-                          item.numOfComments != null
+                          (item.numOfComments != null)
                               ? GestureDetector(
-                                onTap: onTapUpvote,
+                                onTap: widget.onTapComment,
                                 child: _iconStat(
                                   Icons.comment_outlined,
                                   "${item.numOfComments ?? 0}",
                                 ),
                               )
-                              : Container(),
+                              : (_loadingStats
+                                  ? SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                  : GestureDetector(
+                                    onTap: widget.onTapComment,
+                                    child: _iconStat(
+                                      Icons.comment_outlined,
+                                      "${_comments ?? 0}",
+                                    ),
+                                  )),
                         ],
                       ),
                     ],
