@@ -12,6 +12,7 @@ enum ApiVideoFeedType {
   firstUploads,
   user,
   community,
+  related
 }
 
 class VideoFeed extends StatefulWidget {
@@ -131,6 +132,10 @@ class _VideoFeedState extends State<VideoFeed> {
         case ApiVideoFeedType.community:
           if (widget.communityId != null) {
             items = await _api.getCommunityVideos(widget.communityId!);
+          }
+        case ApiVideoFeedType.related:
+          if (widget.username != null) {
+            items = await _api.getRelatedVideos(widget.username!);
           }
           break;
       }

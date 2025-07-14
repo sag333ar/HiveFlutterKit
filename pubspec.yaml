@@ -88,6 +88,7 @@ flutter:
     - assets/images/vote_logo.png
     - assets/images/hive-stats.png
     - assets/images/donate_logo.png
+    - assets/images/logo.png
   #
   # For details regarding assets in packages, see
   # https://flutter.dev/to/asset-from-package
