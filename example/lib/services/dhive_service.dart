@@ -438,6 +438,38 @@ class DhiveService {
     }
   }
 
+   Future<void> getContent(String author, String permlink) async {
+    try {
+      final discussion = await hfk.getContent(
+        author: author,
+        permlink: permlink,
+      );
+      if (discussion == null) {
+        debugPrint('No content found for @$author/$permlink');
+        showSnackBar('No content found for @$author/$permlink');
+        return;
+      }
+
+      debugPrint('--- Content Start for @$author/$permlink ---');
+      debugPrint('Title      : ${discussion.title}');
+      debugPrint('Author     : ${discussion.author}');
+      debugPrint('Permlink   : ${discussion.permlink}');
+      debugPrint('Category   : ${discussion.category}');
+      debugPrint('Body Length: ${discussion.body?.length}');
+      debugPrint('Net Votes  : ${discussion.netVotes}');
+      debugPrint('Children   : ${discussion.children}');
+      debugPrint('Created At : ${discussion.created}');
+      debugPrint('URL        : ${discussion.url}');
+      debugPrint('--- Content End ---\n');
+
+      showSnackBar('Fetched content for @$author/$permlink (see debug output)');
+    } catch (e) {
+      debugPrint('Error in getContent for @$author/$permlink: $e');
+      showSnackBar('Get Content Error for @$author/$permlink: $e');
+    }
+  }
+
+
   Future<List<CommunityItem>> fetchCommunities(String? query, int limit, String? last, String? observer) async {
     try {
       final result = await hfk.getListOfCommunities(

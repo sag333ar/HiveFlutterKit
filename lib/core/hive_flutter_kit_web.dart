@@ -5,6 +5,8 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
+import 'package:hive_flutter_kit/core/models/content.dart';
 import 'package:hive_flutter_kit/core/models/followers.dart';
 import 'package:hive_flutter_kit/core/models/followings.dart';
 import 'package:hive_flutter_kit/core/models/account_history.dart';
@@ -119,6 +121,8 @@ external dynamic getProposalsJS(
   String order_direction,
   String status,
 );
+@JS('getContent')
+external dynamic getContentJS(String author, String permlink);
 
 // -------------------------------------------------------------------------
 
@@ -720,6 +724,36 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
     final Map<String, dynamic> parsed = jsonDecode(jsonString);
     final List<dynamic> proposals = parsed['proposals'] ?? [];
     return proposals.map((e) => Proposal.fromJson(e)).toList();
+  }
+
+  Future<ContentModel?> getContent({
+    required String author,
+    required String permlink,
+  }) async {
+    try {
+      final promise = getContentJS(author, permlink);
+      final jsonString = await promiseToFuture<String>(promise);
+
+      if (jsonString.isEmpty || jsonString == 'null') return null;
+
+      final parsed = jsonDecode(jsonString);
+
+      // If the API wraps the data inside a `result` field (sometimes it does)
+      final data =
+          parsed is Map<String, dynamic> && parsed.containsKey('result')
+              ? parsed['result']
+              : parsed;
+
+      if (data == null || data is! Map<String, dynamic>) {
+        debugPrint('No valid content found for @$author/$permlink');
+        return null;
+      }
+
+      return ContentModel.fromJson(data);
+    } catch (e) {
+      debugPrint('Error parsing content for @$author/$permlink: $e');
+      return null;
+    }
   }
 
   @override

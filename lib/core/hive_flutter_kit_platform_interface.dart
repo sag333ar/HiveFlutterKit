@@ -1,3 +1,4 @@
+import 'package:hive_flutter_kit/core/models/content.dart';
 import 'package:hive_flutter_kit/core/models/followers.dart';
 import 'package:hive_flutter_kit/core/models/followings.dart';
 import 'package:hive_flutter_kit/core/models/account_history.dart';
@@ -417,5 +418,12 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
     int limit = 60,
   }) {
     throw UnimplementedError('getWitnessesByVote has not been implemented.');
+  }
+
+  Future<ContentModel?> getContent({
+    required String author,
+    required String permlink,
+  }){
+    throw UnimplementedError('getContent has not been implemented.');
   }
 }
