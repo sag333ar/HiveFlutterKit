@@ -3,6 +3,9 @@ const { PlaintextKeyProvider } = require("@aioha/aioha/build/providers/custom/pl
 var Buffer = require('buffer/').Buffer
 const dhive = require('@hiveio/dhive');
 let dhiveClient = new dhive.Client(["https://api.hive.blog"]);
+window.dhiveClient = dhiveClient;
+window.dhiveUtils = dhive.utils;
+
 const aioha = initAioha({
   hiveauth: {
     name: "Hive Flutter Kit",
