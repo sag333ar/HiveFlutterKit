@@ -202,7 +202,7 @@ class VideoCard extends StatelessWidget {
   Widget _iconStat(IconData icon, String text) {
     return Row(
       children: [
-        Icon(icon, size: 14, color: Colors.black87),
+        Icon(icon, size: 14, color: Colors.blue),
         const SizedBox(width: 4),
         Text(text, style: const TextStyle(fontSize: 12)),
       ],
