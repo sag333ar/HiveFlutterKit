@@ -77,7 +77,7 @@ class ApiService {
   Future<List<ThreeSpeakVideo>> getUserVideos(String username) async {
     var request = http.Request(
       'GET',
-      Uri.parse('https://studio.3speak.tv/mobile/api/feed/user/@$username'),
+      Uri.parse('${server.kThreeSpeakApiUrl}/feed/user/@$username'),
     );
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
@@ -92,7 +92,7 @@ class ApiService {
   Future<List<ThreeSpeakVideo>> getHomeVideos() async {
     var request = http.Request(
       'GET',
-      Uri.parse(' https://studio.3speak.tv/mobile/api/feed/home'),
+      Uri.parse('${server.kThreeSpeakApiUrl}/feed/home'),
     );
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
@@ -107,7 +107,7 @@ class ApiService {
   Future<List<ThreeSpeakVideo>> getTrendingVideos() async {
     var request = http.Request(
       'GET',
-      Uri.parse('https://studio.3speak.tv/mobile/api/feed/trending'),
+      Uri.parse('${server.kThreeSpeakApiUrl}/feed/trending'),
     );
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
@@ -122,7 +122,7 @@ class ApiService {
   Future<List<ThreeSpeakVideo>> getNewVideos() async {
     var request = http.Request(
       'GET',
-      Uri.parse('https://studio.3speak.tv/mobile/api/feed/new'),
+      Uri.parse('${server.kThreeSpeakApiUrl}/feed/new'),
     );
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
@@ -137,7 +137,7 @@ class ApiService {
   Future<List<ThreeSpeakVideo>> getFirstUploadsVideos() async {
     var request = http.Request(
       'GET',
-      Uri.parse('https://studio.3speak.tv/mobile/api/feed/first'),
+      Uri.parse('${server.kThreeSpeakApiUrl}/feed/first'),
     );
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
@@ -154,7 +154,7 @@ class ApiService {
     String permlink,
   ) async {
     final uri = Uri.parse(
-      'https://studio.3speak.tv/mobile/api/video/@$username/$permlink',
+      '${server.kThreeSpeakApiUrl}/video/@$username/$permlink',
     );
 
     final response = await http.get(uri);
@@ -172,7 +172,7 @@ class ApiService {
 
   Future<List<ThreeSpeakVideo>> getCommunityVideos(String community) async {
     final uri = Uri.parse(
-      'https://studio.3speak.tv/mobile/api/feed/community/@$community',
+      '${server.kThreeSpeakApiUrl}/feed/community/@$community',
     );
 
     final response = await http.get(uri);
