@@ -38,7 +38,6 @@ class VideoCard extends StatelessWidget {
       child: Card(
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
           side: BorderSide(color: Colors.grey.shade400, width: 1),
         ),
         margin: const EdgeInsets.all(8),
@@ -48,9 +47,67 @@ class VideoCard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+
+                if (isInGrid ?? false)
+                  Expanded(
+                    flex: 1,
+                    child: VideoThumbnail(item: item, isVisible: isVisible),
+                  )
+                else
+                  AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: VideoThumbnail(item: item, isVisible: isVisible),
+                  ),
+
+                // Title + Report
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          item.title,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (isReportVisible == true) 
+                        PopupMenuButton<String>(
+                          onSelected: (value) {
+                            if (value == 'Report') {
+                              onTapReport.call();
+                            }
+                          },
+                          itemBuilder:
+                              (context) => const [
+                                PopupMenuItem(
+                                  value: 'Report',
+                                  child: Text(
+                                    'Report',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ),
+                              ],
+                          icon: const Icon(Icons.more_vert),
+                        ),
+                    ],
+                  ),
+                ),
+
                 // Author Row
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4,
+                  ),
                   child: Row(
                     children: [
                       GestureDetector(
@@ -94,60 +151,6 @@ class VideoCard extends StatelessWidget {
                   ),
                 ),
 
-                if (isInGrid ?? false)
-                  Expanded(
-                    flex: 1,
-                    child: VideoThumbnail(item: item, isVisible: isVisible),
-                  )
-                else
-                  AspectRatio(
-                    aspectRatio: 16 / 9,
-                    child: VideoThumbnail(item: item, isVisible: isVisible),
-                  ),
-
-                // Title + Report
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8.0,
-                    vertical: 6,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          item.title,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      if (isReportVisible == true) 
-                        PopupMenuButton<String>(
-                          onSelected: (value) {
-                            if (value == 'Report') {
-                              onTapReport.call();
-                            }
-                          },
-                          itemBuilder:
-                              (context) => const [
-                                PopupMenuItem(
-                                  value: 'Report',
-                                  child: Text(
-                                    'Report',
-                                    style: TextStyle(color: Colors.red),
-                                  ),
-                                ),
-                              ],
-                          icon: const Icon(Icons.more_vert),
-                        ),
-                    ],
-                  ),
-                ),
-
                 // Time, Votes, Comments
                 Padding(
                   padding: const EdgeInsets.only(left: 8, right: 8, bottom: 10),
@@ -159,7 +162,7 @@ class VideoCard extends StatelessWidget {
                           item.hiveValue != null ? '\$${item.hiveValue}' : '',
                           style: TextStyle(
                             fontSize: 12,
-                            color: Colors.grey[600],
+                            color: Colors.green,
                           ),
                         ),
                       Row(
@@ -168,7 +171,7 @@ class VideoCard extends StatelessWidget {
                               ? GestureDetector(
                                 onTap: onTapUpvote,
                                 child: _iconStat(
-                                  Icons.favorite_border,
+                                  Icons.thumb_up_alt_outlined,
                                   "${item.numOfUpvotes ?? 0}",
                                 ),
                               )
@@ -178,7 +181,7 @@ class VideoCard extends StatelessWidget {
                               ? GestureDetector(
                                 onTap: onTapUpvote,
                                 child: _iconStat(
-                                  Icons.favorite_border,
+                                  Icons.comment_outlined,
                                   "${item.numOfComments ?? 0}",
                                 ),
                               )
