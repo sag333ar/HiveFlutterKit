@@ -8,81 +8,44 @@ sidebar_label: 🏁 🧑‍💻 Basic Usage
 
 Here's a simple example of how to use HiveFlutterKit in your Flutter widget. This example demonstrates how to access the hfk instance and call a login method.
 
+# 🔐 Hive Login
+
+The `LoginScreen` is a flexible authentication widget that supports multiple login methods for the Hive blockchain. It features automatic theme detection, dynamic UI customization, and real-time user avatar display. The widget handles the complete authentication flow and provides callbacks for successful login events.
+
+## UI Preview
+![Hive Login Preview](/img/dhive/hive_login.png)
+![Hive Login Preview](/img/dhive/posting_key_login.png)
+
+## Usage Example
+
 ```dart
-import 'package:flutter/material.dart';
-import 'package:hive_flutter_kit/hive_flutter_kit.dart'; // Ensure correct import
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  HiveFlutterKitPlatform hfk = HiveFlutterKitPlatform.instance;
-  final _usernameController = TextEditingController(); // For username input
-  String _loginResult = ''; // To display login result
-
-  void _loginWithHiveKeychain() async {
-    if (_usernameController.text.isEmpty) {
-      setState(() {
-        _loginResult = 'Please enter a username.';
-      });
-      return;
-    }
-    try {
-      // The 'proof' can be any string. If empty, some implementations might auto-generate it.
-      // For security, it's often a challenge string obtained from a server or a timestamp.
-      final result = await hfk.loginWithKeychain(
-        _usernameController.text,
-        'some-text-to-be-signed',
-      );
-      setState(() {
-        // Assuming LoginModel has a meaningful toString or specific fields
-        _loginResult = 'Login Success: ${result.toJson()}';
-      });
-    } catch (e) {
-      setState(() {
-        _loginResult = 'Login Failed: $e';
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('HiveFlutterKit Example'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            TextField(
-              controller: _usernameController,
-              decoration: InputDecoration(
-                labelText: 'Hive Username',
-              ),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _loginWithHiveKeychain,
-              child: Text('Login with Hive Keychain'),
-            ),
-            SizedBox(height: 20),
-            Text('Result: $_loginResult'),
-          ],
-        ),
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _usernameController.dispose();
-    super.dispose();
-  }
-}
+Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) => LoginScreen(
+      hfk: HiveFlutterKitPlatform.instance, // Your HiveFlutterKitPlatform instance
+      uponLogin: (context, result) {
+        // This callback is triggered after successful authentication
+        debugPrint('Login successful! Username: ${result.username}');
+        debugPrint('Public Key: ${result.publicKey}');
+        
+        // Navigate to your app's main screen
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => MainScreen(user: result)),
+        );
+      },
+      // Optional UI customizations:
+      title: 'Welcome to MyApp',
+      subtitle: 'Connect with your Hive account',
+      logoIcon: Image.asset('assets/my_logo.png', height: 64),
+      backgroundColors: [Colors.blue.shade900, Colors.purple.shade900],
+      fontColor: Colors.white,
+      borderColor: Colors.cyan,
+      hiveKeychainButtonColor: Colors.green,
+      hiveAuthButtonColor: Colors.orange,
+      privatePostingKeyButtonColor: Colors.purple,
+      proof: 'MyApp-${DateTime.now().millisecondsSinceEpoch}',
+    ),
+  ),
+);
 ```
