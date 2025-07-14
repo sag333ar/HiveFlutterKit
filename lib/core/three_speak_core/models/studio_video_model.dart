@@ -1,4 +1,61 @@
 import 'dart:convert';
+import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
+
+class VideoFeedGridItemViewModel {
+  String title;
+  String author;
+  String permlink;
+  DateTime created;
+  String category; // community / tag
+  int? numOfUpvotes;
+  int? numOfComments;
+  double? hiveValue;
+  int? duration;
+  String? thumbnail;
+
+  VideoFeedGridItemViewModel({
+    required this.title,
+    required this.author,
+    required this.permlink,
+    required this.created,
+    required this.category,
+    required this.numOfUpvotes,
+    required this.numOfComments,
+    required this.hiveValue,
+    required this.duration,
+    required this.thumbnail,
+  });
+
+  static VideoFeedGridItemViewModel fromThreeSpeakVideo(ThreeSpeakVideo video) {
+    return VideoFeedGridItemViewModel(
+      title: video.title ?? '',
+      author: video.owner ?? '',
+      permlink: video.permlink ?? '',
+      created: video.created ?? DateTime.now(),
+      category: video.category ?? '',
+      numOfComments: null,
+      numOfUpvotes: null,
+      hiveValue: null,
+      duration: video.duration ?? 0,
+      thumbnail: video.getThumbnail(),
+    );
+  }
+
+  static VideoFeedGridItemViewModel fromGQLFeedItem(GQLFeedItem video) {
+    return VideoFeedGridItemViewModel(
+      title: video.title ?? '',
+      author: video.author?.username ?? '',
+      permlink: video.permlink ?? '',
+      created: video.createdAt ?? DateTime.now(),
+      category: video.community?.title ?? '',
+      numOfComments: video.stats?.numComments,
+      numOfUpvotes: video.stats?.numVotes,
+      hiveValue: video.stats?.totalHiveReward,
+      duration: video.spkvideo?.duration?.toInt(),
+      thumbnail: video.spkvideo?.thumbnailUrl,
+    );
+  }
+}
 
 class ThreeSpeakVideo {
   Map<String, bool>? encoding;
@@ -151,7 +208,10 @@ class ThreeSpeakVideo {
         status: json["status"],
         encodingPriceSteem: json["encoding_price_steem"],
         paid: json["paid"],
-        encodingProgress: json["encodingProgress"],
+        encodingProgress:
+            json["encodingProgress"] == null
+                ? null
+                : (json["encodingProgress"] as num).toInt(),
         created:
             json["created"] == null ? null : DateTime.parse(json["created"]),
         is3CjContent: json["is3CJContent"],
@@ -169,7 +229,10 @@ class ThreeSpeakVideo {
         upvoteEligible: json["upvoteEligible"],
         publishType: json["publish_type"],
         beneficiaries: json["beneficiaries"],
-        votePercent: json["votePercent"],
+        votePercent:
+            json["votePercent"] == null
+                ? null
+                : (json["votePercent"] as num).toInt(),
         reducedUpvote: json["reducedUpvote"],
         donations: json["donations"],
         postToHiveBlog: json["postToHiveBlog"],
@@ -186,14 +249,15 @@ class ThreeSpeakVideo {
         id: json["_id"],
         originalFilename: json["originalFilename"],
         permlink: json["permlink"],
-        duration: json["duration"],
-        size: json["size"],
+        duration:
+            json["duration"] == null ? null : (json["duration"] as num).toInt(),
+        size: json["size"] == null ? null : (json["size"] as num).toInt(),
         owner: json["owner"],
         uploadType: json["upload_type"],
         title: json["title"],
         description: json["description"],
         tags: json["tags"],
-        v: json["__v"],
+        v: json["__v"] == null ? null : (json["__v"] as num).toInt(),
         filename: json["filename"],
         localFilename: json["local_filename"],
         thumbnail: json["thumbnail"],
@@ -281,4 +345,12 @@ class ThreeSpeakVideo {
     "steemPosted": steemPosted,
     "job_id": jobId,
   };
+
+  String getThumbnail() {
+    if (thumbnail == null) return '';
+    return thumbnail!.replaceAll(
+      'ipfs://',
+      'https://ipfs-3speak.b-cdn.net/ipfs/',
+    );
+  }
 }

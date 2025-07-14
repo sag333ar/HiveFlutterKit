@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:hive_flutter_kit/core/three_speak_core/models/studio_video_model.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_video_upload/components/user_profile_image.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -50,7 +51,7 @@ class _ThreeSpeakCurrentUserAccountState
     extends State<ThreeSpeakCurrentUserAccount>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  List<dynamic> allVideos = [];
+  List<ThreeSpeakVideo> allVideos = [];
   bool isLoading = true;
   String? errorMessage;
   final storage = FlutterSecureStorage();
@@ -98,7 +99,12 @@ class _ThreeSpeakCurrentUserAccountState
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         setState(() {
-          allVideos = responseData is List ? responseData : [];
+          allVideos =
+              responseData is List
+                  ? responseData
+                      .map((e) => ThreeSpeakVideo.fromJson(e))
+                      .toList()
+                  : [];
           isLoading = false;
         });
       } else {
@@ -113,25 +119,22 @@ class _ThreeSpeakCurrentUserAccountState
     }
   }
 
-  List<dynamic> get encodingVideos =>
+  List<ThreeSpeakVideo> get encodingVideos =>
       allVideos
           .where(
-            (v) => [
-              'uploaded',
-              'encoding_queued',
-              'encoding',
-            ].contains(v['status']),
+            (v) =>
+                ['uploaded', 'encoding_queued', 'encoding'].contains(v.status),
           )
           .toList();
 
-  List<dynamic> get publishNowVideos =>
-      allVideos.where((v) => v['status'] == 'publish_manual').toList();
+  List<ThreeSpeakVideo> get publishNowVideos =>
+      allVideos.where((v) => v.status == 'publish_manual').toList();
 
-  List<dynamic> get myVideos =>
-      allVideos.where((v) => v['status'] == 'published').toList();
+  List<ThreeSpeakVideo> get myVideos =>
+      allVideos.where((v) => v.status == 'published').toList();
 
   Widget buildVideoList(
-    List<dynamic> videos, {
+    List<ThreeSpeakVideo> videos, {
     required VideoListType listType,
   }) {
     if (videos.isEmpty) {
@@ -172,11 +175,11 @@ class _ThreeSpeakCurrentUserAccountState
         itemCount: videos.length,
         itemBuilder: (context, index) {
           final video = videos[index];
-          final thumbnailUrl = video['thumbUrl'] ?? '';
-          final title = video['title'] ?? 'No Title';
-          final permlink = video['permlink'] ?? '';
-          final username = video['owner'] ?? widget.username;
-          final videoId = video['_id'] ?? '';
+          final thumbnailUrl = video.thumbnail ?? '';
+          final title = video.title ?? 'No Title';
+          final permlink = video.permlink ?? '';
+          final username = video.owner ?? widget.username;
+          final videoId = video.id ?? '';
 
           return Card(
             margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -243,7 +246,7 @@ class _ThreeSpeakCurrentUserAccountState
                             fontSize: 12,
                           ),
                         ),
-                        if (video['status'] != null) ...[
+                        if (video.status != null) ...[
                           const SizedBox(height: 4),
                           Container(
                             padding: const EdgeInsets.symmetric(
@@ -251,11 +254,11 @@ class _ThreeSpeakCurrentUserAccountState
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: _getStatusColor(video['status']),
+                              color: _getStatusColor(video.status!),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
-                              video['status'].toString().toUpperCase(),
+                              video.status.toString().toUpperCase(),
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 10,
@@ -270,7 +273,8 @@ class _ThreeSpeakCurrentUserAccountState
                   const SizedBox(width: 8),
                   Column(
                     children: [
-                      if (listType == VideoListType.publishNow && widget.shouldShowPublishButton)
+                      if (listType == VideoListType.publishNow &&
+                          widget.shouldShowPublishButton)
                         ElevatedButton(
                           onPressed: () {
                             if (widget.onPublish != null) {

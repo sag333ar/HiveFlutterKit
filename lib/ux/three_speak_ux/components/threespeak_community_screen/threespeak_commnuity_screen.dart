@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/server_proxy.dart';
+import 'package:hive_flutter_kit/ux/three_speak_ux/components/studio/video_feed.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_community_screen/community_about.dart';
-import 'package:hive_flutter_kit/ux/three_speak_ux/components/three_speak_video_feed.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_community_screen/community_favourite_provider.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_community_screen/community_team.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/threespeak_community_screen/communty_members.dart';
@@ -36,7 +36,7 @@ class ThreespeakCommnuityScreen extends StatefulWidget {
   final void Function(String, String)? onTapRssFeed;
   final void Function(String, String)? onTapShare;
   final void Function(String, String)? onTapReport;
-  final ThreeSpeakVideoFeed Function() videoFeed;
+  final VideoFeed Function() videoFeed;
   final VoidCallback onTapBackButton;
   final bool shouldShowBackButton;
 
