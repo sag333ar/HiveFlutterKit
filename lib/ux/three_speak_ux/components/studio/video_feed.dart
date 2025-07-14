@@ -42,10 +42,13 @@ class VideoFeed extends StatefulWidget {
     this.onTapBackButton,
   });
 
-  /// Static in-memory cache
   static final Map<String, List<ThreeSpeakVideo>> _feedCache = {};
 
-  static String _getCacheKey(ApiVideoFeedType feedType, String? username, String? communityId) {
+  static String _getCacheKey(
+    ApiVideoFeedType feedType,
+    String? username,
+    String? communityId,
+  ) {
     switch (feedType) {
       case ApiVideoFeedType.user:
         return 'user:${username ?? ''}';
@@ -70,26 +73,39 @@ class _VideoFeedState extends State<VideoFeed> {
   @override
   void initState() {
     super.initState();
+    _loadCacheAndFetch();
+  }
+
+  void _loadCacheAndFetch() {
+    final key = VideoFeed._getCacheKey(
+      widget.feedType,
+      widget.username,
+      widget.communityId,
+    );
+    final cachedItems = VideoFeed._feedCache[key];
+    if (cachedItems != null && cachedItems.isNotEmpty) {
+      setState(() {
+        _items = cachedItems;
+        _viewModels =
+            cachedItems
+                .map(VideoFeedGridItemViewModel.fromThreeSpeakVideo)
+                .toList();
+        _loading = false;
+      });
+    } else {
+      setState(() {
+        _loading = true;
+      });
+    }
     _fetchFeed();
   }
 
   Future<void> _fetchFeed({bool forceRefresh = false}) async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
-
-    final key = VideoFeed._getCacheKey(widget.feedType, widget.username, widget.communityId);
-
-    if (!forceRefresh && VideoFeed._feedCache.containsKey(key)) {
-      final cachedItems = VideoFeed._feedCache[key]!;
-      setState(() {
-        _items = cachedItems;
-        _viewModels = cachedItems.map(VideoFeedGridItemViewModel.fromThreeSpeakVideo).toList();
-        _loading = false;
-      });
-      return;
-    }
+    final key = VideoFeed._getCacheKey(
+      widget.feedType,
+      widget.username,
+      widget.communityId,
+    );
 
     try {
       List<ThreeSpeakVideo> items = [];
@@ -119,13 +135,14 @@ class _VideoFeedState extends State<VideoFeed> {
           break;
       }
 
-      // Cache it
       VideoFeed._feedCache[key] = items;
 
       setState(() {
         _items = items;
-        _viewModels = items.map(VideoFeedGridItemViewModel.fromThreeSpeakVideo).toList();
+        _viewModels =
+            items.map(VideoFeedGridItemViewModel.fromThreeSpeakVideo).toList();
         _loading = false;
+        _error = null;
       });
     } catch (e) {
       setState(() {
@@ -144,11 +161,11 @@ class _VideoFeedState extends State<VideoFeed> {
   }
 
   Widget _buildContent(BuildContext context) {
-    if (_loading) {
+    if (_loading && _items.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (_error != null) {
+    if (_error != null && _items.isEmpty) {
       return Center(child: Text('Error: $_error'));
     }
 
@@ -206,26 +223,41 @@ class _VideoFeedState extends State<VideoFeed> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: widget.shouldShowBackButton == true
-          ? AppBar(
-              leading: BackButton(onPressed: widget.onTapBackButton),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.refresh),
-                  tooltip: 'Refresh',
-                  onPressed: () async {
-                    final key = VideoFeed._getCacheKey(widget.feedType, widget.username, widget.communityId);
-                    VideoFeed._feedCache.remove(key);
-                    await _fetchFeed(forceRefresh: true);
-                  },
-                ),
-              ],
-            )
-          : null,
+      appBar:
+          widget.shouldShowBackButton == true
+              ? AppBar(
+                leading: BackButton(onPressed: widget.onTapBackButton),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.refresh),
+                    tooltip: 'Refresh',
+                    onPressed: () async {
+                      final key = VideoFeed._getCacheKey(
+                        widget.feedType,
+                        widget.username,
+                        widget.communityId,
+                      );
+                      VideoFeed._feedCache.remove(key);
+                      setState(() {
+                        _loading = true;
+                      });
+                      _fetchFeed(forceRefresh: true);
+                    },
+                  ),
+                ],
+              )
+              : null,
       body: RefreshIndicator(
         onRefresh: () async {
-          final key = VideoFeed._getCacheKey(widget.feedType, widget.username, widget.communityId);
+          final key = VideoFeed._getCacheKey(
+            widget.feedType,
+            widget.username,
+            widget.communityId,
+          );
           VideoFeed._feedCache.remove(key);
+          setState(() {
+            _loading = true;
+          });
           await _fetchFeed(forceRefresh: true);
         },
         child: _buildContent(context),
