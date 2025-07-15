@@ -4,6 +4,7 @@ import 'package:hive_flutter_kit/core/three_speak_core/models/studio_video_model
 import 'package:hive_flutter_kit/core/three_speak_core/services/api_service.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/studio/video_listView.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/video_card_widget.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 enum ApiVideoFeedType {
   home,
@@ -12,7 +13,7 @@ enum ApiVideoFeedType {
   firstUploads,
   user,
   community,
-  related
+  related,
 }
 
 class VideoFeed extends StatefulWidget {
@@ -166,8 +167,62 @@ class _VideoFeedState extends State<VideoFeed> {
   }
 
   Widget _buildContent(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isWide = screenWidth >= 600;
+
     if (_loading && _items.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
+      final dummyItems = List.generate(
+        isWide ? 8 : 6,
+        (_) => VideoFeedGridItemViewModel.dummy(),
+      );
+
+      if (isWide) {
+        final crossAxisCount = screenWidth ~/ 350;
+        return Skeletonizer(
+          enabled: true,
+          child: GridView.builder(
+            padding: const EdgeInsets.all(8),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: crossAxisCount,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+              childAspectRatio: 0.99,
+            ),
+            itemCount: dummyItems.length,
+            itemBuilder: (context, index) {
+              return VideoCard(
+                item: dummyItems[index],
+                isVisible: true,
+                isInGrid: true,
+                onTap: () {},
+                onTapAuthor: () {},
+                onTapReport: () {},
+                onTapUpvote: () {},
+                onTapComment: () {},
+              );
+            },
+          ),
+        );
+      } else {
+        return Skeletonizer(
+          enabled: true,
+          child: ListView.builder(
+            padding: const EdgeInsets.all(8),
+            itemCount: dummyItems.length,
+            itemBuilder: (context, index) {
+              return VideoCard(
+                item: dummyItems[index],
+                isVisible: true,
+                onTap: () {},
+                onTapAuthor: () {},
+                onTapReport: () {},
+                onTapUpvote: () {},
+                onTapComment: () {},
+              );
+            },
+          ),
+        );
+      }
     }
 
     if (_error != null && _items.isEmpty) {
@@ -177,9 +232,6 @@ class _VideoFeedState extends State<VideoFeed> {
     if (_items.isEmpty) {
       return const Center(child: Text('No videos found.'));
     }
-
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isWide = screenWidth >= 600;
 
     if (isWide) {
       final crossAxisCount = screenWidth ~/ 350;

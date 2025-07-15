@@ -42,32 +42,53 @@ class _VideoCardState extends State<VideoCard> {
   int? _upvotes;
   String? _payoutValue;
   bool _loadingStats = false;
+  bool _hasCache = false;
   late HiveFlutterKitPlatform hfk;
+
+  static final Map<String, dynamic> _contentCache = {};
+
+  String _getCacheKey(String author, String permlink) {
+    return '$author:$permlink';
+  }
 
   @override
   void initState() {
     super.initState();
     hfk = HiveFlutterKitPlatform.instance;
-    if (widget.item.numOfComments == null || widget.item.numOfUpvotes == null) {
-      _fetchStats();
+    final cacheKey = _getCacheKey(widget.item.author, widget.item.permlink);
+    final cachedDiscussion = _contentCache[cacheKey];
+    if (cachedDiscussion != null) {
+      _hasCache = true;
+      _setStatsFromDiscussion(cachedDiscussion);
     }
+    _fetchStats();
+  }
+
+  void _setStatsFromDiscussion(dynamic discussion) {
+    setState(() {
+      _comments = discussion.children ?? 0;
+      _upvotes = (discussion.activeVotes?.length ?? 0);
+      _payoutValue = discussion.payOutValue;
+      _hasCache = true;
+    });
   }
 
   Future<void> _fetchStats() async {
-    setState(() {
-      _loadingStats = true;
-    });
+    final cacheKey = _getCacheKey(widget.item.author, widget.item.permlink);
+    // Only show skeleton if no cache
+    if (!_hasCache) {
+      setState(() {
+        _loadingStats = true;
+      });
+    }
     try {
       final discussion = await hfk.getContent(
         author: widget.item.author,
         permlink: widget.item.permlink,
       );
       if (discussion != null) {
-        setState(() {
-          _comments = discussion.children ?? 0;
-          _upvotes = (discussion.activeVotes?.length ?? 0);
-          _payoutValue = discussion.payOutValue;
-        });
+        _contentCache[cacheKey] = discussion;
+        _setStatsFromDiscussion(discussion);
       }
     } catch (e) {
     } finally {
@@ -83,7 +104,7 @@ class _VideoCardState extends State<VideoCard> {
     return GestureDetector(
       onTap: widget.onTap,
       child: Skeletonizer(
-        enabled: _loadingStats,
+        enabled: !_hasCache && _loadingStats,
         child: Card(
           elevation: 0,
           shape: RoundedRectangleBorder(
