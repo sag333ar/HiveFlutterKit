@@ -24,7 +24,7 @@ const sidebars = {
       label: "🏁 Getting Started",
       items: [
         "getting-started/setup", // Points to docs/getting-started/setup
-        "getting-started/basic-usage", // Points to docs/getting-started/basic-usage
+        "getting-started/hive-login", // Points to docs/getting-started/basic-usage
       ],
     },
     {
@@ -40,7 +40,6 @@ const sidebars = {
         "dhive/followings-screen",
         "dhive/account-activities-screen",
         "dhive/witness-votes-screen",
-        "dhive/login-screen",
       ],
     },
     {
@@ -74,7 +73,8 @@ const sidebars = {
       items: [
         "threespeak/introduction",
         "threespeak/login",
-        "threespeak/video-feed",
+        "threespeak/video-feed-1",
+        "threespeak/video-feed-2",
         "threespeak/video-player",
         "threespeak/video-upload",
         "threespeak/current-account",

@@ -114,4 +114,4 @@ Navigator.push(
 
 - [VideoUploadScreen](/docs/video-upload)
 - [VideoPlayerScreen](/docs/video-player)
-- [ThreeSpeakVideoFeed](/docs/video-feed)
+- [ThreeSpeakVideoFeed](/docs/video-feed-1)
