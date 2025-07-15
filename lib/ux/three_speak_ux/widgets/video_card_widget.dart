@@ -236,9 +236,9 @@ class _VideoCardState extends State<VideoCard> {
                         if (widget.isPayoutValueVisible == true)
                           Text(
                             item.hiveValue != null
-                                ? '\$${item.hiveValue}'
+                                ? '\$${double.tryParse(item.hiveValue.toString())?.toStringAsFixed(3) ?? item.hiveValue}'
                                 : (_payoutValue != null
-                                    ? '\$$_payoutValue'
+                                    ? '\$${double.tryParse(_payoutValue!)?.toStringAsFixed(3) ?? _payoutValue}'
                                     : ''),
                             style: const TextStyle(
                               fontSize: 12,
