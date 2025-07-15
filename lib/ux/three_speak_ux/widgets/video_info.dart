@@ -24,7 +24,7 @@ class VideoInfo extends StatefulWidget {
   final void Function(String, String)? onTapUpvote;
   final void Function(String, String)? onTapShare;
   final void Function(String, String)? onTapBookmark;
-  final void Function(String)? onTapAuthor;
+  final void Function(String, String)? onTapAuthor;
   final void Function(String, String)? onTapInfo;
 
   const VideoInfo({
@@ -77,7 +77,7 @@ class _VideoInfoState extends State<VideoInfo> {
               InkWell(
                 onTap: () {
                   if (widget.onTapAuthor != null) {
-                    widget.onTapAuthor!(widget.author);
+                    widget.onTapAuthor!(widget.author, widget.permlink);
                   }
                 },
                 child: ClipOval(
