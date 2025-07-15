@@ -35,31 +35,60 @@ This Flutter widget provides a user-friendly interface for selecting and uploadi
 ### Usage Example
 
 ```dart
-// Typically, you'd get the token after a user logs in via ThreeSpeakLoginScreen
-// String userToken = "user_3speak_jwt_token";
-// String hiveUsername = "users_hive_username";
-
-Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (context) => VideoUploadScreen(
-      owner: hiveUsername, // The Hive username of the video owner
-      token: userToken,    // The 3Speak JWT token for authentication
-      onUploadSuccess: (response) {
-        // This callback is triggered after the *entire* upload workflow is complete
-        // (i.e., after UploadInfoScreen successfully posts the video details).
-        // 'response' is the Map<String, dynamic> from the final API call in UploadInfoScreen.
-        debugPrint('Entire video upload workflow successful!');
-        debugPrint('API Response: $response');
-        // Example: Show a success message or navigate to the user's videos
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Video successfully published: ${response['permlink']}')),
-        );
-        Navigator.of(context).popUntil((route) => route.isFirst); // Go back to initial screen
-      },
-    ),
-  ),
-);
+ElevatedButton(
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VideoUploadScreen(
+          owner: 'shaktimaaan', // TODO: Parameterize or get from logged-in state
+          token: "YOUR_AUTH_TOKEN",       // TODO: Get actual token
+          onVideoUpload: (model) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Video uploaded: ${model.filename}')),
+            );
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ThumbnailUploadScreen(
+                  uploadModel: model,
+                  onThumbnailUpload: (updatedModel) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Thumbnail uploaded: ${updatedModel.thumbnailFilename}',
+                        ),
+                      ),
+                    );
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => UploadInfoScreen(
+                          uploadModel: updatedModel,
+                          onUploadComplete: (response) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Upload complete: $response'),
+                              ),
+                            );
+                            Navigator.of(context).popUntil(
+                              (route) => route.isFirst,
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  },
+  child: const Text('Upload Video (3Speak)'),
+)
 ```
 
 ### Widget Parameters

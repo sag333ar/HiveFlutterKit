@@ -23,27 +23,54 @@ The `ThreeSpeakCurrentUserAccount` widget is a comprehensive screen that display
 ### Usage Example
 
 ```dart
-// String userToken = "user_3speak_jwt_token";
-// String hiveUsername = "users_hive_username";
-
-Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (context) => ThreeSpeakCurrentUserAccount(
-      token: userToken,
-      username: hiveUsername,
-      onPublish: (username, permlink) {
-        // Handle publish action
-      },
-      onViewMyVideo: (username, permlink) {
-        // Handle view video action
-      },
-      onLogout: () {
-        // Handle logout
-      },
-    ),
-  ),
-);
+ElevatedButton(
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ThreeSpeakCurrentUserAccount(
+          username: 'shaktimaaan', // TODO: Parameterize or get from logged-in state
+          token: "YOUR_AUTH_TOKEN",       // TODO: Get actual token
+          shouldShowBackButton: true,
+          onTapBackButton: () => Navigator.of(context).pop(),
+          onTabChanged: (tabIndex) =>
+              ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Tab changed to: $tabIndex')),
+          ),
+          onLogout: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('User logged out from 3Speak Account')),
+            );
+            // onUserLogout(); // Call the passed logout callback
+            // Navigator.of(context).pop(); // Pop current screen if needed
+          },
+          onPublish: (username, permlink) =>
+              ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Publishing video: $username/$permlink'),
+            ),
+          ),
+          onViewMyVideo: (username, permlink) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Viewing video: $username/$permlink')),
+            );
+            // Potentially navigate to video player
+          },
+          onViewDetails: (username, permlink) =>
+              ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Viewing details: $username/$permlink'),
+            ),
+          ),
+          onMoreOptions: (videoId) => ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('More options for video: $videoId')),
+          ),
+        ),
+      ),
+    );
+  },
+  child: const Text('My Account (3Speak)'),
+)
 ```
 
 ### Widget Parameters
