@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/studio_video_model.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class VideoThumbnail extends StatelessWidget {
   final VideoFeedGridItemViewModel item;
@@ -55,12 +56,12 @@ class VideoThumbnail extends StatelessWidget {
           height: 300,
           width: double.infinity,
           fit: BoxFit.cover,
-          placeholder:
-              (context, url) => Container(
-                height: 200,
-                color: Colors.grey[300],
-                child: const Center(child: CircularProgressIndicator()),
-              ),
+          // placeholder:
+          //     (context, url) => Container(
+          //       height: 200,
+          //       color: Colors.grey[300],
+          //       child: const Center(child: CircularProgressIndicator()),
+          //     ),
           errorWidget:
               (context, url, error) => Image.asset(
                 'packages/hive_flutter_kit/assets/images/logo.png',
@@ -73,18 +74,20 @@ class VideoThumbnail extends StatelessWidget {
           Positioned(
             bottom: 8,
             right: 8,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.8),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Text(
-                _formatDuration(duration),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
+            child: Skeleton.leaf(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.9),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  _formatDuration(duration),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ),
