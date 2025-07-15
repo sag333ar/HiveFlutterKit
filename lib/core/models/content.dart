@@ -14,6 +14,7 @@ class ContentModel {
   final int depth;
   final List<ActiveContentVote> activeVotes;
   final List<BeneficiaryContent> beneficiaries;
+  final String payOutValue;
 
   ContentModel({
     required this.author,
@@ -31,6 +32,7 @@ class ContentModel {
     required this.depth,
     required this.activeVotes,
     required this.beneficiaries,
+    required this.payOutValue,
   });
 
   factory ContentModel.fromJson(Map<String, dynamic> json) {
@@ -56,6 +58,7 @@ class ContentModel {
               ?.map((e) => BeneficiaryContent.fromJson(e))
               .toList() ??
           [],
+      payOutValue: json['pending_payout_value'] ?? '',
     );
   }
 }
