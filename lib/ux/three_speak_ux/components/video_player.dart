@@ -234,8 +234,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         return 'https://ipfs-3speak.b-cdn.net/ipfs/$hash/manifest.m3u8';
       } else if (Platform.isAndroid) {
         debugPrint("Running on Android");
-        // var url = 'https://ipfs-3speak.b-cdn.net/ipfs/$hash/480p/index.m3u8';
-        var url = 'https://ipfs-3speak.b-cdn.net/ipfs/$hash/manifest.m3u8';
+         var url = 'https://ipfs-3speak.b-cdn.net/ipfs/$hash/480p/index.m3u8';
+        //var url = 'https://ipfs-3speak.b-cdn.net/ipfs/$hash/manifest.m3u8';
         debugPrint("Running on Android - $url");
         return url;
       } else {

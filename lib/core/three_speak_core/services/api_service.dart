@@ -74,10 +74,10 @@ class ApiService {
     }
   }
 
-  Future<List<ThreeSpeakVideo>> getUserVideos(String username) async {
+  Future<List<ThreeSpeakVideo>> getUserVideos(String username, {int skip = 0}) async {
     var request = http.Request(
       'GET',
-      Uri.parse('${server.kThreeSpeakApiUrl}/feed/user/@$username'),
+      Uri.parse('${server.kThreeSpeakApiUrl}/feed/user/@$username?skip=$skip'),
     );
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
@@ -89,10 +89,10 @@ class ApiService {
     }
   }
 
-  Future<List<ThreeSpeakVideo>> getHomeVideos() async {
+  Future<List<ThreeSpeakVideo>> getHomeVideos({int skip = 0}) async {
     var request = http.Request(
       'GET',
-      Uri.parse('${server.kThreeSpeakApiUrl}/feed/home'),
+      Uri.parse('${server.kThreeSpeakApiUrl}/feed/home?skip=$skip'),
     );
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
@@ -104,10 +104,24 @@ class ApiService {
     }
   }
 
-  Future<List<ThreeSpeakVideo>> getTrendingVideos() async {
+  Future<List<ThreeSpeakVideo>> getTrendingVideos({int skip = 0}) async {
+  final url = Uri.parse('${server.kThreeSpeakApiUrl}/feed/trending?skip=$skip');
+  final request = http.Request('GET', url);
+
+  final response = await request.send();
+  if (response.statusCode == 200) {
+    final string = await response.stream.bytesToString();
+    return ThreeSpeakVideo.threeSpeakVideosFromJsonString(string);
+  } else {
+    throw response.reasonPhrase ?? 'Something went wrong';
+  }
+}
+
+
+  Future<List<ThreeSpeakVideo>> getNewVideos({int skip = 0}) async {
     var request = http.Request(
       'GET',
-      Uri.parse('${server.kThreeSpeakApiUrl}/feed/trending'),
+      Uri.parse('${server.kThreeSpeakApiUrl}/feed/new?skip=$skip'),
     );
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
@@ -119,25 +133,10 @@ class ApiService {
     }
   }
 
-  Future<List<ThreeSpeakVideo>> getNewVideos() async {
+  Future<List<ThreeSpeakVideo>> getFirstUploadsVideos({int skip = 0}) async {
     var request = http.Request(
       'GET',
-      Uri.parse('${server.kThreeSpeakApiUrl}/feed/new'),
-    );
-    http.StreamedResponse response = await request.send();
-    if (response.statusCode == 200) {
-      var string = await response.stream.bytesToString();
-      return ThreeSpeakVideo.threeSpeakVideosFromJsonString(string);
-    } else {
-      print(response.reasonPhrase);
-      throw response.reasonPhrase ?? 'Something went wrong';
-    }
-  }
-
-  Future<List<ThreeSpeakVideo>> getFirstUploadsVideos() async {
-    var request = http.Request(
-      'GET',
-      Uri.parse('${server.kThreeSpeakApiUrl}/feed/first'),
+      Uri.parse('${server.kThreeSpeakApiUrl}/feed/first?skip=$skip'),
     );
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
@@ -152,9 +151,10 @@ class ApiService {
   Future<ThreeSpeakVideo> getVideoDetails(
     String username,
     String permlink,
+    {int skip = 0}
   ) async {
     final uri = Uri.parse(
-      '${server.kThreeSpeakApiUrl}/video/@$username/$permlink',
+      '${server.kThreeSpeakApiUrl}/video/@$username/$permlink?skip=$skip',
     );
 
     final response = await http.get(uri);
@@ -170,9 +170,9 @@ class ApiService {
     }
   }
 
-  Future<List<ThreeSpeakVideo>> getCommunityVideos(String community) async {
+  Future<List<ThreeSpeakVideo>> getCommunityVideos(String community,{int skip = 0}) async {
     final uri = Uri.parse(
-      '${server.kThreeSpeakApiUrl}/feed/community/@$community',
+      '${server.kThreeSpeakApiUrl}/feed/community/@$community?skip=$skip',
     );
 
     final response = await http.get(uri);
@@ -186,10 +186,10 @@ class ApiService {
     }
   }
 
-  Future<List<ThreeSpeakVideo>> getRelatedVideos(String username) async {
+  Future<List<ThreeSpeakVideo>> getRelatedVideos(String username, {int skip = 0}) async {
     var request = http.Request(
       'GET',
-      Uri.parse('${server.kThreeSpeakApiUrl}/feed/@$username'),
+      Uri.parse('${server.kThreeSpeakApiUrl}/feed/@$username?skip=$skip'),
     );
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
