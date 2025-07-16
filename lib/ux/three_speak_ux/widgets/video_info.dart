@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit/core/models/discussion.dart';
+import 'package:hive_flutter_kit/core/three_speak_core/models/studio_video_model.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/provider/content_favourite_provider.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/server_proxy.dart';
@@ -16,7 +17,7 @@ class VideoInfo extends StatefulWidget {
   final String author;
   final String permlink;
   final DateTime? createdAt;
-  final GQLFeedItem video;
+  final VideoFeedGridItemViewModel video;
   final Discussion? postInfo;
   final String? currentUser;
   final bool isContentVoted;
@@ -273,7 +274,7 @@ class _VideoInfoState extends State<VideoInfo> {
                               // ),
                               SizedBox(width: 8),
                               Text(
-                                '${video.stats?.numComments ?? 0}',
+                                '${video.numOfComments ?? 0}',
                                 style: TextStyle(color: Colors.grey[600]),
                               ),
                             ],
@@ -382,7 +383,7 @@ class _VideoInfoState extends State<VideoInfo> {
                               ),
                               SizedBox(width: 8),
                               Text(
-                                '${video.stats?.numVotes ?? 0}',
+                                '${video.numOfUpvotes ?? 0}',
                                 style: TextStyle(color: Colors.grey[600]),
                               ),
                             ],

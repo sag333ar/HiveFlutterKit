@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/core/common/enum.dart';
+import 'package:hive_flutter_kit/core/three_speak_core/models/studio_video_model.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/three_speak_video_feed.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/video_player.dart'; // Assuming GQLFeedItem is here or in a related import
@@ -8,7 +9,7 @@ Widget buildVideoPlayerScreen(
   BuildContext context, // Added context for navigation
   String? author,
   String? permlink,
-  GQLFeedItem? item,
+  ThreeSpeakVideo? item,
 ) {
   return VideoPlayerScreen(
     item: item,
@@ -26,12 +27,12 @@ Widget buildVideoPlayerScreen(
         feedType: ThreeSpeakVideoFeedType.related,
         onTapVideoItem: (tappedItem) {
           // Recursive call, ensure context is available and correctly used for navigation
-          var screen = buildVideoPlayerScreen(context, null, null, tappedItem);
-          var route = MaterialPageRoute(builder: (context) => screen);
-          Navigator.push(context, route);
+          // var screen = buildVideoPlayerScreen(context, null, null, tappedItem);
+          // var route = MaterialPageRoute(builder: (context) => screen);
+          // Navigator.push(context, route);
         },
         // These might need to be passed as parameters if they vary
-        relatedAuthor: item?.author?.username ?? author ?? 'unknown',
+        relatedAuthor: item?.owner ?? author ?? 'unknown',
         relatedPermlink: item?.permlink ?? permlink ?? 'unknown',
         onTapAuthor: (GQLFeedItem feedItem) {
           debugPrint('Tapped author: ${feedItem.author}');

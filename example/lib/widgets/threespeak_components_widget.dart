@@ -24,7 +24,7 @@ class ThreeSpeakComponentsWidget extends StatelessWidget {
     BuildContext context,
     String? author,
     String? permlink,
-    GQLFeedItem? item,
+    ThreeSpeakVideo? item,
   )
   videoPlayerBuilder;
   final ShowVideoOptionsCallback showVideoOptionsSheet;
@@ -156,28 +156,9 @@ class ThreeSpeakComponentsWidget extends StatelessWidget {
                         title: const Text('Trending Feed (3Speak)'),
                       ),
                       body: 
-                      // VideoFeed(
-                      //   feedType: ApiVideoFeedType.trending,
-                      //   //username: 'wealthwess', 
-                      //   onTapVideoItem: (tappedItem) {
-                      //   },
-                      //   onTapAuthor:
-                      //       (item) =>
-                      //           showSnackBar('Tapped author: ${item.owner}'),
-                      //   onTapReport:
-                      //       (item) =>
-                      //           showSnackBar('Tapped report: ${item.permlink}'),
-                      //   onTapUpvote:
-                      //       (item) =>
-                      //           showSnackBar('Tapped upvote: ${item.permlink}'),
-                      //   onTapComment:
-                      //       (item) => showSnackBar(
-                      //         'Tapped comment: ${item.permlink}',
-                      //       ),
-                      //   isPayoutValueVisible: true,
-                      // ),
-                      ThreeSpeakVideoFeed(
-                        feedType: ThreeSpeakVideoFeedType.trending,
+                      VideoFeed(
+                        feedType: ApiVideoFeedType.trending,
+                        //username: 'wealthwess', 
                         onTapVideoItem: (tappedItem) {
                           var screen = videoPlayerBuilder(
                             context,
@@ -192,7 +173,7 @@ class ThreeSpeakComponentsWidget extends StatelessWidget {
                         },
                         onTapAuthor:
                             (item) =>
-                                showSnackBar('Tapped author: ${item.author}'),
+                                showSnackBar('Tapped author: ${item.owner}'),
                         onTapReport:
                             (item) =>
                                 showSnackBar('Tapped report: ${item.permlink}'),
@@ -205,6 +186,35 @@ class ThreeSpeakComponentsWidget extends StatelessWidget {
                             ),
                         isPayoutValueVisible: true,
                       ),
+                      // ThreeSpeakVideoFeed(
+                      //   feedType: ThreeSpeakVideoFeedType.trending,
+                      //   onTapVideoItem: (tappedItem) {
+                      //     var screen = videoPlayerBuilder(
+                      //       context,
+                      //       null,
+                      //       null,
+                      //       tappedItem,
+                      //     );
+                      //     Navigator.push(
+                      //       context,
+                      //       MaterialPageRoute(builder: (context) => screen),
+                      //     );
+                      //   },
+                      //   onTapAuthor:
+                      //       (item) =>
+                      //           showSnackBar('Tapped author: ${item.author}'),
+                      //   onTapReport:
+                      //       (item) =>
+                      //           showSnackBar('Tapped report: ${item.permlink}'),
+                      //   onTapUpvote:
+                      //       (item) =>
+                      //           showSnackBar('Tapped upvote: ${item.permlink}'),
+                      //   onTapComment:
+                      //       (item) => showSnackBar(
+                      //         'Tapped comment: ${item.permlink}',
+                      //       ),
+                      //   isPayoutValueVisible: true,
+                      // ),
                     ),
               ),
             );
@@ -222,16 +232,16 @@ class ThreeSpeakComponentsWidget extends StatelessWidget {
                       feedType: ThreeSpeakVideoFeedType.search,
                       isSearch: true,
                       onTapVideoItem: (tappedItem) {
-                        var screen = videoPlayerBuilder(
-                          context,
-                          null,
-                          null,
-                          tappedItem,
-                        );
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => screen),
-                        );
+                        // var screen = videoPlayerBuilder(
+                        //   context,
+                        //   null,
+                        //   null,
+                        //   tappedItem,
+                        // );
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(builder: (context) => screen),
+                        // );
                       },
                       onTapAuthor:
                           (item) =>
@@ -305,18 +315,18 @@ class ThreeSpeakComponentsWidget extends StatelessWidget {
                                       ThreeSpeakVideoFeedType.trendingTagFeed,
                                   tag: tag,
                                   onTapVideoItem: (tappedItem) {
-                                    var screen = videoPlayerBuilder(
-                                      context,
-                                      null,
-                                      null,
-                                      tappedItem,
-                                    );
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => screen,
-                                      ),
-                                    );
+                                    // var screen = videoPlayerBuilder(
+                                    //   context,
+                                    //   null,
+                                    //   null,
+                                    //   tappedItem,
+                                    // );
+                                    // Navigator.push(
+                                    //   context,
+                                    //   MaterialPageRoute(
+                                    //     builder: (context) => screen,
+                                    //   ),
+                                    // );
                                   },
                                   onTapAuthor:
                                       (item) => showSnackBar(

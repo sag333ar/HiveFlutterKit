@@ -151,10 +151,9 @@ class ApiService {
   Future<ThreeSpeakVideo> getVideoDetails(
     String username,
     String permlink,
-    {int skip = 0}
   ) async {
     final uri = Uri.parse(
-      '${server.kThreeSpeakApiUrl}/video/@$username/$permlink?skip=$skip',
+      '${server.kThreeSpeakApiUrl}/video/@$username/$permlink',
     );
 
     final response = await http.get(uri);

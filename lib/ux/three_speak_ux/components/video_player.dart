@@ -3,16 +3,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit/core/models/discussion.dart';
-import 'package:hive_flutter_kit/core/three_speak_core/graphql/gql_communicator.dart';
-import 'package:hive_flutter_kit/core/three_speak_core/models/trending_feed_response.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/components/three_speak_video_feed.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/video_info.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
 import 'package:collection/collection.dart';
+import 'package:hive_flutter_kit/core/three_speak_core/services/api_service.dart';
+import 'package:hive_flutter_kit/core/three_speak_core/models/studio_video_model.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
-  final GQLFeedItem? item;
+  final ThreeSpeakVideo? item;
   final String? author;
   final String? permlink;
 
@@ -25,7 +25,6 @@ class VideoPlayerScreen extends StatefulWidget {
   final bool shouldShowBackButton;
   final void Function(String, String)? onTapInfo;
   final ThreeSpeakVideoFeed Function() videoFeed;
-  // final Widget Function(BuildContext context, GQLFeedItem item)? relatedBuilder;
 
   const VideoPlayerScreen({
     super.key,
@@ -55,20 +54,21 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   late VideoPlayerController videoPlayerController;
   ChewieController? chewieController;
   var setupDone = false;
-  GQLFeedItem? item;
-
-  List<GQLFeedItem> relatedVideos = [];
+  VideoFeedGridItemViewModel? item;
+  ThreeSpeakVideo? rawVideoItem;
+  List<ThreeSpeakVideo> relatedVideos = [];
   bool isLoadingRelatedVideos = true;
   Discussion? postInfo;
   String currentUserName = "";
   final HiveFlutterKitPlatform hfk = HiveFlutterKitPlatform.instance;
-  final GQLCommunicator _gql = GQLCommunicator();
+  final ApiService _apiService = ApiService();
 
   @override
   void initState() {
     super.initState();
     if (widget.item != null) {
-      item = widget.item!;
+      rawVideoItem = widget.item!;
+      item = VideoFeedGridItemViewModel.fromThreeSpeakVideo(rawVideoItem!);
       setupPlayer();
       loadHiveInfo();
       setupUsername();
@@ -95,9 +95,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     chewieController = null;
     setupDone = false;
     item = null;
+    rawVideoItem = null;
 
     if (widget.item != null) {
-      item = widget.item!;
+      rawVideoItem = widget.item!;
+      item = VideoFeedGridItemViewModel.fromThreeSpeakVideo(rawVideoItem!);
       setupPlayer();
       loadHiveInfo();
       setupUsername();
@@ -110,12 +112,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   void getVideoItem() async {
     try {
-      var videoItem = await _gql.getVideoItem(
+      var videoItem = await _apiService.getVideoDetails(
         widget.author ?? '',
         widget.permlink ?? '',
       );
       setState(() {
-        item = videoItem;
+        rawVideoItem = videoItem;
+        item = VideoFeedGridItemViewModel.fromThreeSpeakVideo(videoItem);
         setupPlayer();
         loadHiveInfo();
         setupUsername();
@@ -165,19 +168,19 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     }
   }
 
+  // Update all usages of item to use VideoFeedGridItemViewModel fields
   Future<Discussion> fetchHiveInfoForThisVideo() async {
-    if ((item!.author?.username ?? "").isEmpty ||
-        (item!.permlink ?? "").isEmpty) {
+    if ((item?.author ?? "").isEmpty || (item?.permlink ?? "").isEmpty) {
       var errorMessage = "Author or permlink is empty, cannot fetch Hive info.";
       debugPrint(errorMessage);
       throw errorMessage;
     }
     var result = await hfk.getCommentsList(
-      item!.author?.username ?? "",
-      item!.permlink ?? "",
+      item?.author ?? "",
+      item?.permlink ?? "",
     );
     var discussion = result.firstWhereOrNull(
-      (e) => e.author == item!.author?.username && e.permlink == item!.permlink,
+      (e) => e.author == item?.author && e.permlink == item?.permlink,
     );
     if (discussion == null) {
       var errorMessage = "No discussion found for this video.";
@@ -189,11 +192,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   }
 
   void setupPlayer() async {
-    if (item!.playUrl == null || item!.playUrl!.isEmpty) {
+    if (rawVideoItem?.videoV2 == null ||
+        rawVideoItem?.videoV2!.isEmpty == true) {
       debugPrint("No play URL found for this video.");
       return;
     }
-    final resolvedUrl = _resolveIPFSUrl(item!.playUrl ?? "");
+    final resolvedUrl = _resolveIPFSUrl(rawVideoItem?.videoV2 ?? "");
 
     videoPlayerController = VideoPlayerController.network(resolvedUrl);
 
@@ -234,7 +238,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         return 'https://ipfs-3speak.b-cdn.net/ipfs/$hash/manifest.m3u8';
       } else if (Platform.isAndroid) {
         debugPrint("Running on Android");
-         var url = 'https://ipfs-3speak.b-cdn.net/ipfs/$hash/480p/index.m3u8';
+        var url = 'https://ipfs-3speak.b-cdn.net/ipfs/$hash/480p/index.m3u8';
         //var url = 'https://ipfs-3speak.b-cdn.net/ipfs/$hash/manifest.m3u8';
         debugPrint("Running on Android - $url");
         return url;
@@ -248,10 +252,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   Widget _videoInfoWidget() {
     return VideoInfo(
-      title: item!.title ?? "",
-      author: item!.author?.username ?? "",
-      permlink: item!.permlink ?? "",
-      createdAt: item!.createdAt ?? DateTime.now(),
+      title: item?.title ?? "",
+      author: item?.author ?? "",
+      permlink: item?.permlink ?? "",
+      createdAt: item?.created ?? DateTime.now(),
       video: item!,
       postInfo: postInfo,
       currentUser: currentUserName,
