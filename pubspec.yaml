@@ -1,6 +1,6 @@
 name: hive_flutter_kit
 description: A Flutter plugin to seamlessly integrate Hive blockchain authentication (via AIOHA-JS) and operations into your Flutter applications.
-version: 2.4.3
+version: 2.4.4
 homepage: https://sag333ar.github.io/HiveFlutterKit/
 repository: https://github.com/sag333ar/HiveFlutterKit
 issue_tracker: https://github.com/sag333ar/HiveFlutterKit/issues
