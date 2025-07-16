@@ -27,7 +27,7 @@ class LoginScreen extends StatefulWidget {
   final Widget logoIcon;
   final String? logoImagePath;
   final String proof;
-  final void Function(BuildContext context, dynamic result)? uponLogin;
+  final void Function(BuildContext context, dynamic result, String? postingKey)? uponLogin;
 
   LoginScreen({
     super.key,
@@ -140,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       _showMessage('Login Successful');
       if (widget.uponLogin != null) {
-        widget.uponLogin!(context, result);
+        widget.uponLogin!(context, result, null);
       }
     } catch (e) {
       _showMessage('Error: $e');
@@ -157,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
       _showMessage('Login Successful');
       _cancelHiveAuth();
       if (widget.uponLogin != null) {
-        widget.uponLogin!(context, result);
+        widget.uponLogin!(context, result, null);
       }
     } catch (e) {
       _cancelHiveAuth();
@@ -182,7 +182,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       _showMessage('Login Successful');
       if (widget.uponLogin != null) {
-        widget.uponLogin!(context, result);
+        widget.uponLogin!(context, result, postingKey);
       }
     } catch (e) {
       _showMessage('Error: $e');
