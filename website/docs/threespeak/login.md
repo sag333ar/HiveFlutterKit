@@ -123,6 +123,6 @@ Leverages `LoginScreen` to support:
 
 - [VideoUploadScreen](/docs/video-upload) - For uploading videos after logging in.
 - [ThreeSpeakCurrentUserAccount](/docs/current-account) - For managing the logged-in user's 3Speak content.
-- [ThreeSpeakVideoFeed](/docs/video-feed) - For displaying various video feeds.
+- [ThreeSpeakVideoFeed](/docs/video-feed-1) - For displaying various video feeds.
 - `LoginScreen` (from `hive_flutter_kit`) - The base widget used for Hive authentication.
 

@@ -1,10 +1,10 @@
 ---
-title: 🎬 👀 Video Feed
-sidebar_label: 🎬 👀 Video Feed
-slug: /video-feed
+title: 🎬 👀 Union indexer Feed
+sidebar_label: 🎬 👀 Union indexer Feed
+slug: /video-feed-1
 ---
 
-# 🎬 👀 3Speak Video Feed
+# 🎬 👀 3Speak Video (Union indexer Feed)
 
 ![Videos Feed Component Preview](/img/threespeak/firstuploads.png)
 
@@ -16,27 +16,24 @@ This widget fetches video data from the 3Speak GQL API based on the specified `f
 - **Wide screens (>= 600dp):** A grid view with an adaptive number of columns.
 - **Narrow screens (< 600dp):** A list view with `VideoCard` widgets. It uses `VisibilityDetectorListView` for optimizing rendering of visible items.
 
+
 ## Feed Types (`ThreeSpeakVideoFeedType`)
 
-The `feedType` parameter determines the source and nature of the videos displayed:
+| Feed Type         | Description                                                      | Required Parameters                   |
+| ----------------- | ---------------------------------------------------------------- | ------------------------------------- |
+| `trending`        | Shows currently trending videos on the 3Speak platform.          | –                                     |
+| `newUploads`      | Displays the most recently uploaded videos.                      | –                                     |
+| `hot`             | Currently not implemented in code; may return empty or fallback. | –                                     |
+| `firstUploads`    | Features videos that are the first uploads from their creators.  | –                                     |
+| `related`         | Lists videos related to a specific video.                        | `relatedAuthor`, `relatedPermlink`    |
+| `userFeed`        | Shows videos uploaded by a particular user.                      | `username`                            |
+| `commnuityFeed`   | Displays videos from a specific 3Speak community.                | `commnuityId`                         |
+| `myFeed`          | Shows videos from users the current user is following.           | `username`                            |
+| `search`          | Enables searching for videos. UI varies by `isSearch` flag.      | `searchTerm` (if `isSearch` is false) |
+| `trendingTagFeed` | Shows videos trending under a specific tag.                      | `tag`                                 |
 
--   **`trending`**: Shows currently trending videos on the 3Speak platform.
--   **`newUploads`**: Displays the most recently uploaded videos.
--   **`hot`**: (Note: Currently, the implementation for `hot` feed is commented out in the source, so it might behave like an empty list or default to another feed if not explicitly handled by GQL.)
--   **`firstUploads`**: Features videos that are the first uploads from their creators.
--   **`related`**: Lists videos related to a specific video. Requires `relatedAuthor` and `relatedPermlink` parameters.
--   **`userFeed`**: Shows videos uploaded by a particular user. Requires the `username` parameter.
--   **`commnuityFeed`**: Displays videos from a specific 3Speak community. Requires the `commnuityId` parameter.
--   **`myFeed`**: Shows videos from users that the current user (specified by `username`) is following. Requires the `username` parameter.
--   **`search`**: Enables searching for videos.
-    -   If `isSearch` is `true`, it provides a built-in AppBar with a search input field.
-    -   If `isSearch` is `false` (default), it expects a `searchTerm` to be provided externally.
--   **`trendingTagFeed`**: Shows videos trending under a specific tag. Requires the `tag` parameter.
-
----
 
 ## Usage Examples
-
 ### Basic Feed (Trending, New Uploads, etc.)
 
 ```dart

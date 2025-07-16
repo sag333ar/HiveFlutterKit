@@ -82,9 +82,9 @@ A widget to display and manage the logged-in user's 3Speak content.
 
 <!-- Add screenshot for ThreeSpeakCurrentUserAccount if available -->
 <!-- ![Current User Account Screen](/img/threespeak/current_user_account.png) -->
-![Publish Videos Tab](/img/threespeak/image-3.png)
-![My Videos Tab](/img/threespeak/image-4.png)
-![Encoding Videos Tab](/img/threespeak/image-5.png)
+![Publish Videos Tab](/img/threespeak/publish-now.png)
+![My Videos Tab](/img/threespeak/my-videos.png)
+![Encoding Videos Tab](/img/threespeak/encoding-videos.png)
 
 
 ---

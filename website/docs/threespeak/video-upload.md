@@ -35,31 +35,60 @@ This Flutter widget provides a user-friendly interface for selecting and uploadi
 ### Usage Example
 
 ```dart
-// Typically, you'd get the token after a user logs in via ThreeSpeakLoginScreen
-// String userToken = "user_3speak_jwt_token";
-// String hiveUsername = "users_hive_username";
-
-Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (context) => VideoUploadScreen(
-      owner: hiveUsername, // The Hive username of the video owner
-      token: userToken,    // The 3Speak JWT token for authentication
-      onUploadSuccess: (response) {
-        // This callback is triggered after the *entire* upload workflow is complete
-        // (i.e., after UploadInfoScreen successfully posts the video details).
-        // 'response' is the Map<String, dynamic> from the final API call in UploadInfoScreen.
-        debugPrint('Entire video upload workflow successful!');
-        debugPrint('API Response: $response');
-        // Example: Show a success message or navigate to the user's videos
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Video successfully published: ${response['permlink']}')),
-        );
-        Navigator.of(context).popUntil((route) => route.isFirst); // Go back to initial screen
-      },
-    ),
-  ),
-);
+ElevatedButton(
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VideoUploadScreen(
+          owner: 'shaktimaaan', // TODO: Parameterize or get from logged-in state
+          token: "YOUR_AUTH_TOKEN",       // TODO: Get actual token
+          onVideoUpload: (model) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Video uploaded: ${model.filename}')),
+            );
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ThumbnailUploadScreen(
+                  uploadModel: model,
+                  onThumbnailUpload: (updatedModel) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Thumbnail uploaded: ${updatedModel.thumbnailFilename}',
+                        ),
+                      ),
+                    );
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => UploadInfoScreen(
+                          uploadModel: updatedModel,
+                          onUploadComplete: (response) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Upload complete: $response'),
+                              ),
+                            );
+                            Navigator.of(context).popUntil(
+                              (route) => route.isFirst,
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  },
+  child: const Text('Upload Video (3Speak)'),
+)
 ```
 
 ### Widget Parameters
@@ -107,33 +136,86 @@ Navigator.push(
 ## Subsequent Screens in the Workflow
 
 ### `ThumbnailUploadScreen`
+
 ![Thumbnail Upload Screen Preview](/img/threespeak/image-1.png)
 *(Screenshot of the Thumbnail Upload Screen)*
 
--   **Purpose**: Allows the user to pick and upload a thumbnail image for the video that was just uploaded.
--   **Receives**: Video URL, filename, original filename, size, duration, owner, token, and the `onUploadSuccess` callback from `VideoUploadScreen`.
--   **Functionality**:
-    -   Uses `image_picker` to select an image.
-    -   Uploads the image to a 3Speak endpoint (likely `server.kThreeSpeakThumbnailUploadUrl`).
-    -   On successful thumbnail upload, navigates to `UploadInfoScreen`.
+This widget is the second step in the 3Speak video upload workflow. It allows the user to select or generate a thumbnail for their video and upload it.
+
+#### Overview
+
+`ThumbnailUploadScreen` is a stateful widget that:
+-   Receives the uploaded video's data from `VideoUploadScreen`.
+-   Allows the user to pick a custom thumbnail from their device using `file_picker`.
+-   Displays a preview of the selected thumbnail.
+-   Uploads the thumbnail to the 3Speak server using the TUS protocol.
+-   Shows upload progress for the thumbnail.
+-   Upon successful upload, it sends the video and thumbnail information to the 3Speak API to link them.
+-   Navigates to `UploadInfoScreen` on success.
+
+#### Usage Example
+
+This screen is intended to be pushed by `VideoUploadScreen` and is not typically instantiated directly.
+
+#### Widget Parameters
+
+| Parameter         | Type                               | Required | Description                                                                                                                                        |
+|-------------------|------------------------------------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `uploadModel`     | `ThreeSpeakVideoUploadModel`       | ✅        | A model containing all the data from the previous step, including video URL, filename, size, duration, owner, and token.                            |
+| `onThumbnailUpload`| `OnThumbnailUploadCallback`        | ✅        | A callback function that is executed upon successful thumbnail upload. It passes the updated `ThreeSpeakVideoUploadModel` to the next screen.      |
+
+#### Features
+
+-   **🖼️ Custom Thumbnail Selection**: Users can pick their own image file to be used as a thumbnail.
+-   **📤 TUS-Based Upload**: Ensures reliable and resumable uploads for the thumbnail file.
+-   **📊 Progress Indication**: Provides visual feedback on the thumbnail upload progress.
+-   **🔗 API Integration**: Communicates with the 3Speak backend to associate the thumbnail with the video.
+-   **Seamless Workflow**: Automatically transitions to the final step, `UploadInfoScreen`.
 
 ### `UploadInfoScreen`
+
 ![Upload Info Screen Preview](/img/threespeak/image-2.png)
 *(Screenshot of the Upload Info Screen)*
 
--   **Purpose**: Allows the user to enter the video's title, description, tags, and set other publishing options.
--   **Receives**: Video filename, thumbnail URL (from previous step), owner, token, and the `onUploadSuccess` callback.
--   **Functionality**:
-    -   Provides text fields for metadata.
-    -   On submission, makes a final API call to 3Speak (likely `server.kVideoEncoreMessageAPiUrl`) to associate the metadata with the uploaded video and thumbnail, effectively publishing or preparing the video for publishing.
-    -   If this final API call is successful, it invokes the `onUploadSuccess` callback (originally passed to `VideoUploadScreen`) with the API response.
+This is the final screen in the video upload process, where the user adds all the metadata for the video.
+
+#### Overview
+
+`UploadInfoScreen` is a stateful widget where users can:
+-   Enter the video's title, description, and tags.
+-   Mark the content as NSFW (Not Safe for Work).
+-   Choose reward options (e.g., 50%/50% or 100% Power Up).
+-   Add beneficiaries to share post rewards.
+-   Schedule the video for future publication.
+-   Publish the video immediately.
+
+#### Usage Example
+
+This screen is part of the navigation flow from `ThumbnailUploadScreen`.
+
+#### Widget Parameters
+
+| Parameter         | Type                               | Required | Description                                                                                                                                        |
+|-------------------|------------------------------------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `uploadModel`     | `ThreeSpeakVideoUploadModel`       | ✅        | The model containing all video and thumbnail data from the previous steps.                                                                         |
+| `onUploadComplete`| `OnUploadCompleteCallback`         | ✅        | A callback function that is executed when the video is successfully published. It returns the final API response.                                 |
+
+#### Features
+
+-   **📝 Full Metadata Entry**: Comprehensive form for all necessary video details.
+-   **🔞 NSFW Content Flag**: A simple checkbox to mark content as not safe for work.
+-   **💰 Reward Options**: Switch to control post reward distribution (Power Up vs. liquid rewards).
+-   **🤝 Beneficiaries Support**: Interface to add and manage reward beneficiaries.
+-   **🗓️ Scheduling**: A date and time picker to schedule video publication.
+-   **🚀 Immediate Publishing**: Option to publish the video right away.
+-   **✅ Final API Call**: Submits all the information to the 3Speak backend to finalize the post.
 
 ---
 
 ## See Also
 
 -   [ThreeSpeakLoginScreen](/docs/login) - For obtaining the `token` required by `VideoUploadScreen`.
--   [ThreeSpeakVideoFeed](/docs/video-feed) - For displaying video feeds.
+-   [ThreeSpeakVideoFeed](/docs/video-feed-1) - For displaying video feeds.
 -   [VideoPlayerScreen](/docs/video-player) - For playing uploaded videos.
 -   `another_tus_client` package (for TUS protocol).
 -   `file_picker` package (for picking video files).

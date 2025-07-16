@@ -1,10 +1,10 @@
 ---
-title: 👤 🔐 Hive Login
-sidebar_label: 👤 🔐 Hive Login
-slug: /login-screen
+title: 🏁 🔐 Hive Login
+sidebar_label: 🏁 🔐 Hive Login
+slug: /hive-login
 ---
 
-# 👤 🔐 Hive Login
+# 🏁 🔐 Hive Login
 
 The `LoginScreen` is a flexible authentication widget that supports multiple login methods for the Hive blockchain. It features automatic theme detection, dynamic UI customization, and real-time user avatar display. The widget handles the complete authentication flow and provides callbacks for successful login events.
 
@@ -25,35 +25,62 @@ Key features include:
 ## Usage Example
 
 ```dart
-Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (context) => LoginScreen(
-      hfk: HiveFlutterKitPlatform.instance, // Your HiveFlutterKitPlatform instance
-      uponLogin: (context, result) {
-        // This callback is triggered after successful authentication
-        debugPrint('Login successful! Username: ${result.username}');
-        debugPrint('Public Key: ${result.publicKey}');
-        
-        // Navigate to your app's main screen
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => MainScreen(user: result)),
-        );
-      },
-      // Optional UI customizations:
-      title: 'Welcome to MyApp',
-      subtitle: 'Connect with your Hive account',
-      logoIcon: Image.asset('assets/my_logo.png', height: 64),
-      backgroundColors: [Colors.blue.shade900, Colors.purple.shade900],
-      fontColor: Colors.white,
-      borderColor: Colors.cyan,
-      hiveKeychainButtonColor: Colors.green,
-      hiveAuthButtonColor: Colors.orange,
-      privatePostingKeyButtonColor: Colors.purple,
-      proof: 'MyApp-${DateTime.now().millisecondsSinceEpoch}',
-    ),
-  ),
-);
+import 'package:flutter/material.dart';
+import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
+import 'package:hive_flutter_kit/core/models/login_model.dart';
+import 'package:hive_flutter_kit/ux/login_screen.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(home: MyHomePage(title: 'Flutter Demo Home Page'));
+  }
+}
+
+class MyHomePage extends StatelessWidget {
+  final String title;
+  const MyHomePage({super.key, required this.title});
+  String generateUtcIsoTimestamp() {
+    return '${DateTime.now().toUtc().toIso8601String()}Z';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final hfk = HiveFlutterKitPlatform.instance;
+    return Scaffold(
+      body: SafeArea(
+        child: LoginScreen(
+          hfk: hfk,
+          backgroundColors: const [Color(0xFF378CE0), Color(0xFF422E5D)],
+          fontColor: Colors.white,
+          // ignore: deprecated_member_use
+          borderColor: Colors.white.withOpacity(0.3),
+          hiveKeychainButtonColor: Colors.green,
+          hiveKeychainTextColor: Colors.white,
+          hiveAuthButtonColor: Colors.orange,
+          hiveAuthTextColor: Colors.white,
+          title: "The Tesing App",
+          subtitle: "Choose your login method",
+          logoIcon: Image.asset('assets/logo.png', height: 150, width: 150),
+          proof: generateUtcIsoTimestamp(),
+          uponLogin: (context, result) async {
+            if (result is LoginModel) {
+              debugPrint(
+                "result- ${result.challenge}, ${result.proof}, ${result.publicKey}, ${result.username}",
+              );
+            }
+          },
+        ),
+      ),
+    );
+  }
+}
 ```
 
 ---
