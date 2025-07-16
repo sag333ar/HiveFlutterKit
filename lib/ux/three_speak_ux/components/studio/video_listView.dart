@@ -4,11 +4,13 @@ import 'package:hive_flutter_kit/core/three_speak_core/models/studio_video_model
 class VideoListview extends StatefulWidget {
   final List<VideoFeedGridItemViewModel> items;
   final Widget Function(BuildContext, VideoFeedGridItemViewModel, int, bool) itemBuilder;
+  final ScrollController? controller;
 
   const VideoListview({
     Key? key,
     required this.items,
     required this.itemBuilder,
+    this.controller,
   }) : super(key: key);
 
   @override
@@ -19,6 +21,7 @@ class _VideoListviewState extends State<VideoListview> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      controller: widget.controller,
       itemCount: widget.items.length,
       itemBuilder: (context, index) {
         return widget.itemBuilder(context, widget.items[index], index, false);

@@ -72,10 +72,39 @@ class _VideoFeedState extends State<VideoFeed> {
   bool _loading = true;
   String? _error;
 
+  int _skip = 0;
+  bool _isLoadingMore = false;
+  bool _hasMore = true;
+  final ScrollController _scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_onScroll);
     _loadCacheAndFetch();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 300 &&
+        !_isLoadingMore &&
+        _hasMore &&
+        !_loading) {
+      _loadMore();
+    }
+  }
+
+  Future<void> _loadMore() async {
+    setState(() {
+      _isLoadingMore = true;
+    });
+    await _fetchFeed();
   }
 
   void _loadCacheAndFetch() {
@@ -103,57 +132,69 @@ class _VideoFeedState extends State<VideoFeed> {
   }
 
   Future<void> _fetchFeed({bool forceRefresh = false}) async {
-    final key = VideoFeed._getCacheKey(
-      widget.feedType,
-      widget.username,
-      widget.communityId,
-    );
+    if (forceRefresh) {
+      _skip = 0;
+      _hasMore = true;
+      _items.clear();
+      _viewModels.clear();
+    }
 
     try {
-      List<ThreeSpeakVideo> items = [];
+      List<ThreeSpeakVideo> newItems = [];
 
       switch (widget.feedType) {
         case ApiVideoFeedType.home:
-          items = await _api.getHomeVideos();
+          newItems = await _api.getHomeVideos(skip: _skip);
           break;
         case ApiVideoFeedType.trending:
-          items = await _api.getTrendingVideos();
+          newItems = await _api.getTrendingVideos(skip: _skip);
           break;
         case ApiVideoFeedType.newVideos:
-          items = await _api.getNewVideos();
+          newItems = await _api.getNewVideos(skip: _skip);
           break;
         case ApiVideoFeedType.firstUploads:
-          items = await _api.getFirstUploadsVideos();
+          newItems = await _api.getFirstUploadsVideos(skip: _skip);
           break;
         case ApiVideoFeedType.user:
           if (widget.username != null) {
-            items = await _api.getUserVideos(widget.username!);
+            newItems = await _api.getUserVideos(widget.username!, skip: _skip);
           }
           break;
         case ApiVideoFeedType.community:
           if (widget.communityId != null) {
-            items = await _api.getCommunityVideos(widget.communityId!);
+            newItems = await _api.getCommunityVideos(
+              widget.communityId!,
+              skip: _skip,
+            );
           }
+          break;
         case ApiVideoFeedType.related:
           if (widget.username != null) {
-            items = await _api.getRelatedVideos(widget.username!);
+            newItems = await _api.getRelatedVideos(
+              widget.username!,
+              skip: _skip,
+            );
           }
           break;
       }
 
-      VideoFeed._feedCache[key] = items;
-
       setState(() {
-        _items = items;
-        _viewModels =
-            items.map(VideoFeedGridItemViewModel.fromThreeSpeakVideo).toList();
+        if (newItems.length < 50) _hasMore = false;
+        _items.addAll(newItems);
+        _viewModels.addAll(
+          newItems.map(VideoFeedGridItemViewModel.fromThreeSpeakVideo),
+        );
         _loading = false;
+        _isLoadingMore = false;
         _error = null;
       });
+
+      _skip += newItems.length;
     } catch (e) {
       setState(() {
         _error = e.toString();
         _loading = false;
+        _isLoadingMore = false;
       });
     }
   }
@@ -181,6 +222,7 @@ class _VideoFeedState extends State<VideoFeed> {
         return Skeletonizer(
           enabled: true,
           child: GridView.builder(
+            controller: _scrollController,
             padding: const EdgeInsets.all(8),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: crossAxisCount,
@@ -207,6 +249,7 @@ class _VideoFeedState extends State<VideoFeed> {
         return Skeletonizer(
           enabled: true,
           child: ListView.builder(
+            controller: _scrollController,
             padding: const EdgeInsets.all(8),
             itemCount: dummyItems.length,
             itemBuilder: (context, index) {
@@ -236,6 +279,7 @@ class _VideoFeedState extends State<VideoFeed> {
     if (isWide) {
       final crossAxisCount = screenWidth ~/ 350;
       return GridView.builder(
+        controller: _scrollController,
         padding: const EdgeInsets.all(8),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: crossAxisCount,
@@ -261,6 +305,7 @@ class _VideoFeedState extends State<VideoFeed> {
       );
     } else {
       return VideoListview(
+        controller: _scrollController,
         items: _viewModels,
         itemBuilder: (context, item, index, isVisible) {
           return VideoCard(
