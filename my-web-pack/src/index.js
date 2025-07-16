@@ -261,11 +261,16 @@ async function loginWithPlaintextKey(username, postingKey, proof) {
   if (proof === undefined || proof === null || proof === "") {
     proof = parseInt(new Date().getTime() / 1000);
   }
-  aioha.registerCustomProvider(new PlaintextKeyProvider(postingKey));
+  const plaintext = new PlaintextKeyProvider(postingKey)
+  aioha.registerCustomProvider(plaintext);
   const login = await aioha.login(Providers.Custom, username, {
     msg: `${proof}`,
     keyType: KeyTypes.Posting,
   });
+
+  if (login.success) {
+    plaintext.loadAuth(username)
+  }
 
   if (login.error && login.error !== "Already logged in") {
     qrString = "";
