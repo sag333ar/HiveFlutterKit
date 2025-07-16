@@ -356,9 +356,9 @@ class ThreeSpeakComponentsWidget extends StatelessWidget {
                       height: MediaQuery.of(context).size.height,
                       child: ThreeSpeakLoginScreen(
                         hfk: hfk, // Pass hfk instance
-                        uponLogin: (ctx, token, username) {
+                        uponLogin: (ctx, token, username, postingKey) {
                           showSnackBar(
-                            '3Speak Logged in with token: $token, username: $username',
+                            '3Speak Logged in with token: $token, username: $username, postingKey: $postingKey',
                           );
                           Navigator.of(ctx).pop(); // Close dialog upon login
                         },

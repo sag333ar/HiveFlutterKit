@@ -301,7 +301,7 @@ class _SwitchUserState extends State<SwitchUser> {
                                   size: 64,
                                   color: Colors.white,
                                 ),
-                                uponLogin: (context, result) {
+                                uponLogin: (context, result, [postingKey]) {
                                   print('FrontEnd Login Result: $result');
                                   Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(

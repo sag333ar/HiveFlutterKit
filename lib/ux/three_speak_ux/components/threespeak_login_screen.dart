@@ -16,7 +16,7 @@ class ThreeSpeakLoginScreen extends StatelessWidget {
   final String? title;
   final String? subtitle;
   final Widget? logoIcon;
-  final Function(BuildContext context, String token, String username)? uponLogin;
+  final Function(BuildContext context, String token, String username, String? postingKey)? uponLogin;
 
   const ThreeSpeakLoginScreen({
     Key? key,
@@ -34,7 +34,7 @@ class ThreeSpeakLoginScreen extends StatelessWidget {
     this.uponLogin,
   }) : super(key: key);
 
-  Future<void> _handleLogin(BuildContext context, LoginModel result) async {
+  Future<void> _handleLogin(BuildContext context, LoginModel result, String? postingKey) async {
     // Show loading dialog
     showDialog(
       context: context,
@@ -48,7 +48,7 @@ class ThreeSpeakLoginScreen extends StatelessWidget {
       final username = result.username;
       Navigator.of(context).pop(); // Remove loading dialog
       if (token != null) {
-        uponLogin!(context, token, username!);
+        uponLogin!(context, token, username!, postingKey!);
         Navigator.of(context).pop();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -89,9 +89,9 @@ class ThreeSpeakLoginScreen extends StatelessWidget {
           title: safeTitle,
           subtitle: safeSubtitle,
           logoIcon: safeLogoIcon,
-          uponLogin: (context, loginResult) async {
+          uponLogin: (context, loginResult, [postingKey]) async {
             if (loginResult is LoginModel) {
-              await _handleLogin(context, loginResult);
+              await _handleLogin(context, loginResult, postingKey!);
             }
           },
         ),
