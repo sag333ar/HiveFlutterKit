@@ -35,6 +35,7 @@ dependencies:
   qr_flutter: ^4.1.0
   share_plus: ^11.0.0
   scrollable_positioned_list: ^0.3.8
+  skeletonizer: ^2.1.0+1
   timeago: ^3.7.1
   url_launcher: ^6.3.1
   video_player: ^2.9.5
@@ -88,6 +89,7 @@ flutter:
     - assets/images/vote_logo.png
     - assets/images/hive-stats.png
     - assets/images/donate_logo.png
+    - assets/images/logo.png
   #
   # For details regarding assets in packages, see
   # https://flutter.dev/to/asset-from-package

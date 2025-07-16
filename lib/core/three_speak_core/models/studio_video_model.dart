@@ -55,6 +55,19 @@ class VideoFeedGridItemViewModel {
       thumbnail: video.spkvideo?.thumbnailUrl,
     );
   }
+
+  factory VideoFeedGridItemViewModel.dummy() {
+  return VideoFeedGridItemViewModel(
+    title: '',
+    author: '',
+    created: DateTime.now(),
+    permlink: '',
+    hiveValue: null,
+    numOfComments: null,
+    numOfUpvotes: null, category: '', duration: null, thumbnail: '',
+  );
+}
+
 }
 
 class ThreeSpeakVideo {

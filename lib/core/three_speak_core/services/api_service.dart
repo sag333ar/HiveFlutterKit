@@ -185,4 +185,20 @@ class ApiService {
       throw response.reasonPhrase ?? 'Something went wrong';
     }
   }
+
+  Future<List<ThreeSpeakVideo>> getRelatedVideos(String username) async {
+    var request = http.Request(
+      'GET',
+      Uri.parse('${server.kThreeSpeakApiUrl}/feed/@$username'),
+    );
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      var string = await response.stream.bytesToString();
+      return ThreeSpeakVideo.threeSpeakVideosFromJsonString(string);
+    } else {
+      print(response.reasonPhrase);
+      throw response.reasonPhrase ?? 'Something went wrong';
+    }
+  }
+  ///api/feed/@:username/:community/:language
 }

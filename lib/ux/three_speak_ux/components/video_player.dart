@@ -20,7 +20,7 @@ class VideoPlayerScreen extends StatefulWidget {
   final void Function(String, String)? onTapUpvote;
   final void Function(String, String)? onTapShare;
   final void Function(String, String)? onTapBookmark;
-  final void Function(String)? onTapAuthor;
+  final void Function(String, String)? onTapAuthor;
   final VoidCallback onTapBackButton;
   final bool shouldShowBackButton;
   final void Function(String, String)? onTapInfo;

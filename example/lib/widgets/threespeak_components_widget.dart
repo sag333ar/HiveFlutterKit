@@ -155,7 +155,28 @@ class ThreeSpeakComponentsWidget extends StatelessWidget {
                       appBar: AppBar(
                         title: const Text('Trending Feed (3Speak)'),
                       ),
-                      body: ThreeSpeakVideoFeed(
+                      body: 
+                      // VideoFeed(
+                      //   feedType: ApiVideoFeedType.trending,
+                      //   //username: 'wealthwess', 
+                      //   onTapVideoItem: (tappedItem) {
+                      //   },
+                      //   onTapAuthor:
+                      //       (item) =>
+                      //           showSnackBar('Tapped author: ${item.owner}'),
+                      //   onTapReport:
+                      //       (item) =>
+                      //           showSnackBar('Tapped report: ${item.permlink}'),
+                      //   onTapUpvote:
+                      //       (item) =>
+                      //           showSnackBar('Tapped upvote: ${item.permlink}'),
+                      //   onTapComment:
+                      //       (item) => showSnackBar(
+                      //         'Tapped comment: ${item.permlink}',
+                      //       ),
+                      //   isPayoutValueVisible: true,
+                      // ),
+                      ThreeSpeakVideoFeed(
                         feedType: ThreeSpeakVideoFeedType.trending,
                         onTapVideoItem: (tappedItem) {
                           var screen = videoPlayerBuilder(

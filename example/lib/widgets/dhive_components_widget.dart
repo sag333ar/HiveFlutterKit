@@ -34,6 +34,7 @@ class DhiveComponentsWidget extends StatelessWidget {
   final VoidCallback getFollowersData;   // Same as above
   final VoidCallback getWitnessVotesData; // Same as above
   final VoidCallback getProposalsExample; // This was navigation
+  final VoidCallback getContentExample; // This was navigation
   final VoidCallback getAccountHistoryExample; // This was navigation
   final VoidCallback checkThreespeakInAccountAuths; // This seems like a general utility, but keeping here for now
   final VoidCallback getCommentsListhfk;
@@ -62,6 +63,7 @@ class DhiveComponentsWidget extends StatelessWidget {
     required this.getFollowersData,
     required this.getWitnessVotesData,
     required this.getProposalsExample,
+    required this.getContentExample,
     required this.getAccountHistoryExample,
     required this.checkThreespeakInAccountAuths,
     required this.getCommentsListhfk,
@@ -177,7 +179,7 @@ class DhiveComponentsWidget extends StatelessWidget {
             );
           },
         ),
-
+        ElevatedButton(onPressed: getContentExample, child: const Text('Get Content Example (dhive)')),
         ElevatedButton(
           onPressed: checkThreespeakInAccountAuths, // This might move to a general utils/AuthService later
           child: const Text('Check threespeak in accountAuths'),

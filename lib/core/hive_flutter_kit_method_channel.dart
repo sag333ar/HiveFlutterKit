@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:hive_flutter_kit/core/models/content.dart';
 import 'package:hive_flutter_kit/core/models/followers.dart';
 import 'package:hive_flutter_kit/core/models/followings.dart';
 import 'package:hive_flutter_kit/core/models/account_history.dart';
@@ -1632,6 +1633,72 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
         window.flutter_inappwebview.callHandler('$handlerName', result || 'null');
       } catch (e) {
         window.flutter_inappwebview.callHandler('$handlerName', JSON.stringify({proposals: []}));
+      }
+    })();
+  """;
+
+    await headlessWebView.webViewController?.evaluateJavascript(source: jsCall);
+    return completer.future;
+  }
+
+  @override
+  Future<ContentModel?> getContent({
+    required String author,
+    required String permlink,
+  }) async {
+    final completer = Completer<ContentModel?>();
+    final handlerName =
+        'onGetContentResult_${DateTime.now().millisecondsSinceEpoch}';
+
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: handlerName,
+      callback: (args) {
+        if (!completer.isCompleted) {
+          final contentData = args.isNotEmpty ? args[0].toString() : null;
+
+          if (contentData != null &&
+              contentData != 'null' &&
+              contentData.isNotEmpty) {
+            try {
+              final parsed = jsonDecode(contentData);
+
+              // Handle both raw or wrapped responses (e.g., { result: {...} })
+              final data =
+                  parsed is Map<String, dynamic> && parsed.containsKey('result')
+                      ? parsed['result']
+                      : parsed;
+
+              if (data == null || data is! Map<String, dynamic>) {
+                completer.complete(null);
+              } else {
+                final content = ContentModel.fromJson(data);
+                completer.complete(content);
+              }
+            } catch (e) {
+              completer.completeError('Failed to parse getContent: $e');
+            }
+          } else {
+            completer.completeError('Empty or null getContent response');
+          }
+
+          // Remove the JS handler
+          headlessWebView.webViewController?.removeJavaScriptHandler(
+            handlerName: handlerName,
+          );
+        }
+      },
+    );
+
+    final jsAuthor = jsonEncode(author);
+    final jsPermlink = jsonEncode(permlink);
+
+    final jsCall = """
+    (async () => {
+      try {
+        const result = await getContent($jsAuthor, $jsPermlink);
+        window.flutter_inappwebview.callHandler('$handlerName', result || 'null');
+      } catch (e) {
+        window.flutter_inappwebview.callHandler('$handlerName', 'null');
       }
     })();
   """;

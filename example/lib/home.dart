@@ -559,6 +559,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     () => _dhiveService.getWitnessVotesData('sagarkothari88'),
                 getProposalsExample:
                     () => _dhiveService.getProposals(status: 'votable'),
+                getContentExample:
+                    () => _dhiveService.getContent('sagarkothari88','fuhitntzfw'),
                 getAccountHistoryExample:
                     () => _dhiveService.getAccountHistory('sagarkothari88'),
                 checkThreespeakInAccountAuths:
