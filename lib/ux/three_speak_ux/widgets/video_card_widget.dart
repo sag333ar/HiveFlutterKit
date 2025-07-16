@@ -4,7 +4,6 @@ import 'package:hive_flutter_kit/core/hive_flutter_kit_platform_interface.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/models/studio_video_model.dart';
 import 'package:hive_flutter_kit/core/three_speak_core/server_proxy.dart';
 import 'package:hive_flutter_kit/ux/three_speak_ux/widgets/video_thumbnail.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class VideoCard extends StatefulWidget {
@@ -41,7 +40,6 @@ class _VideoCardState extends State<VideoCard> {
   int? _comments;
   int? _upvotes;
   String? _payoutValue;
-  bool _loadingStats = false;
   bool _hasCache = false;
   late HiveFlutterKitPlatform hfk;
 
@@ -102,6 +100,7 @@ class _VideoCardState extends State<VideoCard> {
   Widget build(BuildContext context) {
     final item = widget.item;
     var upvotes = item.numOfUpvotes ?? _upvotes;
+    var comments = item.numOfComments ?? _comments;
     return GestureDetector(
       onTap: widget.onTap,
       child: Card(
@@ -239,7 +238,7 @@ class _VideoCardState extends State<VideoCard> {
                         ),
                       Row(
                         children: [
-                          if (upvotes != null) {
+                          if (upvotes != null)
                           GestureDetector(
                             onTap: widget.onTapUpvote,
                             child: _iconStat(
@@ -247,8 +246,8 @@ class _VideoCardState extends State<VideoCard> {
                               "${item.numOfUpvotes ?? _upvotes}",
                             ),
                           ),
-                          }
                           const SizedBox(width: 12),
+                          if (comments != null)
                           GestureDetector(
                             onTap: widget.onTapComment,
                             child: _iconStat(
