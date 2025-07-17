@@ -14,7 +14,6 @@ const aioha = initAioha({
 });
 
 aioha.setApi('https://api.hive.blog', [
-  'https://techcoderx.com',
   'https://api.syncad.com',
   "https://api.deathwing.me"
 ])
