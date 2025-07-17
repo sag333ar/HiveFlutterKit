@@ -13,6 +13,12 @@ const aioha = initAioha({
   },
 });
 
+aioha.setApi('https://api.hive.blog', [
+  'https://techcoderx.com',
+  'https://api.syncad.com',
+  "https://api.deathwing.me"
+])
+
 aioha.on("hiveauth_challenge_request", (payload, evt, cancel) => {
   qrString = payload;
 });
@@ -776,7 +782,7 @@ window.getAccountHistory = getAccountHistory;
 
 async function subscribeUnsubscribeToCommunity(community, subscribe) {
   try {
-    const result = await aioha.customJSON(KeyTypes.Posting, 'community', [subscribe ? 'subscribe': 'unsubscribe', {community: community}], 'Display Title')
+    const result = await aioha.customJSON(KeyTypes.Posting, 'community', [subscribe ? 'subscribe': 'unsubscribe', {'community': community}], 'Display Title')
     var dataToReturn = JSON.stringify(result);
     return dataToReturn;
   } catch (error) {
