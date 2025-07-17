@@ -60,6 +60,57 @@ String extractFirstIfList(dynamic input) {
 class _VideoInfoState extends State<VideoInfo> {
   final HiveFlutterKitPlatform hfk = HiveFlutterKitPlatform.instance;
   var contentFavoriteProvider = ContentFavoriteProvider();
+
+  int? _comments;
+  int? _upvotes;
+  bool _hasCache = false;
+
+  static final Map<String, dynamic> _contentCache = {};
+
+  String _getCacheKey(String author, String permlink) {
+    return '$author:$permlink';
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final cacheKey = _getCacheKey(widget.author, widget.permlink);
+    final cachedDiscussion = _contentCache[cacheKey];
+    if (cachedDiscussion != null) {
+      _hasCache = true;
+      _setStatsFromDiscussion(cachedDiscussion);
+    }
+    _fetchStats();
+  }
+
+  void _setStatsFromDiscussion(dynamic discussion) {
+    setState(() {
+      _comments = discussion.children ?? 0;
+      _upvotes = (discussion.activeVotes?.length ?? 0);
+      _hasCache = true;
+    });
+  }
+
+  Future<void> _fetchStats() async {
+    final cacheKey = _getCacheKey(widget.author, widget.permlink);
+    if (!_hasCache) {
+      setState(() {});
+    }
+    try {
+      final discussion = await hfk.getContent(
+        author: widget.author,
+        permlink: widget.permlink,
+      );
+      if (discussion != null) {
+        _contentCache[cacheKey] = discussion;
+        _setStatsFromDiscussion(discussion);
+      }
+    } catch (e) {
+    } finally {
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final video = widget.video;
@@ -274,7 +325,7 @@ class _VideoInfoState extends State<VideoInfo> {
                               // ),
                               SizedBox(width: 8),
                               Text(
-                                '${video.numOfComments ?? 0}',
+                                '${_comments ?? video.numOfComments ?? 0}',
                                 style: TextStyle(color: Colors.grey[600]),
                               ),
                             ],
@@ -383,7 +434,7 @@ class _VideoInfoState extends State<VideoInfo> {
                               ),
                               SizedBox(width: 8),
                               Text(
-                                '${video.numOfUpvotes ?? 0}',
+                                '${_upvotes ?? video.numOfUpvotes ?? 0}',
                                 style: TextStyle(color: Colors.grey[600]),
                               ),
                             ],
