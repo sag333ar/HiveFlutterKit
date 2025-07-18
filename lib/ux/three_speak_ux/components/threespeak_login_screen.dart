@@ -16,7 +16,13 @@ class ThreeSpeakLoginScreen extends StatelessWidget {
   final String? title;
   final String? subtitle;
   final Widget? logoIcon;
-  final Function(BuildContext context, String token, String username, String? postingKey)? uponLogin;
+  final Function(
+    BuildContext context,
+    String token,
+    String username,
+    String? postingKey,
+  )?
+  uponLogin;
 
   const ThreeSpeakLoginScreen({
     Key? key,
@@ -34,7 +40,11 @@ class ThreeSpeakLoginScreen extends StatelessWidget {
     this.uponLogin,
   }) : super(key: key);
 
-  Future<void> _handleLogin(BuildContext context, LoginModel result, String? postingKey) async {
+  Future<void> _handleLogin(
+    BuildContext context,
+    LoginModel result,
+    String? postingKey,
+  ) async {
     // Show loading dialog
     showDialog(
       context: context,
@@ -48,7 +58,7 @@ class ThreeSpeakLoginScreen extends StatelessWidget {
       final username = result.username;
       Navigator.of(context).pop(); // Remove loading dialog
       if (token != null) {
-        uponLogin!(context, token, username!, postingKey!);
+        uponLogin!(context, token, username!, postingKey??'');
         Navigator.of(context).pop();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -57,9 +67,9 @@ class ThreeSpeakLoginScreen extends StatelessWidget {
       }
     } catch (e) {
       Navigator.of(context).pop(); // Remove loading dialog
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Login API error: $e")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Login API error: $e")));
     }
   }
 
@@ -68,12 +78,9 @@ class ThreeSpeakLoginScreen extends StatelessWidget {
     // Provide default values if null
     final String safeTitle = title ?? 'Welcome to 3Speak';
     final String safeSubtitle = subtitle ?? 'Login to continue';
-    final Widget safeLogoIcon = logoIcon ??
-        const Icon(
-          Icons.video_library,
-          size: 64,
-          color: Colors.deepPurple,
-        );
+    final Widget safeLogoIcon =
+        logoIcon ??
+        const Icon(Icons.video_library, size: 64, color: Colors.deepPurple);
 
     return Stack(
       children: [
@@ -91,7 +98,7 @@ class ThreeSpeakLoginScreen extends StatelessWidget {
           logoIcon: safeLogoIcon,
           uponLogin: (context, loginResult, [postingKey]) async {
             if (loginResult is LoginModel) {
-              await _handleLogin(context, loginResult, postingKey!);
+              await _handleLogin(context, loginResult, postingKey??'');
             }
           },
         ),
@@ -100,9 +107,10 @@ class ThreeSpeakLoginScreen extends StatelessWidget {
           left: 8,
           child: IconButton(
             icon: const Icon(Icons.arrow_back, size: 28),
-            color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.grey
-                : Colors.black,
+            color:
+                Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey
+                    : Colors.black,
             onPressed: () => Navigator.of(context).maybePop(),
             tooltip: 'Back',
           ),
