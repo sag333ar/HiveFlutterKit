@@ -947,3 +947,18 @@ async function getContent(author, permlink) {
   }
 }
 window.getContent = getContent;
+
+async function broadcastOperationWithPrivatePostingKey(privateKey, operations) {
+  const postingKey = dhive.PrivateKey.fromString(privateKey);
+  const jsonString = atob(operations);
+  const jsonArray = JSON.parse(jsonString);
+  try {
+    const result = await client.broadcast.sendOperations(jsonArray, postingKey);
+    console.log('✅ Broadcast successful:', result);
+    return JSON.stringify(result);
+  } catch (error) {
+    console.error('❌ Broadcast failed:', error);
+    throw error;
+  }
+}
+window.broadcastOperationWithPrivatePostingKey = broadcastOperationWithPrivatePostingKey;
