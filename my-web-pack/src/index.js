@@ -266,7 +266,7 @@ async function loginWithPlaintextKey(username, postingKey, proof) {
   if (proof === undefined || proof === null || proof === "") {
     proof = parseInt(new Date().getTime() / 1000);
   }
-  const plaintext = new PlaintextKeyProvider(postingKey)
+  const plaintext = new PlaintextKeyProvider(postingKey, 'https://api.hive.blog')
   aioha.registerCustomProvider(plaintext);
   const login = await aioha.login(Providers.Custom, username, {
     msg: `${proof}`,
