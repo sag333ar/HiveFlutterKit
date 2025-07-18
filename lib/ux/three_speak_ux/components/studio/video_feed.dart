@@ -189,6 +189,14 @@ class _VideoFeedState extends State<VideoFeed> {
         _error = null;
       });
 
+      // Add this block to update the cache
+      final key = VideoFeed._getCacheKey(
+        widget.feedType,
+        widget.username,
+        widget.communityId,
+      );
+      VideoFeed._feedCache[key] = List<ThreeSpeakVideo>.from(_items);
+
       _skip += newItems.length;
     } catch (e) {
       setState(() {
