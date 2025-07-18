@@ -27,7 +27,8 @@ class LoginScreen extends StatefulWidget {
   final Widget logoIcon;
   final String? logoImagePath;
   final String proof;
-  final void Function(BuildContext context, dynamic result, String? postingKey)? uponLogin;
+  final void Function(BuildContext context, dynamic result, String? postingKey)?
+  uponLogin;
 
   LoginScreen({
     super.key,
@@ -70,6 +71,29 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _showPostingKeyLogin = false;
   bool _isKeychainAvailable = false;
   bool _checkedKeychain = false;
+  bool _showLoading = false;
+
+  void _showLoadingDialog() {
+    if (!_showLoading) {
+      setState(() {
+        _showLoading = true;
+      });
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => const Center(child: CircularProgressIndicator()),
+      );
+    }
+  }
+
+  void _hideLoadingDialog() {
+    if (_showLoading) {
+      setState(() {
+        _showLoading = false;
+      });
+      Navigator.of(context, rootNavigator: true).pop();
+    }
+  }
 
   // Auto-detect theme mode
   bool get _isDarkMode => Theme.of(context).brightness == Brightness.dark;
@@ -133,16 +157,19 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _loginWithHiveKeychain() async {
+    _showLoadingDialog();
     try {
       final result = await widget.hfk.loginWithKeychain(
         _usernameController.text,
         widget.proof,
       );
+      _hideLoadingDialog();
       _showMessage('Login Successful');
       if (widget.uponLogin != null) {
         widget.uponLogin!(context, result, null);
       }
     } catch (e) {
+      _hideLoadingDialog();
       _showMessage('Error: $e');
     }
   }
@@ -154,23 +181,28 @@ class _LoginScreenState extends State<LoginScreen> {
         _usernameController.text,
         widget.proof,
       );
+      _showLoadingDialog(); // Show loading only after QR is scanned and login is being processed
       _showMessage('Login Successful');
       _cancelHiveAuth();
+      _hideLoadingDialog();
       if (widget.uponLogin != null) {
         widget.uponLogin!(context, result, null);
       }
     } catch (e) {
       _cancelHiveAuth();
+      _hideLoadingDialog();
       _showMessage('Error: $e');
     }
   }
 
   void _loginWithPlaintextKey() async {
+    _showLoadingDialog();
     try {
       final username = _usernameController.text;
       final postingKey = _postingKeyController.text;
 
       if (username.isEmpty || postingKey.isEmpty) {
+        _hideLoadingDialog();
         _showMessage('Username and Posting Key are required');
         return;
       }
@@ -180,11 +212,13 @@ class _LoginScreenState extends State<LoginScreen> {
         postingKey,
         widget.proof,
       );
+      _hideLoadingDialog();
       _showMessage('Login Successful');
       if (widget.uponLogin != null) {
         widget.uponLogin!(context, result, postingKey);
       }
     } catch (e) {
+      _hideLoadingDialog();
       _showMessage('Error: $e');
     }
   }
