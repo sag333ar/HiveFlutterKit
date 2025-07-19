@@ -950,7 +950,7 @@ async function getContent(author, permlink) {
 }
 window.getContent = getContent;
 
-async function broadcastOperationWithPrivatePostingKey(privateKey, operations) {
+async function broadcastOperationWithPrivatePostingKey(operations, privateKey) {
   const postingKey = dhive.PrivateKey.fromString(privateKey);
   // const jsonString = atob(operations);
   operations = JSON.parse(operations);
