@@ -5,10 +5,7 @@ class ProfileService {
   final HiveFlutterKitPlatform hfk;
   final Function(String) showSnackBar;
 
-  ProfileService({
-    required this.hfk,
-    required this.showSnackBar,
-  });
+  ProfileService({required this.hfk, required this.showSnackBar});
 
   Future<String?> pickAndUploadImage() async {
     try {
@@ -24,7 +21,10 @@ class ProfileService {
     }
   }
 
-  Future<String?> signAndBroadcastProfileImageTx(String? uploadedImageUrl, String username) async {
+  Future<String?> signAndBroadcastProfileImageTx(
+    String? uploadedImageUrl,
+    String username,
+  ) async {
     if (uploadedImageUrl == null) {
       showSnackBar('Please upload an image first');
       return 'Error: No image URL provided.';
@@ -53,11 +53,14 @@ class ProfileService {
         postingJsonMetadata['profile'] = {'profile_image': uploadedImageUrl};
       }
 
-      print('Updated profile_image: ${postingJsonMetadata['profile']['profile_image']}');
+      print(
+        'Updated profile_image: ${postingJsonMetadata['profile']['profile_image']}',
+      );
 
       final operationData = {
         "account": username,
-        "json_metadata": account.jsonMetadata ?? "", // Preserve existing json_metadata
+        "json_metadata":
+            account.jsonMetadata ?? "", // Preserve existing json_metadata
         "posting_json_metadata": jsonEncode(postingJsonMetadata),
         "extensions": [],
       };
@@ -65,11 +68,15 @@ class ProfileService {
       final dynamic operation = ["account_update2", operationData];
       final dynamic operationRequest = [operation];
 
-      final response = await hfk.signAndBroadcastTx(operationRequest, 'posting');
+      final response = await hfk.signAndBroadcastTx(
+        operationRequest,
+        'posting',
+      );
 
       if (response != null && response['success'] == true) {
         showSnackBar('Broadcast Success');
-        return response['profile']?['profile_image'] ?? 'Broadcasted successfully!';
+        return response['profile']?['profile_image'] ??
+            'Broadcasted successfully!';
       } else {
         final error = response?['error'] ?? 'Unknown error';
         showSnackBar('Broadcast failed: $error');

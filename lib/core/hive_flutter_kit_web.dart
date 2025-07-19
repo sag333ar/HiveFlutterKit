@@ -228,6 +228,12 @@ external dynamic isHiveKeychainAvailableJS();
 @JS('getWitnessesByVote')
 external dynamic getWitnessesByVoteJS(String startAt, int limit);
 
+@JS('broadcastOperationWithPrivatePostingKey')
+external dynamic broadcastOperationWithPrivatePostingKeyJS(
+  dynamic operations, // pass as List<dynamic>
+  String keyType,
+);
+
 /// A web implementation of the HiveFlutterKitPlatform of the HiveFlutterKit plugin.
 class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
   /// Constructs a HiveFlutterKitWeb
@@ -726,6 +732,7 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
     return proposals.map((e) => Proposal.fromJson(e)).toList();
   }
 
+  @override
   Future<ContentModel?> getContent({
     required String author,
     required String permlink,
@@ -772,5 +779,18 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
     var contentData = await promiseToFuture(promise);
     // The JS returns a JSON string array of witness accounts
     return Account.listFromJsonString(contentData);
+  }
+
+  @override
+  Future<dynamic> broadcastOperationWithPrivatePostingKey(
+    dynamic operationRequest,
+    String privateKey,
+  ) async {
+    var promise = broadcastOperationWithPrivatePostingKey(
+      jsonEncode(operationRequest),
+      privateKey,
+    );
+    var result = await promiseToFuture(promise);
+    return jsonDecode(result);
   }
 }

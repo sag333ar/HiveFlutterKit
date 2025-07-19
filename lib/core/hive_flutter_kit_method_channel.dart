@@ -1706,4 +1706,47 @@ class MethodChannelHiveFlutterKit extends HiveFlutterKitPlatform {
     await headlessWebView.webViewController?.evaluateJavascript(source: jsCall);
     return completer.future;
   }
+
+  @override
+  Future<dynamic> broadcastOperationWithPrivatePostingKey(
+    dynamic operationRequest,
+    String privateKey,
+  ) async {
+    final completer = Completer<dynamic>();
+
+    // Remove previous handler if exists
+    headlessWebView.webViewController?.removeJavaScriptHandler(
+      handlerName: 'broadcastOperationWithPrivatePostingKeyResult',
+    );
+
+    headlessWebView.webViewController?.addJavaScriptHandler(
+      handlerName: 'broadcastOperationWithPrivatePostingKeyResult',
+      callback: (args) {
+        if (!completer.isCompleted) {
+          final resultString =
+              (args.isNotEmpty && args[0] is String) ? args[0] as String : null;
+          final response =
+              resultString != null ? jsonDecode(resultString) : null;
+          completer.complete(response);
+        }
+      },
+    );
+
+    final opsJson = jsonEncode(operationRequest);
+
+    final jsCode = """
+    (async () => {
+      try {
+        const res = await window.broadcastOperationWithPrivatePostingKey($opsJson, "$privateKey");
+        window.flutter_inappwebview.callHandler('broadcastOperationWithPrivatePostingKeyResult', JSON.stringify(res));
+      } catch (e) {
+        window.flutter_inappwebview.callHandler('broadcastOperationWithPrivatePostingKeyResult', JSON.stringify({ error: e.toString() }));
+      }
+    })();
+  """;
+
+    await headlessWebView.webViewController?.evaluateJavascript(source: jsCode);
+
+    return completer.future;
+  }
 }

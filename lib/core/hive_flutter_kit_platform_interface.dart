@@ -423,7 +423,16 @@ abstract class HiveFlutterKitPlatform extends PlatformInterface {
   Future<ContentModel?> getContent({
     required String author,
     required String permlink,
-  }){
+  }) {
     throw UnimplementedError('getContent has not been implemented.');
+  }
+
+  Future<dynamic> broadcastOperationWithPrivatePostingKey(
+    dynamic operationRequest,
+    String privateKey,
+  ) {
+    throw UnimplementedError(
+      'broadcastOperationWithPrivatePostingKey has not been implemented.',
+    );
   }
 }

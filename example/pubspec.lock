@@ -424,7 +424,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "2.4.8"
+    version: "2.4.10"
   html:
     dependency: transitive
     description:

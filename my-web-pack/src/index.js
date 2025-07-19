@@ -886,6 +886,7 @@ async function getFullWalletData(username) {
   }
 }
 window.getFullWalletData = getFullWalletData;
+
 async function getWitnessesByVote(startAt = "", limit = 60) {
   try {
     const witnesses = await dhiveClient.call(
@@ -909,6 +910,7 @@ async function getWitnessesByVote(startAt = "", limit = 60) {
   }
 }
 window.getWitnessesByVote = getWitnessesByVote;
+
 async function listProposals(
   start = [-1],
   limit = 500,
@@ -950,15 +952,15 @@ window.getContent = getContent;
 
 async function broadcastOperationWithPrivatePostingKey(privateKey, operations) {
   const postingKey = dhive.PrivateKey.fromString(privateKey);
-  const jsonString = atob(operations);
-  const jsonArray = JSON.parse(jsonString);
+  // const jsonString = atob(operations);
+  operations = JSON.parse(operations);
   try {
-    const result = await client.broadcast.sendOperations(jsonArray, postingKey);
+    const result = await dhiveClient.broadcast.sendOperations(operations, postingKey);
     console.log('✅ Broadcast successful:', result);
     return JSON.stringify(result);
   } catch (error) {
     console.error('❌ Broadcast failed:', error);
-    throw error;
+    return JSON.stringify({ error: error.toString() });
   }
 }
 window.broadcastOperationWithPrivatePostingKey = broadcastOperationWithPrivatePostingKey;
