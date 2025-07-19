@@ -786,7 +786,7 @@ class HiveFlutterKitWeb extends HiveFlutterKitPlatform {
     dynamic operationRequest,
     String privateKey,
   ) async {
-    var promise = broadcastOperationWithPrivatePostingKey(
+    var promise = broadcastOperationWithPrivatePostingKeyJS(
       jsonEncode(operationRequest),
       privateKey,
     );
