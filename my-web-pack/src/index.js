@@ -5,6 +5,7 @@ const dhive = require('@hiveio/dhive');
 let dhiveClient = new dhive.Client(["https://api.hive.blog"]);
 window.dhiveClient = dhiveClient;
 window.dhiveUtils = dhive.utils;
+window.dhive = dhive;
 
 const aioha = initAioha({
   hiveauth: {
